@@ -8,14 +8,22 @@ import {
   useResendEmailVerificationMutation,
   useMakeEmailPrimaryMutation,
   useDeleteEmailMutation,
+<<<<<<< HEAD:@app/client/src/pages/settings/emails.tsx
 } from "@app/graphql";
+=======
+} from "../../graphql";
+>>>>>>> ddd5982... Nicer text:client/src/pages/settings/emails.tsx
 import { Alert, List, Avatar, Form, Input, Button } from "antd";
 import { FormComponentProps, ValidateFieldsOptions } from "antd/lib/form/Form";
 import { ApolloError } from "apollo-client";
 import Redirect from "../../components/Redirect";
 import { getCodeFromError, extractError } from "../../errors";
 import Error from "../../components/ErrorAlert";
+<<<<<<< HEAD:@app/client/src/pages/settings/emails.tsx
 import { H3, P, Strong } from "../../components/Text";
+=======
+import { H2, P, Strong } from "../../components/Text";
+>>>>>>> ddd5982... Nicer text:client/src/pages/settings/emails.tsx
 
 function Email({
   email,
@@ -136,7 +144,11 @@ export default function Settings_Emails() {
               />
             </div>
           )}
+<<<<<<< HEAD:@app/client/src/pages/settings/emails.tsx
           <H3>Email addresses</H3>
+=======
+          <H2>Email addresses</H2>
+>>>>>>> ddd5982... Nicer text:client/src/pages/settings/emails.tsx
           <P>
             <Strong>
               Account notices will be sent your your primary email address.
