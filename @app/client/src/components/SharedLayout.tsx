@@ -1,16 +1,7 @@
 import * as React from "react";
-import {
-  Layout,
-  Avatar,
-  Row,
-  Col,
-  Dropdown,
-  Icon,
-  Menu,
-  Typography,
-} from "antd";
+import { Layout, Avatar, Row, Col, Dropdown, Icon, Menu } from "antd";
 import Link from "next/link";
-import { projectName, companyName } from "@app/config";
+import { projectName } from "@app/config";
 import {
   useSharedLayoutQuery,
   useLogoutMutation,
@@ -27,7 +18,6 @@ import Error from "./ErrorAlert";
 import { ApolloError } from "apollo-client";
 
 const { Header, Content, Footer } = Layout;
-const { Text } = Typography;
 
 /*
  * For some reason, possibly related to the interaction between
@@ -167,32 +157,7 @@ function SharedLayout({ title, noPad = false, children }: SharedLayoutProps) {
             flexWrap: "wrap",
             justifyContent: "space-between",
           }}
-        >
-          <Text style={{ color: "#fff" }}>
-            Copyright &copy; {new Date().getFullYear()} {companyName}. All
-            rights reserved.
-            {process.env.T_AND_C_URL ? (
-              <span>
-                {" "}
-                <a
-                  style={{ color: "#fff", textDecoration: "underline" }}
-                  href={process.env.T_AND_C_URL}
-                >
-                  Terms and conditions
-                </a>
-              </span>
-            ) : null}
-          </Text>
-          <Text style={{ color: "#fff" }}>
-            Powered by{" "}
-            <a
-              style={{ color: "#fff", textDecoration: "underline" }}
-              href="https://graphile.org/postgraphile"
-            >
-              PostGraphile
-            </a>
-          </Text>
-        </div>
+        ></div>
       </Footer>
     </Layout>
   );

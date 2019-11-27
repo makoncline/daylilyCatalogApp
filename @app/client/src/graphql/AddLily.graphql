@@ -1,0 +1,16 @@
+mutation AddLily($name: String!, $price: String, $note: String) {
+  createLily(input: { lily: { name: $name, price: $price, note: $note } }) {
+    user {
+      id
+      lilies {
+        nodes {
+          id
+          name
+          price
+          note
+          updatedAt
+        }
+      }
+    }
+  }
+}

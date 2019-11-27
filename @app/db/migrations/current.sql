@@ -1,5 +1,6 @@
 -- Enter migration here
 drop table if exists app_public.lilies cascade;
+
 create table app_public.lilies (
   id serial primary key,
   user_id int not null default app_public.current_user_id() references app_public.users,
@@ -10,10 +11,12 @@ create table app_public.lilies (
   updated_at timestamptz not null default now()
 );
 
-grant select on app_public.lilies to :DATABASE_VISITOR;
-grant insert(name, price, note) on table app_public.lilies to :DATABASE_VISITOR;
-grant update(name, price, note) on table app_public.lilies to :DATABASE_VISITOR;
-grant delete on table app_public.lilies to :DATABASE_VISITOR;
+grant
+  select,
+  insert (name, price, note),
+  update (name, price, note),
+  delete
+on table app_public.lilies to :DATABASE_VISITOR;
 
 alter table app_public.lilies enable row level security;
 
@@ -28,5 +31,3 @@ create trigger _100_timestamps
   execute procedure app_private.tg__timestamps();
 
 CREATE INDEX ON app_public.lilies(user_id);
-
-COMMENT ON TABLE "app_public"."lily" IS E'@name shouldnt-exist';

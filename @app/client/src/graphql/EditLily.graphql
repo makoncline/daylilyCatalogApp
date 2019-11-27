@@ -1,0 +1,17 @@
+mutation EditLily($id: Int!, $name: String!, $price: String, $note: String) {
+  updateLily(
+    input: { patch: { name: $name, price: $price, note: $note }, id: $id }
+  ) {
+    user {
+      lilies {
+        nodes {
+          id
+          name
+          price
+          note
+          updatedAt
+        }
+      }
+    }
+  }
+}

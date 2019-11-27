@@ -1,0 +1,13 @@
+query Lilies {
+  currentUser {
+    lilies {
+      nodes {
+        id
+        name
+        price
+        note
+        updatedAt
+      }
+    }
+  }
+}
