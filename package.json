@@ -1,8 +1,8 @@
 {
-  "name": "My_Project_Here",
+  "name": "Daylily_Catalog",
   "version": "1.0.1",
   "private": true,
-  "description": "Description of project here",
+  "description": "Daylily catalog CRUD app",
   "scripts": {
     "clean": "node ./scripts/clean.js",
     "reset": "yarn clean && node ./scripts/delete-env-file.js",
