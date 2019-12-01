@@ -4,9 +4,10 @@ import { List, Avatar, Typography } from "antd";
 
 const { Title, Paragraph, Text } = Typography;
 
-export default function Lily(props: any) {
+export default function LilyRow(props: any) {
   const [deleteLily] = useDeleteLilyMutation();
   const lily = props.lily;
+  const handleEdit = props.handleEdit;
   const deleteAction = () => (
     <a
       onClick={() => deleteLily({ variables: { id: lily.id } })}
@@ -15,12 +16,17 @@ export default function Lily(props: any) {
       Delete
     </a>
   );
+  const editAction = () => (
+    <a onClick={() => handleEdit(lily)} data-cy="settingslilies-button-edit">
+      Edit
+    </a>
+  );
 
   return (
     <List.Item
       data-cy={`settingslilies-liiyitem-${lily.id}`}
       key={lily.id}
-      actions={[deleteAction()]}
+      actions={[deleteAction(), editAction()]}
     >
       <List.Item.Meta
         avatar={
