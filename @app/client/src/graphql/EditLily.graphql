@@ -1,15 +1,31 @@
-mutation EditLily($id: Int!, $name: String!, $price: String, $note: String) {
+#import "./LilyData.graphql"
+
+mutation EditLily(
+  $id: Int!
+  $name: String!
+  $imgUrl: String
+  $price: BigFloat
+  $publicNote: String
+  $privateNote: String
+) {
   updateLily(
-    input: { patch: { name: $name, price: $price, note: $note }, id: $id }
+    input: {
+      patch: {
+        name: $name
+        imgUrl: $imgUrl
+        price: $price
+        publicNote: $publicNote
+        privateNote: $privateNote
+      }
+      id: $id
+    }
   ) {
     user {
+      id
       lilies {
         nodes {
           id
-          name
-          price
-          note
-          updatedAt
+          ...LilyData
         }
       }
     }

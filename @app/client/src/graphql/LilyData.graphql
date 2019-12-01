@@ -1,0 +1,14 @@
+fragment LilyData on Lily {
+  id
+  name
+  imgUrl
+  price
+  publicNote
+  privateNote
+  user {
+    id
+    username
+  }
+  updatedAt
+  createdAt
+}

@@ -1,12 +1,12 @@
+#import "./LilyData.graphql"
+
 query Lilies {
   currentUser {
+    id
     lilies {
       nodes {
         id
-        name
-        price
-        note
-        updatedAt
+        ...LilyData
       }
     }
   }

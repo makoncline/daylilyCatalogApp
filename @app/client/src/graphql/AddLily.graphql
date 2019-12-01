@@ -1,14 +1,28 @@
-mutation AddLily($name: String!, $price: String, $note: String) {
-  createLily(input: { lily: { name: $name, price: $price, note: $note } }) {
+#import "./LilyData.graphql"
+mutation AddLily(
+  $name: String!
+  $imgUrl: String
+  $price: BigFloat
+  $publicNote: String
+  $privateNote: String
+) {
+  createLily(
+    input: {
+      lily: {
+        name: $name
+        imgUrl: $imgUrl
+        price: $price
+        publicNote: $publicNote
+        privateNote: $privateNote
+      }
+    }
+  ) {
     user {
       id
       lilies {
         nodes {
           id
-          name
-          price
-          note
-          updatedAt
+          ...LilyData
         }
       }
     }

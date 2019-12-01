@@ -1,13 +1,13 @@
-mutation Delete($id: Int!) {
+#import "./LilyData.graphql"
+
+mutation DeleteLily($id: Int!) {
   deleteLily(input: { id: $id }) {
     user {
+      id
       lilies {
         nodes {
           id
-          name
-          price
-          note
-          updatedAt
+          ...LilyData
         }
       }
     }

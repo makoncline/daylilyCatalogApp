@@ -1,3 +1,8 @@
+"""
+A floating point number that requires more precision than IEEE 754 binary 64
+"""
+scalar BigFloat
+
 """All input for the `changePassword` mutation."""
 input ChangePasswordInput {
   """
@@ -303,9 +308,11 @@ enum LiliesOrderBy {
 type Lily {
   createdAt: Datetime!
   id: Int!
+  imgUrl: String
   name: String!
-  note: String
-  price: String
+  price: BigFloat
+  privateNote: String
+  publicNote: String
   updatedAt: Datetime!
 
   """Reads a single `User` that is related to this `Lily`."""
@@ -326,16 +333,20 @@ input LilyCondition {
 
 """An input for mutations affecting `Lily`"""
 input LilyInput {
+  imgUrl: String
   name: String!
-  note: String
-  price: String
+  price: BigFloat
+  privateNote: String
+  publicNote: String
 }
 
 """Represents an update to a `Lily`. Fields that are set will be updated."""
 input LilyPatch {
+  imgUrl: String
   name: String
-  note: String
-  price: String
+  price: BigFloat
+  privateNote: String
+  publicNote: String
 }
 
 input LoginInput {

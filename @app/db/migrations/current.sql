@@ -5,16 +5,18 @@ create table app_public.lilies (
   id serial primary key,
   user_id int not null default app_public.current_user_id() references app_public.users,
   name text not null check (char_length(name) < 70),
-  price text,
-  note text,
+  img_url text check(img_url ~ '^https?://[^/]+'),
+  price decimal(12,2),
+  public_note text,
+  private_note text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 
 grant
   select,
-  insert (name, price, note),
-  update (name, price, note),
+  insert (name, img_url, price, public_note, private_note),
+  update (name, img_url, price, public_note, private_note),
   delete
 on table app_public.lilies to :DATABASE_VISITOR;
 
