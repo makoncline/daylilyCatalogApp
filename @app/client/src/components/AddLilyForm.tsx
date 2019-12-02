@@ -1,6 +1,20 @@
 import React, { useCallback, useMemo } from "react";
-import { useAddLilyMutation, useEditLilyMutation, Lily } from "@app/graphql";
-import { Alert, Form, Input, Modal, InputNumber } from "antd";
+import {
+  useAddLilyMutation,
+  useEditLilyMutation,
+  Lily,
+  useDeleteLilyMutation,
+} from "@app/graphql";
+import {
+  Alert,
+  Form,
+  Input,
+  Modal,
+  InputNumber,
+  Button,
+  message,
+  Popconfirm,
+} from "antd";
 import { promisify } from "util";
 import { FormComponentProps, ValidateFieldsOptions } from "antd/lib/form/Form";
 import { ApolloError } from "apollo-client";
@@ -36,6 +50,7 @@ function AddLilyForm({
 }: AddLilyFormProps) {
   const [addLily] = useAddLilyMutation();
   const [editLily] = useEditLilyMutation();
+  const [deleteLily] = useDeleteLilyMutation();
   const validateFields: (
     fieldNames?: Array<string>,
     options?: ValidateFieldsOptions
@@ -72,6 +87,8 @@ function AddLilyForm({
           });
         }
         setUpdateLily(null);
+        const messageText = updateLily ? "Daylily edited" : "Daylily added";
+        message.success(messageText);
         form.resetFields();
         onComplete();
       } catch (e) {
@@ -89,6 +106,33 @@ function AddLilyForm({
       addLily,
     ]
   );
+
+  function testImage(__: any, url: any, callback: any) {
+    if (!url) callback();
+    let timeout = 5000;
+    let timedOut = false;
+    let timer: any;
+    let img = new Image();
+    img.onerror = img.onabort = () => {
+      if (!timedOut) {
+        clearTimeout(timer);
+        callback("Error: The URL entered may not be an image");
+      }
+    };
+    img.onload = () => {
+      if (!timedOut) {
+        clearTimeout(timer);
+        callback();
+      }
+    };
+    img.src = url;
+    timer = setTimeout(() => {
+      timedOut = true;
+      img.src = "//!!!!/test.jpg";
+      callback("Error: The URL entered may not be an image");
+    }, timeout);
+  }
+
   const { getFieldDecorator } = form;
   const code = getCodeFromError(error);
   return (
@@ -121,6 +165,9 @@ function AddLilyForm({
               {
                 required: false,
                 message: "Enter an image url, if you'd like.",
+              },
+              {
+                validator: testImage,
               },
             ],
           })(<TextArea data-cy="settingslilies-input-imgUrl" autoSize />)}
@@ -188,6 +235,20 @@ function AddLilyForm({
             />
           </Form.Item>
         ) : null}
+        {updateLily && (
+          <Popconfirm
+            title="Are you sure delete this daylily?"
+            onConfirm={() => {
+              deleteLily({ variables: { id: updateLily.id } });
+              setShow(false);
+              message.success("Daylily deleted");
+            }}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button type="danger">Delete</Button>
+          </Popconfirm>
+        )}
       </Form>
     </Modal>
   );

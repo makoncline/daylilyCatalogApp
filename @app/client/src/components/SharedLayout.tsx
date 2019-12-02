@@ -96,6 +96,10 @@ function SharedLayout({ title, noPad = false, children }: SharedLayoutProps) {
             <Link href="/">
               <a>Home</a>
             </Link>
+            {"  |  "}
+            <Link href="/lilies">
+              <a>Catalog</a>
+            </Link>
           </Col>
           <Col>
             <h3>{title}</h3>

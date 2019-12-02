@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import SharedLayout from "../components/SharedLayout";
 import { useLiliesQuery } from "@app/graphql";
-import { List, Button } from "antd";
+import { Button } from "antd";
 import Error from "../components/ErrorAlert";
 import Redirect from "../components/Redirect";
-import LilyRow from "../components/LilyRow";
 import { ApolloError } from "apollo-client";
 import AddLilyForm from "../components/AddLilyForm";
+import LiliesTable from "../components/LiliesTable";
 
 export default function Lilies() {
   const { data, loading, error } = useLiliesQuery();
@@ -16,7 +16,6 @@ export default function Lilies() {
   const [formError, setFormError] = useState<Error | ApolloError | null>(null);
 
   function handleEdit(lily: any) {
-    console.log(lily);
     setUpdateLily(null);
     setUpdateLily(lily);
     setShowAddLilyForm(true);
@@ -42,11 +41,7 @@ export default function Lilies() {
           >
             Add daylily
           </Button>
-          <List
-            itemLayout="horizontal"
-            dataSource={user.lilies.nodes}
-            renderItem={lily => <LilyRow lily={lily} handleEdit={handleEdit} />}
-          />
+          <LiliesTable dataSource={user.lilies.nodes} handleEdit={handleEdit} />
           <AddLilyForm
             onComplete={() => setShowAddLilyForm(false)}
             error={formError}
