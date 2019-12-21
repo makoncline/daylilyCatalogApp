@@ -4,7 +4,7 @@
   "private": true,
   "description": "Daylily catalog CRUD app",
   "engines": {
-    "node": "12.13.0"
+    "node": "13.2.0"
   },
   "scripts": {
     "clean": "node ./scripts/clean.js",
