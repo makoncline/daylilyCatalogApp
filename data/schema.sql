@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.6 (Debian 11.6-1.pgdg90+1)
--- Dumped by pg_dump version 11.6 (Debian 11.6-1.pgdg90+1)
+-- Dumped from database version 12.0 (Debian 12.0-2.pgdg100+1)
+-- Dumped by pg_dump version 12.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -97,7 +97,7 @@ $$;
 
 SET default_tablespace = '';
 
-SET default_with_oids = false;
+SET default_table_access_method = heap;
 
 --
 -- Name: users; Type: TABLE; Schema: app_public; Owner: -
@@ -1308,6 +1308,45 @@ COMMENT ON TABLE app_private.user_secrets IS 'The contents of this table should 
 
 
 --
+-- Name: lilies; Type: TABLE; Schema: app_public; Owner: -
+--
+
+CREATE TABLE app_public.lilies (
+    id integer NOT NULL,
+    user_id integer DEFAULT app_public.current_user_id() NOT NULL,
+    name text NOT NULL,
+    img_url text,
+    price numeric(12,2),
+    public_note text,
+    private_note text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT lilies_img_url_check CHECK ((img_url ~ '^https?://[^/]+'::text)),
+    CONSTRAINT lilies_name_check CHECK ((char_length(name) < 70))
+);
+
+
+--
+-- Name: lilies_id_seq; Type: SEQUENCE; Schema: app_public; Owner: -
+--
+
+CREATE SEQUENCE app_public.lilies_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: lilies_id_seq; Type: SEQUENCE OWNED BY; Schema: app_public; Owner: -
+--
+
+ALTER SEQUENCE app_public.lilies_id_seq OWNED BY app_public.lilies.id;
+
+
+--
 -- Name: user_authentications; Type: TABLE; Schema: app_public; Owner: -
 --
 
@@ -1411,6 +1450,13 @@ ALTER SEQUENCE app_public.users_id_seq OWNED BY app_public.users.id;
 
 
 --
+-- Name: lilies id; Type: DEFAULT; Schema: app_public; Owner: -
+--
+
+ALTER TABLE ONLY app_public.lilies ALTER COLUMN id SET DEFAULT nextval('app_public.lilies_id_seq'::regclass);
+
+
+--
 -- Name: user_authentications id; Type: DEFAULT; Schema: app_public; Owner: -
 --
 
@@ -1480,6 +1526,14 @@ ALTER TABLE ONLY app_private.user_secrets
 
 
 --
+-- Name: lilies lilies_pkey; Type: CONSTRAINT; Schema: app_public; Owner: -
+--
+
+ALTER TABLE ONLY app_public.lilies
+    ADD CONSTRAINT lilies_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: user_authentications uniq_user_authentications; Type: CONSTRAINT; Schema: app_public; Owner: -
 --
 
@@ -1535,6 +1589,13 @@ CREATE INDEX idx_user_emails_primary ON app_public.user_emails USING btree (is_p
 
 
 --
+-- Name: lilies_user_id_idx; Type: INDEX; Schema: app_public; Owner: -
+--
+
+CREATE INDEX lilies_user_id_idx ON app_public.lilies USING btree (user_id);
+
+
+--
 -- Name: uniq_user_emails_primary_email; Type: INDEX; Schema: app_public; Owner: -
 --
 
@@ -1556,73 +1617,80 @@ CREATE INDEX user_authentications_user_id_idx ON app_public.user_authentications
 
 
 --
+-- Name: lilies _100_timestamps; Type: TRIGGER; Schema: app_public; Owner: -
+--
+
+CREATE TRIGGER _100_timestamps BEFORE INSERT OR UPDATE ON app_public.lilies FOR EACH ROW EXECUTE FUNCTION app_private.tg__timestamps();
+
+
+--
 -- Name: user_authentications _100_timestamps; Type: TRIGGER; Schema: app_public; Owner: -
 --
 
-CREATE TRIGGER _100_timestamps BEFORE INSERT OR UPDATE ON app_public.user_authentications FOR EACH ROW EXECUTE PROCEDURE app_private.tg__timestamps();
+CREATE TRIGGER _100_timestamps BEFORE INSERT OR UPDATE ON app_public.user_authentications FOR EACH ROW EXECUTE FUNCTION app_private.tg__timestamps();
 
 
 --
 -- Name: user_emails _100_timestamps; Type: TRIGGER; Schema: app_public; Owner: -
 --
 
-CREATE TRIGGER _100_timestamps BEFORE INSERT OR UPDATE ON app_public.user_emails FOR EACH ROW EXECUTE PROCEDURE app_private.tg__timestamps();
+CREATE TRIGGER _100_timestamps BEFORE INSERT OR UPDATE ON app_public.user_emails FOR EACH ROW EXECUTE FUNCTION app_private.tg__timestamps();
 
 
 --
 -- Name: users _100_timestamps; Type: TRIGGER; Schema: app_public; Owner: -
 --
 
-CREATE TRIGGER _100_timestamps BEFORE INSERT OR UPDATE ON app_public.users FOR EACH ROW EXECUTE PROCEDURE app_private.tg__timestamps();
+CREATE TRIGGER _100_timestamps BEFORE INSERT OR UPDATE ON app_public.users FOR EACH ROW EXECUTE FUNCTION app_private.tg__timestamps();
 
 
 --
 -- Name: user_emails _200_forbid_existing_email; Type: TRIGGER; Schema: app_public; Owner: -
 --
 
-CREATE TRIGGER _200_forbid_existing_email BEFORE INSERT ON app_public.user_emails FOR EACH ROW EXECUTE PROCEDURE app_public.tg_user_emails__forbid_if_verified();
+CREATE TRIGGER _200_forbid_existing_email BEFORE INSERT ON app_public.user_emails FOR EACH ROW EXECUTE FUNCTION app_public.tg_user_emails__forbid_if_verified();
 
 
 --
 -- Name: users _200_make_first_user_admin; Type: TRIGGER; Schema: app_public; Owner: -
 --
 
-CREATE TRIGGER _200_make_first_user_admin BEFORE INSERT ON app_public.users FOR EACH ROW WHEN ((new.id = 1)) EXECUTE PROCEDURE app_private.tg_users__make_first_user_admin();
+CREATE TRIGGER _200_make_first_user_admin BEFORE INSERT ON app_public.users FOR EACH ROW WHEN ((new.id = 1)) EXECUTE FUNCTION app_private.tg_users__make_first_user_admin();
 
 
 --
 -- Name: users _500_gql_update; Type: TRIGGER; Schema: app_public; Owner: -
 --
 
-CREATE TRIGGER _500_gql_update AFTER UPDATE ON app_public.users FOR EACH ROW EXECUTE PROCEDURE app_public.tg__graphql_subscription('userChanged', 'graphql:user:$1', 'id');
+CREATE TRIGGER _500_gql_update AFTER UPDATE ON app_public.users FOR EACH ROW EXECUTE FUNCTION app_public.tg__graphql_subscription('userChanged', 'graphql:user:$1', 'id');
 
 
 --
 -- Name: user_emails _500_insert_secrets; Type: TRIGGER; Schema: app_public; Owner: -
 --
 
-CREATE TRIGGER _500_insert_secrets AFTER INSERT ON app_public.user_emails FOR EACH ROW EXECUTE PROCEDURE app_private.tg_user_email_secrets__insert_with_user_email();
+CREATE TRIGGER _500_insert_secrets AFTER INSERT ON app_public.user_emails FOR EACH ROW EXECUTE FUNCTION app_private.tg_user_email_secrets__insert_with_user_email();
 
 
 --
 -- Name: users _500_insert_secrets; Type: TRIGGER; Schema: app_public; Owner: -
 --
 
-CREATE TRIGGER _500_insert_secrets AFTER INSERT ON app_public.users FOR EACH ROW EXECUTE PROCEDURE app_private.tg_user_secrets__insert_with_user();
+CREATE TRIGGER _500_insert_secrets AFTER INSERT ON app_public.users FOR EACH ROW EXECUTE FUNCTION app_private.tg_user_secrets__insert_with_user();
 
 
 --
 -- Name: user_emails _500_verify_account_on_verified; Type: TRIGGER; Schema: app_public; Owner: -
 --
 
-CREATE TRIGGER _500_verify_account_on_verified AFTER INSERT OR UPDATE OF is_verified ON app_public.user_emails FOR EACH ROW WHEN ((new.is_verified IS TRUE)) EXECUTE PROCEDURE app_public.tg_user_emails__verify_account_on_verified();
+CREATE TRIGGER _500_verify_account_on_verified AFTER INSERT OR UPDATE OF is_verified ON app_public.user_emails FOR EACH ROW WHEN ((new.is_verified IS TRUE)) EXECUTE FUNCTION app_public.tg_user_emails__verify_account_on_verified();
 
 
 --
 -- Name: user_emails _900_send_verification_email; Type: TRIGGER; Schema: app_public; Owner: -
 --
 
-CREATE TRIGGER _900_send_verification_email AFTER INSERT ON app_public.user_emails FOR EACH ROW WHEN ((new.is_verified IS FALSE)) EXECUTE PROCEDURE app_private.tg__add_job('user_emails__send_verification');
+CREATE TRIGGER _900_send_verification_email AFTER INSERT ON app_public.user_emails FOR EACH ROW WHEN ((new.is_verified IS FALSE)) EXECUTE FUNCTION app_private.tg__add_job('user_emails__send_verification');
 
 
 --
@@ -1655,6 +1723,14 @@ ALTER TABLE ONLY app_private.user_email_secrets
 
 ALTER TABLE ONLY app_private.user_secrets
     ADD CONSTRAINT user_secrets_user_id_fkey FOREIGN KEY (user_id) REFERENCES app_public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: lilies lilies_user_id_fkey; Type: FK CONSTRAINT; Schema: app_public; Owner: -
+--
+
+ALTER TABLE ONLY app_public.lilies
+    ADD CONSTRAINT lilies_user_id_fkey FOREIGN KEY (user_id) REFERENCES app_public.users(id);
 
 
 --
@@ -1704,6 +1780,13 @@ ALTER TABLE app_private.user_email_secrets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE app_private.user_secrets ENABLE ROW LEVEL SECURITY;
 
 --
+-- Name: lilies delete_lilies; Type: POLICY; Schema: app_public; Owner: -
+--
+
+CREATE POLICY delete_lilies ON app_public.lilies FOR DELETE USING ((user_id = app_public.current_user_id()));
+
+
+--
 -- Name: user_authentications delete_own; Type: POLICY; Schema: app_public; Owner: -
 --
 
@@ -1725,6 +1808,13 @@ CREATE POLICY delete_self ON app_public.users FOR DELETE USING ((id = app_public
 
 
 --
+-- Name: lilies insert_lilies; Type: POLICY; Schema: app_public; Owner: -
+--
+
+CREATE POLICY insert_lilies ON app_public.lilies FOR INSERT WITH CHECK ((user_id = app_public.current_user_id()));
+
+
+--
 -- Name: user_emails insert_own; Type: POLICY; Schema: app_public; Owner: -
 --
 
@@ -1732,10 +1822,23 @@ CREATE POLICY insert_own ON app_public.user_emails FOR INSERT WITH CHECK ((user_
 
 
 --
+-- Name: lilies; Type: ROW SECURITY; Schema: app_public; Owner: -
+--
+
+ALTER TABLE app_public.lilies ENABLE ROW LEVEL SECURITY;
+
+--
 -- Name: users select_all; Type: POLICY; Schema: app_public; Owner: -
 --
 
 CREATE POLICY select_all ON app_public.users FOR SELECT USING (true);
+
+
+--
+-- Name: lilies select_lilies; Type: POLICY; Schema: app_public; Owner: -
+--
+
+CREATE POLICY select_lilies ON app_public.lilies FOR SELECT USING ((user_id = app_public.current_user_id()));
 
 
 --
@@ -1750,6 +1853,13 @@ CREATE POLICY select_own ON app_public.user_authentications FOR SELECT USING ((u
 --
 
 CREATE POLICY select_own ON app_public.user_emails FOR SELECT USING ((user_id = app_public.current_user_id()));
+
+
+--
+-- Name: lilies update_lilies; Type: POLICY; Schema: app_public; Owner: -
+--
+
+CREATE POLICY update_lilies ON app_public.lilies FOR UPDATE USING ((user_id = app_public.current_user_id()));
 
 
 --
@@ -1838,6 +1948,55 @@ GRANT SELECT,DELETE ON TABLE app_public.user_emails TO daylily_catalog_visitor;
 --
 
 GRANT INSERT(email) ON TABLE app_public.user_emails TO daylily_catalog_visitor;
+
+
+--
+-- Name: TABLE lilies; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT SELECT,DELETE ON TABLE app_public.lilies TO daylily_catalog_visitor;
+
+
+--
+-- Name: COLUMN lilies.name; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT INSERT(name),UPDATE(name) ON TABLE app_public.lilies TO daylily_catalog_visitor;
+
+
+--
+-- Name: COLUMN lilies.img_url; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT INSERT(img_url),UPDATE(img_url) ON TABLE app_public.lilies TO daylily_catalog_visitor;
+
+
+--
+-- Name: COLUMN lilies.price; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT INSERT(price),UPDATE(price) ON TABLE app_public.lilies TO daylily_catalog_visitor;
+
+
+--
+-- Name: COLUMN lilies.public_note; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT INSERT(public_note),UPDATE(public_note) ON TABLE app_public.lilies TO daylily_catalog_visitor;
+
+
+--
+-- Name: COLUMN lilies.private_note; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT INSERT(private_note),UPDATE(private_note) ON TABLE app_public.lilies TO daylily_catalog_visitor;
+
+
+--
+-- Name: SEQUENCE lilies_id_seq; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT SELECT,USAGE ON SEQUENCE app_public.lilies_id_seq TO daylily_catalog_visitor;
 
 
 --
