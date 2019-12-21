@@ -39,7 +39,7 @@ function isSafe(nextUrl: string | void | null) {
 }
 
 /**
- * Login page just renders the standard layout and embeds the login form
+ * Login page just renders the standard layout and embeds the login form.
  */
 export default function Login({ next: rawNext }: LoginProps) {
   const [error, setError] = useState<Error | ApolloError | null>(null);
