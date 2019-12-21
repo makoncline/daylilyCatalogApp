@@ -3,6 +3,9 @@
   "version": "1.0.1",
   "private": true,
   "description": "Daylily catalog CRUD app",
+  "engines": {
+    "node": "12.13.0"
+  },
   "scripts": {
     "clean": "node ./scripts/clean.js",
     "reset": "yarn clean && node ./scripts/delete-env-file.js",
