@@ -36,5 +36,13 @@
   },
   "[typescriptreact]": {
     "editor.formatOnSave": false
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "[graphql]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": false
+    }
   }
 }
