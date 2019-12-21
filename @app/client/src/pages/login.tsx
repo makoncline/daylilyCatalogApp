@@ -22,7 +22,7 @@ import Router from "next/router";
 import { ApolloError } from "apollo-client";
 import { getCodeFromError, extractError } from "../errors";
 import Redirect from "../components/Redirect";
-import SocialLoginOptions from "../components/SocialLoginOptions";
+//import SocialLoginOptions from "../components/SocialLoginOptions";
 
 const { Paragraph } = Typography;
 
