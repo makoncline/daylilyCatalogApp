@@ -78,11 +78,11 @@ export default function Login({ next: rawNext }: LoginProps) {
                     </Button>
                   </Col>
                 </Row>
-                <Row style={{ marginBottom: 8 }}>
+                {/* <Row style={{ marginBottom: 8 }}>
                   <Col span={28}>
                     <SocialLoginOptions next={next} />
                   </Col>
-                </Row>
+                </Row> */}
                 <Row type="flex" justify="center">
                   <Col>
                     <Paragraph>

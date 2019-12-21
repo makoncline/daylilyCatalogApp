@@ -13,8 +13,10 @@ import SharedLayout from "../components/SharedLayout";
 export default function Home() {
   return (
     <SharedLayout title="Home">
-      <Title data-cy="homepage-header">Welcome to the app</Title>
-      <Paragraph>This is paragraph text</Paragraph>
+      <Title data-cy="homepage-header">Welcome to the Daylily Catalog</Title>
+      <Paragraph>
+        Create an account or sign in, then click catalog above to begin.
+      </Paragraph>
     </SharedLayout>
   );
 }
