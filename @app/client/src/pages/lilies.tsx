@@ -31,6 +31,7 @@ export default function Lilies() {
     } else {
       return (
         <div>
+          <h1 style={{ textAlign: "center" }}>Your Daylily Catalog</h1>
           <Button
             type="primary"
             onClick={() => {
@@ -38,6 +39,7 @@ export default function Lilies() {
               setShowAddLilyForm(true);
             }}
             data-cy="settingslilies-button-addlily"
+            style={{ margin: "auto", marginBottom: "1rem", display: "block" }}
           >
             Add daylily
           </Button>
