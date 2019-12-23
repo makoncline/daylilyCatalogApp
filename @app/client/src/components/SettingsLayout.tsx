@@ -35,10 +35,6 @@ const pages = {
     title: "Password",
     cy: "settingslayout-link-password",
   }),
-  "/settings/accounts": page({
-    title: "Linked Accounts",
-    cy: "settingslayout-link-accounts",
-  }),
   "/settings/emails": page({
     title: "Emails",
     warnIfUnverified: true,
@@ -52,6 +48,12 @@ const pages = {
     cy: "settingslayout-link-delete",
   }),
 };
+
+// //removed from below security
+// "/settings/accounts": page({
+//   title: "Linked Accounts",
+//   cy: "settingslayout-link-accounts",
+// }),
 
 interface SettingsLayoutProps {
   href: keyof (typeof pages);

@@ -17,7 +17,7 @@ import Warn from "./Warn";
 import Error from "./ErrorAlert";
 import { ApolloError } from "apollo-client";
 
-const { Header, Content, Footer } = Layout;
+const { Header, Content } = Layout;
 
 /*
  * For some reason, possibly related to the interaction between
@@ -85,24 +85,28 @@ function SharedLayout({ title, noPad = false, children }: SharedLayoutProps) {
   return (
     <Layout>
       {data && data.currentUser ? <CurrentUserUpdatedSubscription /> : null}
-      <Header style={{ boxShadow: "0 2px 8px #f0f1f2", zIndex: 1 }}>
+      <Header
+        style={{ boxShadow: "0 2px 8px #f0f1f2", zIndex: 1, paddingLeft: 0 }}
+      >
         <Head>
           <title>
             {title} — {projectName}
           </title>
         </Head>
-        <Row type="flex" justify="space-between">
-          <Col span={6}>
-            <Link href="/">
-              <a>Home</a>
-            </Link>
-            {"  |  "}
-            <Link href="/lilies">
-              <a>Catalog</a>
-            </Link>
-          </Col>
-          <Col>
-            <h3>{title}</h3>
+        <Row type="flex" justify="space-between" align="bottom">
+          <Col style={{ textAlign: "left" }}>
+            <Menu theme="light" mode="horizontal">
+              <Menu.Item>
+                <Link href="/">
+                  <a>Home</a>
+                </Link>
+              </Menu.Item>
+              <Menu.Item>
+                <Link href="/lilies">
+                  <a>Catalog</a>
+                </Link>
+              </Menu.Item>
+            </Menu>
           </Col>
           <Col span={6} style={{ textAlign: "right" }}>
             {data && data.currentUser ? (
@@ -147,22 +151,13 @@ function SharedLayout({ title, noPad = false, children }: SharedLayoutProps) {
           </Col>
         </Row>
       </Header>
-      <Content style={{ minHeight: "calc(100vh - 64px - 120px)" }}>
+      <Content style={{ minHeight: "calc(100vh - 64px)" }}>
         {renderChildren({
           error,
           loading,
           currentUser: data && data.currentUser,
         })}
       </Content>
-      <Footer>
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "space-between",
-          }}
-        ></div>
-      </Footer>
     </Layout>
   );
 }
