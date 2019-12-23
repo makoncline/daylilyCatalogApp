@@ -122,7 +122,7 @@ export default function LiliesTable(props: any) {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      width: "50%",
+      width: "90%",
       ...getColumnSearchProps("name"),
     },
     {
@@ -147,7 +147,7 @@ export default function LiliesTable(props: any) {
               <img
                 alt={`${record.name} image`}
                 src={record.imgUrl}
-                style={{ maxWidth: "400px", width: "50vw" }}
+                style={{ maxWidth: "300px", width: "50vw" }}
               />
             )}
             {record.price && (
