@@ -306,6 +306,7 @@ enum LiliesOrderBy {
 }
 
 type Lily {
+  ahsId: String
   createdAt: Datetime!
   id: Int!
   imgUrl: String
@@ -333,6 +334,7 @@ input LilyCondition {
 
 """An input for mutations affecting `Lily`"""
 input LilyInput {
+  ahsId: String
   imgUrl: String
   name: String!
   price: BigFloat
@@ -342,6 +344,7 @@ input LilyInput {
 
 """Represents an update to a `Lily`. Fields that are set will be updated."""
 input LilyPatch {
+  ahsId: String
   imgUrl: String
   name: String
   price: BigFloat

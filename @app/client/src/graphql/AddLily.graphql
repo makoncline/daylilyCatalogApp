@@ -5,6 +5,7 @@ mutation AddLily(
   $price: BigFloat
   $publicNote: String
   $privateNote: String
+  $ahsId: String
 ) {
   createLily(
     input: {
@@ -14,6 +15,7 @@ mutation AddLily(
         price: $price
         publicNote: $publicNote
         privateNote: $privateNote
+        ahsId: $ahsId
       }
     }
   ) {

@@ -5,6 +5,7 @@ fragment LilyData on Lily {
   price
   publicNote
   privateNote
+  ahsId
   user {
     id
     username

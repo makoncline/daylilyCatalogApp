@@ -1,3 +1,3 @@
 web: yarn server start
 worker: yarn worker start
-release: yarn db migrate
+release: yarn db wipe-if-demo && yarn db migrate

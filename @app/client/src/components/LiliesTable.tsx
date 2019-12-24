@@ -106,7 +106,7 @@ export default function LiliesTable(props: any) {
       title: "Img",
       dataIndex: "imgUrl",
       key: "imgUrl",
-      width: "5%",
+      width: "25%",
       // eslint-disable-next-line react/display-name
       render: (imgUrl: any) => (
         <div>
@@ -122,14 +122,14 @@ export default function LiliesTable(props: any) {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      width: "90%",
+      width: "50%",
       ...getColumnSearchProps("name"),
     },
     {
       title: "Action",
       dataIndex: "",
       key: "x",
-      width: "5%",
+      width: "25%",
       // eslint-disable-next-line react/display-name
       render: (record: any) => editAction(record),
     },
