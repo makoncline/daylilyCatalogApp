@@ -27,6 +27,7 @@
   "author": "Benjie Gillam <code@benjiegillam.com>",
   "license": "SEE LICENSE IN LICENSE.md",
   "dependencies": {
+    "@types/cors": "^2.8.6",
     "cors": "^2.8.5",
     "lerna": "^3.18.3",
     "react-highlight-words": "^0.16.0",
