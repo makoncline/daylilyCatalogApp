@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Table, Avatar, Typography, Button, Input, Icon } from "antd";
 import Highlighter from "react-highlight-words";
+import Link from "next/link";
 const { Paragraph, Text } = Typography;
 
 export default function LiliesTable(props: any) {
@@ -149,6 +150,26 @@ export default function LiliesTable(props: any) {
                 src={record.imgUrl}
                 style={{ maxWidth: "300px", width: "50vw" }}
               />
+            )}
+            {record.ahsId && (
+              <div>
+                <Text type="secondary" style={{ fontSize: ".75rem" }}>
+                  Data:
+                </Text>
+                <Paragraph
+                  style={{
+                    margin: "0",
+                    marginLeft: "1rem",
+                    padding: "0",
+                  }}
+                >
+                  <Link
+                    href={`http://www.daylilydatabase.org/detail.php?id=${record.ahsId}`}
+                  >
+                    <a>View AHS data</a>
+                  </Link>
+                </Paragraph>
+              </div>
             )}
             {record.price && (
               <div>
