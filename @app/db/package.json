@@ -9,7 +9,12 @@
     "commit": "yarn gm commit",
     "uncommit": "yarn gm uncommit",
     "reset": "yarn gm reset",
+<<<<<<< HEAD
     "dump": "yarn gm migrate && yarn gm reset --shadow && yarn gm migrate --shadow --force"
+=======
+    "dump": "yarn gm migrate && yarn gm reset --shadow && yarn gm migrate --shadow --force",
+    "wipe-if-demo": "./scripts/wipe-if-demo"
+>>>>>>> parent of 1a83b76... delete wipe if demo script
   },
   "dependencies": {
     "graphile-migrate": "^0.0.17"

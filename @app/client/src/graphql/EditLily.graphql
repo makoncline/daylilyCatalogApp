@@ -7,6 +7,7 @@ mutation EditLily(
   $price: BigFloat
   $publicNote: String
   $privateNote: String
+  $ahsId: String
 ) {
   updateLily(
     input: {
@@ -16,6 +17,7 @@ mutation EditLily(
         price: $price
         publicNote: $publicNote
         privateNote: $privateNote
+        ahsId: $ahsId
       }
       id: $id
     }

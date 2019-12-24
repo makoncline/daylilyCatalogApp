@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import {
   useAddLilyMutation,
   useEditLilyMutation,
@@ -19,6 +19,8 @@ import { promisify } from "util";
 import { FormComponentProps, ValidateFieldsOptions } from "antd/lib/form/Form";
 import { ApolloError } from "apollo-client";
 import { getCodeFromError, extractError } from "../errors";
+import { AutoComplete } from "antd";
+
 const { TextArea } = Input;
 interface FormValues {
   name: string;
@@ -133,8 +135,46 @@ function AddLilyForm({
     }, timeout);
   }
 
-  const { getFieldDecorator } = form;
+  const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
   const code = getCodeFromError(error);
+  interface ILily {
+    id: number;
+    name: string;
+    image: string;
+  }
+  const [dataSource, setDataSource] = useState<Array<ILily>>([]);
+
+  const onSearch = async (searchText: string) => {
+    if (searchText.length >= 3) {
+      const searchResult = await searchAhs(searchText);
+      setDataSource(searchResult);
+    }
+  };
+
+  async function searchAhs(searchText: string) {
+    try {
+      const response = await fetch(
+        `https://data.daylilycatalog.com/ahs/search/${searchText}`
+      );
+      const resJson = await response.json();
+      return resJson || [];
+    } catch (err) {
+      console.log(err);
+      return [];
+    }
+  }
+
+  function onSelect(value: any) {
+    const selection = dataSource.filter(
+      (item: ILily) => item.name === value
+    )[0];
+    const imgVal = getFieldValue("imgUrl");
+    if (!imgVal) {
+      setFieldsValue({ imgUrl: selection.image });
+    }
+    setDataSource([]);
+  }
+
   return (
     <Modal
       visible={show}
@@ -156,7 +196,14 @@ function AddLilyForm({
                 message: "Please enter a daylily name",
               },
             ],
-          })(<Input data-cy="settingslilies-input-name" />)}
+          })(
+            <AutoComplete
+              dataSource={dataSource.map((item: ILily) => item.name)}
+              onSearch={onSearch}
+              placeholder="input here"
+              onSelect={onSelect}
+            />
+          )}
         </Form.Item>
         <Form.Item label="Image URL">
           {getFieldDecorator("imgUrl", {

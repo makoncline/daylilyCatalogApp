@@ -387,14 +387,15 @@ async function main() {
     );
 
     // //for heroku deploy
-    // // This is the root role for the database`);
+    // This is the root role for the database`);
     // await client.query(
     //   // IMPORTANT: don't grant SUPERUSER in production, we only need this so we can load the watch fixtures!
     //   `CREATE ROLE ${DATABASE_OWNER} WITH LOGIN PASSWORD '${DATABASE_OWNER_PASSWORD}' IN ROLE rds_superuser;`
     // );
 
     // //makon added
-    // await client.query(`GRANT ${DATABASE_OWNER} TO makon;`);
+    // await client.query(`GRANT ${DATABASE_OWNER} TO rds_superuser;`);
+    // await client.query(`GRANT rds_superuser TO ${DATABASE_OWNER};`);
 
     // This is the no-access role that PostGraphile will run as by default`);
     await client.query(
