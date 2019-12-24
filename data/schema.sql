@@ -1319,6 +1319,7 @@ CREATE TABLE app_public.lilies (
     price numeric(12,2),
     public_note text,
     private_note text,
+    ahs_id text,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     CONSTRAINT lilies_img_url_check CHECK ((img_url ~ '^https?://[^/]+'::text)),
@@ -1990,6 +1991,13 @@ GRANT INSERT(public_note),UPDATE(public_note) ON TABLE app_public.lilies TO dayl
 --
 
 GRANT INSERT(private_note),UPDATE(private_note) ON TABLE app_public.lilies TO daylily_catalog_visitor;
+
+
+--
+-- Name: COLUMN lilies.ahs_id; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT INSERT(ahs_id),UPDATE(ahs_id) ON TABLE app_public.lilies TO daylily_catalog_visitor;
 
 
 --
