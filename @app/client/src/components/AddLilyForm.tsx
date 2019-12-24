@@ -28,6 +28,7 @@ interface FormValues {
   price: number;
   publicNote: string;
   privateNote: string;
+  ahsId: string;
 }
 
 interface AddLilyFormProps extends FormComponentProps<FormValues> {
@@ -75,6 +76,7 @@ function AddLilyForm({
               price: values.price || null,
               publicNote: values.publicNote || null,
               privateNote: values.privateNote || null,
+              ahsId: values.ahsId || null,
             },
           });
         } else {
@@ -85,6 +87,7 @@ function AddLilyForm({
               price: values.price || null,
               publicNote: values.publicNote || null,
               privateNote: values.privateNote || null,
+              ahsId: values.ahsId || null,
             },
           });
         }
@@ -172,6 +175,8 @@ function AddLilyForm({
     if (!imgVal) {
       setFieldsValue({ imgUrl: selection.image });
     }
+    setFieldsValue({ ahsId: selection.id + "" });
+    console.log(selection, setFieldsValue, getFieldValue);
     setDataSource([]);
   }
 
@@ -180,6 +185,7 @@ function AddLilyForm({
       visible={show}
       title={updateLily ? "Edit Daylily" : "Add a new Daylily"}
       onOk={handleSubmit}
+      style={{ top: 20 }}
       onCancel={() => {
         setShow(false);
         setUpdateLily(null);
@@ -187,7 +193,7 @@ function AddLilyForm({
       }}
     >
       <Form onSubmit={handleSubmit}>
-        <Form.Item label="Name">
+        <Form.Item label="Name" style={{ marginBottom: 5 }}>
           {getFieldDecorator("name", {
             initialValue: updateLily ? updateLily.name : "",
             rules: [
@@ -200,12 +206,12 @@ function AddLilyForm({
             <AutoComplete
               dataSource={dataSource.map((item: ILily) => item.name)}
               onSearch={onSearch}
-              placeholder="input here"
               onSelect={onSelect}
+              allowClear
             />
           )}
         </Form.Item>
-        <Form.Item label="Image URL">
+        <Form.Item label="Image URL" style={{ marginBottom: 5 }}>
           {getFieldDecorator("imgUrl", {
             initialValue: updateLily ? updateLily.imgUrl : "",
             rules: [
@@ -217,9 +223,20 @@ function AddLilyForm({
                 validator: testImage,
               },
             ],
-          })(<TextArea data-cy="settingslilies-input-imgUrl" autoSize />)}
+          })(<Input data-cy="settingslilies-input-imgUrl" allowClear />)}
         </Form.Item>
-        <Form.Item label="Price">
+        <Form.Item label="AHS ID" style={{ display: "none" }}>
+          {getFieldDecorator("ahsId", {
+            initialValue: updateLily ? updateLily.ahsId : "",
+            rules: [
+              {
+                required: false,
+                message: "Enter an AHS ID, if you'd like.",
+              },
+            ],
+          })(<TextArea data-cy="settingslilies-input-ahsId" autoSize />)}
+        </Form.Item>
+        <Form.Item label="Price" style={{ marginBottom: 5 }}>
           {getFieldDecorator("price", {
             initialValue: updateLily ? updateLily.price : "",
             rules: [
@@ -240,7 +257,7 @@ function AddLilyForm({
             />
           )}
         </Form.Item>
-        <Form.Item label="Public note">
+        <Form.Item label="Public note" style={{ marginBottom: 5 }}>
           {getFieldDecorator("publicNote", {
             initialValue: updateLily ? updateLily.publicNote : "",
             rules: [
@@ -251,7 +268,7 @@ function AddLilyForm({
             ],
           })(<TextArea data-cy="settingslilies-input-publicNote" autoSize />)}
         </Form.Item>
-        <Form.Item label="Private note">
+        <Form.Item label="Private note" style={{ marginBottom: 5 }}>
           {getFieldDecorator("privateNote", {
             initialValue: updateLily ? updateLily.privateNote : "",
             rules: [
