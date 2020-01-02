@@ -1,4 +1,5 @@
 -- Enter migration here
 alter table app_public.lilies
-  alter column img_url type text array;
+  drop column if exists img_url,
+  add column img_url text[];
 
