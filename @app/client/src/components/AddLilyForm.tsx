@@ -24,7 +24,7 @@ import { AutoComplete } from "antd";
 const { TextArea } = Input;
 interface FormValues {
   name: string;
-  imgUrl: string;
+  imgUrl: string[];
   price: number;
   publicNote: string;
   privateNote: string;
