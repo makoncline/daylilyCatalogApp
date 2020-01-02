@@ -44,5 +44,12 @@
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": false
     }
-  }
+  },
+  "spellright.language": [
+    "en"
+  ],
+  "spellright.documentTypes": [
+    "markdown",
+    "latex"
+  ]
 }
