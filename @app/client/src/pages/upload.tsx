@@ -7,8 +7,6 @@ const ROOT_URL = process.env.ROOT_URL;
 export default function Upload() {
   const [success, setSuccess] = useState(false);
   const [url, setUrl] = useState("");
-  console.log(success);
-  console.log(url);
   const Success_message = () => (
     <div style={{ padding: 50 }}>
       <h3 style={{ color: "green" }}>SUCCESSFUL UPLOAD</h3>
