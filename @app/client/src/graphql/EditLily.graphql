@@ -3,7 +3,7 @@
 mutation EditLily(
   $id: Int!
   $name: String!
-  $imgUrl: String
+  $imgUrl: [String]
   $price: BigFloat
   $publicNote: String
   $privateNote: String
