@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import AWS from "aws-sdk";
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const bucket: string = process.env.BUCKET || "";
-  const key: string = req.query.key + "";
+  const bucket: string = process.env.BUCKET as string;
+  const key: string = req.query.key as string;
   if (!bucket) {
     res.json({ success: false, err: "no bucket enviromental var set" });
     return;
