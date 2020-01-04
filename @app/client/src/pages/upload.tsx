@@ -11,6 +11,7 @@ export default function Upload() {
     <div style={{ padding: 50 }}>
       <h3 style={{ color: "green" }}>SUCCESSFUL UPLOAD</h3>
       <a href={url.split("?")[0]}>Access the file here</a>
+      <button onClick={handleDelete}>Delete</button>
       <br />
     </div>
   );
@@ -23,16 +24,18 @@ export default function Upload() {
   // Perform the upload
   const handleUpload = () => {
     let file = uploadInput.files[0];
+    if (!file) return;
     // Split the filename to get the name and type
     let fileParts = uploadInput.files[0].name.split(".");
     let fileName = fileParts[0];
     let fileType = fileParts[1];
     console.log("Preparing the upload");
     axios
-      .get(`${ROOT_URL}/api/sign_s3`, {
+      .get(`${ROOT_URL}/api/s3`, {
         params: {
           fileName: fileName,
           fileType: fileType,
+          operation: "put",
         },
       })
       .then(response => {
@@ -50,6 +53,38 @@ export default function Upload() {
             console.log("ERROR " + JSON.stringify(error));
           });
       })
+      .catch(error => {
+        console.log(JSON.stringify(error));
+      });
+  };
+  const handleDelete = () => {
+    let file = uploadInput.files[0];
+    if (!file) return;
+    // Split the filename to get the name and type
+    let fileParts = file.name.split(".");
+    let fileName = fileParts[0];
+    let fileType = fileParts[1];
+    axios
+      .get(`${ROOT_URL}/api/s3`, {
+        params: {
+          fileName: fileName,
+          fileType: fileType,
+          operation: "delete",
+        },
+      })
+      // .then(response => {
+      //   var url = response.data.url;
+      //   setUrl(url);
+      //   axios
+      //     .put(url, file)
+      //     .then((result: any) => {
+      //       console.log("Response from s3", result);
+      //       setSuccess(true);
+      //     })
+      //     .catch(error => {
+      //       console.log("ERROR " + JSON.stringify(error));
+      //     });
+      // })
       .catch(error => {
         console.log(JSON.stringify(error));
       });
