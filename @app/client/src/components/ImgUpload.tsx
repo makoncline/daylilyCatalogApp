@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Upload, Icon, Modal } from "antd";
 
 function getBase64(file: any) {
@@ -10,74 +10,57 @@ function getBase64(file: any) {
   });
 }
 
-class PicturesWall extends React.Component {
-  state = {
-    previewVisible: false,
-    previewImage: "",
-    fileList: [],
-  };
+const PicturesWall = () => {
+  const [previewVisible, setPreviewVisible] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [fileList, setFileList] = useState<any>([]);
 
-  handleCancel = () => this.setState({ previewVisible: false });
+  const handleCancel = () => setPreviewVisible(false);
 
-  handlePreview = async (file: any) => {
+  const handlePreview = async (file: any) => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
     }
-
-    this.setState({
-      previewImage: file.url || file.preview,
-      previewVisible: true,
-    });
+    setPreviewImage(file.url || file.preview);
+    setPreviewVisible(true);
   };
 
-  handleChange = ({ fileList }: any) => this.setState({ fileList });
+  const handleChange = ({ fileList }: any) => setFileList(fileList);
 
-  handleRemove = (file: any) => {
-    this.setState((state: any) => {
-      const index = state.fileList.indexOf(file);
-      const newFileList = state.fileList.slice();
+  const handleRemove = (file: any) => {
+    setFileList((fileList: any) => {
+      const index = fileList.indexOf(file);
+      const newFileList = fileList.slice();
       newFileList.splice(index, 1);
-      return {
-        fileList: newFileList,
-      };
+      return newFileList;
     });
   };
-  handleBeforeUpload = (file: any) => {
-    this.setState((state: any) => ({
-      fileList: [...state.fileList, file],
-    }));
+  const handleBeforeUpload = (file: any) => {
+    setFileList([...fileList, file]);
     return false;
   };
-
-  render() {
-    const { previewVisible, previewImage, fileList } = this.state;
-    const uploadButton = (
-      <div>
-        <Icon type="plus" />
-        <div className="ant-upload-text">Upload</div>
-      </div>
-    );
-    return (
-      <div className="clearfix">
-        <Upload
-          listType="picture-card"
-          fileList={fileList}
-          onRemove={this.handleRemove}
-          beforeUpload={this.handleBeforeUpload}
-          onPreview={this.handlePreview}
-          onChange={this.handleChange}
-        >
-          {fileList.length >= 8 ? null : uploadButton}
-        </Upload>
-        <Modal
-          visible={previewVisible}
-          footer={null}
-          onCancel={this.handleCancel}
-        >
-          <img alt="example" style={{ width: "100%" }} src={previewImage} />
-        </Modal>
-      </div>
-    );
-  }
-}
+  const uploadButton = (
+    <div>
+      <Icon type="plus" />
+      <div className="ant-upload-text">Upload</div>
+    </div>
+  );
+  return (
+    <div className="clearfix">
+      <Upload
+        listType="picture-card"
+        fileList={fileList}
+        onRemove={handleRemove}
+        beforeUpload={handleBeforeUpload}
+        onPreview={handlePreview}
+        onChange={handleChange}
+      >
+        {fileList.length >= 8 ? null : uploadButton}
+      </Upload>
+      <Modal visible={previewVisible} footer={null} onCancel={handleCancel}>
+        <img alt="example" style={{ width: "100%" }} src={previewImage} />
+      </Modal>
+    </div>
+  );
+};
 export default PicturesWall;
