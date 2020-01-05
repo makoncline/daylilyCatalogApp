@@ -21,7 +21,7 @@ import { ApolloError } from "apollo-client";
 import { getCodeFromError, extractError } from "../errors";
 import { AutoComplete } from "antd";
 import ImgUpload from "../components/ImgUpload";
-import testImageUrl from "../util/testImageUrl";
+//import testImageUrl from "../util/testImageUrl";
 
 const { TextArea } = Input;
 interface FormValues {
@@ -56,6 +56,7 @@ function AddLilyForm({
   const [addLily] = useAddLilyMutation();
   const [editLily] = useEditLilyMutation();
   const [deleteLily] = useDeleteLilyMutation();
+  const [fileList, setFileList] = useState<any>([]);
   const validateFields: (
     fieldNames?: Array<string>,
     options?: ValidateFieldsOptions
@@ -82,6 +83,7 @@ function AddLilyForm({
             },
           });
         } else {
+
           await addLily({
             variables: {
               imgUrl: values.imgUrl || null,
@@ -187,7 +189,7 @@ function AddLilyForm({
             />
           )}
         </Form.Item>
-        <Form.Item label="Image URL" style={{ marginBottom: 5 }}>
+        {/* <Form.Item label="Image URL" style={{ marginBottom: 5 }}>
           {getFieldDecorator("imgUrl", {
             initialValue: updateLily ? updateLily.imgUrl : "",
             rules: [
@@ -200,8 +202,8 @@ function AddLilyForm({
               },
             ],
           })(<Input data-cy="settingslilies-input-imgUrl" allowClear />)}
-        </Form.Item>
-        <ImgUpload />
+        </Form.Item> */}
+        <ImgUpload fileList={[fileList, setFileList]} />
         <Form.Item label="AHS ID" style={{ display: "none" }}>
           {getFieldDecorator("ahsId", {
             initialValue: updateLily ? updateLily.ahsId : "",

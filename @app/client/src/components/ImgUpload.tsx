@@ -10,10 +10,10 @@ function getBase64(file: any) {
   });
 }
 
-const PicturesWall = () => {
+const PicturesWall = (props: any) => {
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
-  const [fileList, setFileList] = useState<any>([]);
+  const [fileList, setFileList] = props.fileList;
 
   const handleCancel = () => setPreviewVisible(false);
 
@@ -28,12 +28,10 @@ const PicturesWall = () => {
   const handleChange = ({ fileList }: any) => setFileList(fileList);
 
   const handleRemove = (file: any) => {
-    setFileList((fileList: any) => {
-      const index = fileList.indexOf(file);
-      const newFileList = fileList.slice();
-      newFileList.splice(index, 1);
-      return newFileList;
-    });
+    const index = fileList.indexOf(file);
+    const newFileList = fileList.slice();
+    newFileList.splice(index, 1);
+    setFileList(newFileList);
   };
   const handleBeforeUpload = (file: any) => {
     setFileList([...fileList, file]);
@@ -45,6 +43,8 @@ const PicturesWall = () => {
       <div className="ant-upload-text">Upload</div>
     </div>
   );
+  console.log(fileList);
+
   return (
     <div className="clearfix">
       <Upload
