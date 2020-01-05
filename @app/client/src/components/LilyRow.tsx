@@ -31,7 +31,7 @@ export default function LilyRow(props: any) {
       <List.Item.Meta
         avatar={
           lily.imgUrl ? (
-            <Avatar size="large" src={lily.imgUrl} />
+            <Avatar size="large" src={lily.imgUrl[0]} />
           ) : (
             <Avatar size="large" src={"https://i.imgur.com/0cGzAR8.png"} />
           )

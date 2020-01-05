@@ -111,8 +111,8 @@ export default function LiliesTable(props: any) {
       // eslint-disable-next-line react/display-name
       render: (imgUrl: any) => (
         <div>
-          {imgUrl ? (
-            <Avatar size="large" src={imgUrl} />
+          {imgUrl && imgUrl[0] ? (
+            <Avatar size="large" src={imgUrl[0]} />
           ) : (
             <Avatar size="large" src={"https://i.imgur.com/0cGzAR8.png"} />
           )}
@@ -144,10 +144,10 @@ export default function LiliesTable(props: any) {
       expandedRowRender={(record: any) => {
         return (
           <div>
-            {record.imgUrl && (
+            {record.imgUrl && record.imgUrl[0] && (
               <img
                 alt={`${record.name} image`}
-                src={record.imgUrl}
+                src={record.imgUrl[0]}
                 style={{ maxWidth: "300px", width: "50vw" }}
               />
             )}
