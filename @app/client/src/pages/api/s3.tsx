@@ -24,13 +24,18 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   function getClient() {
+    const region = process.env.AWS_REGION;
     const accessKey = process.env.AWSACCESSKEYID;
     const secretKey = process.env.AWSSECRETKEY;
     AWS.config.update({
       accessKeyId: accessKey,
       secretAccessKey: secretKey,
+      signatureVersion: "v4",
+      region: region,
     });
     const options = {
+      signatureVersion: "v4",
+      region: region,
       // uncomment the next line to use accelerated endpoint
       // accelerated endpoint must be turned on in your s3 bucket first
       // endpoint: new AWS.Endpoint(
