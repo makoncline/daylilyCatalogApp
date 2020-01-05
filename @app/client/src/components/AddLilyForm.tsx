@@ -20,6 +20,8 @@ import { FormComponentProps, ValidateFieldsOptions } from "antd/lib/form/Form";
 import { ApolloError } from "apollo-client";
 import { getCodeFromError, extractError } from "../errors";
 import { AutoComplete } from "antd";
+import ImgUpload from "../components/ImgUpload";
+import testImageUrl from "../util/testImageUrl";
 
 const { TextArea } = Input;
 interface FormValues {
@@ -112,32 +114,6 @@ function AddLilyForm({
     ]
   );
 
-  function testImage(__: any, url: any, callback: any) {
-    if (!url) callback();
-    let timeout = 5000;
-    let timedOut = false;
-    let timer: any;
-    let img = new Image();
-    img.onerror = img.onabort = () => {
-      if (!timedOut) {
-        clearTimeout(timer);
-        callback("Error: The URL entered may not be an image");
-      }
-    };
-    img.onload = () => {
-      if (!timedOut) {
-        clearTimeout(timer);
-        callback();
-      }
-    };
-    img.src = url;
-    timer = setTimeout(() => {
-      timedOut = true;
-      img.src = "//!!!!/test.jpg";
-      callback("Error: The URL entered may not be an image");
-    }, timeout);
-  }
-
   const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
   const code = getCodeFromError(error);
   interface ILily {
@@ -220,11 +196,12 @@ function AddLilyForm({
                 message: "Enter an image url, if you'd like.",
               },
               {
-                validator: testImage,
+                validator: testImageUrl,
               },
             ],
           })(<Input data-cy="settingslilies-input-imgUrl" allowClear />)}
         </Form.Item>
+        <ImgUpload />
         <Form.Item label="AHS ID" style={{ display: "none" }}>
           {getFieldDecorator("ahsId", {
             initialValue: updateLily ? updateLily.ahsId : "",
