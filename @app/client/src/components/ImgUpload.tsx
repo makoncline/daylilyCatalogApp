@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Upload, Icon, Modal } from "antd";
+import axios from "axios";
 
 function getBase64(file: any) {
   return new Promise((resolve, reject) => {
@@ -25,35 +26,79 @@ const PicturesWall = (props: any) => {
     setPreviewVisible(true);
   };
 
-  const handleChange = ({ fileList }: any) => setFileList(fileList);
-
-  const handleRemove = (file: any) => {
-    const index = fileList.indexOf(file);
-    const newFileList = fileList.slice();
-    newFileList.splice(index, 1);
+  const handleChange = ({ fileList }: any) => {
+    const newFileList = fileList.map((file: any) => {
+      if (file.response) {
+        const url = file.response.url.split("?")[0];
+        file.url = url;
+      }
+      return file;
+    });
     setFileList(newFileList);
   };
-  const handleBeforeUpload = (file: any) => {
-    setFileList([...fileList, file]);
-    return false;
+
+  const handleRemove = (file: any) => {
+    axios
+      .get(`${process.env.ROOT_URL}/api/s3`, {
+        params: {
+          key: file.uid + "." + file.name.split(".")[1],
+          operation: "delete",
+        },
+      })
+      .then(() => {
+        console.log("item deleted");
+      })
+      .catch(error => {
+        console.log(JSON.stringify(error));
+      });
   };
+  const customRequest = (option: any) => {
+    const { onSuccess, onError, file, onProgress } = option;
+    axios
+      .get(`${process.env.ROOT_URL}/api/s3`, {
+        params: {
+          key: file.uid + "." + file.name.split(".")[1],
+          operation: "put",
+        },
+      })
+      .then(response => {
+        const url = response.data.url;
+        axios
+          .put(url, file, {
+            onUploadProgress: e => {
+              const progress = Math.round((e.loaded / e.total) * 100);
+              onProgress({ percent: progress }, file);
+            },
+          })
+          .then(response => {
+            onSuccess(response.config, file);
+          })
+          .catch(err => {
+            console.log(err);
+            onError(err);
+          });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
   const uploadButton = (
     <div>
       <Icon type="plus" />
       <div className="ant-upload-text">Upload</div>
     </div>
   );
-  console.log(fileList);
 
   return (
     <div className="clearfix">
       <Upload
+        customRequest={customRequest}
         listType="picture-card"
         fileList={fileList}
-        onRemove={handleRemove}
-        beforeUpload={handleBeforeUpload}
         onPreview={handlePreview}
         onChange={handleChange}
+        onRemove={handleRemove}
       >
         {fileList.length >= 8 ? null : uploadButton}
       </Upload>

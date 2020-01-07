@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import {
   useAddLilyMutation,
   useEditLilyMutation,
@@ -22,6 +22,7 @@ import { getCodeFromError, extractError } from "../errors";
 import { AutoComplete } from "antd";
 import ImgUpload from "../components/ImgUpload";
 //import testImageUrl from "../util/testImageUrl";
+// import ImgUp from "../components/imgUp";
 
 const { TextArea } = Input;
 interface FormValues {
@@ -57,6 +58,16 @@ function AddLilyForm({
   const [editLily] = useEditLilyMutation();
   const [deleteLily] = useDeleteLilyMutation();
   const [fileList, setFileList] = useState<any>([]);
+  const [dataSource, setDataSource] = useState<Array<ILily>>([]);
+  useEffect(() => {
+    if (updateLily && updateLily.imgUrl) {
+      setFileList(
+        updateLily.imgUrl.map((url: any, i: number) => {
+          return { uid: -i, name: "i", status: "done", url };
+        })
+      );
+    }
+  }, [updateLily]);
   const validateFields: (
     fieldNames?: Array<string>,
     options?: ValidateFieldsOptions
@@ -64,17 +75,27 @@ function AddLilyForm({
     () => promisify((...args) => form.validateFields(...args)),
     [form]
   );
+  const handleCancle = () => {
+    setShow(false);
+    setUpdateLily(null);
+    form.resetFields();
+    setFileList([]);
+    setDataSource([]);
+  };
   const handleSubmit = useCallback(
     async e => {
       e.preventDefault();
       try {
         setError(null);
         const values = await validateFields();
+        const imgUrls = fileList.map((file: any) => {
+          return file.url;
+        });
         if (updateLily) {
           await editLily({
             variables: {
               id: updateLily.id,
-              imgUrl: values.imgUrl || null,
+              imgUrl: imgUrls,
               name: values.name,
               price: values.price || null,
               publicNote: values.publicNote || null,
@@ -83,10 +104,9 @@ function AddLilyForm({
             },
           });
         } else {
-
           await addLily({
             variables: {
-              imgUrl: values.imgUrl || null,
+              imgUrl: imgUrls,
               name: values.name,
               price: values.price || null,
               publicNote: values.publicNote || null,
@@ -98,7 +118,8 @@ function AddLilyForm({
         setUpdateLily(null);
         const messageText = updateLily ? "Daylily edited" : "Daylily added";
         message.success(messageText);
-        form.resetFields();
+        setFileList([]);
+        setDataSource([]);
         onComplete();
       } catch (e) {
         setError(e);
@@ -107,9 +128,9 @@ function AddLilyForm({
     [
       setError,
       validateFields,
+      fileList,
       updateLily,
       setUpdateLily,
-      form,
       onComplete,
       editLily,
       addLily,
@@ -123,7 +144,6 @@ function AddLilyForm({
     name: string;
     image: string;
   }
-  const [dataSource, setDataSource] = useState<Array<ILily>>([]);
 
   const onSearch = async (searchText: string) => {
     if (searchText.length >= 3) {
@@ -154,7 +174,15 @@ function AddLilyForm({
       setFieldsValue({ imgUrl: selection.image });
     }
     setFieldsValue({ ahsId: selection.id + "" });
-    console.log(selection, setFieldsValue, getFieldValue);
+    setFileList([
+      ...fileList,
+      {
+        uid: -fileList.length,
+        name: selection.name,
+        status: "done",
+        url: selection.image,
+      },
+    ]);
     setDataSource([]);
   }
 
@@ -164,11 +192,7 @@ function AddLilyForm({
       title={updateLily ? "Edit Daylily" : "Add a new Daylily"}
       onOk={handleSubmit}
       style={{ top: 20 }}
-      onCancel={() => {
-        setShow(false);
-        setUpdateLily(null);
-        form.resetFields();
-      }}
+      onCancel={handleCancle}
     >
       <Form onSubmit={handleSubmit}>
         <Form.Item label="Name" style={{ marginBottom: 5 }}>
@@ -189,20 +213,6 @@ function AddLilyForm({
             />
           )}
         </Form.Item>
-        {/* <Form.Item label="Image URL" style={{ marginBottom: 5 }}>
-          {getFieldDecorator("imgUrl", {
-            initialValue: updateLily ? updateLily.imgUrl : "",
-            rules: [
-              {
-                required: false,
-                message: "Enter an image url, if you'd like.",
-              },
-              {
-                validator: testImageUrl,
-              },
-            ],
-          })(<Input data-cy="settingslilies-input-imgUrl" allowClear />)}
-        </Form.Item> */}
         <ImgUpload fileList={[fileList, setFileList]} />
         <Form.Item label="AHS ID" style={{ display: "none" }}>
           {getFieldDecorator("ahsId", {
@@ -258,7 +268,6 @@ function AddLilyForm({
             ],
           })(<TextArea data-cy="settingslilies-input-privateNote" autoSize />)}
         </Form.Item>
-
         {error ? (
           <Form.Item>
             <Alert
