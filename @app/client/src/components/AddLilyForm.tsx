@@ -21,8 +21,7 @@ import { ApolloError } from "apollo-client";
 import { getCodeFromError, extractError } from "../errors";
 import { AutoComplete } from "antd";
 import ImgUpload from "../components/ImgUpload";
-//import testImageUrl from "../util/testImageUrl";
-// import ImgUp from "../components/imgUp";
+import axios from "axios";
 
 const { TextArea } = Input;
 interface FormValues {
@@ -42,6 +41,7 @@ interface AddLilyFormProps extends FormComponentProps<FormValues> {
   setShow: (val: boolean) => void;
   updateLily?: Lily | null;
   setUpdateLily: (val: any) => void;
+  user: any;
 }
 
 function AddLilyForm({
@@ -53,6 +53,7 @@ function AddLilyForm({
   setShow,
   updateLily,
   setUpdateLily,
+  user,
 }: AddLilyFormProps) {
   const [addLily] = useAddLilyMutation();
   const [editLily] = useEditLilyMutation();
@@ -62,12 +63,18 @@ function AddLilyForm({
   useEffect(() => {
     if (updateLily && updateLily.imgUrl) {
       setFileList(
-        updateLily.imgUrl.map((url: any, i: number) => {
-          return { uid: -i, name: "i", status: "done", url };
+        updateLily.imgUrl.map((url: any) => {
+          const fileName = url && url.substring(url.lastIndexOf("/") + 1);
+          return {
+            uid: `${user.id}/${fileName}`,
+            name: fileName,
+            status: "done",
+            url,
+          };
         })
       );
     }
-  }, [updateLily]);
+  }, [updateLily, user.id]);
   const validateFields: (
     fieldNames?: Array<string>,
     options?: ValidateFieldsOptions
@@ -82,15 +89,110 @@ function AddLilyForm({
     setFileList([]);
     setDataSource([]);
   };
+
+  const handleImgUpload = useCallback(
+    async (file: any, i: number) => {
+      return await axios
+        .get(`${process.env.ROOT_URL}/api/s3`, {
+          params: {
+            key: file.uid,
+            operation: "put",
+          },
+        })
+        .then(async response => {
+          const url = response.data.url;
+          return await axios
+            .put(url, file.originFileObj, {
+              onUploadProgress: e => {
+                const progress = Math.round((e.loaded / e.total) * 100);
+                const newFileList = fileList.slice();
+                newFileList[i].status = "uploading";
+                newFileList[i].percent = progress;
+                setFileList(newFileList);
+              },
+            })
+            .then(response => {
+              console.log("success", response);
+              const newFileList = fileList.slice();
+              newFileList[i].status = "done";
+              setFileList(newFileList);
+              return (
+                response &&
+                response.config &&
+                response.config.url &&
+                response.config.url.split("?")[0]
+              );
+            })
+            .catch(err => {
+              console.log(err);
+              throw new Error(err);
+            });
+        })
+        .catch(err => {
+          console.log(err);
+          throw new Error(err);
+        });
+    },
+    [fileList]
+  );
+  const handleImgDelete = useCallback(
+    (url: any) => {
+      const fileName = url && url.substring(url.lastIndexOf("/") + 1);
+      axios
+        .get(`${process.env.ROOT_URL}/api/s3`, {
+          params: {
+            key: `${user.id}/${fileName}`,
+            operation: "delete",
+          },
+        })
+        .then(() => {
+          console.log("item deleted");
+        })
+        .catch(error => {
+          console.log(JSON.stringify(error));
+        });
+    },
+    [user.id]
+  );
+  const handleImages = useCallback(async () => {
+    //Editing a flower
+    if (updateLily && updateLily.imgUrl) {
+      console.log("prev", updateLily.imgUrl);
+      console.log("current", fileList);
+      const prevImgUrls = updateLily.imgUrl;
+      const imgToDelete = prevImgUrls.filter((url: any) => {
+        return !fileList.some((file: any) => file.url === url);
+      });
+      console.log("to del", imgToDelete);
+      imgToDelete.forEach((url: any) => handleImgDelete(url));
+    }
+
+    //add any new files
+    return await Promise.all(
+      fileList
+        .map((file: any, i: number) => {
+          if (!file.url) {
+            return handleImgUpload(file, i);
+          }
+        })
+        .filter((file: any) => file)
+    );
+  }, [fileList, handleImgUpload, updateLily, handleImgDelete]);
+
   const handleSubmit = useCallback(
     async e => {
       e.preventDefault();
       try {
         setError(null);
         const values = await validateFields();
-        const imgUrls = fileList.map((file: any) => {
-          return file.url;
-        });
+        const prevImgUrls = fileList
+          .filter((file: any) => file.url)
+          .map((file: any) => file.url);
+        console.log("TCL: prevImgUrls", prevImgUrls);
+        const newImgUrls: any = await handleImages();
+        console.log("TCL: newImgUrls", newImgUrls);
+        const imgUrls = [...prevImgUrls, ...(await newImgUrls)];
+        console.log("TCL: imgUrls", imgUrls);
         if (updateLily) {
           await editLily({
             variables: {
@@ -129,6 +231,7 @@ function AddLilyForm({
       setError,
       validateFields,
       fileList,
+      handleImages,
       updateLily,
       setUpdateLily,
       onComplete,
@@ -186,6 +289,14 @@ function AddLilyForm({
     setDataSource([]);
   }
 
+  const handleDelete = async (id: any) => {
+    fileList.forEach((file: any) => handleImgDelete(file.url));
+    deleteLily({ variables: { id } });
+    setShow(false);
+    handleCancle();
+    message.success("Daylily deleted");
+  };
+
   return (
     <Modal
       visible={show}
@@ -193,6 +304,36 @@ function AddLilyForm({
       onOk={handleSubmit}
       style={{ top: 20 }}
       onCancel={handleCancle}
+      footer={
+        updateLily
+          ? [
+              <Popconfirm
+                key={1}
+                title="Are you sure delete this daylily?"
+                onConfirm={() => handleDelete(updateLily.id)}
+                okText="Yes"
+                cancelText="No"
+              >
+                <Button type="danger" style={{ float: "left" }}>
+                  Delete
+                </Button>
+              </Popconfirm>,
+              <Button key={2} onClick={handleCancle}>
+                Cancel
+              </Button>,
+              <Button key={3} type="primary" onClick={handleSubmit}>
+                OK
+              </Button>,
+            ]
+          : [
+              <Button key={1} onClick={handleCancle}>
+                Cancel
+              </Button>,
+              <Button key={2} type="primary" onClick={handleSubmit}>
+                OK
+              </Button>,
+            ]
+      }
     >
       <Form onSubmit={handleSubmit}>
         <Form.Item label="Name" style={{ marginBottom: 5 }}>
@@ -213,7 +354,7 @@ function AddLilyForm({
             />
           )}
         </Form.Item>
-        <ImgUpload fileList={[fileList, setFileList]} />
+        <ImgUpload fileList={[fileList, setFileList]} user={user} />
         <Form.Item label="AHS ID" style={{ display: "none" }}>
           {getFieldDecorator("ahsId", {
             initialValue: updateLily ? updateLily.ahsId : "",
@@ -287,20 +428,6 @@ function AddLilyForm({
             />
           </Form.Item>
         ) : null}
-        {updateLily && (
-          <Popconfirm
-            title="Are you sure delete this daylily?"
-            onConfirm={() => {
-              deleteLily({ variables: { id: updateLily.id } });
-              setShow(false);
-              message.success("Daylily deleted");
-            }}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Button type="danger">Delete</Button>
-          </Popconfirm>
-        )}
       </Form>
     </Modal>
   );
