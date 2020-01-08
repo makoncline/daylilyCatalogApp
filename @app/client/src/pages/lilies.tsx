@@ -52,6 +52,7 @@ export default function Lilies() {
             setShow={setShowAddLilyForm}
             updateLily={updateLily}
             setUpdateLily={setUpdateLily}
+            user={user}
           />
         </div>
       );
