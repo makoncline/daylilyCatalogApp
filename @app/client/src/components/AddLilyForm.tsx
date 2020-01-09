@@ -280,15 +280,17 @@ function AddLilyForm({
       setFieldsValue({ imgUrl: selection.image });
     }
     setFieldsValue({ ahsId: selection.id + "" });
-    setFileList([
-      ...fileList,
-      {
-        uid: -fileList.length,
-        name: selection.name,
-        status: "done",
-        url: selection.image,
-      },
-    ]);
+    if (selection.image) {
+      setFileList([
+        ...fileList,
+        {
+          uid: -fileList.length,
+          name: selection.name,
+          status: "done",
+          url: selection.image,
+        },
+      ]);
+    }
     setDataSource([]);
   }
 
