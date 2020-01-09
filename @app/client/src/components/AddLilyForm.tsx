@@ -216,9 +216,11 @@ function AddLilyForm({
             },
           });
         }
-        setUpdateLily(null);
         const messageText = updateLily ? "Daylily edited" : "Daylily added";
         message.success(messageText);
+        setShow(false);
+        form.resetFields();
+        setUpdateLily(null);
         setFileList([]);
         setDataSource([]);
         onComplete();
@@ -232,6 +234,8 @@ function AddLilyForm({
       fileList,
       handleImages,
       updateLily,
+      setShow,
+      form,
       setUpdateLily,
       onComplete,
       editLily,
@@ -295,6 +299,16 @@ function AddLilyForm({
     handleCancle();
     message.success("Daylily deleted");
   };
+  const formItemLayout = {
+    labelCol: {
+      xs: { span: 24 },
+      sm: { span: 5 },
+    },
+    wrapperCol: {
+      xs: { span: 24 },
+      sm: { span: 19 },
+    },
+  };
 
   return (
     <Modal
@@ -349,7 +363,7 @@ function AddLilyForm({
             ]
       }
     >
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit} {...formItemLayout}>
         <Form.Item label="Name" style={{ marginBottom: 5 }}>
           {getFieldDecorator("name", {
             initialValue: updateLily ? updateLily.name : "",
@@ -369,11 +383,6 @@ function AddLilyForm({
             />
           )}
         </Form.Item>
-        <ImgUpload
-          fileList={[fileList, setFileList]}
-          user={user}
-          isUploading={isUploading}
-        />
         <Form.Item label="AHS ID" style={{ display: "none" }}>
           {getFieldDecorator("ahsId", {
             initialValue: updateLily ? updateLily.ahsId : "",
@@ -404,7 +413,7 @@ function AddLilyForm({
             <InputNumber
               style={{ width: "100%" }}
               formatter={value =>
-                `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                value ? `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",") : ""
               }
               parser={value => `${value}`.replace(/\$\s?|(,*)/g, "")}
               precision={2}
@@ -425,7 +434,7 @@ function AddLilyForm({
           })(
             <TextArea
               data-cy="settingslilies-input-publicNote"
-              autoSize
+              autoSize={{ minRows: 2 }}
               disabled={isUploading}
             />
           )}
@@ -442,11 +451,16 @@ function AddLilyForm({
           })(
             <TextArea
               data-cy="settingslilies-input-privateNote"
-              autoSize
+              autoSize={{ minRows: 2 }}
               disabled={isUploading}
             />
           )}
         </Form.Item>
+        <ImgUpload
+          fileList={[fileList, setFileList]}
+          user={user}
+          isUploading={isUploading}
+        />
         {error ? (
           <Form.Item>
             <Alert
