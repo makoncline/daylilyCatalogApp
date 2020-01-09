@@ -94,7 +94,7 @@ const PicturesWall = (props: any) => {
   const uploadButton = (
     <div>
       <Icon type="plus" />
-      <div className="ant-upload-text">Upload</div>
+      <div className="ant-upload-text">Image</div>
     </div>
   );
 
