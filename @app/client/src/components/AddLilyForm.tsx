@@ -60,6 +60,7 @@ function AddLilyForm({
   const [deleteLily] = useDeleteLilyMutation();
   const [fileList, setFileList] = useState<any>([]);
   const [dataSource, setDataSource] = useState<Array<ILily>>([]);
+  const [isUploading, setIsUploading] = useState(false);
   useEffect(() => {
     if (updateLily && updateLily.imgUrl) {
       setFileList(
@@ -75,6 +76,7 @@ function AddLilyForm({
       );
     }
   }, [updateLily, user.id]);
+
   const validateFields: (
     fieldNames?: Array<string>,
     options?: ValidateFieldsOptions
@@ -83,6 +85,7 @@ function AddLilyForm({
     [form]
   );
   const handleCancle = () => {
+    if (isUploading) return;
     setShow(false);
     setUpdateLily(null);
     form.resetFields();
@@ -155,21 +158,18 @@ function AddLilyForm({
     [user.id]
   );
   const handleImages = useCallback(async () => {
-    //Editing a flower
+    setIsUploading(true);
     if (updateLily && updateLily.imgUrl) {
-      console.log("prev", updateLily.imgUrl);
-      console.log("current", fileList);
       const prevImgUrls = updateLily.imgUrl;
       const imgToDelete = prevImgUrls.filter((url: any) => {
         return !fileList.some((file: any) => file.url === url);
       });
-      console.log("to del", imgToDelete);
       imgToDelete.forEach((url: any) => handleImgDelete(url));
     }
-
     //add any new files
-    return await Promise.all(
+    const isDone = await Promise.all(
       fileList
+        .filter((file: any) => file.status !== "error")
         .map((file: any, i: number) => {
           if (!file.url) {
             return handleImgUpload(file, i);
@@ -177,6 +177,8 @@ function AddLilyForm({
         })
         .filter((file: any) => file)
     );
+    setIsUploading(false);
+    return isDone;
   }, [fileList, handleImgUpload, updateLily, handleImgDelete]);
 
   const handleSubmit = useCallback(
@@ -188,11 +190,8 @@ function AddLilyForm({
         const prevImgUrls = fileList
           .filter((file: any) => file.url)
           .map((file: any) => file.url);
-        console.log("TCL: prevImgUrls", prevImgUrls);
         const newImgUrls: any = await handleImages();
-        console.log("TCL: newImgUrls", newImgUrls);
         const imgUrls = [...prevImgUrls, ...(await newImgUrls)];
-        console.log("TCL: imgUrls", imgUrls);
         if (updateLily) {
           await editLily({
             variables: {
@@ -313,24 +312,39 @@ function AddLilyForm({
                 onConfirm={() => handleDelete(updateLily.id)}
                 okText="Yes"
                 cancelText="No"
+                disabled={isUploading}
               >
-                <Button type="danger" style={{ float: "left" }}>
+                <Button
+                  type="danger"
+                  style={{ float: "left" }}
+                  disabled={isUploading}
+                >
                   Delete
                 </Button>
               </Popconfirm>,
-              <Button key={2} onClick={handleCancle}>
+              <Button key={2} onClick={handleCancle} disabled={isUploading}>
                 Cancel
               </Button>,
-              <Button key={3} type="primary" onClick={handleSubmit}>
-                OK
+              <Button
+                key={3}
+                type="primary"
+                onClick={handleSubmit}
+                loading={isUploading}
+              >
+                {isUploading ? "Uploading, please wait." : "OK"}
               </Button>,
             ]
           : [
-              <Button key={1} onClick={handleCancle}>
+              <Button key={1} onClick={handleCancle} disabled={isUploading}>
                 Cancel
               </Button>,
-              <Button key={2} type="primary" onClick={handleSubmit}>
-                OK
+              <Button
+                key={2}
+                type="primary"
+                onClick={handleSubmit}
+                loading={isUploading}
+              >
+                {isUploading ? "Uploading, please wait." : "OK"}
               </Button>,
             ]
       }
@@ -351,10 +365,15 @@ function AddLilyForm({
               onSearch={onSearch}
               onSelect={onSelect}
               allowClear
+              disabled={isUploading}
             />
           )}
         </Form.Item>
-        <ImgUpload fileList={[fileList, setFileList]} user={user} />
+        <ImgUpload
+          fileList={[fileList, setFileList]}
+          user={user}
+          isUploading={isUploading}
+        />
         <Form.Item label="AHS ID" style={{ display: "none" }}>
           {getFieldDecorator("ahsId", {
             initialValue: updateLily ? updateLily.ahsId : "",
@@ -364,7 +383,13 @@ function AddLilyForm({
                 message: "Enter an AHS ID, if you'd like.",
               },
             ],
-          })(<TextArea data-cy="settingslilies-input-ahsId" autoSize />)}
+          })(
+            <TextArea
+              data-cy="settingslilies-input-ahsId"
+              autoSize
+              disabled={isUploading}
+            />
+          )}
         </Form.Item>
         <Form.Item label="Price" style={{ marginBottom: 5 }}>
           {getFieldDecorator("price", {
@@ -384,6 +409,7 @@ function AddLilyForm({
               parser={value => `${value}`.replace(/\$\s?|(,*)/g, "")}
               precision={2}
               data-cy="settingslilies-input-price"
+              disabled={isUploading}
             />
           )}
         </Form.Item>
@@ -396,7 +422,13 @@ function AddLilyForm({
                 message: "Enter a public note, if you'd like.",
               },
             ],
-          })(<TextArea data-cy="settingslilies-input-publicNote" autoSize />)}
+          })(
+            <TextArea
+              data-cy="settingslilies-input-publicNote"
+              autoSize
+              disabled={isUploading}
+            />
+          )}
         </Form.Item>
         <Form.Item label="Private note" style={{ marginBottom: 5 }}>
           {getFieldDecorator("privateNote", {
@@ -407,7 +439,13 @@ function AddLilyForm({
                 message: "Enter a private note, if you'd like.",
               },
             ],
-          })(<TextArea data-cy="settingslilies-input-privateNote" autoSize />)}
+          })(
+            <TextArea
+              data-cy="settingslilies-input-privateNote"
+              autoSize
+              disabled={isUploading}
+            />
+          )}
         </Form.Item>
         {error ? (
           <Form.Item>

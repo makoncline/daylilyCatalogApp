@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Upload, Icon, Modal } from "antd";
+import { Upload, Icon, Modal, message } from "antd";
 import axios from "axios";
 import slugify from "slugify";
 
@@ -28,33 +28,17 @@ const PicturesWall = (props: any) => {
   };
 
   const handleChange = ({ fileList }: any) => {
-    const newFileList = fileList.map((file: any) => {
+    let newFileList = fileList.map((file: any) => {
       if (file.response) {
         const url = file.response.url.split("?")[0];
         file.url = url;
       }
       return file;
     });
-    console.log(newFileList);
+    newFileList = fileList.filter((file: any) => file.status !== "error");
     setFileList(newFileList);
   };
 
-  // const handleRemove = (file: any) => {
-  //   console.log(file.uid);
-  //   axios
-  //     .get(`${process.env.ROOT_URL}/api/s3`, {
-  //       params: {
-  //         key: file.uid,
-  //         operation: "delete",
-  //       },
-  //     })
-  //     .then(() => {
-  //       console.log("item deleted");
-  //     })
-  //     .catch(error => {
-  //       console.log(JSON.stringify(error));
-  //     });
-  // };
   function getUid(userId: number, name: string) {
     const randomHex = () => Math.floor(Math.random() * 16777215).toString(16);
     const fileNameSlug = slugify(name, {
@@ -64,11 +48,20 @@ const PicturesWall = (props: any) => {
   }
   const handleBeforeUpload = (file: any) => {
     file.uid = getUid(props.user.id, file.name);
+    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+    if (!isJpgOrPng) {
+      message.error("You can only upload JPG or PNG images!");
+      file.status = "error";
+    }
+    const isLt3M = file.size / 1024 / 1024 < 3;
+    if (!isLt3M) {
+      message.error("Image must smaller than 3MB!");
+      file.status = "error";
+    }
     return false;
   };
   const customRequest = (option: any) => {
     const { onSuccess, onError, file, onProgress } = option;
-    console.log(file.uid);
     axios
       .get(`${process.env.ROOT_URL}/api/s3`, {
         params: {
@@ -114,8 +107,9 @@ const PicturesWall = (props: any) => {
         onPreview={handlePreview}
         onChange={handleChange}
         beforeUpload={handleBeforeUpload}
+        disabled={props.isUploading}
       >
-        {fileList.length >= 8 ? null : uploadButton}
+        {fileList.length >= 8 || props.isUploading ? null : uploadButton}
       </Upload>
       <Modal visible={previewVisible} footer={null} onCancel={handleCancel}>
         <img alt="example" style={{ width: "100%" }} src={previewImage} />
