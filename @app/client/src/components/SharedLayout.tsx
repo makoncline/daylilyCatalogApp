@@ -97,11 +97,6 @@ function SharedLayout({ title, noPad = false, children }: SharedLayoutProps) {
           <Col style={{ textAlign: "left" }}>
             <Menu theme="light" mode="horizontal">
               <Menu.Item>
-                <Link href="/">
-                  <a>Home</a>
-                </Link>
-              </Menu.Item>
-              <Menu.Item>
                 <Link href="/lilies">
                   <a>Catalog</a>
                 </Link>
