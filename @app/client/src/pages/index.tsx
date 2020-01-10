@@ -37,7 +37,6 @@ export default function Catalog() {
 
       return (
         <div>
-          <h1 style={{ textAlign: "center" }}>Your Daylily Catalog</h1>
           <Button
             type="primary"
             onClick={() => {
@@ -45,13 +44,21 @@ export default function Catalog() {
               setShowAddLilyForm(true);
             }}
             data-cy="settingslilies-button-addlily"
-            style={{ margin: "auto", marginBottom: "1rem", display: "block" }}
+            block
+            style={{
+              marginLeft: "auto",
+              marginBottom: "1rem",
+              display: "block",
+            }}
           >
             Add daylily
           </Button>
           <Input
+            placeholder="Filter catalog by name..."
             value={nameFilter}
             onChange={e => setNameFilter(e.target.value)}
+            style={{ marginBottom: "1rem" }}
+            allowClear
           />
           <LiliesTable
             dataSource={nameFilter ? filteredUserLilies : userLilies}

@@ -256,6 +256,7 @@ function AddLilyForm({
       const searchResult = await searchAhs(searchText);
       setDataSource(searchResult);
     }
+    setFieldsValue({ ahsId: "" });
   };
 
   async function searchAhs(searchText: string) {
@@ -281,15 +282,17 @@ function AddLilyForm({
     }
     setFieldsValue({ ahsId: selection.id + "" });
     if (selection.image) {
-      setFileList([
-        ...fileList,
-        {
-          uid: -fileList.length,
-          name: selection.name,
-          status: "done",
-          url: selection.image,
-        },
-      ]);
+      if (!fileList.some((file: any) => file.url === selection.image)) {
+        setFileList([
+          ...fileList,
+          {
+            uid: -fileList.length,
+            name: selection.name,
+            status: "done",
+            url: selection.image,
+          },
+        ]);
+      }
     }
     setDataSource([]);
   }
