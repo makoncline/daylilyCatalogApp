@@ -1,19 +1,15 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import AWS from "aws-sdk";
+import getConfig from "next/config";
+const { serverRuntimeConfig } = getConfig();
+
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const bucket: string = process.env.BUCKET as string;
-  const key: string = req.query.key as string;
-  if (!bucket) {
-    res.json({ success: false, err: "no bucket enviromental var set" });
-    return;
-  }
-  if (!key) {
-    res.json({ success: false, err: "no key set" });
-    return;
-  }
+  console.log(serverRuntimeConfig);
+  const bucket = serverRuntimeConfig.BUCKET;
+  const key = req.query.key;
   const params: AWS.S3.DeleteObjectRequest = {
     Bucket: bucket,
-    Key: key,
+    Key: key as string,
   };
   const client = getClient();
   const operation = req.query.operation;
@@ -24,9 +20,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   function getClient() {
-    const region = process.env.AWS_REGION;
-    const accessKey = process.env.AWSACCESSKEYID;
-    const secretKey = process.env.AWSSECRETKEY;
+    const region = serverRuntimeConfig.AWS_REGION;
+    const accessKey = serverRuntimeConfig.AWSACCESSKEYID;
+    const secretKey = serverRuntimeConfig.AWSSECRETKEY;
     AWS.config.update({
       accessKeyId: accessKey,
       secretAccessKey: secretKey,
@@ -55,6 +51,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       if (err) {
         res.json({ success: false, err });
       } else {
+        console.log(url);
         res.json({ success: true, url });
       }
     });

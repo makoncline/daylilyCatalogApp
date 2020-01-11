@@ -38,6 +38,12 @@ if (!ROOT_URL) {
       withCss,
       withLess
     )({
+      serverRuntimeConfig: {
+        BUCKET: BUCKET,
+        AWSACCESSKEYID: AWSACCESSKEYID,
+        AWSSECRETKEY: AWSSECRETKEY,
+        AWS_REGION: AWS_REGION,
+      },
       distDir: `../.next`,
       exportTrailingSlash: true,
       lessLoaderOptions: {
@@ -54,10 +60,6 @@ if (!ROOT_URL) {
             new webpack.DefinePlugin({
               "process.env.ROOT_URL": JSON.stringify(ROOT_URL),
               "process.env.T_AND_C_URL": JSON.stringify(T_AND_C_URL || null),
-              "process.env.BUCKET": JSON.stringify(BUCKET),
-              "process.env.AWSACCESSKEYID": JSON.stringify(AWSACCESSKEYID),
-              "process.env.AWSSECRETKEY": JSON.stringify(AWSSECRETKEY),
-              "process.env.AWS_REGION": JSON.stringify(AWS_REGION),
             }),
           ],
           externals: [
