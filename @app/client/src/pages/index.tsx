@@ -26,7 +26,7 @@ export default function Catalog() {
     if (error && !loading) {
       return <Error error={error} />;
     } else if (!user && !loading) {
-      return <Redirect href={`/login?next=${encodeURIComponent("/lilies")}`} />;
+      return <Redirect href={`/login?next=${encodeURIComponent("/")}`} />;
     } else if (!user) {
       return "Loading";
     } else {

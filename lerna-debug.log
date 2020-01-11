@@ -1,0 +1,34 @@
+0 silly argv {
+0 silly argv   _: [ 'run' ],
+0 silly argv   parallel: true,
+0 silly argv   lernaVersion: '3.19.0',
+0 silly argv   '$0': '/Users/makoncline/Dropbox (Personal)/Developer/daylilyCatalog/node_modules/.bin/lerna',
+0 silly argv   script: 'watch'
+0 silly argv }
+1 notice cli v3.19.0
+2 verbose rootPath /Users/makoncline/Dropbox (Personal)/Developer/daylilyCatalog
+3 info Executing command in 5 packages: "npm run watch"
+4 silly npmRunScript.stream [ 'watch', [], '@app/config' ]
+5 silly getExecOpts /Users/makoncline/Dropbox (Personal)/Developer/daylilyCatalog/@app/config undefined
+6 silly npmRunScript.stream [ 'watch', [], '@app/db' ]
+7 silly getExecOpts /Users/makoncline/Dropbox (Personal)/Developer/daylilyCatalog/@app/db undefined
+8 silly npmRunScript.stream [ 'watch', [], '@app/graphql' ]
+9 silly getExecOpts /Users/makoncline/Dropbox (Personal)/Developer/daylilyCatalog/@app/graphql undefined
+10 silly npmRunScript.stream [ 'watch', [], '@app/server' ]
+11 silly getExecOpts /Users/makoncline/Dropbox (Personal)/Developer/daylilyCatalog/@app/server undefined
+12 silly npmRunScript.stream [ 'watch', [], '@app/worker' ]
+13 silly getExecOpts /Users/makoncline/Dropbox (Personal)/Developer/daylilyCatalog/@app/worker undefined
+14 error Error: Command failed: npm run watch
+14 error
+14 error
+14 error > @app/config@0.0.0 watch /Users/makoncline/Dropbox (Personal)/Developer/daylilyCatalog/@app/config
+14 error > tsc -w
+14 error
+14 error
+14 error 6:43:51 AM - Starting compilation in watch mode...
+14 error
+14 error
+14 error 6:44:11 AM - Found 0 errors. Watching for file changes.
+14 error
+14 error     at makeError (/Users/makoncline/Dropbox (Personal)/Developer/daylilyCatalog/node_modules/execa/index.js:174:9)
+14 error     at /Users/makoncline/Dropbox (Personal)/Developer/daylilyCatalog/node_modules/execa/index.js:278:16
