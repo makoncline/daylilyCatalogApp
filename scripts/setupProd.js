@@ -1,7 +1,6 @@
 const dotenv = require("dotenv");
 const inquirer = require("inquirer");
 const pg = require("pg");
-
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 async function main() {
@@ -129,6 +128,9 @@ async function main() {
     await clientSuper.query(`GRANT rds_superuser TO ${DATABASE_SUPERUSER};`);
     await clientSuper.query(
       `CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;`
+    );
+    await clientSuper.query(
+      `CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;`
     );
     await clientSuper.query(
       `CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public;`
