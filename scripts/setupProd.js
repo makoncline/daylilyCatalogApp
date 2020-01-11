@@ -1,12 +1,9 @@
 const dotenv = require("dotenv");
 const inquirer = require("inquirer");
 const pg = require("pg");
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 async function main() {
-  // FINALLY we can source our environment
-  dotenv.config({ path: `${__dirname}/../.env` });
-  require(`${__dirname}/../@app/config/extra`);
+  dotenv.config({ path: `${__dirname}/../production.env` });
   const {
     DATABASE_SUPERUSER,
     DATABASE_SUPERUSER_PASSWORD,
@@ -21,15 +18,15 @@ async function main() {
   } = process.env;
   const SUPERUSER_TEMPLATE1_URL = `postgres://${DATABASE_SUPERUSER}:${DATABASE_SUPERUSER_PASSWORD}@${DATABASE_HOST}/template1`;
   const SUPERUSER_DATABASE_URL = `postgres://${DATABASE_SUPERUSER}:${DATABASE_SUPERUSER_PASSWORD}@${DATABASE_HOST}/${DATABASE_NAME}`;
-  console.log(SUPERUSER_TEMPLATE1_URL);
 
+  let dropComfirmed = false;
   if (!CONFIRM_DROP) {
     const confirm = await inquirer.prompt([
       {
         type: "confirm",
         name: "CONFIRM",
         default: false,
-        message: `We're going to drop (if necessary):
+        message: `Do you want to drop (if necessary):
 
   - database ${DATABASE_NAME}
   - database ${DATABASE_NAME}_shadow
@@ -39,12 +36,18 @@ async function main() {
       },
     ]);
     if (!confirm.CONFIRM) {
-      console.error("Confirmation failed; exiting");
-      process.exit(1);
+      // console.error("Confirmation failed; exiting");
+      // process.exit(1);
+    } else {
+      dropComfirmed = true;
     }
   }
-
-  console.log("Installing or reinstalling the roles and database...");
+  if (dropComfirmed) {
+    console.log("Installing  or reinstalling the roles and database...");
+  } else {
+    console.log("Installing the roles and database...");
+  }
+  console.log("Installing the roles and database...");
   const pgPool = new pg.Pool({
     connectionString: SUPERUSER_TEMPLATE1_URL,
   });
@@ -76,14 +79,16 @@ async function main() {
 
   const client = await pgPool.connect();
   try {
-    // RESET database
-    await client.query(`DROP DATABASE IF EXISTS ${DATABASE_NAME};`);
-    await client.query(`DROP DATABASE IF EXISTS ${DATABASE_NAME}_shadow;`);
-    await client.query(`DROP DATABASE IF EXISTS ${DATABASE_NAME}_test;`);
-    await client.query(`DROP ROLE IF EXISTS ${DATABASE_VISITOR};`);
-    await client.query(`DROP ROLE IF EXISTS ${DATABASE_AUTHENTICATOR};`);
-    await client.query(`DROP ROLE IF EXISTS ${DATABASE_OWNER};`);
-
+    if (dropComfirmed) {
+      //RESET database
+      await client.query(`DROP DATABASE IF EXISTS ${DATABASE_NAME};`);
+      await client.query(`DROP DATABASE IF EXISTS ${DATABASE_NAME}_shadow;`);
+      await client.query(`DROP DATABASE IF EXISTS ${DATABASE_NAME}_test;`);
+      await client.query(`DROP ROLE IF EXISTS ${DATABASE_VISITOR};`);
+      await client.query(`DROP ROLE IF EXISTS ${DATABASE_AUTHENTICATOR};`);
+      await client.query(`DROP ROLE IF EXISTS ${DATABASE_OWNER};`);
+      console.log("database reset successful");
+    }
     // Now to set up the production database:
     await client.query(
       `CREATE ROLE ${DATABASE_OWNER} WITH LOGIN PASSWORD '${DATABASE_OWNER_PASSWORD}';`
@@ -115,6 +120,7 @@ async function main() {
     await client.query(
       `GRANT CONNECT ON DATABASE ${DATABASE_NAME} TO ${DATABASE_AUTHENTICATOR};`
     );
+    console.log("database setup successful");
   } finally {
     await client.release();
   }
@@ -138,6 +144,7 @@ async function main() {
     await clientSuper.query(
       `CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;`
     );
+    console.log("database extension install successful");
   } finally {
     await clientSuper.end();
   }
