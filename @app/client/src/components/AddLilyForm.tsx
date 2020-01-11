@@ -76,6 +76,11 @@ function AddLilyForm({
       );
     }
   }, [updateLily, user.id]);
+  //
+  useEffect(() => {
+    console.log(error);
+    setIsUploading(false);
+  }, [error]);
 
   const validateFields: (
     fieldNames?: Array<string>,
