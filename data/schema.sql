@@ -1315,14 +1315,13 @@ CREATE TABLE app_public.lilies (
     id integer NOT NULL,
     user_id integer DEFAULT app_public.current_user_id() NOT NULL,
     name text NOT NULL,
-    img_url text,
+    img_url text[],
     price numeric(12,2),
     public_note text,
     private_note text,
     ahs_id text,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    CONSTRAINT lilies_img_url_check CHECK ((img_url ~ '^https?://[^/]+'::text)),
     CONSTRAINT lilies_name_check CHECK ((char_length(name) < 70))
 );
 

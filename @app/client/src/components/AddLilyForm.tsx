@@ -62,7 +62,7 @@ function AddLilyForm({
   const [dataSource, setDataSource] = useState<Array<ILily>>([]);
   const [isUploading, setIsUploading] = useState(false);
   useEffect(() => {
-    if (updateLily && updateLily.imgUrl) {
+    if (updateLily && updateLily.imgUrl && updateLily.imgUrl.length) {
       setFileList(
         updateLily.imgUrl.map((url: any) => {
           const fileName = url && url.substring(url.lastIndexOf("/") + 1);
