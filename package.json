@@ -5,6 +5,7 @@
   "description": "Daylily catalog crud app",
   "scripts": {
     "setup": "yarn && node ./scripts/setup.js",
+    "setupProd": "yarn && node ./scripts/setupProd.js",
     "start": "node ./scripts/start.js",
     "test": "node scripts/test.js",
     "test:watch": "node scripts/test.js --watch",
