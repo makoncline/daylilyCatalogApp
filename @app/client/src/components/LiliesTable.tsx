@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Table, Avatar, Button } from "antd";
 // import SearchColumn from "../components/SearchColumn";
 import Highlighter from "react-highlight-words";
@@ -6,7 +6,7 @@ const { Column } = Table;
 
 function useWindowSize() {
   const [size, setSize] = useState([0, 0]);
-  useLayoutEffect(() => {
+  useEffect(() => {
     function updateSize() {
       setSize([window.innerWidth, window.innerHeight]);
     }
