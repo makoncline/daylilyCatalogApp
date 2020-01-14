@@ -78,7 +78,6 @@ function AddLilyForm({
   }, [updateLily, user.id]);
   //
   useEffect(() => {
-    console.log(error);
     setIsUploading(false);
   }, [error]);
 
@@ -120,7 +119,6 @@ function AddLilyForm({
               },
             })
             .then(response => {
-              console.log("success", response);
               const newFileList = fileList.slice();
               newFileList[i].status = "done";
               setFileList(newFileList);
@@ -154,7 +152,7 @@ function AddLilyForm({
           },
         })
         .then(() => {
-          console.log("item deleted");
+          //console.log("item deleted");
         })
         .catch(error => {
           console.log(JSON.stringify(error));
