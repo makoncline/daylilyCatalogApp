@@ -56,7 +56,7 @@ export default function Catalog() {
           <Input
             placeholder="Filter catalog by name..."
             value={nameFilter}
-            onChange={e => setNameFilter(e.target.value)}
+            onChange={e => setNameFilter(e.target.value.toLowerCase())}
             style={{ marginBottom: "1rem" }}
             allowClear
           />
