@@ -123,7 +123,7 @@ export default function LiliesTable(props: any) {
         dataIndex="ahsId"
         key="ahsId"
         width={72}
-        render={(ahsId: any) => <DataButton ahsId={ahsId} />}
+        render={DataButton}
       />
     </Table>
   );

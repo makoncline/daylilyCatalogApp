@@ -32,7 +32,6 @@ export default function Upload() {
       let fileParts = file.name.split(".");
       let fileName = fileParts[0];
       let fileType = fileParts[1];
-      console.log("Preparing the upload", fileName, fileType);
       axios
         .get(`${ROOT_URL}/api/s3`, {
           params: {
@@ -43,12 +42,9 @@ export default function Upload() {
         .then(response => {
           var url = response.data.url;
           setUrl(url);
-          console.log("Recieved a signed request " + url);
-
           axios
             .put(url, file)
-            .then((result: any) => {
-              console.log("Response from s3", result);
+            .then(() => {
               setSuccess(true);
             })
             .catch(error => {
@@ -75,7 +71,7 @@ export default function Upload() {
         },
       })
       .then(() => {
-        console.log("item deleted");
+        console.log(fileName + "." + fileType + "deleted");
       })
       .catch(error => {
         console.log(JSON.stringify(error));
