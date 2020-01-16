@@ -4,7 +4,6 @@ import getConfig from "next/config";
 const { serverRuntimeConfig } = getConfig();
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  console.log(serverRuntimeConfig);
   const bucket = serverRuntimeConfig.BUCKET;
   const key = req.query.key;
   const params: AWS.S3.DeleteObjectRequest = {
@@ -51,7 +50,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       if (err) {
         res.json({ success: false, err });
       } else {
-        console.log(url);
         res.json({ success: true, url });
       }
     });
