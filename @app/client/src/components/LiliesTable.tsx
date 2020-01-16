@@ -1,24 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Table, Avatar, Button } from "antd";
-// import SearchColumn from "../components/SearchColumn";
 import Highlighter from "react-highlight-words";
+//import useWindowSize from "../hooks/useWindowSize";
 const { Column } = Table;
 
-function useWindowSize() {
-  const [size, setSize] = useState([0, 0]);
-  useEffect(() => {
-    function updateSize() {
-      setSize([window.innerWidth, window.innerHeight]);
-    }
-    window.addEventListener("resize", updateSize);
-    updateSize();
-    return () => window.removeEventListener("resize", updateSize);
-  }, []);
-  return size;
-}
+const DataButton = (ahsId: any) => (
+  <div>
+    {ahsId && (
+      <Button
+        onClick={e => {
+          e.stopPropagation();
+          window.open(
+            `http://www.daylilydatabase.org/detail.php?id=${ahsId}`,
+            "_blank"
+          );
+        }}
+        shape="circle"
+        icon="info"
+        type="primary"
+      />
+    )}
+  </div>
+);
 
 export default function LiliesTable(props: any) {
-  const height = useWindowSize()[1];
+  //const height = useWindowSize()[1];
   const truncate = (input: string, length: number) =>
     input && input.length > length
       ? `${input.substring(0, length - 3)}...`
@@ -35,7 +41,7 @@ export default function LiliesTable(props: any) {
       dataSource={props.dataSource}
       pagination={{ pageSize: 50 }}
       bordered
-      scroll={{ x: 876, y: height - 286 }}
+      scroll={{ x: 876 }}
       size="middle"
       rowKey={(record: any) => record.id}
       onRow={(record: any) => {
@@ -71,7 +77,7 @@ export default function LiliesTable(props: any) {
         sortDirections={["descend", "ascend"]}
         sorter={(a: any, b: any) => a.imgUrl.length - b.imgUrl.length}
         render={(imgUrl: any) => (
-          <>
+          <div>
             {imgUrl && imgUrl.length ? (
               <Avatar
                 size="large"
@@ -80,7 +86,7 @@ export default function LiliesTable(props: any) {
             ) : (
               <Avatar size="large" src={"https://i.imgur.com/0cGzAR8.png"} />
             )}
-          </>
+          </div>
         )}
       />
       <Column
@@ -117,24 +123,7 @@ export default function LiliesTable(props: any) {
         dataIndex="ahsId"
         key="ahsId"
         width={72}
-        render={(ahsId: any) => (
-          <div>
-            {ahsId && (
-              <Button
-                onClick={e => {
-                  e.stopPropagation();
-                  window.open(
-                    `http://www.daylilydatabase.org/detail.php?id=${ahsId}`,
-                    "_blank"
-                  );
-                }}
-                shape="circle"
-                icon="info"
-                type="primary"
-              />
-            )}
-          </div>
-        )}
+        render={(ahsId: any) => <DataButton ahsId={ahsId} />}
       />
     </Table>
   );
