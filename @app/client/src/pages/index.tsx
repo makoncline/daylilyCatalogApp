@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, SetStateAction, Dispatch } from "react";
 import SharedLayout from "../components/SharedLayout";
 import { useLiliesQuery } from "@app/graphql";
 import { Button, Input } from "antd";
@@ -14,7 +14,10 @@ export default function Catalog() {
   const [showAddLilyForm, setShowAddLilyForm] = useState(false);
   const [updateLily, setUpdateLily] = useState(null);
   const [formError, setFormError] = useState<Error | ApolloError | null>(null);
-  const [nameFilter, setNameFilter] = useState<any>(null);
+  const [nameFilter, setNameFilter]: [
+    string,
+    Dispatch<SetStateAction<string>>
+  ] = useState("");
 
   function handleEdit(lily: any) {
     setUpdateLily(null);
@@ -31,9 +34,10 @@ export default function Catalog() {
       return "Loading";
     } else {
       const userLilies = user.lilies.nodes;
-      const filteredUserLilies = userLilies.filter((lily: any) =>
-        lily.name.toLowerCase().includes(nameFilter)
-      );
+      const filteredUserLilies = userLilies.filter((lily: any) => {
+        if (!nameFilter) return;
+        return lily.name.toLowerCase().includes(nameFilter.toLowerCase());
+      });
 
       return (
         <div>
@@ -56,7 +60,7 @@ export default function Catalog() {
           <Input
             placeholder="Filter catalog by name..."
             value={nameFilter}
-            onChange={e => setNameFilter(e.target.value.toLowerCase())}
+            onChange={e => setNameFilter(e.target.value)}
             style={{ marginBottom: "1rem" }}
             allowClear
           />
