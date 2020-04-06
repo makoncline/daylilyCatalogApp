@@ -153,35 +153,6 @@ function SharedLayout({ title, noPad = false, children }: SharedLayoutProps) {
           currentUser: data && data.currentUser,
         })}
       </Content>
-      <Footer>
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "space-between",
-          }}
-        >
-          <Text style={{ color: "#fff" }}>
-            Copyright &copy; {new Date().getFullYear()} {companyName}. All
-            rights reserved.
-            {process.env.T_AND_C_URL ? (
-              <span>
-                {" "}
-                <a href={process.env.T_AND_C_URL}>Terms and conditions</a>
-              </span>
-            ) : null}
-          </Text>
-          <Text style={{ color: "#fff" }}>
-            Powered by{" "}
-            <a
-              style={{ color: "#fff", textDecoration: "underline" }}
-              href="https://graphile.org/postgraphile"
-            >
-              PostGraphile
-            </a>
-          </Text>
-        </div>
-      </Footer>
     </Layout>
   );
 }
