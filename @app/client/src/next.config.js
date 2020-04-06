@@ -1,10 +1,14 @@
 require("@app/config");
 const compose = require("lodash/flowRight");
 
-const { ROOT_DOMAIN, ROOT_URL, T_AND_C_URL } = process.env;
-if (!ROOT_DOMAIN) {
-  throw new Error("ROOT_DOMAIN is a required envvar");
-}
+const {
+  ROOT_URL,
+  T_AND_C_URL,
+  BUCKET,
+  AWSACCESSKEYID,
+  AWSSECRETKEY,
+  AWS_REGION,
+} = process.env;
 if (!ROOT_URL) {
   throw new Error("ROOT_URL is a required envvar");
 }
