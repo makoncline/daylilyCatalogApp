@@ -1,0 +1,20 @@
+version: "3"
+services:
+  daylilycatalogserver:
+    image: makon/daylilycatalog:server
+    container_name: daylilycatalogserver
+    restart: always
+    environment:
+      VIRTUAL_HOST: app.daylilycatalog.com
+      LETSENCRYPT_HOST: app.daylilycatalog.com
+      LETSENCRYPT_EMAIL: ogmakon@gmail.com
+      VIRTUAL_PORT: 5678
+      GRAPHILE_LICENSE:
+      SECRET: B0QXveJktC4E0bGF2WKFbCEq2vigoHzcMvM5CuN9HZB2Mgb4kyjTpG3LUwPfdLMM
+      JWT_SECRET: kTJkD8w79qdI0JM3FmtAwxllJ4qApB8CBB7zkCNUfDJqCUB1lLzrMIAam37tM$
+      DATABASE_VISITOR: daylily_catalog_visitor
+      DATABASE_URL: postgres://daylily_catalog:SNZYxor4VOGlZ8Dhc-XJOVfJxdcr7orl$
+      AUTH_DATABASE_URL: postgres://daylily_catalog_authenticator:c5wYvA2EH__-y$
+      GITHUB_KEY:
+      GITHUB_SECRET:
+      BUCKET: daylily-catalog-images
