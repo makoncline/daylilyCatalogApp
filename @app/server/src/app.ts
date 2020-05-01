@@ -3,7 +3,7 @@ import express, { Express } from "express";
 import * as middleware from "./middleware";
 import { makeShutdownActions, ShutdownAction } from "./shutdownActions";
 import { Middleware } from "postgraphile";
-import { sanitiseEnv } from "./utils";
+import { sanitizeEnv } from "./utils";
 import cors from "cors";
 
 // Server may not always be supplied, e.g. where mounting on a subroute
@@ -26,7 +26,7 @@ export async function makeApp({
 }: {
   httpServer?: Server;
 } = {}): Promise<Express> {
-  sanitiseEnv();
+  sanitizeEnv();
 
   const isTest = process.env.NODE_ENV === "test";
   const isDev = process.env.NODE_ENV === "development";

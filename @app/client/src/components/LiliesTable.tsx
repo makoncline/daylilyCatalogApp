@@ -1,7 +1,7 @@
 import React from "react";
 import { Table, Avatar, Button } from "antd";
 import Highlighter from "react-highlight-words";
-//import useWindowSize from "../hooks/useWindowSize";
+// import useWindowSize from "../hooks/useWindowSize";
 const { Column } = Table;
 
 const DataButton = (ahsId: any) => (
@@ -24,7 +24,7 @@ const DataButton = (ahsId: any) => (
 );
 
 export default function LiliesTable(props: any) {
-  //const height = useWindowSize()[1];
+  // const height = useWindowSize()[1];
   const truncate = (input: string, length: number) =>
     input && input.length > length
       ? `${input.substring(0, length - 3)}...`
@@ -56,6 +56,7 @@ export default function LiliesTable(props: any) {
         dataIndex="name"
         key="name"
         width={235}
+        defaultSortOrder="descend"
         sortDirections={["descend", "ascend"]}
         sorter={(a: any, b: any) =>
           a.name === [a.name, b.name].sort()[0] ? 1 : -1
