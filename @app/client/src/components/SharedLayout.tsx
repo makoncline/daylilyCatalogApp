@@ -85,23 +85,20 @@ function SharedLayout({ title, noPad = false, children }: SharedLayoutProps) {
   return (
     <Layout>
       {data && data.currentUser ? <CurrentUserUpdatedSubscription /> : null}
-      <Header
-        style={{ boxShadow: "0 2px 8px #f0f1f2", zIndex: 1, paddingLeft: 0 }}
-      >
+      <Header style={{ boxShadow: "0 2px 8px #f0f1f2", zIndex: 1 }}>
         <Head>
           <title>
             {title} — {projectName}
           </title>
         </Head>
-        <Row type="flex" justify="space-between" align="bottom">
-          <Col style={{ textAlign: "left" }}>
-            <Menu theme="light" mode="horizontal">
-              <Menu.Item>
-                <Link href="/">
-                  <a>Catalog</a>
-                </Link>
-              </Menu.Item>
-            </Menu>
+        <Row type="flex" justify="space-between">
+          <Col span={6}>
+            <Link href="/">
+              <a>Home</a>
+            </Link>
+          </Col>
+          <Col>
+            <h3>{title}</h3>
           </Col>
           <Col span={6} style={{ textAlign: "right" }}>
             {data && data.currentUser ? (

@@ -49,12 +49,6 @@ const pages = {
   }),
 };
 
-// //removed from below security
-// "/settings/accounts": page({
-//   title: "Linked Accounts",
-//   cy: "settingslayout-link-accounts",
-// }),
-
 interface SettingsLayoutProps {
   href: keyof typeof pages;
   children: React.ReactNode;
@@ -76,7 +70,7 @@ export default function SettingsLayout({
         !currentUser && !error && !loading ? (
           <Redirect href={`/login?next=${encodeURIComponent(fullHref)}`} />
         ) : (
-          <Layout style={{ minHeight: "calc(100vh - 64px - 64px)" }} hasSider>
+          <Layout style={{ minHeight: "calc(100vh - 64px)" }} hasSider>
             <Sider>
               <Menu selectedKeys={[href]}>
                 {Object.keys(pages).map(pageHref => (

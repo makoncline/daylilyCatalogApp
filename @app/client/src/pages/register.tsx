@@ -21,6 +21,7 @@ import {
   extractError,
 } from "../errors";
 import { formItemLayout, tailFormItemLayout } from "../forms";
+import { resetWebsocketConnection } from "../lib/withApollo";
 
 interface RegisterProps {}
 
@@ -76,7 +77,9 @@ function RegistrationForm({
   error,
   setError,
 }: RegistrationFormProps) {
-  const [register] = useRegisterMutation();
+  const [register] = useRegisterMutation({
+    refetchQueries: ["SharedLayout"],
+  });
   const client = useApolloClient();
   const [confirmDirty, setConfirmDirty] = useState(false);
 
@@ -108,6 +111,7 @@ function RegistrationForm({
         });
         // Success: refetch
         client.resetStore();
+        resetWebsocketConnection();
         Router.push(onSuccessRedirectTo);
       } catch (e) {
         const code = getCodeFromError(e);
@@ -142,6 +146,17 @@ function RegistrationForm({
               errors: [
                 new Error(
                   "An account with this username has already been registered, please try a different username."
+                ),
+              ],
+            },
+          });
+        } else if (code === "23514") {
+          form.setFields({
+            username: {
+              value: form.getFieldValue("username"),
+              errors: [
+                new Error(
+                  "This username is not allowed; usernames must be between 2 and 24 characters long (inclusive), must start with a letter, and must contain only alphanumeric characters and underscores."
                 ),
               ],
             },
@@ -219,7 +234,7 @@ function RegistrationForm({
           rules: [
             {
               required: true,
-              message: "Please input your name",
+              message: "Please input your name.",
               whitespace: true,
             },
           ],
@@ -239,8 +254,30 @@ function RegistrationForm({
           rules: [
             {
               required: true,
-              message: "Please input your username",
+              message: "Please input your username.",
               whitespace: true,
+            },
+            {
+              min: 2,
+              message: "Username must be at least 2 characters long.",
+            },
+            {
+              max: 24,
+              message: "Username must be no more than 24 characters long.",
+            },
+            {
+              pattern: /^([a-zA-Z]|$)/,
+              message: "Username must start with a letter.",
+            },
+            {
+              pattern: /^([^_]|_[^_]|_$)*$/,
+              message:
+                "Username must not contain two underscores next to each other.",
+            },
+            {
+              pattern: /^[a-zA-Z0-9_]*$/,
+              message:
+                "Username must contain only alphanumeric characters and underscores.",
             },
           ],
         })(<Input data-cy="registerpage-input-username" />)}
@@ -250,11 +287,11 @@ function RegistrationForm({
           rules: [
             {
               type: "email",
-              message: "The input is not valid E-mail",
+              message: "The input is not valid E-mail.",
             },
             {
               required: true,
-              message: "Please input your E-mail",
+              message: "Please input your E-mail.",
             },
           ],
         })(<Input data-cy="registerpage-input-email" />)}
@@ -264,7 +301,7 @@ function RegistrationForm({
           rules: [
             {
               required: true,
-              message: "Please input your password",
+              message: "Please input your password.",
             },
             {
               validator: validateToNextPassword,
@@ -277,7 +314,7 @@ function RegistrationForm({
           rules: [
             {
               required: true,
-              message: "Please confirm your password",
+              message: "Please confirm your password.",
             },
             {
               validator: compareToFirstPassword,

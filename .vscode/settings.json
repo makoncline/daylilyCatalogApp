@@ -6,12 +6,26 @@
   "eslint.autoFixOnSave": true,
   "eslint.lintTask.enable": true,
   "eslint.lintTask.options": "--ext .js,.jsx,.ts,.tsx,.graphql .",
-  "eslint.validate": [
-    { "autoFix": true, "language": "javascript" },
-    { "autoFix": true, "language": "javascriptreact" },
-    { "autoFix": true, "language": "typescript" },
-    { "autoFix": true, "language": "typescriptreact" },
-    { "autoFix": false, "language": "graphql" }
+  "eslint.validate": [{
+      "autoFix": true,
+      "language": "javascript"
+    },
+    {
+      "autoFix": true,
+      "language": "javascriptreact"
+    },
+    {
+      "autoFix": true,
+      "language": "typescript"
+    },
+    {
+      "autoFix": true,
+      "language": "typescriptreact"
+    },
+    {
+      "autoFix": false,
+      "language": "graphql"
+    }
   ],
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
@@ -44,12 +58,5 @@
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": false
     }
-  },
-  "spellright.language": [
-    "en"
-  ],
-  "spellright.documentTypes": [
-    "markdown",
-    "latex"
-  ]
+  }
 }

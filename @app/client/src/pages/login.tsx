@@ -22,8 +22,8 @@ import Router from "next/router";
 import { ApolloError } from "apollo-client";
 import { getCodeFromError, extractError } from "../errors";
 import Redirect from "../components/Redirect";
-//import SocialLoginOptions from "../components/SocialLoginOptions";
-
+// import SocialLoginOptions from "../components/SocialLoginOptions";
+import { resetWebsocketConnection } from "../lib/withApollo";
 const { Paragraph } = Typography;
 
 function hasErrors(fieldsError: Object) {
@@ -39,7 +39,7 @@ function isSafe(nextUrl: string | void | null) {
 }
 
 /**
- * Login page just renders the standard layout and embeds the login form.
+ * Login page just renders the standard layout and embeds the login form
  */
 export default function Login({ next: rawNext }: LoginProps) {
   const [error, setError] = useState<Error | ApolloError | null>(null);
@@ -78,11 +78,6 @@ export default function Login({ next: rawNext }: LoginProps) {
                     </Button>
                   </Col>
                 </Row>
-                {/* <Row style={{ marginBottom: 8 }}>
-                  <Col span={28}>
-                    <SocialLoginOptions next={next} />
-                  </Col>
-                </Row> */}
                 <Row type="flex" justify="center">
                   <Col>
                     <Paragraph>
@@ -127,7 +122,7 @@ function LoginForm({
   error,
   setError,
 }: LoginFormProps) {
-  const [login] = useLoginMutation();
+  const [login] = useLoginMutation({});
   const client = useApolloClient();
   const validateFields: (
     fieldNames?: Array<string>,
@@ -150,6 +145,7 @@ function LoginForm({
           },
         });
         // Success: refetch
+        resetWebsocketConnection();
         client.resetStore();
         Router.push(onSuccessRedirectTo);
       } catch (e) {

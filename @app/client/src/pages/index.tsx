@@ -1,7 +1,7 @@
 import React, { useState, SetStateAction, Dispatch } from "react";
 import SharedLayout from "../components/SharedLayout";
 import { useLiliesQuery } from "@app/graphql";
-import { Button, Input } from "antd";
+import { Button, Row, Col, Input } from "antd";
 import Error from "../components/ErrorAlert";
 import Redirect from "../components/Redirect";
 import { ApolloError } from "apollo-client";
@@ -40,7 +40,7 @@ export default function Catalog() {
       });
 
       return (
-        <div>
+        <>
           <Button
             type="primary"
             onClick={() => {
@@ -79,7 +79,7 @@ export default function Catalog() {
             setUpdateLily={setUpdateLily}
             user={user}
           />
-        </div>
+        </>
       );
     }
   })();
