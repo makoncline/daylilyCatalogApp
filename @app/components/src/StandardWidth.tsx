@@ -1,7 +1,11 @@
-import React from "react";
+import React, { FC } from "react";
 import { Row, Col } from "antd";
 
-const StandardWidth = ({ children }: { children: React.ReactNode }) => (
+export interface StandardWidthProps {
+  children: React.ReactNode;
+}
+
+export const StandardWidth: FC<StandardWidthProps> = ({ children }) => (
   <Row
     style={{
       padding: "1rem",
@@ -13,4 +17,3 @@ const StandardWidth = ({ children }: { children: React.ReactNode }) => (
     <Col>{children}</Col>
   </Row>
 );
-export default StandardWidth;

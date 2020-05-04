@@ -10,6 +10,7 @@ const DataButton = (ahsId: any) => (
       <Button
         onClick={e => {
           e.stopPropagation();
+          // @ts-ignore
           window.open(
             `http://www.daylilydatabase.org/detail.php?id=${ahsId}`,
             "_blank"
@@ -23,7 +24,7 @@ const DataButton = (ahsId: any) => (
   </div>
 );
 
-export default function LiliesTable(props: any) {
+export function LiliesTable(props: any) {
   // const height = useWindowSize()[1];
   const truncate = (input: string, length: number) =>
     input && input.length > length

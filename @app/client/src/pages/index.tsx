@@ -1,14 +1,17 @@
 import React, { useState, SetStateAction, Dispatch } from "react";
-import SharedLayout from "../components/SharedLayout";
+import SharedLayout from "../layout/SharedLayout";
 import { useLiliesQuery } from "@app/graphql";
-import { Button, Row, Col, Input } from "antd";
-import Error from "../components/ErrorAlert";
-import Redirect from "../components/Redirect";
+import { Button, Input } from "antd";
+import {
+  ErrorAlert,
+  Redirect,
+  WrappedAddLilyForm,
+  LiliesTable,
+} from "@app/components";
 import { ApolloError } from "apollo-client";
-import AddLilyForm from "../components/AddLilyForm";
-import LiliesTable from "../components/LiliesTable";
+import { NextPage } from "next";
 
-export default function Catalog() {
+const Catalog: NextPage = () => {
   const { data, loading, error } = useLiliesQuery();
   const user = data && data.currentUser;
   const [showAddLilyForm, setShowAddLilyForm] = useState(false);
@@ -27,7 +30,7 @@ export default function Catalog() {
 
   const pageContent = (() => {
     if (error && !loading) {
-      return <Error error={error} />;
+      return <ErrorAlert error={error} />;
     } else if (!user && !loading) {
       return <Redirect href={`/login?next=${encodeURIComponent("/")}`} />;
     } else if (!user) {
@@ -69,7 +72,7 @@ export default function Catalog() {
             handleEdit={handleEdit}
             searchText={nameFilter}
           />
-          <AddLilyForm
+          <WrappedAddLilyForm
             onComplete={() => setShowAddLilyForm(false)}
             error={formError}
             setError={setFormError}
@@ -84,4 +87,6 @@ export default function Catalog() {
     }
   })();
   return <SharedLayout title="Catalog">{pageContent}</SharedLayout>;
-}
+};
+
+export default Catalog;

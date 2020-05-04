@@ -39,7 +39,14 @@ export default function SearchColumn(props: any) {
           placeholder={`Search ${dataIndex}`}
           value={selectedKeys[0]}
           onChange={e =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
+            setSelectedKeys(
+              // @ts-ignore
+              e.currentTarget.value
+                ? // @ts-ignore
+                  // @ts-ignore
+                  [e.currentTarget.value]
+                : []
+            )
           }
           onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
           style={{ width: 188, marginBottom: 8, display: "block" }}
@@ -75,7 +82,7 @@ export default function SearchColumn(props: any) {
 
     const onFilterDropdownVisibleChange = (visible: any) => {
       if (visible) {
-        setTimeout(() => searchInput.select());
+        setTimeout(() => searchInput.select(), 10);
       }
     };
 

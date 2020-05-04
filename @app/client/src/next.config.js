@@ -44,6 +44,7 @@ if (!ROOT_URL) {
         AWSSECRETKEY: AWSSECRETKEY,
         AWS_REGION: AWS_REGION,
       },
+      poweredByHeader: false,
       distDir: `../.next`,
       exportTrailingSlash: true,
       lessLoaderOptions: {

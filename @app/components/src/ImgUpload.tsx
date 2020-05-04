@@ -5,10 +5,11 @@ import slugify from "slugify";
 
 function getBase64(file: any) {
   return new Promise((resolve, reject) => {
+    // @ts-ignore
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
+    reader.onerror = (error: any) => reject(error);
   });
 }
 

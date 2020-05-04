@@ -18,13 +18,13 @@ import {
 import { promisify } from "util";
 import { FormComponentProps, ValidateFieldsOptions } from "antd/lib/form/Form";
 import { ApolloError } from "apollo-client";
-import { getCodeFromError, extractError } from "../errors";
+// import { getCodeFromError, extractError } from "../errors";
 import { AutoComplete } from "antd";
-import ImgUpload from "../components/ImgUpload";
+import ImgUpload from "./ImgUpload";
 import axios from "axios";
 
 const { TextArea } = Input;
-interface FormValues {
+export interface FormValues {
   name: string;
   imgUrl: string[];
   price: number;
@@ -32,8 +32,10 @@ interface FormValues {
   privateNote: string;
   ahsId: string;
 }
-
-interface AddLilyFormProps extends FormComponentProps<FormValues> {
+export interface User {
+  id: number;
+}
+export interface AddLilyFormProps extends FormComponentProps<FormValues> {
   onComplete: () => void;
   error: Error | ApolloError | null;
   setError: (error: Error | ApolloError | null) => void;
@@ -41,7 +43,7 @@ interface AddLilyFormProps extends FormComponentProps<FormValues> {
   setShow: (val: boolean) => void;
   updateLily?: Lily | null;
   setUpdateLily: (val: any) => void;
-  user: any;
+  user: User;
 }
 
 function AddLilyForm({
@@ -55,6 +57,8 @@ function AddLilyForm({
   setUpdateLily,
   user,
 }: AddLilyFormProps) {
+  console.log(user);
+  const id = user.id;
   const [addLily] = useAddLilyMutation();
   const [editLily] = useEditLilyMutation();
   const [deleteLily] = useDeleteLilyMutation();
@@ -67,7 +71,7 @@ function AddLilyForm({
         updateLily.imgUrl.map((url: any) => {
           const fileName = url && url.substring(url.lastIndexOf("/") + 1);
           return {
-            uid: `${user.id}/${fileName}`,
+            uid: `${id}/${fileName}`,
             name: fileName,
             status: "done",
             url,
@@ -75,8 +79,7 @@ function AddLilyForm({
         })
       );
     }
-  }, [updateLily, user.id]);
-  //
+  }, [updateLily, id]);
   useEffect(() => {
     setIsUploading(false);
   }, [error]);
@@ -147,7 +150,7 @@ function AddLilyForm({
       axios
         .get(`${process.env.ROOT_URL}/api/s3`, {
           params: {
-            key: `${user.id}/${fileName}`,
+            key: `${id}/${fileName}`,
             operation: "delete",
           },
         })
@@ -158,7 +161,7 @@ function AddLilyForm({
           console.log(JSON.stringify(error));
         });
     },
-    [user.id]
+    [id]
   );
   const handleImages = useCallback(async () => {
     setIsUploading(true);
@@ -247,7 +250,7 @@ function AddLilyForm({
   );
 
   const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
-  const code = getCodeFromError(error);
+  // const code = getCodeFromError(error);
   interface ILily {
     id: number;
     name: string;
@@ -264,6 +267,7 @@ function AddLilyForm({
 
   async function searchAhs(searchText: string) {
     try {
+      // @ts-ignore
       const response = await fetch(
         `https://data.daylilycatalog.com/ahs/search/${searchText}`
       );
@@ -476,13 +480,13 @@ function AddLilyForm({
               message={`Error adding daylily`}
               description={
                 <span>
-                  {extractError(error).message}
+                  {/* {extractError(error).message}
                   {code ? (
                     <span>
                       {" "}
                       (Error code: <code>ERR_{code}</code>)
                     </span>
-                  ) : null}
+                  ) : null} */}
                 </span>
               }
             />
@@ -493,11 +497,9 @@ function AddLilyForm({
   );
 }
 
-const WrappedAddLilyForm = Form.create<AddLilyFormProps>({
+export const WrappedAddLilyForm = Form.create<AddLilyFormProps>({
   name: "addLilyForm",
   onValuesChange(props) {
     props.setError(null);
   },
 })(AddLilyForm);
-
-export default WrappedAddLilyForm;

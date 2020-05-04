@@ -1,7 +1,16 @@
 import * as React from "react";
-import { Layout, Avatar, Row, Col, Dropdown, Icon, Menu } from "antd";
+import {
+  Layout,
+  Avatar,
+  Row,
+  Col,
+  Dropdown,
+  Icon,
+  Menu,
+  Typography,
+} from "antd";
 import Link from "next/link";
-import { projectName } from "@app/config";
+import { projectName, companyName } from "@app/config";
 import {
   useSharedLayoutQuery,
   useLogoutMutation,
@@ -11,13 +20,12 @@ import {
 import Router from "next/router";
 import { useApolloClient } from "@apollo/react-hooks";
 import { useCallback } from "react";
-import StandardWidth from "./StandardWidth";
+import { StandardWidth, Warn, ErrorAlert } from "@app/components";
 import Head from "next/head";
-import Warn from "./Warn";
-import Error from "./ErrorAlert";
 import { ApolloError } from "apollo-client";
 
-const { Header, Content } = Layout;
+const { Header, Content, Footer } = Layout;
+const { Text } = Typography;
 
 /*
  * For some reason, possibly related to the interaction between
@@ -72,7 +80,7 @@ function SharedLayout({ title, noPad = false, children }: SharedLayoutProps) {
   const renderChildren = (props: SharedLayoutChildProps) => {
     const inner =
       props.error && !props.loading ? (
-        <Error error={props.error} />
+        <ErrorAlert error={props.error} />
       ) : typeof children === "function" ? (
         children(props)
       ) : (
@@ -143,13 +151,38 @@ function SharedLayout({ title, noPad = false, children }: SharedLayoutProps) {
           </Col>
         </Row>
       </Header>
-      <Content style={{ minHeight: "calc(100vh - 64px)" }}>
+      <Content style={{ minHeight: "calc(100vh - 64px - 120px)" }}>
         {renderChildren({
           error,
           loading,
           currentUser: data && data.currentUser,
         })}
       </Content>
+      <Footer>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text style={{ color: "#fff" }}>
+            Copyright &copy; {new Date().getFullYear()} {companyName}. All
+            rights reserved.
+            {process.env.T_AND_C_URL ? (
+              <span>
+                {" "}
+                <a
+                  style={{ color: "#fff", textDecoration: "underline" }}
+                  href={process.env.T_AND_C_URL}
+                >
+                  Terms and conditions
+                </a>
+              </span>
+            ) : null}
+          </Text>
+        </div>
+      </Footer>
     </Layout>
   );
 }
