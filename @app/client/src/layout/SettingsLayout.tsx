@@ -1,12 +1,8 @@
 import React from "react";
-import SharedLayout, {
-  SharedLayoutChildProps,
-} from "../components/SharedLayout";
+import SharedLayout, { SharedLayoutChildProps } from "./SharedLayout";
 import Link from "next/link";
 import { Layout, Menu, Typography } from "antd";
-import StandardWidth from "./StandardWidth";
-import Warn from "./Warn";
-import Redirect from "./Redirect";
+import { StandardWidth, Warn, Redirect } from "@app/components";
 import { TextProps } from "antd/lib/typography/Text";
 import { useRouter, NextRouter } from "next/router";
 import * as qs from "querystring";
@@ -32,9 +28,13 @@ const pages = {
     cy: "settingslayout-link-profile",
   }),
   "/settings/security": page({
-    title: "Password",
+    title: "Passphrase",
     cy: "settingslayout-link-password",
   }),
+  // "/settings/accounts": page({
+  //   title: "Linked Accounts",
+  //   cy: "settingslayout-link-accounts",
+  // }),
   "/settings/emails": page({
     title: "Emails",
     warnIfUnverified: true,
@@ -70,7 +70,7 @@ export default function SettingsLayout({
         !currentUser && !error && !loading ? (
           <Redirect href={`/login?next=${encodeURIComponent(fullHref)}`} />
         ) : (
-          <Layout style={{ minHeight: "calc(100vh - 64px)" }} hasSider>
+          <Layout style={{ minHeight: "calc(100vh - 64px - 64px)" }} hasSider>
             <Sider>
               <Menu selectedKeys={[href]}>
                 {Object.keys(pages).map(pageHref => (

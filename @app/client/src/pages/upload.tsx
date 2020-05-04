@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import SharedLayout from "../components/SharedLayout";
+import SharedLayout from "../layout/SharedLayout";
 import axios from "axios";
 
 const ROOT_URL = process.env.ROOT_URL;

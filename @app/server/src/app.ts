@@ -6,7 +6,7 @@ import { Middleware } from "postgraphile";
 import { sanitizeEnv } from "./utils";
 import cors from "cors";
 
-// Server may not always be supplied, e.g. where mounting on a subroute
+// Server may not always be supplied, e.g. where mounting on a sub-route
 export function getHttpServer(app: Express): Server | void {
   return app.get("httpServer");
 }

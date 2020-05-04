@@ -1,6 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// const packageJson = require("../../../package.json");
-
+// @ts-ignore
+const packageJson = require("../../../package.json");
+console.log(packageJson);
 // TODO: customise this with your own settings!
 
 export const fromEmail = '"Daylily Catalog" <no-reply@daylilycatalog.com>';
