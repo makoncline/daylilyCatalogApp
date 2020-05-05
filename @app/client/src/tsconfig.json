@@ -4,6 +4,7 @@
     "composite": false,
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
+    "noEmit": true,
     "esModuleInterop": true,
     "declaration": false,
     "declarationMap": false,
