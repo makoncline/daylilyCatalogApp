@@ -2,16 +2,17 @@ import { Task } from "graphile-worker";
 import { template as lodashTemplate } from "lodash";
 // @ts-ignore
 import mjml2html = require("mjml");
-import * as html2text from "html-to-text";
-import getTransport from "../transport";
-import { promises as fsp } from "fs";
 import {
-  projectName,
   emailLegalText as legalText,
   fromEmail,
+  projectName,
 } from "@app/config";
-import * as nodemailer from "nodemailer";
 import chalk from "chalk";
+import { promises as fsp } from "fs";
+import * as html2text from "html-to-text";
+import * as nodemailer from "nodemailer";
+
+import getTransport from "../transport";
 
 const { readFile } = fsp;
 
@@ -29,7 +30,7 @@ export interface SendEmailPayload {
   };
 }
 
-const task: Task = async inPayload => {
+const task: Task = async (inPayload) => {
   const payload: SendEmailPayload = inPayload as any;
   const transport = await getTransport();
   const { options: inOptions, template, variables } = payload;

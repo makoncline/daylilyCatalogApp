@@ -1,10 +1,11 @@
-import { Server } from "http";
+import cors from "cors";
 import express, { Express } from "express";
+import { Server } from "http";
+import { Middleware } from "postgraphile";
+
 import * as middleware from "./middleware";
 import { makeShutdownActions, ShutdownAction } from "./shutdownActions";
-import { Middleware } from "postgraphile";
 import { sanitizeEnv } from "./utils";
-import cors from "cors";
 
 // Server may not always be supplied, e.g. where mounting on a sub-route
 export function getHttpServer(app: Express): Server | void {
@@ -43,10 +44,7 @@ export async function makeApp({
    * Our Express server
    */
   const app = express();
-  // var corsOptions = {
-  //   origin: 'http://app.daylilycatalog.com',
-  //   optionsSuccessStatus: 200
-  // }
+
   app.use(cors());
 
   /*
@@ -78,6 +76,7 @@ export async function makeApp({
    * operate very rapidly to enable quick as possible server startup.
    */
   await middleware.installDatabasePools(app);
+  await middleware.installWorkerUtils(app);
   await middleware.installHelmet(app);
   await middleware.installSession(app);
   await middleware.installPassport(app);

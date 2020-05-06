@@ -1,4 +1,5 @@
 *.env
+.env
 .next
 node_modules
 dist
@@ -9,5 +10,5 @@ dist
 /@app/graphql/index.*
 .agignore
 *.tsbuildinfo
-
+.ethereal
 dockerBuildCommands.txt

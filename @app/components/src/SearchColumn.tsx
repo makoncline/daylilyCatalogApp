@@ -1,9 +1,10 @@
+// @ts-nocheck
+import { Button, Icon, Input, Table } from "antd";
 import React, { useState } from "react";
-import { Table, Button, Input, Icon } from "antd";
 import Highlighter from "react-highlight-words";
 const { Column } = Table;
 
-export default function SearchColumn(props: any) {
+export const SearchColumn = (props: any) => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   let searchInput: any = null;
@@ -33,12 +34,12 @@ export default function SearchColumn(props: any) {
     }) => (
       <div style={{ padding: 8 }}>
         <Input
-          ref={node => {
+          ref={(node) => {
             searchInput = node;
           }}
           placeholder={`Search ${dataIndex}`}
           value={selectedKeys[0]}
-          onChange={e =>
+          onChange={(e) =>
             setSelectedKeys(
               // @ts-ignore
               e.currentTarget.value
@@ -75,10 +76,7 @@ export default function SearchColumn(props: any) {
     );
 
     const onFilter = (value: any, record: any) =>
-      record[dataIndex]
-        .toString()
-        .toLowerCase()
-        .includes(value.toLowerCase());
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase());
 
     const onFilterDropdownVisibleChange = (visible: any) => {
       if (visible) {
@@ -113,4 +111,4 @@ export default function SearchColumn(props: any) {
       {...getColumnSearchProps(props.dataIndex)}
     />
   );
-}
+};

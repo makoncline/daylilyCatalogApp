@@ -1,14 +1,15 @@
-import React, { useCallback, useState } from "react";
-import SettingsLayout from "../../layout/SettingsLayout";
-import { NextPage } from "next";
-import { H3, P, ErrorAlert } from "@app/components";
-import { Alert, Button, Modal, Typography } from "antd";
-import { ApolloError } from "apollo-client";
+import { ErrorAlert, P, SettingsLayout } from "@app/components";
 import {
-  useRequestAccountDeletionMutation,
   useConfirmAccountDeletionMutation,
+  useRequestAccountDeletionMutation,
+  useSharedQuery,
 } from "@app/graphql";
+import { getCodeFromError } from "@app/lib";
+import { Alert, Button, Modal, PageHeader, Typography } from "antd";
+import { ApolloError } from "apollo-client";
+import { NextPage } from "next";
 import { useRouter } from "next/router";
+import React, { useCallback, useState } from "react";
 
 const { Text } = Typography;
 
@@ -71,9 +72,10 @@ const Settings_Accounts: NextPage = () => {
       setDeleting(false);
     })();
   }, [confirmAccountDeletion, deleting, token]);
+  const query = useSharedQuery();
   return (
-    <SettingsLayout href="/settings/delete">
-      <H3>Delete Account</H3>
+    <SettingsLayout href="/settings/delete" query={query}>
+      <PageHeader title="Delete account" />
       <P>
         Deleting your user account will delete all data (except that which we
         must retain for legal, compliance and accounting reasons) and cannot be
@@ -101,7 +103,7 @@ const Settings_Accounts: NextPage = () => {
               </P>
               <Button
                 onClick={confirmDeletion}
-                type="danger"
+                danger
                 disabled={deleting}
               >
                 PERMANENTLY DELETE MY ACCOUNT
@@ -122,29 +124,54 @@ const Settings_Accounts: NextPage = () => {
           }
         />
       ) : (
-        <Alert
-          type="error"
-          message="Delete user account?"
-          description={
-            <>
-              <P>
-                Deleting your account cannot be undone, you will lose all your
-                data.
+            <Alert
+              type="error"
+              message="Delete user account?"
+              description={
+                <>
+                  <P>
+                    Deleting your account cannot be undone, you will lose all your
+                    data.
               </P>
-              <Button onClick={openModal} type="danger">
-                I want to delete my account
+                  <Button onClick={openModal} danger>
+                    I want to delete my account
               </Button>
-            </>
-          }
-        />
-      )}
-      {error ? <ErrorAlert error={error} /> : null}
+                </>
+              }
+            />
+          )}
+      {error ? (
+        getCodeFromError(error) === "OWNER" ? (
+          <Alert
+            type="error"
+            showIcon
+            message="Cannot delete account"
+            description={
+              <>
+                <P>
+                  You cannot delete your account whilst you are the owner of an
+                  organization.
+                </P>
+                <P>
+                  For each organization you are the owner of, please either
+                  assign your ownership to another user or delete the
+                  organization to continue.
+                </P>
+              </>
+            }
+          />
+        ) : (
+            <ErrorAlert error={error} />
+          )
+      ) : null}
+
       <Modal
         visible={confirmOpen}
         onCancel={closeModal}
         onOk={doIt}
         okText="Send delete account email"
-        okType="danger"
+        okType="primary"
+        okButtonProps={{ danger: true }}
         title="Send delete account confirmation email?"
         confirmLoading={doingIt}
       >

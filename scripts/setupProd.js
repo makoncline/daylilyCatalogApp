@@ -52,7 +52,7 @@ async function main() {
     connectionString: SUPERUSER_TEMPLATE1_URL,
   });
 
-  pgPool.on("error", err => {
+  pgPool.on("error", (err) => {
     // Ignore
     console.log(
       "An error occurred whilst trying to talk to the database: " + err.message
@@ -158,7 +158,7 @@ async function main() {
   console.log();
 }
 
-main().catch(e => {
+main().catch((e) => {
   console.error(e);
   process.exit(1);
 });

@@ -2,6 +2,7 @@
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
     "composite": false,
+    "incremental": false,
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "noEmit": true,
@@ -12,9 +13,17 @@
   },
   "exclude": ["node_modules"],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "references": [
-    { "path": "../../config" },
-    { "path": "../../graphql" },
-    { "path": "../../components" }
+  "references": [{
+      "path": "../../config"
+    },
+    {
+      "path": "../../graphql"
+    },
+    {
+      "path": "../../components"
+    },
+    {
+      "path": "../../lib"
+    }
   ]
 }

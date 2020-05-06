@@ -1,15 +1,24 @@
 const { readFileSync } = require("fs");
-const schemaString = readFileSync("./data/schema.graphql", "utf8");
 
 module.exports = {
   parser: "@typescript-eslint/parser",
   extends: [
     "plugin:react/recommended",
+    "plugin:import/errors",
+    "plugin:import/typescript",
     "prettier",
     "prettier/@typescript-eslint",
     "prettier/react",
   ],
-  plugins: ["jest", "@typescript-eslint", "react-hooks", "react", "graphql"],
+  plugins: [
+    "jest",
+    "@typescript-eslint",
+    "react-hooks",
+    "react",
+    "graphql",
+    "simple-import-sort",
+    "import",
+  ],
   overrides: [
     {
       files: ["@app/e2e/cypress/**"],
@@ -84,30 +93,20 @@ module.exports = {
 
     "import/no-extraneous-dependencies": 0,
 
-    "graphql/template-strings": [
-      "error",
-      {
-        env: "literal",
-        schemaString,
-      },
-    ],
-    "graphql/named-operations": [
-      "error",
-      {
-        schemaString,
-      },
-    ],
-    "graphql/required-fields": [
-      "error",
-      {
-        env: "literal",
-        schemaString,
-        requiredFields: ["nodeId", "id"],
-      },
-    ],
     "react/destructuring-assignment": 0,
 
     "arrow-body-style": 0,
     "no-nested-ternary": 0,
+
+    /*
+     * simple-import-sort seems to be the most stable import sorting currently,
+     * disable others
+     */
+    "simple-import-sort/sort": "error",
+    "sort-imports": "off",
+    "import/order": "off",
+
+    "import/no-deprecated": "warn",
+    "import/no-duplicates": "error",
   },
 };

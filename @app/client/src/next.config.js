@@ -9,12 +9,17 @@ const {
   AWSSECRETKEY,
   AWS_REGION,
 } = process.env;
+
 if (!ROOT_URL) {
-  throw new Error("ROOT_URL is a required envvar");
+  if (process.argv[1].endsWith("/depcheck")) {
+    /* NOOP */
+  } else {
+    throw new Error("ROOT_URL is a required envvar");
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-(function(process = null) {
+(function (process = null) {
   // You *must not* use `process.env` in here, because we need to check we have
   // those variables. To enforce this, we've deliberately shadowed process.
   module.exports = () => {
@@ -54,19 +59,47 @@ if (!ROOT_URL) {
       webpack(config, { webpack, dev, isServer }) {
         if (dev) config.devtool = "cheap-module-source-map";
 
+        const makeSafe = (externals) => {
+          if (Array.isArray(externals)) {
+            return externals.map((ext) => {
+              if (typeof ext === "function") {
+                return (context, request, callback) => {
+                  if (/^@app\//.test(request)) {
+                    callback();
+                  } else {
+                    return ext(context, request, callback);
+                  }
+                };
+              } else {
+                return ext;
+              }
+            });
+          }
+        };
+
+        const externals =
+          isServer && dev ? makeSafe(config.externals) : config.externals;
+
         return {
           ...config,
           plugins: [
             ...config.plugins,
             new webpack.DefinePlugin({
-              "process.env.ROOT_URL": JSON.stringify(ROOT_URL),
+              "process.env.ROOT_URL": JSON.stringify(
+                ROOT_URL || "http://localhost:5678"
+              ),
               "process.env.T_AND_C_URL": JSON.stringify(T_AND_C_URL || null),
             }),
+            new webpack.IgnorePlugin(
+              // These modules are server-side only; we don't want webpack
+              // attempting to bundle them into the client.
+              /^(node-gyp-build|bufferutil|utf-8-validate)$/
+            ),
           ],
           externals: [
-            ...(config.externals || []),
+            ...(externals || []),
             isServer ? { "pg-native": "pg/lib/client" } : null,
-          ].filter(_ => _),
+          ].filter((_) => _),
         };
       },
     });

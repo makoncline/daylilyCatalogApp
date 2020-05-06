@@ -1,6 +1,6 @@
 // @ts-ignore
-const packageJson = require("../../../package.json");
-console.log(packageJson);
+// const packageJson = require("../../../package.json");
+
 // TODO: customise this with your own settings!
 
 export const fromEmail = '"Daylily Catalog" <no-reply@daylilycatalog.com>';

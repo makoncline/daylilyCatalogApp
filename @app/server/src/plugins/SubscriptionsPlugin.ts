@@ -1,12 +1,14 @@
 import { Build } from "graphile-build";
-import { SQL, QueryBuilder } from "graphile-build-pg";
+import { QueryBuilder, SQL } from "graphile-build-pg";
 import {
-  makeExtendSchemaPlugin,
-  gql,
   embed /*, AugmentedGraphQLFieldResolver */,
+  gql,
+  makeExtendSchemaPlugin,
 } from "graphile-utils";
 // graphile-utils doesn't export this yet
 import { GraphQLResolveInfo } from "graphql";
+
+import { OurGraphQLContext } from "../middleware/installPostGraphile";
 type GraphileHelpers = any;
 type AugmentedGraphQLFieldResolver<
   TSource,
@@ -61,7 +63,7 @@ const currentUserTopicFromContext = async (
  *
  * And see the database trigger function `app_public.tg__graphql_subscription()`.
  */
-const SubscriptionsPlugin = makeExtendSchemaPlugin(build => {
+const SubscriptionsPlugin = makeExtendSchemaPlugin((build) => {
   const { pgSql: sql } = build;
   return {
     typeDefs: gql`
@@ -105,7 +107,7 @@ function recordByIdFromTable(
   return async (
     event: TgGraphQLSubscriptionPayload,
     _args: {},
-    _context: any,
+    _context: OurGraphQLContext,
     { graphile: { selectGraphQLResultFromTable } }
   ) => {
     const rows = await selectGraphQLResultFromTable(
