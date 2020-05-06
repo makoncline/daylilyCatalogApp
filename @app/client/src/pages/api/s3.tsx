@@ -1,5 +1,5 @@
-import { NextApiRequest, NextApiResponse } from "next";
 import AWS from "aws-sdk";
+import { NextApiRequest, NextApiResponse } from "next";
 import getConfig from "next/config";
 const { serverRuntimeConfig } = getConfig();
 
@@ -55,7 +55,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     });
   }
   function del(client: AWS.S3, params: AWS.S3.DeleteObjectRequest) {
-    client.deleteObject(params, err => {
+    client.deleteObject(params, (err) => {
       if (err) {
         res.json({ success: false, err });
       } else {

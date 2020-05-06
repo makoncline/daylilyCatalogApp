@@ -1,10 +1,11 @@
-import React from "react";
+// @ts-nocheck
 import { useDeleteLilyMutation } from "@app/graphql";
-import { List, Avatar, Typography } from "antd";
+import { Avatar, List, Typography } from "antd";
+import React from "react";
 
 const { Title, Paragraph, Text } = Typography;
 
-export default function LilyRow(props: any) {
+export const LilyRow = (props: any) => {
   const [deleteLily] = useDeleteLilyMutation();
   const lily = props.lily;
   const handleEdit = props.handleEdit;
@@ -89,4 +90,4 @@ export default function LilyRow(props: any) {
       />
     </List.Item>
   );
-}
+};

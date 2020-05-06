@@ -1,27 +1,29 @@
-import React, { useState, useCallback, useMemo, useEffect } from "react";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 import {
-  useAddLilyMutation,
-  useEditLilyMutation,
   Lily,
+  useAddLilyMutation,
   useDeleteLilyMutation,
+  useEditLilyMutation,
 } from "@app/graphql";
+import { extractError, formItemLayout, getCodeFromError } from "@app/lib";
 import {
   Alert,
+  AutoComplete,
+  Button,
   Form,
   Input,
-  Modal,
   InputNumber,
-  Button,
   message,
+  Modal,
   Popconfirm,
+  Tooltip,
 } from "antd";
-import { promisify } from "util";
-import { FormComponentProps, ValidateFieldsOptions } from "antd/lib/form/Form";
+import Select, { SelectValue } from "antd/lib/select";
 import { ApolloError } from "apollo-client";
-// import { getCodeFromError, extractError } from "../errors";
-import { AutoComplete } from "antd";
-import ImgUpload from "./ImgUpload";
 import axios from "axios";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+
+import { ImgUpload } from "./ImgUpload";
 
 const { TextArea } = Input;
 export interface FormValues {
@@ -35,7 +37,7 @@ export interface FormValues {
 export interface User {
   id: number;
 }
-export interface AddLilyFormProps extends FormComponentProps<FormValues> {
+export interface AddLilyFormProps {
   onComplete: () => void;
   error: Error | ApolloError | null;
   setError: (error: Error | ApolloError | null) => void;
@@ -46,8 +48,7 @@ export interface AddLilyFormProps extends FormComponentProps<FormValues> {
   user: User;
 }
 
-function AddLilyForm({
-  form,
+export const AddLilyForm = ({
   error,
   setError,
   onComplete,
@@ -56,8 +57,7 @@ function AddLilyForm({
   updateLily,
   setUpdateLily,
   user,
-}: AddLilyFormProps) {
-  console.log(user);
+}: AddLilyFormProps) => {
   const id = user.id;
   const [addLily] = useAddLilyMutation();
   const [editLily] = useEditLilyMutation();
@@ -65,40 +65,67 @@ function AddLilyForm({
   const [fileList, setFileList] = useState<any>([]);
   const [dataSource, setDataSource] = useState<Array<ILily>>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [form] = Form.useForm();
+  const { setFieldsValue, getFieldValue } = form;
+  const focusElement = useRef<Select<SelectValue>>(null);
+
   useEffect(() => {
-    if (updateLily && updateLily.imgUrl && updateLily.imgUrl.length) {
-      setFileList(
-        updateLily.imgUrl.map((url: any) => {
-          const fileName = url && url.substring(url.lastIndexOf("/") + 1);
-          return {
-            uid: `${id}/${fileName}`,
-            name: fileName,
-            status: "done",
-            url,
-          };
-        })
-      );
+    if (updateLily) {
+      setFieldsValue({ name: updateLily?.name });
+      setFieldsValue({ price: updateLily?.price });
+      setFieldsValue({ ahsId: updateLily?.ahsId });
+      setFieldsValue({ publicNote: updateLily?.publicNote });
+      setFieldsValue({ privateNote: updateLily?.privateNote });
+      if (updateLily.imgUrl && updateLily.imgUrl.length) {
+        setFileList(
+          updateLily.imgUrl.map((url: any) => {
+            const fileName = url && url.substring(url.lastIndexOf("/") + 1);
+            return {
+              uid: `${id}/${fileName}`,
+              name: fileName,
+              status: "done",
+              url,
+            };
+          })
+        );
+      }
     }
-  }, [updateLily, id]);
+  }, [updateLily, id, setFieldsValue]);
+
+  useEffect(() => {
+    if (!updateLily) {
+      if (focusElement.current) {
+        focusElement.current!.focus();
+      }
+    }
+  }, [show, updateLily]);
+
   useEffect(() => {
     setIsUploading(false);
   }, [error]);
 
-  const validateFields: (
-    fieldNames?: Array<string>,
-    options?: ValidateFieldsOptions
-  ) => Promise<FormValues> = useMemo(
-    () => promisify((...args) => form.validateFields(...args)),
-    [form]
-  );
   const handleCancle = () => {
     if (isUploading) return;
-    setShow(false);
-    setUpdateLily(null);
-    form.resetFields();
-    setFileList([]);
-    setDataSource([]);
+    resetForm();
   };
+
+  const resetForm = useCallback(() => {
+    setFileList([]);
+    setIsUploading(false);
+    setUpdateLily(null);
+    setDataSource([]);
+    setError(null);
+    setShow(false);
+    form.resetFields();
+  }, [
+    setFileList,
+    setIsUploading,
+    setUpdateLily,
+    setDataSource,
+    setError,
+    setShow,
+    form,
+  ]);
 
   const handleImgUpload = useCallback(
     async (file: any, i: number) => {
@@ -109,11 +136,11 @@ function AddLilyForm({
             operation: "put",
           },
         })
-        .then(async response => {
+        .then(async (response) => {
           const url = response.data.url;
           return await axios
             .put(url, file.originFileObj, {
-              onUploadProgress: e => {
+              onUploadProgress: (e) => {
                 const progress = Math.round((e.loaded / e.total) * 100);
                 const newFileList = fileList.slice();
                 newFileList[i].status = "uploading";
@@ -121,7 +148,7 @@ function AddLilyForm({
                 setFileList(newFileList);
               },
             })
-            .then(response => {
+            .then((response) => {
               const newFileList = fileList.slice();
               newFileList[i].status = "done";
               setFileList(newFileList);
@@ -132,12 +159,12 @@ function AddLilyForm({
                 response.config.url.split("?")[0]
               );
             })
-            .catch(err => {
+            .catch((err) => {
               console.log(err);
               throw new Error(err);
             });
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           throw new Error(err);
         });
@@ -157,7 +184,7 @@ function AddLilyForm({
         .then(() => {
           //console.log("item deleted");
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(JSON.stringify(error));
         });
     },
@@ -188,11 +215,11 @@ function AddLilyForm({
   }, [fileList, handleImgUpload, updateLily, handleImgDelete]);
 
   const handleSubmit = useCallback(
-    async e => {
+    async (e) => {
       e.preventDefault();
       try {
         setError(null);
-        const values = await validateFields();
+        const values = await form.validateFields();
         const prevImgUrls = fileList
           .filter((file: any) => file.url)
           .map((file: any) => file.url);
@@ -224,11 +251,7 @@ function AddLilyForm({
         }
         const messageText = updateLily ? "Daylily edited" : "Daylily added";
         message.success(messageText);
-        setShow(false);
-        form.resetFields();
-        setUpdateLily(null);
-        setFileList([]);
-        setDataSource([]);
+        resetForm();
         onComplete();
       } catch (e) {
         setError(e);
@@ -236,21 +259,17 @@ function AddLilyForm({
     },
     [
       setError,
-      validateFields,
       fileList,
       handleImages,
-      updateLily,
-      setShow,
+      resetForm,
       form,
-      setUpdateLily,
+      updateLily,
       onComplete,
       editLily,
       addLily,
     ]
   );
 
-  const { getFieldDecorator, setFieldsValue, getFieldValue } = form;
-  // const code = getCodeFromError(error);
   interface ILily {
     id: number;
     name: string;
@@ -283,6 +302,7 @@ function AddLilyForm({
     const selection = dataSource.filter(
       (item: ILily) => item.name === value
     )[0];
+    console.log(selection);
     const imgVal = getFieldValue("imgUrl");
     if (!imgVal) {
       setFieldsValue({ imgUrl: selection.image });
@@ -307,23 +327,14 @@ function AddLilyForm({
   const handleDelete = async (id: any) => {
     fileList.forEach((file: any) => handleImgDelete(file.url));
     deleteLily({ variables: { id } });
-    setShow(false);
+    resetForm();
     handleCancle();
     message.success("Daylily deleted");
-  };
-  const formItemLayout = {
-    labelCol: {
-      xs: { span: 24 },
-      sm: { span: 5 },
-    },
-    wrapperCol: {
-      xs: { span: 24 },
-      sm: { span: 19 },
-    },
   };
 
   return (
     <Modal
+      forceRender
       visible={show}
       title={updateLily ? "Edit Daylily" : "Add a new Daylily"}
       onOk={handleSubmit}
@@ -340,11 +351,7 @@ function AddLilyForm({
                 cancelText="No"
                 disabled={isUploading}
               >
-                <Button
-                  type="danger"
-                  style={{ float: "left" }}
-                  disabled={isUploading}
-                >
+                <Button danger style={{ float: "left" }} disabled={isUploading}>
                   Delete
                 </Button>
               </Popconfirm>,
@@ -375,98 +382,109 @@ function AddLilyForm({
             ]
       }
     >
-      <Form onSubmit={handleSubmit} {...formItemLayout}>
-        <Form.Item label="Name" style={{ marginBottom: 5 }}>
-          {getFieldDecorator("name", {
-            initialValue: updateLily ? updateLily.name : "",
-            rules: [
-              {
-                required: true,
-                message: "Please enter a daylily name",
-              },
-            ],
-          })(
-            <AutoComplete
-              dataSource={dataSource.map((item: ILily) => item.name)}
-              onSearch={onSearch}
-              onSelect={onSelect}
-              allowClear
-              disabled={isUploading}
-            />
-          )}
+      <Form {...formItemLayout} form={form} onFinish={handleSubmit}>
+        <Form.Item
+          label={
+            <span data-cy="addLilyForm-name-label">
+              Name&nbsp;
+              <Tooltip title="Enter the name of the daylily. Select a registered cultivar from the drop down list to link registration data and, possibly, a photo">
+                <QuestionCircleOutlined />
+              </Tooltip>
+            </span>
+          }
+          name="name"
+          rules={[
+            {
+              required: true,
+              message: "Please enter a name for this daylily",
+            },
+          ]}
+        >
+          <AutoComplete
+            data-cy="addLilyForm-input-name"
+            ref={focusElement}
+            options={dataSource.map((item: ILily) => {
+              return { value: item.name };
+            })}
+            onSearch={onSearch}
+            onSelect={onSelect}
+            allowClear
+            disabled={isUploading}
+          />
         </Form.Item>
-        <Form.Item label="AHS ID" style={{ display: "none" }}>
-          {getFieldDecorator("ahsId", {
-            initialValue: updateLily ? updateLily.ahsId : "",
-            rules: [
-              {
-                required: false,
-                message: "Enter an AHS ID, if you'd like.",
-              },
-            ],
-          })(
-            <TextArea
-              data-cy="settingslilies-input-ahsId"
-              autoSize
-              disabled={isUploading}
-            />
-          )}
+        <Form.Item
+          style={{ display: "none" }}
+          label={
+            <span data-cy="addLilyForm-ahsId-label">
+              AHS ID&nbsp;
+              <Tooltip title="Enter an AHS ID, if you'd like.">
+                <QuestionCircleOutlined />
+              </Tooltip>
+            </span>
+          }
+          name="ahsId"
+        >
+          <TextArea
+            data-cy="settingslilies-input-ahsId"
+            autoSize
+            disabled={isUploading}
+          />
         </Form.Item>
-        <Form.Item label="Price" style={{ marginBottom: 5 }}>
-          {getFieldDecorator("price", {
-            initialValue: updateLily ? updateLily.price : "",
-            rules: [
-              {
-                required: false,
-                message: "Enter a price, if you'd like.",
-              },
-            ],
-          })(
-            <InputNumber
-              style={{ width: "100%" }}
-              formatter={value =>
-                value ? `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",") : ""
-              }
-              parser={value => `${value}`.replace(/\$\s?|(,*)/g, "")}
-              precision={2}
-              data-cy="settingslilies-input-price"
-              disabled={isUploading}
-            />
-          )}
+
+        <Form.Item
+          label={
+            <span data-cy="addLilyForm-price-label">
+              Price&nbsp;
+              <Tooltip title="Enter a price for this daylily. If you do not enter a price, the daylily will be listed as 'Display Only' in your public catalog">
+                <QuestionCircleOutlined />
+              </Tooltip>
+            </span>
+          }
+          name="price"
+        >
+          <InputNumber
+            formatter={(value) =>
+              value ? `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",") : ""
+            }
+            parser={(value) => `${value}`.replace(/\$\s?|(,*)/g, "")}
+            precision={2}
+            data-cy="addLilyForm-input-price"
+            disabled={isUploading}
+          />
         </Form.Item>
-        <Form.Item label="Public note" style={{ marginBottom: 5 }}>
-          {getFieldDecorator("publicNote", {
-            initialValue: updateLily ? updateLily.publicNote : "",
-            rules: [
-              {
-                required: false,
-                message: "Enter a public note, if you'd like.",
-              },
-            ],
-          })(
-            <TextArea
-              data-cy="settingslilies-input-publicNote"
-              autoSize={{ minRows: 2 }}
-              disabled={isUploading}
-            />
-          )}
+        <Form.Item
+          label={
+            <span data-cy="addLilyForm-publicNote-label">
+              Public Note&nbsp;
+              <Tooltip title="Enter a public note or description of this daylily. This will be the description for the listing in your public catalog.">
+                <QuestionCircleOutlined />
+              </Tooltip>
+            </span>
+          }
+          name="publicNote"
+        >
+          <TextArea
+            data-cy="addLilyForm-input-publicNote"
+            autoSize={{ minRows: 2 }}
+            disabled={isUploading}
+          />
         </Form.Item>
-        <Form.Item label="Private note" style={{ marginBottom: 5 }}>
-          {getFieldDecorator("privateNote", {
-            initialValue: updateLily ? updateLily.privateNote : "",
-            rules: [
-              {
-                required: false,
-                message: "Enter a private note, if you'd like.",
-              },
-            ],
-          })(
-            <TextArea
-              data-cy="settingslilies-input-privateNote"
-              autoSize={{ minRows: 2 }}
-              disabled={isUploading}
-            />
-          )}
+        <Form.Item
+          label={
+            <span data-cy="addLilyForm-privateNote-label">
+              Private Note&nbsp;
+              <Tooltip title="Enter a private note for this daylily. This note will only be visiable to you.">
+                <QuestionCircleOutlined />
+              </Tooltip>
+            </span>
+          }
+          name="privateNote"
+        >
+          <TextArea
+            data-cy="addLilyForm-input-privateNote"
+            autoSize={{ minRows: 2 }}
+            disabled={isUploading}
+          />
         </Form.Item>
         <ImgUpload
           fileList={[fileList, setFileList]}
@@ -474,19 +492,19 @@ function AddLilyForm({
           isUploading={isUploading}
         />
         {error ? (
-          <Form.Item>
+          <Form.Item label="Error">
             <Alert
               type="error"
-              message={`Error adding daylily`}
+              message={`Saving daylily failed`}
               description={
                 <span>
-                  {/* {extractError(error).message}
-                  {code ? (
+                  {extractError(error).message}
+                  {getCodeFromError(error) ? (
                     <span>
                       {" "}
-                      (Error code: <code>ERR_{code}</code>)
+                      (Error code: <code>ERR_{getCodeFromError(error)}</code>)
                     </span>
-                  ) : null} */}
+                  ) : null}
                 </span>
               }
             />
@@ -495,11 +513,4 @@ function AddLilyForm({
       </Form>
     </Modal>
   );
-}
-
-export const WrappedAddLilyForm = Form.create<AddLilyFormProps>({
-  name: "addLilyForm",
-  onValuesChange(props) {
-    props.setError(null);
-  },
-})(AddLilyForm);
+};

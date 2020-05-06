@@ -1,7 +1,10 @@
-import React, { useState } from "react";
-import { Upload, Icon, Modal, message } from "antd";
+import { InboxOutlined } from "@ant-design/icons";
+import { message, Modal, Upload } from "antd";
 import axios from "axios";
+import React, { useState } from "react";
 import slugify from "slugify";
+
+const { Dragger } = Upload;
 
 function getBase64(file: any) {
   return new Promise((resolve, reject) => {
@@ -13,7 +16,7 @@ function getBase64(file: any) {
   });
 }
 
-const PicturesWall = (props: any) => {
+export const ImgUpload = (props: any) => {
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [fileList, setFileList] = props.fileList;
@@ -37,6 +40,9 @@ const PicturesWall = (props: any) => {
       return file;
     });
     newFileList = fileList.filter((file: any) => file.status !== "error");
+    if (newFileList.length > 8) {
+      newFileList = newFileList.slice(0, 8);
+    }
     setFileList(newFileList);
   };
 
@@ -49,9 +55,9 @@ const PicturesWall = (props: any) => {
   }
   const handleBeforeUpload = (file: any) => {
     file.uid = getUid(props.user.id, file.name);
-    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+    const isJpgOrPng = file.type.startsWith("image/");
     if (!isJpgOrPng) {
-      message.error("You can only upload JPG or PNG images!");
+      message.error("You can only upload image files!");
       file.status = "error";
     }
     const isLt3M = file.size / 1024 / 1024 < 3;
@@ -70,34 +76,27 @@ const PicturesWall = (props: any) => {
           operation: "put",
         },
       })
-      .then(response => {
+      .then((response) => {
         const url = response.data.url;
         axios
           .put(url, file, {
-            onUploadProgress: e => {
+            onUploadProgress: (e) => {
               const progress = Math.round((e.loaded / e.total) * 100);
               onProgress({ percent: progress }, file);
             },
           })
-          .then(response => {
+          .then((response) => {
             onSuccess(response.config, file);
           })
-          .catch(err => {
+          .catch((err) => {
             console.log(err);
             onError(err);
           });
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
   };
-
-  const uploadButton = (
-    <div>
-      <Icon type="plus" />
-      <div className="ant-upload-text">Image</div>
-    </div>
-  );
 
   return (
     <div className="clearfix">
@@ -108,14 +107,35 @@ const PicturesWall = (props: any) => {
         onPreview={handlePreview}
         onChange={handleChange}
         beforeUpload={handleBeforeUpload}
-        disabled={props.isUploading}
-      >
-        {fileList.length >= 8 || props.isUploading ? null : uploadButton}
-      </Upload>
+        accept="image/*"
+        multiple
+      />
+      {fileList.length < 8 && !props.isUploading && (
+        <Dragger
+          customRequest={customRequest}
+          showUploadList={false}
+          fileList={fileList}
+          onChange={handleChange}
+          beforeUpload={handleBeforeUpload}
+          disabled={props.isUploading || fileList.length >= 8}
+          accept="image/*"
+          multiple
+        >
+          <p className="ant-upload-drag-icon">
+            <InboxOutlined />
+          </p>
+          <p className="ant-upload-text">
+            Click or drag file to this area to upload
+          </p>
+          <p className="ant-upload-hint">
+            Support for a single or bulk upload. Image files under 3mb size
+            only.
+          </p>
+        </Dragger>
+      )}
       <Modal visible={previewVisible} footer={null} onCancel={handleCancel}>
         <img alt="example" style={{ width: "100%" }} src={previewImage} />
       </Modal>
     </div>
   );
 };
-export default PicturesWall;

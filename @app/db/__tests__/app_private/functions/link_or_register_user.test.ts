@@ -1,5 +1,6 @@
-import { withRootDb, snapshotSafe } from "../../helpers";
 import { PoolClient } from "pg";
+
+import { snapshotSafe, withRootDb } from "../../helpers";
 
 async function linkOrRegisterUser(
   client: PoolClient,
@@ -26,7 +27,7 @@ async function linkOrRegisterUser(
 
 describe("when account doesn't already exist", () => {
   it("can login with full oauth details", () =>
-    withRootDb(async client => {
+    withRootDb(async (client) => {
       const user = await linkOrRegisterUser(
         client,
         null,
@@ -61,7 +62,7 @@ describe("when account doesn't already exist", () => {
     }));
 
   it("can login with minimal oauth details", () =>
-    withRootDb(async client => {
+    withRootDb(async (client) => {
       const user = await linkOrRegisterUser(
         client,
         null,
@@ -81,7 +82,7 @@ describe("when account doesn't already exist", () => {
     }));
 
   test("cannot register without email", () =>
-    withRootDb(async client => {
+    withRootDb(async (client) => {
       const promise = client.query(
         "SELECT * FROM app_private.link_or_register_user($1, $2, $3, $4, $5)",
         [
@@ -101,7 +102,7 @@ describe("when account doesn't already exist", () => {
     }));
 
   it("cannot register with invalid email", () =>
-    withRootDb(async client => {
+    withRootDb(async (client) => {
       const promise = linkOrRegisterUser(
         client,
         null,
@@ -120,7 +121,7 @@ describe("when account doesn't already exist", () => {
 });
 
 it("login with new oauth sharing email of existing account links accounts", () =>
-  withRootDb(async client => {
+  withRootDb(async (client) => {
     const sharedEmail = "existing@example.com";
     const existingUser = await linkOrRegisterUser(
       client,
@@ -148,7 +149,7 @@ it("login with new oauth sharing email of existing account links accounts", () =
   }));
 
 it("login with new oauth when logged in links accounts", () =>
-  withRootDb(async client => {
+  withRootDb(async (client) => {
     const githubUser = await linkOrRegisterUser(
       client,
       null,

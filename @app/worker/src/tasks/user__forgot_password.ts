@@ -1,4 +1,5 @@
 import { Task } from "graphile-worker";
+
 import { SendEmailPayload } from "./send_email";
 
 interface UserForgotPasswordPayload {
@@ -23,7 +24,7 @@ const task: Task = async (inPayload, { addJob, withPgClient }) => {
   const { id: userId, email, token } = payload;
   const {
     rows: [user],
-  } = await withPgClient(pgClient =>
+  } = await withPgClient((pgClient) =>
     pgClient.query(
       `
         select users.*

@@ -1,5 +1,7 @@
+// @ts-nocheck
+import { InfoOutlined } from "@ant-design/icons";
+import { Avatar, Button, Table } from "antd";
 import React from "react";
-import { Table, Avatar, Button } from "antd";
 import Highlighter from "react-highlight-words";
 // import useWindowSize from "../hooks/useWindowSize";
 const { Column } = Table;
@@ -8,7 +10,7 @@ const DataButton = (ahsId: any) => (
   <div>
     {ahsId && (
       <Button
-        onClick={e => {
+        onClick={(e) => {
           e.stopPropagation();
           // @ts-ignore
           window.open(
@@ -17,7 +19,7 @@ const DataButton = (ahsId: any) => (
           );
         }}
         shape="circle"
-        icon="info"
+        icon={<InfoOutlined />}
         type="primary"
       />
     )}
@@ -97,7 +99,7 @@ export function LiliesTable(props: any) {
         key="price"
         sortDirections={["descend", "ascend"]}
         sorter={(a: any, b: any) => a.price - b.price}
-        render={price => price && `${currency(price)}`}
+        render={(price) => price && `${currency(price)}`}
         width={104}
       />
       <Column
@@ -108,7 +110,7 @@ export function LiliesTable(props: any) {
         sorter={(a: any, b: any) =>
           (a.publicNote || "").length - (b.publicNote || "").length
         }
-        render={note => truncate(note, 140)}
+        render={(note) => truncate(note, 140)}
       />
       <Column
         title="Private Note"
@@ -118,7 +120,7 @@ export function LiliesTable(props: any) {
         sorter={(a: any, b: any) =>
           (a.privateNote || "").length - (b.privateNote || "").length
         }
-        render={note => truncate(note, 140)}
+        render={(note) => truncate(note, 140)}
       />
       <Column
         title="Data"

@@ -1,15 +1,15 @@
-import React, { useState, SetStateAction, Dispatch } from "react";
-import SharedLayout from "../layout/SharedLayout";
-import { useLiliesQuery } from "@app/graphql";
-import { Button, Input } from "antd";
 import {
+  AddLilyForm,
   ErrorAlert,
-  Redirect,
-  WrappedAddLilyForm,
   LiliesTable,
+  Redirect,
+  SharedLayout,
 } from "@app/components";
+import { useLiliesQuery, useSharedQuery } from "@app/graphql";
+import { Button, Input } from "antd";
 import { ApolloError } from "apollo-client";
 import { NextPage } from "next";
+import React, { useState } from "react";
 
 const Catalog: NextPage = () => {
   const { data, loading, error } = useLiliesQuery();
@@ -19,7 +19,7 @@ const Catalog: NextPage = () => {
   const [formError, setFormError] = useState<Error | ApolloError | null>(null);
   const [nameFilter, setNameFilter]: [
     string,
-    Dispatch<SetStateAction<string>>
+    React.Dispatch<React.SetStateAction<string>>
   ] = useState("");
 
   function handleEdit(lily: any) {
@@ -63,7 +63,7 @@ const Catalog: NextPage = () => {
           <Input
             placeholder="Filter catalog by name..."
             value={nameFilter}
-            onChange={e => setNameFilter(e.target.value)}
+            onChange={(e) => setNameFilter(e.target.value)}
             style={{ marginBottom: "1rem" }}
             allowClear
           />
@@ -72,7 +72,7 @@ const Catalog: NextPage = () => {
             handleEdit={handleEdit}
             searchText={nameFilter}
           />
-          <WrappedAddLilyForm
+          <AddLilyForm
             onComplete={() => setShowAddLilyForm(false)}
             error={formError}
             setError={setFormError}
@@ -82,11 +82,22 @@ const Catalog: NextPage = () => {
             setUpdateLily={setUpdateLily}
             user={user}
           />
+          {/* <NewAddLilyForm
+            visible={showAddLilyForm}
+            onCreate={() => setShowAddLilyForm(false)}
+            onCancel={() => setShowAddLilyForm(false)}
+            updateLily={updateLily}
+          /> */}
         </>
       );
     }
   })();
-  return <SharedLayout title="Catalog">{pageContent}</SharedLayout>;
+  const query = useSharedQuery();
+  return (
+    <SharedLayout title="Catalog" query={query}>
+      {pageContent}
+    </SharedLayout>
+  );
 };
 
 export default Catalog;
