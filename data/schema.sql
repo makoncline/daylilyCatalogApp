@@ -1730,7 +1730,7 @@ ALTER TABLE ONLY app_private.user_secrets
 --
 
 ALTER TABLE ONLY app_public.lilies
-    ADD CONSTRAINT lilies_user_id_fkey FOREIGN KEY (user_id) REFERENCES app_public.users(id);
+    ADD CONSTRAINT lilies_user_id_fkey FOREIGN KEY (user_id) REFERENCES app_public.users(id) ON DELETE CASCADE;
 
 
 --
