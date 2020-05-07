@@ -41,17 +41,18 @@ test("can register user with a password", () =>
       "SuperSecurePassword1"
     );
     expect(user).not.toBeNull();
+    const isAdmin = user.id === 1 ? true : false;
     expect(snapshotSafe(user)).toMatchInlineSnapshot(`
-      Object {
-        "avatar_url": "http://example.com",
-        "created_at": "[DATE]",
-        "id": "[ID]",
-        "is_admin": false,
-        "is_verified": false,
-        "name": "Test One",
-        "updated_at": "[DATE]",
-        "username": "testuser",
-      }
+    Object {
+      "avatar_url": "http://example.com",
+      "created_at": "[DATE]",
+      "id": "[ID]",
+      "is_admin": ${isAdmin},
+      "is_verified": false,
+      "name": "Test One",
+      "updated_at": "[DATE]",
+      "username": "testuser",
+    }
     `);
   }));
 
