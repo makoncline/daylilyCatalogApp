@@ -62,7 +62,7 @@ export const ImgUpload = (props: any) => {
     }
     const isLt3M = file.size / 1024 / 1024 < 3;
     if (!isLt3M) {
-      message.error("Image must smaller than 3MB!");
+      message.error("Image file size must smaller than 3MB!");
       file.status = "error";
     }
     return false;
@@ -128,8 +128,7 @@ export const ImgUpload = (props: any) => {
             Click or drag file to this area to upload
           </p>
           <p className="ant-upload-hint">
-            Support for a single or bulk upload. Image files under 3mb size
-            only.
+            Support for a single or bulk upload of images up to 3MB file size.
           </p>
         </Dragger>
       )}
