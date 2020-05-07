@@ -39,6 +39,8 @@ export function LiliesTable(props: any) {
       currencyDisplay: "symbol",
       useGrouping: true,
     });
+
+  const sortAlphaNum = (a, b) => ('' + a).localeCompare(b + '', 'en', { numeric: true })
   return (
     <Table
       dataSource={props.dataSource}
@@ -62,7 +64,7 @@ export function LiliesTable(props: any) {
         defaultSortOrder="descend"
         sortDirections={["descend", "ascend"]}
         sorter={(a: any, b: any) =>
-          a.name === [a.name, b.name].sort()[0] ? 1 : -1
+          sortAlphaNum(a.name, b.name) >= 0 ? -1 : 1
         }
         render={(text: any) => (
           <Highlighter
@@ -88,8 +90,8 @@ export function LiliesTable(props: any) {
                 src={imgUrl[Math.floor(Math.random() * imgUrl.length)]}
               />
             ) : (
-              <Avatar size="large" src={"https://i.imgur.com/0cGzAR8.png"} />
-            )}
+                <Avatar size="large" src={"https://i.imgur.com/0cGzAR8.png"} />
+              )}
           </div>
         )}
       />
@@ -98,7 +100,9 @@ export function LiliesTable(props: any) {
         dataIndex="price"
         key="price"
         sortDirections={["descend", "ascend"]}
-        sorter={(a: any, b: any) => a.price - b.price}
+        sorter={(a: any, b: any) =>
+          sortAlphaNum(a.price, b.price) >= 0 ? -1 : 1
+        }
         render={(price) => price && `${currency(price)}`}
         width={104}
       />
@@ -106,20 +110,12 @@ export function LiliesTable(props: any) {
         title="Public Note"
         dataIndex="publicNote"
         key="publicNote"
-        sortDirections={["descend", "ascend"]}
-        sorter={(a: any, b: any) =>
-          (a.publicNote || "").length - (b.publicNote || "").length
-        }
         render={(note) => truncate(note, 140)}
       />
       <Column
         title="Private Note"
         dataIndex="privateNote"
         key="privateNote"
-        sortDirections={["descend", "ascend"]}
-        sorter={(a: any, b: any) =>
-          (a.privateNote || "").length - (b.privateNote || "").length
-        }
         render={(note) => truncate(note, 140)}
       />
       <Column
