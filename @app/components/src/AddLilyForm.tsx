@@ -277,7 +277,7 @@ export const AddLilyForm = ({
   }
 
   const onSearch = async (searchText: string) => {
-    if (searchText.length >= 3) {
+    if (searchText.length >= 2) {
       const searchResult = await searchAhs(searchText);
       setDataSource(searchResult);
     }
