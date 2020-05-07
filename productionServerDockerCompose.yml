@@ -11,10 +11,19 @@ services:
       VIRTUAL_PORT: 5678
       GRAPHILE_LICENSE:
       SECRET: B0QXveJktC4E0bGF2WKFbCEq2vigoHzcMvM5CuN9HZB2Mgb4kyjTpG3LUwPfdLMM
-      JWT_SECRET: kTJkD8w79qdI0JM3FmtAwxllJ4qApB8CBB7zkCNUfDJqCUB1lLzrMIAam37tM$
+      JWT_SECRET: kTJkD8w79qdI0JM3FmtAwxllJ4qApB8CBB7zkCNUfDJqCUB1lLzrMIAam37tMlwo
       DATABASE_VISITOR: daylily_catalog_visitor
-      DATABASE_URL: postgres://daylily_catalog:SNZYxor4VOGlZ8Dhc-XJOVfJxdcr7orl$
-      AUTH_DATABASE_URL: postgres://daylily_catalog_authenticator:c5wYvA2EH__-y$
+      DATABASE_URL: postgres://daylily_catalog:SNZYxor4VOGlZ8Dhc-XJOVfJxdcr7orlXEj2RC3n@makon-pg-db.ceywqhmw6rov.us-east-1.rds.amazonaws.com/daylily_catalog?ssl=true&sslrootcert=../../data/amazon-rds-ca-cert.pem
+      AUTH_DATABASE_URL: postgres://daylily_catalog_authenticator:c5wYvA2EH__-yTbWALdAHTMCfOqea5zE5lya44_o@makon-pg-db.ceywqhmw6rov.us-east-1.rds.amazonaws.com/daylily_catalog?ssl=true&sslrootcert=../../data/amazon-rds-ca-cert.pem
       GITHUB_KEY:
       GITHUB_SECRET:
       BUCKET: daylily-catalog-images
+      NODE_ENV: production
+      DATABASE_AUTHENTICATOR: daylily_catalog_authenticator
+      DATABASE_OWNER_PASSWORD: SNZYxor4VOGlZ8Dhc-XJOVfJxdcr7orlXEj2RC3n
+      DATABASE_AUTHENTICATOR_PASSWORD: c5wYvA2EH__-yTbWALdAHTMCfOqea5zE5lya44_o
+      AWSACCESSKEYID: AKIA2T3MKTR7UHSPKJZW
+      AWSSECRETKEY: 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
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: AKIA2T3MKTR7QI75QE7H
+      AWS_SECRET_ACCESS_KEY: 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
