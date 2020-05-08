@@ -24,7 +24,6 @@
     "@types/pg": "^7.14.1",
     "@types/redis": "^2.8.16",
     "body-parser": "^1.19.0",
-    "aws-sdk": "^2.596.0",
     "chalk": "^3.0.0",
     "connect-pg-simple": "^6.1.0",
     "connect-redis": "^4.0.4",
@@ -45,8 +44,7 @@
     "postgraphile": "^4.7.0",
     "redis": "^3.0.2",
     "source-map-support": "^0.5.13",
-    "tslib": "^1.11.1",
-    "moment": "2.24.0"
+    "tslib": "^1.11.1"
   },
   "devDependencies": {
     "@types/node": "^12.12.31",
@@ -56,8 +54,5 @@
   "optionalDependencies": {
     "bufferutil": "^4.0.1",
     "utf-8-validate": "^5.0.2"
-  },
-  "resolutions": {
-    "moment": "2.24.0"
   }
 }
