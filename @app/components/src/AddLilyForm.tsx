@@ -280,6 +280,8 @@ export const AddLilyForm = ({
     if (searchText.length >= 2) {
       const searchResult = await searchAhs(searchText);
       setDataSource(searchResult);
+    } else {
+      setDataSource([])
     }
     setFieldsValue({ ahsId: "" });
   };
@@ -408,6 +410,7 @@ export const AddLilyForm = ({
             })}
             onSearch={onSearch}
             onSelect={onSelect}
+            onBlur={() => setDataSource([])}
             allowClear
             disabled={isUploading}
           />
