@@ -281,7 +281,7 @@ export const AddLilyForm = ({
       const searchResult = await searchAhs(searchText);
       setDataSource(searchResult);
     } else {
-      setDataSource([])
+      setDataSource([]);
     }
     setFieldsValue({ ahsId: "" });
   };
@@ -345,43 +345,48 @@ export const AddLilyForm = ({
       footer={
         updateLily
           ? [
-            <Popconfirm
-              key={1}
-              title="Are you sure delete this daylily?"
-              onConfirm={() => handleDelete(updateLily.id)}
-              okText="Yes"
-              cancelText="No"
-              disabled={isUploading}
-            >
-              <Button type='primary' danger style={{ float: "left" }} disabled={isUploading}>
-                Delete
+              <Popconfirm
+                key={1}
+                title="Are you sure delete this daylily?"
+                onConfirm={() => handleDelete(updateLily.id)}
+                okText="Yes"
+                cancelText="No"
+                disabled={isUploading}
+              >
+                <Button
+                  type="primary"
+                  danger
+                  style={{ float: "left" }}
+                  disabled={isUploading}
+                >
+                  Delete
                 </Button>
-            </Popconfirm>,
-            <Button key={2} onClick={handleCancle} disabled={isUploading}>
-              Cancel
+              </Popconfirm>,
+              <Button key={2} onClick={handleCancle} disabled={isUploading}>
+                Cancel
               </Button>,
-            <Button
-              key={3}
-              type="primary"
-              onClick={handleSubmit}
-              loading={isUploading}
-            >
-              {isUploading ? "Uploading, please wait." : "SAVE"}
-            </Button>,
-          ]
+              <Button
+                key={3}
+                type="primary"
+                onClick={handleSubmit}
+                loading={isUploading}
+              >
+                {isUploading ? "Uploading, please wait." : "SAVE"}
+              </Button>,
+            ]
           : [
-            <Button key={1} onClick={handleCancle} disabled={isUploading}>
-              Cancel
+              <Button key={1} onClick={handleCancle} disabled={isUploading}>
+                Cancel
               </Button>,
-            <Button
-              key={2}
-              type="primary"
-              onClick={handleSubmit}
-              loading={isUploading}
-            >
-              {isUploading ? "Uploading, please wait." : "OK"}
-            </Button>,
-          ]
+              <Button
+                key={2}
+                type="primary"
+                onClick={handleSubmit}
+                loading={isUploading}
+              >
+                {isUploading ? "Uploading, please wait." : "OK"}
+              </Button>,
+            ]
       }
     >
       <Form {...formItemLayout} form={form} onFinish={handleSubmit}>

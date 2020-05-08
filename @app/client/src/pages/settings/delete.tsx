@@ -101,11 +101,7 @@ const Settings_Accounts: NextPage = () => {
                 We're sorry to see you go, please don't hesitate to reach out
                 and let us know why you no longer want your account.
               </P>
-              <Button
-                onClick={confirmDeletion}
-                danger
-                disabled={deleting}
-              >
+              <Button onClick={confirmDeletion} danger disabled={deleting}>
                 PERMANENTLY DELETE MY ACCOUNT
               </Button>
             </>
@@ -124,22 +120,22 @@ const Settings_Accounts: NextPage = () => {
           }
         />
       ) : (
-            <Alert
-              type="error"
-              message="Delete user account?"
-              description={
-                <>
-                  <P>
-                    Deleting your account cannot be undone, you will lose all your
-                    data.
+        <Alert
+          type="error"
+          message="Delete user account?"
+          description={
+            <>
+              <P>
+                Deleting your account cannot be undone, you will lose all your
+                data.
               </P>
-                  <Button onClick={openModal} danger>
-                    I want to delete my account
+              <Button onClick={openModal} danger>
+                I want to delete my account
               </Button>
-                </>
-              }
-            />
-          )}
+            </>
+          }
+        />
+      )}
       {error ? (
         getCodeFromError(error) === "OWNER" ? (
           <Alert
@@ -161,8 +157,8 @@ const Settings_Accounts: NextPage = () => {
             }
           />
         ) : (
-            <ErrorAlert error={error} />
-          )
+          <ErrorAlert error={error} />
+        )
       ) : null}
 
       <Modal

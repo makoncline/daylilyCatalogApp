@@ -1,13 +1,20 @@
 // @ts-nocheck
 import { InfoOutlined } from "@ant-design/icons";
-import { Avatar, Button, Table, Space } from "antd";
+import { Avatar, Button, Table } from "antd";
 import React from "react";
 import Highlighter from "react-highlight-words";
 // import useWindowSize from "../hooks/useWindowSize";
 const { Column } = Table;
 
 const DataButton = (ahsId: any) => (
-  <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+  <div
+    style={{
+      width: "100%",
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "center",
+    }}
+  >
     {ahsId && (
       <Button
         onClick={(e) => {
@@ -40,7 +47,8 @@ export function LiliesTable(props: any) {
       useGrouping: true,
     });
 
-  const sortAlphaNum = (a, b) => ('' + a).localeCompare(b + '', 'en', { numeric: true })
+  const sortAlphaNum = (a, b) =>
+    ("" + a).localeCompare(b + "", "en", { numeric: true });
   return (
     <Table
       dataSource={props.dataSource}
@@ -83,15 +91,22 @@ export function LiliesTable(props: any) {
         sortDirections={["descend", "ascend"]}
         sorter={(a: any, b: any) => a.imgUrl.length - b.imgUrl.length}
         render={(imgUrl: any) => (
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+            }}
+          >
             {imgUrl && imgUrl.length ? (
               <Avatar
                 size="large"
                 src={imgUrl[Math.floor(Math.random() * imgUrl.length)]}
               />
             ) : (
-                <Avatar size="large" src={"https://i.imgur.com/0cGzAR8.png"} />
-              )}
+              <Avatar size="large" src={"https://i.imgur.com/0cGzAR8.png"} />
+            )}
           </div>
         )}
       />
