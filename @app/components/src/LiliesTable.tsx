@@ -1,13 +1,13 @@
 // @ts-nocheck
 import { InfoOutlined } from "@ant-design/icons";
-import { Avatar, Button, Table } from "antd";
+import { Avatar, Button, Table, Space } from "antd";
 import React from "react";
 import Highlighter from "react-highlight-words";
 // import useWindowSize from "../hooks/useWindowSize";
 const { Column } = Table;
 
 const DataButton = (ahsId: any) => (
-  <div>
+  <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
     {ahsId && (
       <Button
         onClick={(e) => {
@@ -83,7 +83,7 @@ export function LiliesTable(props: any) {
         sortDirections={["descend", "ascend"]}
         sorter={(a: any, b: any) => a.imgUrl.length - b.imgUrl.length}
         render={(imgUrl: any) => (
-          <div>
+          <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
             {imgUrl && imgUrl.length ? (
               <Avatar
                 size="large"
