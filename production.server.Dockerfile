@@ -74,7 +74,7 @@ WORKDIR /app/
 COPY --from=clean /app/ /app/
 
 # Install yarn ASAP because it's the slowest
-RUN yarn install --frozen-lockfile --production=true --no-progress
+RUN yarn install --frozen-lockfile --production=true --no-progress --network-timeout 100000
 
 # Import our shared args
 ARG PORT
