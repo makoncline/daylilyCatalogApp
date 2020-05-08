@@ -12,3 +12,5 @@ dist
 *.tsbuildinfo
 .ethereal
 dockerBuildCommands.txt
+productionServerDockerCompose.yml
+productionWorkerDockerCompose.yml
