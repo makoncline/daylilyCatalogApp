@@ -9,8 +9,7 @@
     "commit": "yarn gm commit",
     "uncommit": "yarn gm uncommit",
     "reset": "yarn gm reset",
-    "dump": "yarn gm migrate && yarn gm reset --shadow --erase && yarn gm migrate --shadow --force",
-    "wipe-if-demo": "./scripts/wipe-if-demo"
+    "dump": "yarn gm migrate && yarn gm reset --shadow --erase && yarn gm migrate --shadow --force"
   },
   "dependencies": {
     "graphile-migrate": "^0.2.0"
