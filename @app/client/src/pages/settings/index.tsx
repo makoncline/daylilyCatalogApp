@@ -1,4 +1,9 @@
-import { ErrorAlert, Redirect, SettingsLayout } from "@app/components";
+import {
+  ErrorAlert,
+  MarkdownInput,
+  Redirect,
+  SettingsLayout,
+} from "@app/components";
 import {
   ProfileSettingsForm_UserFragment,
   useSettingsProfileQuery,
@@ -48,6 +53,9 @@ export default Settings_Profile;
 interface FormValues {
   username: string;
   name: string;
+  intro: string;
+  bio: string;
+  userLocation: string;
 }
 
 interface ProfileSettingsFormProps {
@@ -76,6 +84,9 @@ function ProfileSettingsForm({
             patch: {
               username: values.username,
               name: values.name,
+              intro: values.intro,
+              bio: values.bio,
+              userLocation: values.userLocation,
             },
           },
         });
@@ -102,6 +113,12 @@ function ProfileSettingsForm({
   );
 
   const code = getCodeFromError(error);
+
+  const handleSetBio: (text: string | null | undefined) => void = (text) => {
+    if (text) {
+      form.setFieldsValue({ bio: text });
+    }
+  };
   return (
     <div>
       <PageHeader title="Edit profile" />
@@ -109,7 +126,13 @@ function ProfileSettingsForm({
         {...formItemLayout}
         form={form}
         onFinish={handleSubmit}
-        initialValues={{ name: user.name, username: user.username }}
+        initialValues={{
+          name: user.name,
+          username: user.username,
+          intro: user.intro,
+          bio: user.bio,
+          userLocation: user.userLocation,
+        }}
       >
         <Form.Item
           label="Name"
@@ -133,6 +156,15 @@ function ProfileSettingsForm({
             },
           ]}
         >
+          <Input />
+        </Form.Item>
+        <Form.Item label="Location" name="userLocation">
+          <Input />
+        </Form.Item>
+        <Form.Item label="Intro" name="intro">
+          <Input />
+        </Form.Item>
+        <Form.Item label="Bio" name="bio" style={{ display: "none" }}>
           <Input />
         </Form.Item>
         {error ? (
@@ -162,6 +194,13 @@ function ProfileSettingsForm({
           <Button htmlType="submit">Update Profile</Button>
         </Form.Item>
       </Form>
+
+      <PageHeader title="Edit Bio" />
+      <MarkdownInput handleSetBio={handleSetBio} value={user.bio} />
+      <br />
+      <Button htmlType="submit" onClick={form.submit}>
+        Update Profile
+      </Button>
     </div>
   );
 }

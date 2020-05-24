@@ -45,12 +45,15 @@ test("can register user with a password", () =>
     expect(snapshotSafe(user)).toMatchInlineSnapshot(`
     Object {
       "avatar_url": "http://example.com",
+      "bio": null,
       "created_at": "[DATE]",
       "id": "[ID]",
+      "intro": null,
       "is_admin": ${isAdmin},
       "is_verified": false,
       "name": "Test One",
       "updated_at": "[DATE]",
+      "user_location": null,
       "username": "testuser",
     }
     `);
@@ -87,12 +90,15 @@ test("can register user with just a username and email", () =>
     expect(snapshotSafe(user)).toMatchInlineSnapshot(`
       Object {
         "avatar_url": null,
+        "bio": null,
         "created_at": "[DATE]",
         "id": "[ID]",
+        "intro": null,
         "is_admin": false,
         "is_verified": false,
         "name": null,
         "updated_at": "[DATE]",
+        "user_location": null,
         "username": "testuser",
       }
     `);

@@ -5,6 +5,9 @@ mutation UpdateUser($id: Int!, $patch: UserPatch!) {
       id
       name
       username
+      intro
+      bio
+      userLocation
     }
   }
 }

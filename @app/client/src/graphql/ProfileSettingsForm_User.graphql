@@ -3,4 +3,7 @@ fragment ProfileSettingsForm_User on User {
   name
   username
   avatarUrl
+  intro
+  bio
+  userLocation
 }

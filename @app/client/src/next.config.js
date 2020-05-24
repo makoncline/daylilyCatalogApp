@@ -38,6 +38,7 @@ if (!ROOT_URL) {
     // fix: prevents error when .less files are required by node
     if (typeof require !== "undefined") {
       require.extensions[".less"] = () => {};
+      require.extensions[".css"] = () => {};
     }
     return compose(
       withCss,
@@ -55,6 +56,9 @@ if (!ROOT_URL) {
       lessLoaderOptions: {
         javascriptEnabled: true,
         modifyVars: themeVariables, // make your antd custom effective
+      },
+      cssLoaderOptions: {
+        url: false,
       },
       webpack(config, { webpack, dev, isServer }) {
         if (dev) config.devtool = "cheap-module-source-map";

@@ -813,11 +813,17 @@ type UpdateUserPayload {
 type User {
   """Optional avatar URL."""
   avatarUrl: String
+
+  """A markdown text bio for the user."""
+  bio: String
   createdAt: Datetime!
   hasPassword: Boolean
 
   """Unique identifier for the user."""
   id: Int!
+
+  """A short introduction for the user."""
+  intro: String
 
   """If true, the user has elevated privileges."""
   isAdmin: Boolean!
@@ -901,6 +907,9 @@ type User {
     """The method to use when ordering `UserEmail`."""
     orderBy: [UserEmailsOrderBy!] = [PRIMARY_KEY_ASC]
   ): UserEmailsConnection!
+
+  """A location for the user."""
+  userLocation: String
 
   """Public-facing username (or 'handle') of the user."""
   username: String!
@@ -1039,8 +1048,17 @@ input UserPatch {
   """Optional avatar URL."""
   avatarUrl: String
 
+  """A markdown text bio for the user."""
+  bio: String
+
+  """A short introduction for the user."""
+  intro: String
+
   """Public-facing name (or pseudonym) of the user."""
   name: String
+
+  """A location for the user."""
+  userLocation: String
 
   """Public-facing username (or 'handle') of the user."""
   username: String
