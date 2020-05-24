@@ -6,6 +6,9 @@ subscription CurrentUserUpdated {
       username
       name
       avatarUrl
+      intro
+      bio
+      userLocation
       isAdmin
       isVerified
     }

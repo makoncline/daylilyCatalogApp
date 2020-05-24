@@ -50,12 +50,15 @@ describe("when account doesn't already exist", () => {
       expect(snapshotSafe(user)).toMatchInlineSnapshot(`
       Object {
         "avatar_url": "http://example.com/avatar.jpg",
+        "bio": null,
         "created_at": "[DATE]",
         "id": "[ID]",
+        "intro": null,
         "is_admin": false,
         "is_verified": true,
         "name": "GitHub User123456",
         "updated_at": "[DATE]",
+        "user_location": null,
         "username": "GHU123",
       }
     `);

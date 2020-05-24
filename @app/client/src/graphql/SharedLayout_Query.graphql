@@ -11,5 +11,8 @@ fragment SharedLayout_User on User {
   username
   avatarUrl
   isAdmin
+  intro
+  bio
+  userLocation
   isVerified
 }
