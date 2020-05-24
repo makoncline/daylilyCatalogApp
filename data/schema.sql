@@ -112,7 +112,12 @@ CREATE TABLE app_public.users (
     is_verified boolean DEFAULT false NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    intro text,
+    bio text,
+    user_location text,
     CONSTRAINT users_avatar_url_check CHECK ((avatar_url ~ '^https?://[^/]+'::text)),
+    CONSTRAINT users_intro_check CHECK ((char_length(intro) < 280)),
+    CONSTRAINT users_user_location_check CHECK ((char_length(user_location) < 140)),
     CONSTRAINT users_username_check CHECK (((length((username)::text) >= 2) AND (length((username)::text) <= 24) AND (username OPERATOR(public.~) '^[a-zA-Z]([a-zA-Z0-9][_]?)+$'::public.citext)))
 );
 
@@ -157,6 +162,27 @@ COMMENT ON COLUMN app_public.users.avatar_url IS 'Optional avatar URL.';
 --
 
 COMMENT ON COLUMN app_public.users.is_admin IS 'If true, the user has elevated privileges.';
+
+
+--
+-- Name: COLUMN users.intro; Type: COMMENT; Schema: app_public; Owner: -
+--
+
+COMMENT ON COLUMN app_public.users.intro IS 'A short introduction for the user.';
+
+
+--
+-- Name: COLUMN users.bio; Type: COMMENT; Schema: app_public; Owner: -
+--
+
+COMMENT ON COLUMN app_public.users.bio IS 'A markdown text bio for the user.';
+
+
+--
+-- Name: COLUMN users.user_location; Type: COMMENT; Schema: app_public; Owner: -
+--
+
+COMMENT ON COLUMN app_public.users.user_location IS 'A location for the user.';
 
 
 --
@@ -1927,6 +1953,27 @@ GRANT UPDATE(name) ON TABLE app_public.users TO daylily_catalog_visitor;
 --
 
 GRANT UPDATE(avatar_url) ON TABLE app_public.users TO daylily_catalog_visitor;
+
+
+--
+-- Name: COLUMN users.intro; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT UPDATE(intro) ON TABLE app_public.users TO daylily_catalog_visitor;
+
+
+--
+-- Name: COLUMN users.bio; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT UPDATE(bio) ON TABLE app_public.users TO daylily_catalog_visitor;
+
+
+--
+-- Name: COLUMN users.user_location; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT UPDATE(user_location) ON TABLE app_public.users TO daylily_catalog_visitor;
 
 
 --
