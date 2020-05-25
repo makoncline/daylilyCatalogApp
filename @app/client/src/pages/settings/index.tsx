@@ -1,4 +1,5 @@
 import {
+  AvatarUpload,
   ErrorAlert,
   MarkdownInput,
   Redirect,
@@ -134,6 +135,9 @@ function ProfileSettingsForm({
           userLocation: user.userLocation,
         }}
       >
+        <Form.Item label="Avatar">
+          <AvatarUpload user={user} />
+        </Form.Item>
         <Form.Item
           label="Name"
           name="name"
