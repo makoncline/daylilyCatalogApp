@@ -6,7 +6,7 @@ const { serverRuntimeConfig } = getConfig();
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const bucket = serverRuntimeConfig.BUCKET;
   const key = req.query.key;
-  const params: AWS.S3.DeleteObjectRequest = {
+  const params: AWS.S3.PutObjectRequest = {
     Bucket: bucket,
     Key: key as string,
   };
@@ -41,7 +41,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     const client = new AWS.S3(options);
     return client;
   }
-  function put(client: AWS.S3, params: AWS.S3.DeleteObjectRequest) {
+  function put(client: AWS.S3, params: AWS.S3.PutObjectRequest) {
     const putParams = {
       ...params,
       Expires: 5 * 60,

@@ -17,3 +17,4 @@ export * from "./ImgUpload";
 export * from "./LiliesTable";
 export * from "./LilyRow";
 export * from "./MarkdownInput";
+export * from "./AvatarUpload";
