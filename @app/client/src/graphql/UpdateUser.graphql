@@ -9,6 +9,7 @@ mutation UpdateUser($id: Int!, $patch: UserPatch!) {
       intro
       bio
       userLocation
+      imgUrls
     }
   }
 }

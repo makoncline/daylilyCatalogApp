@@ -53,6 +53,7 @@ describe("when account doesn't already exist", () => {
         "bio": null,
         "created_at": "[DATE]",
         "id": "[ID]",
+        "img_urls": Array [],
         "intro": null,
         "is_admin": false,
         "is_verified": true,

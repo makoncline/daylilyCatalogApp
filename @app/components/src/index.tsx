@@ -18,3 +18,4 @@ export * from "./LiliesTable";
 export * from "./LilyRow";
 export * from "./MarkdownInput";
 export * from "./AvatarUpload";
+export * from "./MultiImageUpload";

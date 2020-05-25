@@ -6,4 +6,5 @@ fragment ProfileSettingsForm_User on User {
   intro
   bio
   userLocation
+  imgUrls
 }
