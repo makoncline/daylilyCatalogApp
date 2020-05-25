@@ -144,7 +144,9 @@ export function AvatarUpload({
     avatarUrl: string
   ) => Promise<Boolean> = async (avatarUrl) => {
     if (avatarUrl) {
-      const key = avatarUrl.substring(avatarUrl.lastIndexOf("/") + 1);
+      const key = decodeURIComponent(
+        avatarUrl.substring(avatarUrl.lastIndexOf("/") + 1)
+      );
       await axios
         .get(`${process.env.ROOT_URL}/api/s3`, {
           params: {

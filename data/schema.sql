@@ -115,6 +115,7 @@ CREATE TABLE app_public.users (
     intro text,
     bio text,
     user_location text,
+    img_urls text[] DEFAULT '{}'::text[],
     CONSTRAINT users_avatar_url_check CHECK ((avatar_url ~ '^https?://[^/]+'::text)),
     CONSTRAINT users_intro_check CHECK ((char_length(intro) < 280)),
     CONSTRAINT users_user_location_check CHECK ((char_length(user_location) < 140)),
@@ -183,6 +184,13 @@ COMMENT ON COLUMN app_public.users.bio IS 'A markdown text bio for the user.';
 --
 
 COMMENT ON COLUMN app_public.users.user_location IS 'A location for the user.';
+
+
+--
+-- Name: COLUMN users.img_urls; Type: COMMENT; Schema: app_public; Owner: -
+--
+
+COMMENT ON COLUMN app_public.users.img_urls IS 'Array of profile photos for the `User`';
 
 
 --
@@ -1974,6 +1982,13 @@ GRANT UPDATE(bio) ON TABLE app_public.users TO daylily_catalog_visitor;
 --
 
 GRANT UPDATE(user_location) ON TABLE app_public.users TO daylily_catalog_visitor;
+
+
+--
+-- Name: COLUMN users.img_urls; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT UPDATE(img_urls) ON TABLE app_public.users TO daylily_catalog_visitor;
 
 
 --

@@ -173,7 +173,8 @@ export const AddLilyForm = ({
   );
   const handleImgDelete = useCallback(
     (url: any) => {
-      const fileName = url && url.substring(url.lastIndexOf("/") + 1);
+      const fileName =
+        url && decodeURIComponent(url.substring(url.lastIndexOf("/") + 1));
       axios
         .get(`${process.env.ROOT_URL}/api/s3`, {
           params: {
