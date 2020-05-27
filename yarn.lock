@@ -112,6 +112,15 @@
   dependencies:
     "@babel/highlight" "^7.8.3"
 
+"@babel/compat-data@^7.10.0":
+  version "7.10.0"
+  resolved "https://registry.yarnpkg.com/@babel/compat-data/-/compat-data-7.10.0.tgz#1e9129ec36bc7cc5ec202801d8af9529699b8d5e"
+  integrity sha512-H59nKm/7ATMfocMobbSk4PkeAerKqoxk+EYBT0kV5sol0e8GBpGNHseZNNYX0VOItKngIf6GgUpEOAlOLIUvDA==
+  dependencies:
+    browserslist "^4.12.0"
+    invariant "^2.2.4"
+    semver "^5.5.0"
+
 "@babel/compat-data@^7.9.6":
   version "7.9.6"
   resolved "https://registry.yarnpkg.com/@babel/compat-data/-/compat-data-7.9.6.tgz#3f604c40e420131affe6f2c8052e9a275ae2049b"
@@ -204,6 +213,17 @@
   dependencies:
     "@babel/helper-annotate-as-pure" "^7.8.3"
     "@babel/types" "^7.9.0"
+
+"@babel/helper-compilation-targets@^7.10.0":
+  version "7.10.0"
+  resolved "https://registry.yarnpkg.com/@babel/helper-compilation-targets/-/helper-compilation-targets-7.10.0.tgz#c2734604ddfaa616479759a0cc2593d1928304bd"
+  integrity sha512-PW5Hlc1cQ8bLzY7YsLJP6PQ7GR6ZD8Av4JlP3DZk6QaZJvptsXNDn4Su64EjKAetLTJhVPDp8AEC+j2O6b/Gpg==
+  dependencies:
+    "@babel/compat-data" "^7.10.0"
+    browserslist "^4.12.0"
+    invariant "^2.2.4"
+    levenary "^1.1.1"
+    semver "^5.5.0"
 
 "@babel/helper-compilation-targets@^7.9.6":
   version "7.9.6"
@@ -4616,7 +4636,7 @@ browserslist@4.8.3:
     electron-to-chromium "^1.3.322"
     node-releases "^1.1.44"
 
-browserslist@^4.0.0, browserslist@^4.11.1, browserslist@^4.6.0, browserslist@^4.8.5:
+browserslist@^4.0.0, browserslist@^4.11.1, browserslist@^4.12.0, browserslist@^4.6.0, browserslist@^4.8.5:
   version "4.12.0"
   resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.12.0.tgz#06c6d5715a1ede6c51fc39ff67fd647f740b656d"
   integrity sha512-UH2GkcEDSI0k/lRkuDSzFl9ZZ87skSy9w2XAn1MsZnL+4c4rqbBd3e82UWHbYDpztABrPBhZsTEeuxVfHppqDg==
