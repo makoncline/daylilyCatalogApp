@@ -49,10 +49,22 @@ export function LiliesTable(props: any) {
 
   const sortAlphaNum = (a, b) =>
     ("" + a).localeCompare(b + "", "en", { numeric: true });
+
+  const filters = Array.from(
+    new Set(props.dataSource.map((item) => item && item.list && item.list.name))
+  ).map((item) => {
+    return { value: item, text: item };
+  });
+
   return (
     <Table
       dataSource={props.dataSource}
-      pagination={{ pageSize: 50 }}
+      pagination={{
+        position: ["topRight", "bottomRight"],
+        defaultPageSize: 25,
+        hideOnSinglePage: true,
+        pageSizeOptions: ["10", "25", "50", "100"],
+      }}
       bordered
       scroll={{ x: 876 }}
       size="middle"
@@ -109,6 +121,47 @@ export function LiliesTable(props: any) {
             )}
           </div>
         )}
+      />
+      <Column
+        title="List"
+        dataIndex="list"
+        key="list"
+        width={125}
+        render={(list) => (list ? truncate(list.name, 40) : "")}
+        // sortDirections={["descend", "ascend"]}
+        // sorter={(a: any, b: any, order: any) => {
+        //   if (order === "ascend") {
+        //     if (a.list === b.list) {
+        //       return 0;
+        //     } else if (a.list === null) {
+        //       return 1;
+        //     } else if (b.list === null) {
+        //       return -1;
+        //     } else {
+        //       return sortAlphaNum(a.list.name, b.list.name) > 0 ? -1 : 1;
+        //     }
+        //   } else if (order === "descend") {
+        //     if (a.list === b.list) {
+        //       return 0;
+        //     } else if (a.list === null) {
+        //       return -1;
+        //     } else if (b.list === null) {
+        //       return 1;
+        //     } else {
+        //       return sortAlphaNum(a.list.name, b.list.name) > 0 ? -1 : 1;
+        //     }
+        //   }
+        // }}
+        filters={filters}
+        onFilter={(value, record) => {
+          if (!value) {
+            return !record.list;
+          } else {
+            return record.list && record.list.name
+              ? value == record.list.name
+              : false;
+          }
+        }}
       />
       <Column
         title="Price"

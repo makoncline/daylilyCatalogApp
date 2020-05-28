@@ -1,0 +1,22 @@
+#import "./ListData.graphql"
+#import "./LilyData.graphql"
+
+mutation DeleteList($id: Int!) {
+  deleteList(input: { id: $id }) {
+    user {
+      id
+      lists {
+        nodes {
+          id
+          ...ListData
+        }
+      }
+      lilies {
+        nodes {
+          id
+          ...LilyData
+        }
+      }
+    }
+  }
+}

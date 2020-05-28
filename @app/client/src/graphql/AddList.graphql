@@ -1,0 +1,14 @@
+#import "./ListData.graphql"
+mutation AddList($name: String!, $intro: String, $bio: String) {
+  createList(input: { list: { name: $name, intro: $intro, bio: $bio } }) {
+    user {
+      id
+      lists {
+        nodes {
+          id
+          ...ListData
+        }
+      }
+    }
+  }
+}

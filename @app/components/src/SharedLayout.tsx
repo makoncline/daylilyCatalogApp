@@ -196,6 +196,22 @@ export function SharedLayout({
                 overlay={
                   <Menu>
                     <Menu.Item>
+                      <Link href="/">
+                        <a data-cy="layout-link-catalog">
+                          <Warn okay={data.currentUser.isVerified}>
+                            Catalog
+                          </Warn>
+                        </a>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item>
+                      <Link href="/lists">
+                        <a data-cy="layout-link-lists">
+                          <Warn okay={data.currentUser.isVerified}>Lists</Warn>
+                        </a>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item>
                       <Link href="/settings">
                         <a data-cy="layout-link-settings">
                           <Warn okay={data.currentUser.isVerified}>

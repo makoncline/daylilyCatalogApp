@@ -4,6 +4,7 @@ import {
   useAddLilyMutation,
   useDeleteLilyMutation,
   useEditLilyMutation,
+  useListsQuery,
 } from "@app/graphql";
 import { extractError, formItemLayout, getCodeFromError } from "@app/lib";
 import {
@@ -26,6 +27,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ImgUpload } from "./ImgUpload";
 
 const { TextArea } = Input;
+const { Option } = Select;
 export interface FormValues {
   name: string;
   imgUrl: string[];
@@ -33,6 +35,7 @@ export interface FormValues {
   publicNote: string;
   privateNote: string;
   ahsId: string;
+  listId: number;
 }
 export interface User {
   id: number;
@@ -68,10 +71,13 @@ export const AddLilyForm = ({
   const [form] = Form.useForm();
   const { setFieldsValue, getFieldValue } = form;
   const focusElement = useRef<Select<SelectValue>>(null);
+  const { data } = useListsQuery();
+  const lists = data && data.currentUser && data.currentUser.lists.nodes;
 
   useEffect(() => {
     if (updateLily) {
       setFieldsValue({ name: updateLily?.name });
+      setFieldsValue({ list: updateLily.list ? updateLily.list.id : 0 });
       setFieldsValue({ price: updateLily?.price });
       setFieldsValue({ ahsId: updateLily?.ahsId });
       setFieldsValue({ publicNote: updateLily?.publicNote });
@@ -236,6 +242,7 @@ export const AddLilyForm = ({
               publicNote: values.publicNote || null,
               privateNote: values.privateNote || null,
               ahsId: values.ahsId || null,
+              listId: values.list || null,
             },
           });
         } else {
@@ -247,6 +254,7 @@ export const AddLilyForm = ({
               publicNote: values.publicNote || null,
               privateNote: values.privateNote || null,
               ahsId: values.ahsId || null,
+              listId: values.list || null,
             },
           });
         }
@@ -390,7 +398,12 @@ export const AddLilyForm = ({
             ]
       }
     >
-      <Form {...formItemLayout} form={form} onFinish={handleSubmit}>
+      <Form
+        {...formItemLayout}
+        form={form}
+        onFinish={handleSubmit}
+        initialValues={{ list: 0 }}
+      >
         <Form.Item
           label={
             <span data-cy="addLilyForm-name-label">
@@ -420,6 +433,29 @@ export const AddLilyForm = ({
             allowClear
             disabled={isUploading}
           />
+        </Form.Item>
+        <Form.Item
+          label={
+            <span data-cy="addLilyForm-list-label">
+              List&nbsp;
+              <Tooltip title="Add this daylily to a list, if you'd like.">
+                <QuestionCircleOutlined />
+              </Tooltip>
+            </span>
+          }
+          name="list"
+        >
+          <Select data-cy="addLilyForm-input-list" disabled={isUploading}>
+            <Option key="none" value={0}>
+              None
+            </Option>
+            {lists &&
+              lists.map((list, i) => (
+                <Option key={i} value={list.id}>
+                  {list.name}
+                </Option>
+              ))}
+          </Select>
         </Form.Item>
         <Form.Item
           style={{ display: "none" }}
