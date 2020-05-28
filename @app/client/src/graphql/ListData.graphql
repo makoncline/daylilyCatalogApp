@@ -1,0 +1,12 @@
+fragment ListData on List {
+  id
+  userId
+  name
+  intro
+  bio
+  updatedAt
+  createdAt
+  lilies {
+    totalCount
+  }
+}

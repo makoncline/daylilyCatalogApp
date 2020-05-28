@@ -6,6 +6,10 @@ fragment LilyData on Lily {
   publicNote
   privateNote
   ahsId
+  list {
+    id
+    ...ListData
+  }
   user {
     id
     username

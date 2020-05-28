@@ -6,6 +6,7 @@ mutation AddLily(
   $publicNote: String
   $privateNote: String
   $ahsId: String
+  $listId: Int
 ) {
   createLily(
     input: {
@@ -16,6 +17,7 @@ mutation AddLily(
         publicNote: $publicNote
         privateNote: $privateNote
         ahsId: $ahsId
+        listId: $listId
       }
     }
   ) {

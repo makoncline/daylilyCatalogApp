@@ -1,9 +1,9 @@
-import { ErrorAlert, Lilies, Redirect, SharedLayout } from "@app/components";
+import { ErrorAlert, Lists, Redirect, SharedLayout } from "@app/components";
 import { useSharedQuery } from "@app/graphql";
 import { NextPage } from "next";
 import React from "react";
 
-const Catalog: NextPage = () => {
+const ListsPage: NextPage = () => {
   const { data, loading, error } = useSharedQuery();
   const user = data && data.currentUser;
 
@@ -17,17 +17,17 @@ const Catalog: NextPage = () => {
     } else {
       return (
         <>
-          <Lilies />
+          <Lists />
         </>
       );
     }
   })();
   const query = useSharedQuery();
   return (
-    <SharedLayout title="Catalog" query={query}>
+    <SharedLayout title="Lists" query={query}>
       {pageContent}
     </SharedLayout>
   );
 };
 
-export default Catalog;
+export default ListsPage;

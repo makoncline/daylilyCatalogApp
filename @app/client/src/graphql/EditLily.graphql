@@ -8,6 +8,7 @@ mutation EditLily(
   $publicNote: String
   $privateNote: String
   $ahsId: String
+  $listId: Int
 ) {
   updateLily(
     input: {
@@ -18,6 +19,7 @@ mutation EditLily(
         publicNote: $publicNote
         privateNote: $privateNote
         ahsId: $ahsId
+        listId: $listId
       }
       id: $id
     }

@@ -83,12 +83,53 @@ type CreateLilyPayload {
     orderBy: [LiliesOrderBy!] = [PRIMARY_KEY_ASC]
   ): LiliesEdge
 
+  """Reads a single `List` that is related to this `Lily`."""
+  list: List
+
   """
   Our root query field type. Allows us to run any query from our mutation payload.
   """
   query: Query
 
   """Reads a single `User` that is related to this `Lily`."""
+  user: User
+}
+
+"""All input for the create `List` mutation."""
+input CreateListInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The `List` to be created by this mutation."""
+  list: ListInput!
+}
+
+"""The output of our create `List` mutation."""
+type CreateListPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `List` that was created by this mutation."""
+  list: List
+
+  """An edge for our `List`. May be used by Relay 1."""
+  listEdge(
+    """The method to use when ordering `List`."""
+    orderBy: [ListsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): ListsEdge
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `User` that is related to this `List`."""
   user: User
 }
 
@@ -167,12 +208,54 @@ type DeleteLilyPayload {
     orderBy: [LiliesOrderBy!] = [PRIMARY_KEY_ASC]
   ): LiliesEdge
 
+  """Reads a single `List` that is related to this `Lily`."""
+  list: List
+
   """
   Our root query field type. Allows us to run any query from our mutation payload.
   """
   query: Query
 
   """Reads a single `User` that is related to this `Lily`."""
+  user: User
+}
+
+"""All input for the `deleteList` mutation."""
+input DeleteListInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The primary key for the `List`."""
+  id: Int!
+}
+
+"""The output of our delete `List` mutation."""
+type DeleteListPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+  deletedListNodeId: ID
+
+  """The `List` that was deleted by this mutation."""
+  list: List
+
+  """An edge for our `List`. May be used by Relay 1."""
+  listEdge(
+    """The method to use when ordering `List`."""
+    orderBy: [ListsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): ListsEdge
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `User` that is related to this `List`."""
   user: User
 }
 
@@ -298,6 +381,8 @@ type LiliesEdge {
 enum LiliesOrderBy {
   ID_ASC
   ID_DESC
+  LIST_ID_ASC
+  LIST_ID_DESC
   NATURAL
   PRIMARY_KEY_ASC
   PRIMARY_KEY_DESC
@@ -310,6 +395,12 @@ type Lily {
   createdAt: Datetime!
   id: Int!
   imgUrl: [String]
+
+  """Reads a single `List` that is related to this `Lily`."""
+  list: List
+
+  """The primary key for the `List` this `Lily` belongs to."""
+  listId: Int
   name: String!
   price: BigFloat
   privateNote: String
@@ -328,6 +419,9 @@ input LilyCondition {
   """Checks for equality with the object’s `id` field."""
   id: Int
 
+  """Checks for equality with the object’s `listId` field."""
+  listId: Int
+
   """Checks for equality with the object’s `userId` field."""
   userId: Int
 }
@@ -338,6 +432,9 @@ input LilyInput {
   createdAt: Datetime
   id: Int
   imgUrl: [String]
+
+  """The primary key for the `List` this `Lily` belongs to."""
+  listId: Int
   name: String!
   price: BigFloat
   privateNote: String
@@ -352,12 +449,143 @@ input LilyPatch {
   createdAt: Datetime
   id: Int
   imgUrl: [String]
+
+  """The primary key for the `List` this `Lily` belongs to."""
+  listId: Int
   name: String
   price: BigFloat
   privateNote: String
   publicNote: String
   updatedAt: Datetime
   userId: Int
+}
+
+"""A list of lilies."""
+type List {
+  """A long bio for the `List` written by the `User`."""
+  bio: String
+
+  """The time this `List` was created."""
+  createdAt: Datetime!
+
+  """The primary key for the `List`."""
+  id: Int!
+
+  """A short introduction for the `List` written by the `User`."""
+  intro: String
+
+  """Reads and enables pagination through a set of `Lily`."""
+  lilies(
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: LilyCondition
+
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """The method to use when ordering `Lily`."""
+    orderBy: [LiliesOrderBy!] = [PRIMARY_KEY_ASC]
+  ): LiliesConnection!
+
+  """The name of the `List` written by the `User`."""
+  name: String!
+
+  """The time this `List` was last modified (or created)."""
+  updatedAt: Datetime!
+
+  """Reads a single `User` that is related to this `List`."""
+  user: User
+
+  """The id of the `User`."""
+  userId: Int!
+}
+
+"""
+A condition to be used against `List` object types. All fields are tested for equality and combined with a logical ‘and.’
+"""
+input ListCondition {
+  """Checks for equality with the object’s `id` field."""
+  id: Int
+
+  """Checks for equality with the object’s `userId` field."""
+  userId: Int
+}
+
+"""An input for mutations affecting `List`"""
+input ListInput {
+  """A long bio for the `List` written by the `User`."""
+  bio: String
+
+  """A short introduction for the `List` written by the `User`."""
+  intro: String
+
+  """The name of the `List` written by the `User`."""
+  name: String!
+}
+
+"""Represents an update to a `List`. Fields that are set will be updated."""
+input ListPatch {
+  """A long bio for the `List` written by the `User`."""
+  bio: String
+
+  """A short introduction for the `List` written by the `User`."""
+  intro: String
+
+  """The name of the `List` written by the `User`."""
+  name: String
+}
+
+"""A connection to a list of `List` values."""
+type ListsConnection {
+  """
+  A list of edges which contains the `List` and cursor to aid in pagination.
+  """
+  edges: [ListsEdge!]!
+
+  """A list of `List` objects."""
+  nodes: [List!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `List` you could get from the connection."""
+  totalCount: Int!
+}
+
+"""A `List` edge in the connection."""
+type ListsEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `List` at the end of the edge."""
+  node: List!
+}
+
+"""Methods to use when ordering `List`."""
+enum ListsOrderBy {
+  ID_ASC
+  ID_DESC
+  NATURAL
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+  USER_ID_ASC
+  USER_ID_DESC
 }
 
 input LoginInput {
@@ -439,6 +667,14 @@ type Mutation {
     input: CreateLilyInput!
   ): CreateLilyPayload
 
+  """Creates a single `List`."""
+  createList(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateListInput!
+  ): CreateListPayload
+
   """Creates a single `UserEmail`."""
   createUserEmail(
     """
@@ -454,6 +690,14 @@ type Mutation {
     """
     input: DeleteLilyInput!
   ): DeleteLilyPayload
+
+  """Deletes a single `List` using a unique key."""
+  deleteList(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteListInput!
+  ): DeleteListPayload
 
   """Deletes a single `UserAuthentication` using a unique key."""
   deleteUserAuthentication(
@@ -557,6 +801,14 @@ type Mutation {
     input: UpdateLilyInput!
   ): UpdateLilyPayload
 
+  """Updates a single `List` using a unique key and a patch."""
+  updateList(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateListInput!
+  ): UpdateListPayload
+
   """Updates a single `User` using a unique key and a patch."""
   updateUser(
     """
@@ -626,6 +878,36 @@ type Query {
     orderBy: [LiliesOrderBy!] = [PRIMARY_KEY_ASC]
   ): LiliesConnection
   lily(id: Int!): Lily
+  list(id: Int!): List
+
+  """Reads and enables pagination through a set of `List`."""
+  lists(
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: ListCondition
+
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """The method to use when ordering `List`."""
+    orderBy: [ListsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): ListsConnection
   user(id: Int!): User
   userAuthentication(id: Int!): UserAuthentication
   userByUsername(username: String!): User
@@ -760,12 +1042,58 @@ type UpdateLilyPayload {
     orderBy: [LiliesOrderBy!] = [PRIMARY_KEY_ASC]
   ): LiliesEdge
 
+  """Reads a single `List` that is related to this `Lily`."""
+  list: List
+
   """
   Our root query field type. Allows us to run any query from our mutation payload.
   """
   query: Query
 
   """Reads a single `User` that is related to this `Lily`."""
+  user: User
+}
+
+"""All input for the `updateList` mutation."""
+input UpdateListInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The primary key for the `List`."""
+  id: Int!
+
+  """
+  An object where the defined keys will be set on the `List` being updated.
+  """
+  patch: ListPatch!
+}
+
+"""The output of our update `List` mutation."""
+type UpdateListPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `List` that was updated by this mutation."""
+  list: List
+
+  """An edge for our `List`. May be used by Relay 1."""
+  listEdge(
+    """The method to use when ordering `List`."""
+    orderBy: [ListsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): ListsEdge
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `User` that is related to this `List`."""
   user: User
 }
 
@@ -821,6 +1149,8 @@ type User {
 
   """Unique identifier for the user."""
   id: Int!
+
+  """Array of profile photos for the `User`"""
   imgUrls: [String]
 
   """Array of profile photos for the `User`"""
@@ -858,6 +1188,35 @@ type User {
     """The method to use when ordering `Lily`."""
     orderBy: [LiliesOrderBy!] = [PRIMARY_KEY_ASC]
   ): LiliesConnection!
+
+  """Reads and enables pagination through a set of `List`."""
+  lists(
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: ListCondition
+
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """The method to use when ordering `List`."""
+    orderBy: [ListsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): ListsConnection!
 
   """Public-facing name (or pseudonym) of the user."""
   name: String
@@ -1051,6 +1410,8 @@ input UserPatch {
 
   """A markdown text bio for the user."""
   bio: String
+
+  """Array of profile photos for the `User`"""
   imgUrls: [String]
 
   """Array of profile photos for the `User`"""

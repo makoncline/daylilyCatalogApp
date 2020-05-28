@@ -1356,8 +1356,16 @@ CREATE TABLE app_public.lilies (
     ahs_id text,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    list_id integer,
     CONSTRAINT lilies_name_check CHECK ((char_length(name) < 70))
 );
+
+
+--
+-- Name: COLUMN lilies.list_id; Type: COMMENT; Schema: app_public; Owner: -
+--
+
+COMMENT ON COLUMN app_public.lilies.list_id IS 'The primary key for the `List` this `Lily` belongs to.';
 
 
 --
@@ -1378,6 +1386,99 @@ CREATE SEQUENCE app_public.lilies_id_seq
 --
 
 ALTER SEQUENCE app_public.lilies_id_seq OWNED BY app_public.lilies.id;
+
+
+--
+-- Name: lists; Type: TABLE; Schema: app_public; Owner: -
+--
+
+CREATE TABLE app_public.lists (
+    id integer NOT NULL,
+    user_id integer DEFAULT app_public.current_user_id() NOT NULL,
+    name text NOT NULL,
+    intro text,
+    bio text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT lists_intro_check CHECK ((char_length(intro) < 280)),
+    CONSTRAINT lists_name_check CHECK ((char_length(name) < 70))
+);
+
+
+--
+-- Name: TABLE lists; Type: COMMENT; Schema: app_public; Owner: -
+--
+
+COMMENT ON TABLE app_public.lists IS 'A list of lilies.';
+
+
+--
+-- Name: COLUMN lists.id; Type: COMMENT; Schema: app_public; Owner: -
+--
+
+COMMENT ON COLUMN app_public.lists.id IS 'The primary key for the `List`.';
+
+
+--
+-- Name: COLUMN lists.user_id; Type: COMMENT; Schema: app_public; Owner: -
+--
+
+COMMENT ON COLUMN app_public.lists.user_id IS 'The id of the `User`.';
+
+
+--
+-- Name: COLUMN lists.name; Type: COMMENT; Schema: app_public; Owner: -
+--
+
+COMMENT ON COLUMN app_public.lists.name IS 'The name of the `List` written by the `User`.';
+
+
+--
+-- Name: COLUMN lists.intro; Type: COMMENT; Schema: app_public; Owner: -
+--
+
+COMMENT ON COLUMN app_public.lists.intro IS 'A short introduction for the `List` written by the `User`.';
+
+
+--
+-- Name: COLUMN lists.bio; Type: COMMENT; Schema: app_public; Owner: -
+--
+
+COMMENT ON COLUMN app_public.lists.bio IS 'A long bio for the `List` written by the `User`.';
+
+
+--
+-- Name: COLUMN lists.created_at; Type: COMMENT; Schema: app_public; Owner: -
+--
+
+COMMENT ON COLUMN app_public.lists.created_at IS 'The time this `List` was created.';
+
+
+--
+-- Name: COLUMN lists.updated_at; Type: COMMENT; Schema: app_public; Owner: -
+--
+
+COMMENT ON COLUMN app_public.lists.updated_at IS 'The time this `List` was last modified (or created).';
+
+
+--
+-- Name: lists_id_seq; Type: SEQUENCE; Schema: app_public; Owner: -
+--
+
+CREATE SEQUENCE app_public.lists_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: lists_id_seq; Type: SEQUENCE OWNED BY; Schema: app_public; Owner: -
+--
+
+ALTER SEQUENCE app_public.lists_id_seq OWNED BY app_public.lists.id;
 
 
 --
@@ -1491,6 +1592,13 @@ ALTER TABLE ONLY app_public.lilies ALTER COLUMN id SET DEFAULT nextval('app_publ
 
 
 --
+-- Name: lists id; Type: DEFAULT; Schema: app_public; Owner: -
+--
+
+ALTER TABLE ONLY app_public.lists ALTER COLUMN id SET DEFAULT nextval('app_public.lists_id_seq'::regclass);
+
+
+--
 -- Name: user_authentications id; Type: DEFAULT; Schema: app_public; Owner: -
 --
 
@@ -1568,6 +1676,14 @@ ALTER TABLE ONLY app_public.lilies
 
 
 --
+-- Name: lists lists_pkey; Type: CONSTRAINT; Schema: app_public; Owner: -
+--
+
+ALTER TABLE ONLY app_public.lists
+    ADD CONSTRAINT lists_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: user_authentications uniq_user_authentications; Type: CONSTRAINT; Schema: app_public; Owner: -
 --
 
@@ -1623,10 +1739,24 @@ CREATE INDEX idx_user_emails_primary ON app_public.user_emails USING btree (is_p
 
 
 --
+-- Name: lilies_list_id_idx; Type: INDEX; Schema: app_public; Owner: -
+--
+
+CREATE INDEX lilies_list_id_idx ON app_public.lilies USING btree (list_id);
+
+
+--
 -- Name: lilies_user_id_idx; Type: INDEX; Schema: app_public; Owner: -
 --
 
 CREATE INDEX lilies_user_id_idx ON app_public.lilies USING btree (user_id);
+
+
+--
+-- Name: lists_user_id_idx; Type: INDEX; Schema: app_public; Owner: -
+--
+
+CREATE INDEX lists_user_id_idx ON app_public.lists USING btree (user_id);
 
 
 --
@@ -1655,6 +1785,13 @@ CREATE INDEX user_authentications_user_id_idx ON app_public.user_authentications
 --
 
 CREATE TRIGGER _100_timestamps BEFORE INSERT OR UPDATE ON app_public.lilies FOR EACH ROW EXECUTE FUNCTION app_private.tg__timestamps();
+
+
+--
+-- Name: lists _100_timestamps; Type: TRIGGER; Schema: app_public; Owner: -
+--
+
+CREATE TRIGGER _100_timestamps BEFORE INSERT OR UPDATE ON app_public.lists FOR EACH ROW EXECUTE FUNCTION app_private.tg__timestamps();
 
 
 --
@@ -1760,11 +1897,27 @@ ALTER TABLE ONLY app_private.user_secrets
 
 
 --
+-- Name: lilies lilies_list_id_fkey; Type: FK CONSTRAINT; Schema: app_public; Owner: -
+--
+
+ALTER TABLE ONLY app_public.lilies
+    ADD CONSTRAINT lilies_list_id_fkey FOREIGN KEY (list_id) REFERENCES app_public.lists(id) ON DELETE SET NULL;
+
+
+--
 -- Name: lilies lilies_user_id_fkey; Type: FK CONSTRAINT; Schema: app_public; Owner: -
 --
 
 ALTER TABLE ONLY app_public.lilies
     ADD CONSTRAINT lilies_user_id_fkey FOREIGN KEY (user_id) REFERENCES app_public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: lists lists_user_id_fkey; Type: FK CONSTRAINT; Schema: app_public; Owner: -
+--
+
+ALTER TABLE ONLY app_public.lists
+    ADD CONSTRAINT lists_user_id_fkey FOREIGN KEY (user_id) REFERENCES app_public.users(id);
 
 
 --
@@ -1860,6 +2013,35 @@ CREATE POLICY insert_own ON app_public.user_emails FOR INSERT WITH CHECK ((user_
 --
 
 ALTER TABLE app_public.lilies ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: lists; Type: ROW SECURITY; Schema: app_public; Owner: -
+--
+
+ALTER TABLE app_public.lists ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: lists manage_as_admin; Type: POLICY; Schema: app_public; Owner: -
+--
+
+CREATE POLICY manage_as_admin ON app_public.lists USING ((EXISTS ( SELECT 1
+   FROM app_public.users
+  WHERE ((users.is_admin IS TRUE) AND (users.id = app_public.current_user_id())))));
+
+
+--
+-- Name: lists manage_own; Type: POLICY; Schema: app_public; Owner: -
+--
+
+CREATE POLICY manage_own ON app_public.lists USING ((user_id = app_public.current_user_id()));
+
+
+--
+-- Name: lists select_all; Type: POLICY; Schema: app_public; Owner: -
+--
+
+CREATE POLICY select_all ON app_public.lists FOR SELECT USING (true);
+
 
 --
 -- Name: users select_all; Type: POLICY; Schema: app_public; Owner: -
@@ -2062,10 +2244,52 @@ GRANT INSERT(ahs_id),UPDATE(ahs_id) ON TABLE app_public.lilies TO daylily_catalo
 
 
 --
+-- Name: COLUMN lilies.list_id; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT INSERT(list_id),UPDATE(list_id) ON TABLE app_public.lilies TO daylily_catalog_visitor;
+
+
+--
 -- Name: SEQUENCE lilies_id_seq; Type: ACL; Schema: app_public; Owner: -
 --
 
 GRANT SELECT,USAGE ON SEQUENCE app_public.lilies_id_seq TO daylily_catalog_visitor;
+
+
+--
+-- Name: TABLE lists; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT SELECT,DELETE ON TABLE app_public.lists TO daylily_catalog_visitor;
+
+
+--
+-- Name: COLUMN lists.name; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT INSERT(name),UPDATE(name) ON TABLE app_public.lists TO daylily_catalog_visitor;
+
+
+--
+-- Name: COLUMN lists.intro; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT INSERT(intro),UPDATE(intro) ON TABLE app_public.lists TO daylily_catalog_visitor;
+
+
+--
+-- Name: COLUMN lists.bio; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT INSERT(bio),UPDATE(bio) ON TABLE app_public.lists TO daylily_catalog_visitor;
+
+
+--
+-- Name: SEQUENCE lists_id_seq; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT SELECT,USAGE ON SEQUENCE app_public.lists_id_seq TO daylily_catalog_visitor;
 
 
 --

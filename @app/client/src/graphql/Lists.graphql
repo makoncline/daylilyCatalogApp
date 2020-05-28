@@ -1,12 +1,11 @@
-#import "./LilyData.graphql"
 #import "./ListData.graphql"
-query Lilies {
+query Lists {
   currentUser {
     id
-    lilies {
+    lists {
       nodes {
         id
-        ...LilyData
+        ...ListData
       }
     }
   }

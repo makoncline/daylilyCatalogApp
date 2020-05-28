@@ -12,7 +12,9 @@
     "jsx": "react"
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "references": [{
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    {
       "path": "../graphql"
     },
     {

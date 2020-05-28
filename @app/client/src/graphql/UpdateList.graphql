@@ -1,0 +1,15 @@
+#import "./ListData.graphql"
+mutation UpdateList($id: Int!, $patch: ListPatch!) {
+  updateList(input: { id: $id, patch: $patch }) {
+    clientMutationId
+    user {
+      id
+      lists {
+        nodes {
+          id
+          ...ListData
+        }
+      }
+    }
+  }
+}
