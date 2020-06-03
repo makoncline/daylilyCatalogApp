@@ -173,10 +173,29 @@ function ProfileSettingsForm({
         >
           <Input />
         </Form.Item>
-        <Form.Item label="Location" name="userLocation">
+        <Form.Item
+          label="Location"
+          name="userLocation"
+          rules={[
+            {
+              max: 140,
+              message: "Location must beless than 140 characters long.",
+            },
+          ]}
+        >
           <Input />
         </Form.Item>
-        <Form.Item label="Intro" name="intro">
+        <Form.Item
+          label="Intro"
+          name="intro"
+          rules={[
+            {
+              max: 280,
+              message:
+                "Intro must beless than 280 characters long. Please use the Bio section for long form text.",
+            },
+          ]}
+        >
           <Input />
         </Form.Item>
         <Form.Item label="Bio" name="bio" style={{ display: "none" }}>
@@ -211,6 +230,13 @@ function ProfileSettingsForm({
       </Form>
 
       <PageHeader title="Edit Bio" />
+      <p>
+        Write your Bio in plain text or Markdown.{" "}
+        <a href="./markdown" target="blank">
+          Click here
+        </a>{" "}
+        for a tutorial.
+      </p>
       <MarkdownInput handleSetBio={handleSetBio} value={user.bio} />
       <br />
       <Button htmlType="submit" onClick={form.submit}>
