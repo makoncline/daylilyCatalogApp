@@ -179,7 +179,7 @@ function ProfileSettingsForm({
           rules={[
             {
               max: 140,
-              message: "Location must beless than 140 characters long.",
+              message: "Location must be less than 140 characters long.",
             },
           ]}
         >
@@ -192,7 +192,7 @@ function ProfileSettingsForm({
             {
               max: 280,
               message:
-                "Intro must beless than 280 characters long. Please use the Bio section for long form text.",
+                "Intro must be less than 280 characters long. Please use the Bio section for long form text.",
             },
           ]}
         >
