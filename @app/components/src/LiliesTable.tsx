@@ -35,10 +35,12 @@ const DataButton = (ahsId: any) => (
 
 export function LiliesTable(props: any) {
   // const height = useWindowSize()[1];
+
   const truncate = (input: string, length: number) =>
     input && input.length > length
       ? `${input.substring(0, length - 3)}...`
       : input;
+
   const currency = (input: Number) =>
     new Number(input).toLocaleString("en-US", {
       style: "currency",
@@ -113,11 +115,11 @@ export function LiliesTable(props: any) {
           >
             {imgUrl && imgUrl.length ? (
               <Avatar
-                size="large"
-                src={imgUrl[Math.floor(Math.random() * imgUrl.length)]}
+                size={64}
+                src={`https://images.weserv.nl/?url=${imgUrl[0]}&w=100&h=100&fit=cover`}
               />
             ) : (
-              <Avatar size="large" src={"https://i.imgur.com/0cGzAR8.png"} />
+              <Avatar size={64} src={"https://i.imgur.com/0cGzAR8.png"} />
             )}
           </div>
         )}

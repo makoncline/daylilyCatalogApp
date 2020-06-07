@@ -1153,7 +1153,7 @@ type User {
   """Array of profile photos for the `User`"""
   imgUrls: [String]
 
-  """Array of profile photos for the `User`"""
+  """A short introduction for the user."""
   intro: String
 
   """If true, the user has elevated privileges."""
@@ -1414,7 +1414,7 @@ input UserPatch {
   """Array of profile photos for the `User`"""
   imgUrls: [String]
 
-  """Array of profile photos for the `User`"""
+  """A short introduction for the user."""
   intro: String
 
   """Public-facing name (or pseudonym) of the user."""
