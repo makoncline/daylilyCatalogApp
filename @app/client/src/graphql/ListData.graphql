@@ -6,7 +6,4 @@ fragment ListData on List {
   bio
   updatedAt
   createdAt
-  lilies {
-    totalCount
-  }
 }
