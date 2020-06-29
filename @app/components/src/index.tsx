@@ -22,3 +22,4 @@ export * from "./MultiImageUpload";
 export * from "./ListTable";
 export * from "./Lilies";
 export * from "./Lists";
+export * from "./Wysiwyg";
