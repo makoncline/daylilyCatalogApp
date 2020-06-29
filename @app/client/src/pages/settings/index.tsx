@@ -1,10 +1,10 @@
 import {
   AvatarUpload,
   ErrorAlert,
-  MarkdownInput,
   MultiImageUpload,
   Redirect,
   SettingsLayout,
+  Wysiwyg,
 } from "@app/components";
 import {
   ProfileSettingsForm_UserFragment,
@@ -230,14 +230,7 @@ function ProfileSettingsForm({
       </Form>
 
       <PageHeader title="Edit Bio" />
-      <p>
-        Write your Bio in plain text or Markdown.{" "}
-        <a href="./markdown" target="blank">
-          Click here
-        </a>{" "}
-        for a tutorial.
-      </p>
-      <MarkdownInput handleSetBio={handleSetBio} value={user.bio} />
+      <Wysiwyg handleSetBio={handleSetBio} value={user.bio} />
       <br />
       <Button htmlType="submit" onClick={form.submit}>
         Update Profile
