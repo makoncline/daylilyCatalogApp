@@ -14,11 +14,9 @@ const Editor = dynamic(
 export const Wysiwyg = ({
   handleSetBio,
   value,
-  height = 500,
 }: {
   handleSetBio: (text: string | null | undefined) => void;
   value: string | null | undefined;
-  height?: number;
 }) => {
   const [editorState, setEditorState] = useState<any>();
 
@@ -29,7 +27,7 @@ export const Wysiwyg = ({
       const newEditorState = EditorState.createWithContent(contentState);
       setEditorState(newEditorState);
     }
-  }, []);
+  }, [value]);
 
   const onEditorStateChange = (editorState: any) => {
     setEditorState(editorState);
