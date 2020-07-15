@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 12.1
+-- Dumped from database version 12.3
 -- Dumped by pg_dump version 12.2
 
 SET statement_timeout = 0;
@@ -1342,6 +1342,79 @@ COMMENT ON TABLE app_private.user_secrets IS 'The contents of this table should 
 
 
 --
+-- Name: ahs_data; Type: TABLE; Schema: app_public; Owner: -
+--
+
+CREATE TABLE app_public.ahs_data (
+    id integer NOT NULL,
+    ahs_id integer NOT NULL,
+    name text,
+    hybridizer text,
+    year text,
+    scape_height text,
+    bloom_size text,
+    bloom_season text,
+    ploidy text,
+    foliage_type text,
+    bloom_habit text,
+    seedling_num text,
+    color text,
+    form text,
+    parentage text,
+    image text,
+    fragrance text,
+    budcount text,
+    branches text,
+    sculpting text,
+    foliage text,
+    flower text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: TABLE ahs_data; Type: COMMENT; Schema: app_public; Owner: -
+--
+
+COMMENT ON TABLE app_public.ahs_data IS 'The results of scraping daylilies.org daylily database.';
+
+
+--
+-- Name: COLUMN ahs_data.id; Type: COMMENT; Schema: app_public; Owner: -
+--
+
+COMMENT ON COLUMN app_public.ahs_data.id IS 'The primary key for the `AHS Data`.';
+
+
+--
+-- Name: COLUMN ahs_data.ahs_id; Type: COMMENT; Schema: app_public; Owner: -
+--
+
+COMMENT ON COLUMN app_public.ahs_data.ahs_id IS 'The id of the `AHS Data` from the daylilies.org database.';
+
+
+--
+-- Name: ahs_data_id_seq; Type: SEQUENCE; Schema: app_public; Owner: -
+--
+
+CREATE SEQUENCE app_public.ahs_data_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: ahs_data_id_seq; Type: SEQUENCE OWNED BY; Schema: app_public; Owner: -
+--
+
+ALTER SEQUENCE app_public.ahs_data_id_seq OWNED BY app_public.ahs_data.id;
+
+
+--
 -- Name: lilies; Type: TABLE; Schema: app_public; Owner: -
 --
 
@@ -1357,6 +1430,7 @@ CREATE TABLE app_public.lilies (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     list_id integer,
+    ahs_ref integer,
     CONSTRAINT lilies_name_check CHECK ((char_length(name) < 70))
 );
 
@@ -1366,6 +1440,13 @@ CREATE TABLE app_public.lilies (
 --
 
 COMMENT ON COLUMN app_public.lilies.list_id IS 'The primary key for the `List` this `Lily` belongs to.';
+
+
+--
+-- Name: COLUMN lilies.ahs_ref; Type: COMMENT; Schema: app_public; Owner: -
+--
+
+COMMENT ON COLUMN app_public.lilies.ahs_ref IS 'The primary key for the `AHS Data` this `Lily` references.';
 
 
 --
@@ -1585,6 +1666,13 @@ ALTER SEQUENCE app_public.users_id_seq OWNED BY app_public.users.id;
 
 
 --
+-- Name: ahs_data id; Type: DEFAULT; Schema: app_public; Owner: -
+--
+
+ALTER TABLE ONLY app_public.ahs_data ALTER COLUMN id SET DEFAULT nextval('app_public.ahs_data_id_seq'::regclass);
+
+
+--
 -- Name: lilies id; Type: DEFAULT; Schema: app_public; Owner: -
 --
 
@@ -1668,6 +1756,22 @@ ALTER TABLE ONLY app_private.user_secrets
 
 
 --
+-- Name: ahs_data ahs_data_ahs_id_key; Type: CONSTRAINT; Schema: app_public; Owner: -
+--
+
+ALTER TABLE ONLY app_public.ahs_data
+    ADD CONSTRAINT ahs_data_ahs_id_key UNIQUE (ahs_id);
+
+
+--
+-- Name: ahs_data ahs_data_pkey; Type: CONSTRAINT; Schema: app_public; Owner: -
+--
+
+ALTER TABLE ONLY app_public.ahs_data
+    ADD CONSTRAINT ahs_data_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: lilies lilies_pkey; Type: CONSTRAINT; Schema: app_public; Owner: -
 --
 
@@ -1732,10 +1836,24 @@ ALTER TABLE ONLY app_public.users
 
 
 --
+-- Name: ahs_data_ahs_id_idx; Type: INDEX; Schema: app_public; Owner: -
+--
+
+CREATE INDEX ahs_data_ahs_id_idx ON app_public.ahs_data USING btree (ahs_id);
+
+
+--
 -- Name: idx_user_emails_primary; Type: INDEX; Schema: app_public; Owner: -
 --
 
 CREATE INDEX idx_user_emails_primary ON app_public.user_emails USING btree (is_primary, user_id);
+
+
+--
+-- Name: lilies_ahs_ref_idx; Type: INDEX; Schema: app_public; Owner: -
+--
+
+CREATE INDEX lilies_ahs_ref_idx ON app_public.lilies USING btree (ahs_ref);
 
 
 --
@@ -1778,6 +1896,13 @@ CREATE UNIQUE INDEX uniq_user_emails_verified_email ON app_public.user_emails US
 --
 
 CREATE INDEX user_authentications_user_id_idx ON app_public.user_authentications USING btree (user_id);
+
+
+--
+-- Name: ahs_data _100_timestamps; Type: TRIGGER; Schema: app_public; Owner: -
+--
+
+CREATE TRIGGER _100_timestamps BEFORE INSERT OR UPDATE ON app_public.ahs_data FOR EACH ROW EXECUTE FUNCTION app_private.tg__timestamps();
 
 
 --
@@ -1897,6 +2022,14 @@ ALTER TABLE ONLY app_private.user_secrets
 
 
 --
+-- Name: lilies lilies_ahs_ref_fkey; Type: FK CONSTRAINT; Schema: app_public; Owner: -
+--
+
+ALTER TABLE ONLY app_public.lilies
+    ADD CONSTRAINT lilies_ahs_ref_fkey FOREIGN KEY (ahs_ref) REFERENCES app_public.ahs_data(ahs_id) ON DELETE SET NULL;
+
+
+--
 -- Name: lilies lilies_list_id_fkey; Type: FK CONSTRAINT; Schema: app_public; Owner: -
 --
 
@@ -1967,6 +2100,12 @@ ALTER TABLE app_private.user_email_secrets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE app_private.user_secrets ENABLE ROW LEVEL SECURITY;
 
 --
+-- Name: ahs_data; Type: ROW SECURITY; Schema: app_public; Owner: -
+--
+
+ALTER TABLE app_public.ahs_data ENABLE ROW LEVEL SECURITY;
+
+--
 -- Name: lilies delete_lilies; Type: POLICY; Schema: app_public; Owner: -
 --
 
@@ -2034,6 +2173,13 @@ CREATE POLICY manage_as_admin ON app_public.lists USING ((EXISTS ( SELECT 1
 --
 
 CREATE POLICY manage_own ON app_public.lists USING ((user_id = app_public.current_user_id()));
+
+
+--
+-- Name: ahs_data select_all; Type: POLICY; Schema: app_public; Owner: -
+--
+
+CREATE POLICY select_all ON app_public.ahs_data FOR SELECT USING (true);
 
 
 --
@@ -2195,6 +2341,20 @@ GRANT INSERT(email) ON TABLE app_public.user_emails TO daylily_catalog_visitor;
 
 
 --
+-- Name: TABLE ahs_data; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT SELECT ON TABLE app_public.ahs_data TO daylily_catalog_visitor;
+
+
+--
+-- Name: SEQUENCE ahs_data_id_seq; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT SELECT,USAGE ON SEQUENCE app_public.ahs_data_id_seq TO daylily_catalog_visitor;
+
+
+--
 -- Name: TABLE lilies; Type: ACL; Schema: app_public; Owner: -
 --
 
@@ -2248,6 +2408,13 @@ GRANT INSERT(ahs_id),UPDATE(ahs_id) ON TABLE app_public.lilies TO daylily_catalo
 --
 
 GRANT INSERT(list_id),UPDATE(list_id) ON TABLE app_public.lilies TO daylily_catalog_visitor;
+
+
+--
+-- Name: COLUMN lilies.ahs_ref; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT INSERT(ahs_ref),UPDATE(ahs_ref) ON TABLE app_public.lilies TO daylily_catalog_visitor;
 
 
 --
