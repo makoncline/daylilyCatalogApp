@@ -1,3 +1,112 @@
+"""A connection to a list of `AhsDatum` values."""
+type AhsDataConnection {
+  """
+  A list of edges which contains the `AhsDatum` and cursor to aid in pagination.
+  """
+  edges: [AhsDataEdge!]!
+
+  """A list of `AhsDatum` objects."""
+  nodes: [AhsDatum!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `AhsDatum` you could get from the connection."""
+  totalCount: Int!
+}
+
+"""A `AhsDatum` edge in the connection."""
+type AhsDataEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `AhsDatum` at the end of the edge."""
+  node: AhsDatum!
+}
+
+"""Methods to use when ordering `AhsDatum`."""
+enum AhsDataOrderBy {
+  AHS_ID_ASC
+  AHS_ID_DESC
+  ID_ASC
+  ID_DESC
+  NATURAL
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+"""The results of scraping daylilies.org daylily database."""
+type AhsDatum {
+  """The id of the `AHS Data` from the daylilies.org database."""
+  ahsId: Int!
+  bloomHabit: String
+  bloomSeason: String
+  bloomSize: String
+  branches: String
+  budcount: String
+  color: String
+  createdAt: Datetime!
+  flower: String
+  foliage: String
+  foliageType: String
+  form: String
+  fragrance: String
+  hybridizer: String
+
+  """The primary key for the `AHS Data`."""
+  id: Int!
+  image: String
+
+  """Reads and enables pagination through a set of `Lily`."""
+  liliesByAhsRef(
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: LilyCondition
+
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """The method to use when ordering `Lily`."""
+    orderBy: [LiliesOrderBy!] = [PRIMARY_KEY_ASC]
+  ): LiliesConnection!
+  name: String
+  parentage: String
+  ploidy: String
+  scapeHeight: String
+  sculpting: String
+  seedlingNum: String
+  updatedAt: Datetime!
+  year: String
+}
+
+"""
+A condition to be used against `AhsDatum` object types. All fields are tested
+for equality and combined with a logical ‘and.’
+"""
+input AhsDatumCondition {
+  """Checks for equality with the object’s `ahsId` field."""
+  ahsId: Int
+
+  """Checks for equality with the object’s `id` field."""
+  id: Int
+}
+
 """
 A floating point number that requires more precision than IEEE 754 binary 64
 """
@@ -68,6 +177,9 @@ input CreateLilyInput {
 
 """The output of our create `Lily` mutation."""
 type CreateLilyPayload {
+  """Reads a single `AhsDatum` that is related to this `Lily`."""
+  ahsDatumByAhsRef: AhsDatum
+
   """
   The exact same `clientMutationId` that was provided in the mutation input,
   unchanged and unused. May be used by a client to track mutations.
@@ -192,6 +304,9 @@ input DeleteLilyInput {
 
 """The output of our delete `Lily` mutation."""
 type DeleteLilyPayload {
+  """Reads a single `AhsDatum` that is related to this `Lily`."""
+  ahsDatumByAhsRef: AhsDatum
+
   """
   The exact same `clientMutationId` that was provided in the mutation input,
   unchanged and unused. May be used by a client to track mutations.
@@ -379,6 +494,8 @@ type LiliesEdge {
 
 """Methods to use when ordering `Lily`."""
 enum LiliesOrderBy {
+  AHS_REF_ASC
+  AHS_REF_DESC
   ID_ASC
   ID_DESC
   LIST_ID_ASC
@@ -391,7 +508,12 @@ enum LiliesOrderBy {
 }
 
 type Lily {
+  """Reads a single `AhsDatum` that is related to this `Lily`."""
+  ahsDatumByAhsRef: AhsDatum
   ahsId: String
+
+  """The primary key for the `AHS Data` this `Lily` references."""
+  ahsRef: Int
   createdAt: Datetime!
   id: Int!
   imgUrl: [String]
@@ -416,6 +538,9 @@ type Lily {
 A condition to be used against `Lily` object types. All fields are tested for equality and combined with a logical ‘and.’
 """
 input LilyCondition {
+  """Checks for equality with the object’s `ahsRef` field."""
+  ahsRef: Int
+
   """Checks for equality with the object’s `id` field."""
   id: Int
 
@@ -429,6 +554,9 @@ input LilyCondition {
 """An input for mutations affecting `Lily`"""
 input LilyInput {
   ahsId: String
+
+  """The primary key for the `AHS Data` this `Lily` references."""
+  ahsRef: Int
   createdAt: Datetime
   id: Int
   imgUrl: [String]
@@ -446,6 +574,9 @@ input LilyInput {
 """Represents an update to a `Lily`. Fields that are set will be updated."""
 input LilyPatch {
   ahsId: String
+
+  """The primary key for the `AHS Data` this `Lily` references."""
+  ahsRef: Int
   createdAt: Datetime
   id: Int
   imgUrl: [String]
@@ -846,6 +977,37 @@ type PageInfo {
 
 """The root query type which gives access points into the data universe."""
 type Query {
+  """Reads and enables pagination through a set of `AhsDatum`."""
+  ahsData(
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: AhsDatumCondition
+
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """The method to use when ordering `AhsDatum`."""
+    orderBy: [AhsDataOrderBy!] = [PRIMARY_KEY_ASC]
+  ): AhsDataConnection
+  ahsDatum(id: Int!): AhsDatum
+  ahsDatumByAhsId(ahsId: Int!): AhsDatum
+
   """The currently logged in user (or null if not logged in)."""
   currentUser: User
 
@@ -1027,6 +1189,9 @@ input UpdateLilyInput {
 
 """The output of our update `Lily` mutation."""
 type UpdateLilyPayload {
+  """Reads a single `AhsDatum` that is related to this `Lily`."""
+  ahsDatumByAhsRef: AhsDatum
+
   """
   The exact same `clientMutationId` that was provided in the mutation input,
   unchanged and unused. May be used by a client to track mutations.
