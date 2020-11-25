@@ -46,6 +46,15 @@ function serverCommand(
 }>;
 
 /**
+ * Deletes all organizations with slug starting 'test'.
+ */
+function serverCommand(
+  command: "clearTestOrganizations"
+): Chainable<{
+  success: true;
+}>;
+
+/**
  * Creates a verified or unverified user, bypassing all safety checks.
  * Redirects to `next`.
  *
@@ -103,6 +112,7 @@ function login(payload?: {
   name?: string;
   verified?: boolean;
   password?: string;
+  orgs?: [[string, string] | [string, string, boolean]];
 }): Chainable<Window> {
   return cy.visit(
     Cypress.env("ROOT_URL") +

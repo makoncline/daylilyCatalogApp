@@ -8,14 +8,14 @@ import {
 import { useResetPasswordMutation, useSharedQuery } from "@app/graphql";
 import { formItemLayout, setPasswordInfo, tailFormItemLayout } from "@app/lib";
 import { Alert, Button, Form, Input } from "antd";
-import { useForm } from "antd/lib/form/util";
+import { useForm } from "antd/lib/form/Form";
 import get from "lodash/get";
 import { NextPage } from "next";
 import { Store } from "rc-field-form/lib/interface";
 import React, { FocusEvent, useCallback, useState } from "react";
 
 interface IProps {
-  userId: number;
+  userId: number | null;
   token: string | null;
 }
 
@@ -37,7 +37,7 @@ const ResetPage: NextPage<IProps> = ({
   const [form] = useForm();
 
   const [[userId, token], setIdAndToken] = useState<[number, string]>([
-    rawUserId,
+    rawUserId || 0,
     rawToken || "",
   ]);
 
@@ -114,6 +114,15 @@ const ResetPage: NextPage<IProps> = ({
         changedValues
       );
       setPasswordIsDirty(form.isFieldTouched("password"));
+      if (changedValues.confirm) {
+        if (form.isFieldTouched("password")) {
+          form.validateFields(["password"]);
+        }
+      } else if (changedValues.password) {
+        if (form.isFieldTouched("confirm")) {
+          form.validateFields(["confirm"]);
+        }
+      }
     },
     [form]
   );

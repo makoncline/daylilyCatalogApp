@@ -7,7 +7,13 @@ if (!process.env.TEST_DATABASE_URL) {
 }
 export const TEST_DATABASE_URL: string = process.env.TEST_DATABASE_URL;
 
-export type User = { id: number; _password?: string; _email?: string };
+export type User = {
+  id: number;
+  username: string;
+  _password?: string;
+  _email?: string;
+};
+export type Organization = { id: string; name: string };
 
 // Make sure we release those pgPools so that our tests exit!
 afterAll(() => {
@@ -124,6 +130,28 @@ export const createUsers = async function createUsers(
     users.push(user);
   }
   return users;
+};
+
+export const createOrganizations = async function createOrganizations(
+  client: PoolClient,
+  count: number = 1
+) {
+  const organizations: Organization[] = [];
+  for (let i = 0; i < count; i++) {
+    const slug = `organization-${i}`;
+    const name = `Organization ${i}`;
+    const {
+      rows: [organization],
+    } = await client.query(
+      `
+        select * from app_public.create_organization($1, $2)
+      `,
+      [slug, name]
+    );
+    organizations.push(organization);
+  }
+
+  return organizations;
 };
 
 /******************************************************************************/

@@ -1,30 +1,46 @@
-"""A connection to a list of `AhsDatum` values."""
+"""
+A connection to a list of `AhsDatum` values.
+"""
 type AhsDataConnection {
   """
   A list of edges which contains the `AhsDatum` and cursor to aid in pagination.
   """
   edges: [AhsDataEdge!]!
 
-  """A list of `AhsDatum` objects."""
+  """
+  A list of `AhsDatum` objects.
+  """
   nodes: [AhsDatum!]!
 
-  """Information to aid in pagination."""
+  """
+  Information to aid in pagination.
+  """
   pageInfo: PageInfo!
 
-  """The count of *all* `AhsDatum` you could get from the connection."""
+  """
+  The count of *all* `AhsDatum` you could get from the connection.
+  """
   totalCount: Int!
 }
 
-"""A `AhsDatum` edge in the connection."""
+"""
+A `AhsDatum` edge in the connection.
+"""
 type AhsDataEdge {
-  """A cursor for use in pagination."""
+  """
+  A cursor for use in pagination.
+  """
   cursor: Cursor
 
-  """The `AhsDatum` at the end of the edge."""
+  """
+  The `AhsDatum` at the end of the edge.
+  """
   node: AhsDatum!
 }
 
-"""Methods to use when ordering `AhsDatum`."""
+"""
+Methods to use when ordering `AhsDatum`.
+"""
 enum AhsDataOrderBy {
   AHS_ID_ASC
   AHS_ID_DESC
@@ -35,9 +51,13 @@ enum AhsDataOrderBy {
   PRIMARY_KEY_DESC
 }
 
-"""The results of scraping daylilies.org daylily database."""
+"""
+The results of scraping daylilies.org daylily database.
+"""
 type AhsDatum {
-  """The id of the `AHS Data` from the daylilies.org database."""
+  """
+  The id of the `AHS Data` from the daylilies.org database.
+  """
   ahsId: Int!
   bloomHabit: String
   bloomSeason: String
@@ -53,16 +73,24 @@ type AhsDatum {
   fragrance: String
   hybridizer: String
 
-  """The primary key for the `AHS Data`."""
+  """
+  The primary key for the `AHS Data`.
+  """
   id: Int!
   image: String
 
-  """Reads and enables pagination through a set of `Lily`."""
+  """
+  Reads and enables pagination through a set of `Lily`.
+  """
   liliesByAhsRef(
-    """Read all values in the set after (below) this cursor."""
+    """
+    Read all values in the set after (below) this cursor.
+    """
     after: Cursor
 
-    """Read all values in the set before (above) this cursor."""
+    """
+    Read all values in the set before (above) this cursor.
+    """
     before: Cursor
 
     """
@@ -70,10 +98,14 @@ type AhsDatum {
     """
     condition: LilyCondition
 
-    """Only read the first `n` values of the set."""
+    """
+    Only read the first `n` values of the set.
+    """
     first: Int
 
-    """Only read the last `n` values of the set."""
+    """
+    Only read the last `n` values of the set.
+    """
     last: Int
 
     """
@@ -82,7 +114,9 @@ type AhsDatum {
     """
     offset: Int
 
-    """The method to use when ordering `Lily`."""
+    """
+    The method to use when ordering `Lily`.
+    """
     orderBy: [LiliesOrderBy!] = [PRIMARY_KEY_ASC]
   ): LiliesConnection!
   name: String
@@ -100,10 +134,14 @@ A condition to be used against `AhsDatum` object types. All fields are tested
 for equality and combined with a logical ‘and.’
 """
 input AhsDatumCondition {
-  """Checks for equality with the object’s `ahsId` field."""
+  """
+  Checks for equality with the object’s `ahsId` field.
+  """
   ahsId: Int
 
-  """Checks for equality with the object’s `id` field."""
+  """
+  Checks for equality with the object’s `id` field.
+  """
   id: Int
 }
 
@@ -112,7 +150,9 @@ A floating point number that requires more precision than IEEE 754 binary 64
 """
 scalar BigFloat
 
-"""All input for the `changePassword` mutation."""
+"""
+All input for the `changePassword` mutation.
+"""
 input ChangePasswordInput {
   """
   An arbitrary string value with no semantic meaning. Will be included in the
@@ -123,7 +163,9 @@ input ChangePasswordInput {
   oldPassword: String!
 }
 
-"""The output of our `changePassword` mutation."""
+"""
+The output of our `changePassword` mutation.
+"""
 type ChangePasswordPayload {
   """
   The exact same `clientMutationId` that was provided in the mutation input,
@@ -138,7 +180,9 @@ type ChangePasswordPayload {
   success: Boolean
 }
 
-"""All input for the `confirmAccountDeletion` mutation."""
+"""
+All input for the `confirmAccountDeletion` mutation.
+"""
 input ConfirmAccountDeletionInput {
   """
   An arbitrary string value with no semantic meaning. Will be included in the
@@ -148,7 +192,9 @@ input ConfirmAccountDeletionInput {
   token: String!
 }
 
-"""The output of our `confirmAccountDeletion` mutation."""
+"""
+The output of our `confirmAccountDeletion` mutation.
+"""
 type ConfirmAccountDeletionPayload {
   """
   The exact same `clientMutationId` that was provided in the mutation input,
@@ -163,7 +209,9 @@ type ConfirmAccountDeletionPayload {
   success: Boolean
 }
 
-"""All input for the create `Lily` mutation."""
+"""
+All input for the create `Lily` mutation.
+"""
 input CreateLilyInput {
   """
   An arbitrary string value with no semantic meaning. Will be included in the
@@ -171,13 +219,19 @@ input CreateLilyInput {
   """
   clientMutationId: String
 
-  """The `Lily` to be created by this mutation."""
+  """
+  The `Lily` to be created by this mutation.
+  """
   lily: LilyInput!
 }
 
-"""The output of our create `Lily` mutation."""
+"""
+The output of our create `Lily` mutation.
+"""
 type CreateLilyPayload {
-  """Reads a single `AhsDatum` that is related to this `Lily`."""
+  """
+  Reads a single `AhsDatum` that is related to this `Lily`.
+  """
   ahsDatumByAhsRef: AhsDatum
 
   """
@@ -186,16 +240,24 @@ type CreateLilyPayload {
   """
   clientMutationId: String
 
-  """The `Lily` that was created by this mutation."""
+  """
+  The `Lily` that was created by this mutation.
+  """
   lily: Lily
 
-  """An edge for our `Lily`. May be used by Relay 1."""
+  """
+  An edge for our `Lily`. May be used by Relay 1.
+  """
   lilyEdge(
-    """The method to use when ordering `Lily`."""
+    """
+    The method to use when ordering `Lily`.
+    """
     orderBy: [LiliesOrderBy!] = [PRIMARY_KEY_ASC]
   ): LiliesEdge
 
-  """Reads a single `List` that is related to this `Lily`."""
+  """
+  Reads a single `List` that is related to this `Lily`.
+  """
   list: List
 
   """
@@ -203,11 +265,15 @@ type CreateLilyPayload {
   """
   query: Query
 
-  """Reads a single `User` that is related to this `Lily`."""
+  """
+  Reads a single `User` that is related to this `Lily`.
+  """
   user: User
 }
 
-"""All input for the create `List` mutation."""
+"""
+All input for the create `List` mutation.
+"""
 input CreateListInput {
   """
   An arbitrary string value with no semantic meaning. Will be included in the
@@ -215,11 +281,15 @@ input CreateListInput {
   """
   clientMutationId: String
 
-  """The `List` to be created by this mutation."""
+  """
+  The `List` to be created by this mutation.
+  """
   list: ListInput!
 }
 
-"""The output of our create `List` mutation."""
+"""
+The output of our create `List` mutation.
+"""
 type CreateListPayload {
   """
   The exact same `clientMutationId` that was provided in the mutation input,
@@ -227,12 +297,18 @@ type CreateListPayload {
   """
   clientMutationId: String
 
-  """The `List` that was created by this mutation."""
+  """
+  The `List` that was created by this mutation.
+  """
   list: List
 
-  """An edge for our `List`. May be used by Relay 1."""
+  """
+  An edge for our `List`. May be used by Relay 1.
+  """
   listEdge(
-    """The method to use when ordering `List`."""
+    """
+    The method to use when ordering `List`.
+    """
     orderBy: [ListsOrderBy!] = [PRIMARY_KEY_ASC]
   ): ListsEdge
 
@@ -241,11 +317,15 @@ type CreateListPayload {
   """
   query: Query
 
-  """Reads a single `User` that is related to this `List`."""
+  """
+  Reads a single `User` that is related to this `List`.
+  """
   user: User
 }
 
-"""All input for the create `UserEmail` mutation."""
+"""
+All input for the create `UserEmail` mutation.
+"""
 input CreateUserEmailInput {
   """
   An arbitrary string value with no semantic meaning. Will be included in the
@@ -253,11 +333,15 @@ input CreateUserEmailInput {
   """
   clientMutationId: String
 
-  """The `UserEmail` to be created by this mutation."""
+  """
+  The `UserEmail` to be created by this mutation.
+  """
   userEmail: UserEmailInput!
 }
 
-"""The output of our create `UserEmail` mutation."""
+"""
+The output of our create `UserEmail` mutation.
+"""
 type CreateUserEmailPayload {
   """
   The exact same `clientMutationId` that was provided in the mutation input,
@@ -270,20 +354,30 @@ type CreateUserEmailPayload {
   """
   query: Query
 
-  """Reads a single `User` that is related to this `UserEmail`."""
+  """
+  Reads a single `User` that is related to this `UserEmail`.
+  """
   user: User
 
-  """The `UserEmail` that was created by this mutation."""
+  """
+  The `UserEmail` that was created by this mutation.
+  """
   userEmail: UserEmail
 
-  """An edge for our `UserEmail`. May be used by Relay 1."""
+  """
+  An edge for our `UserEmail`. May be used by Relay 1.
+  """
   userEmailEdge(
-    """The method to use when ordering `UserEmail`."""
+    """
+    The method to use when ordering `UserEmail`.
+    """
     orderBy: [UserEmailsOrderBy!] = [PRIMARY_KEY_ASC]
   ): UserEmailsEdge
 }
 
-"""A location in a connection that can be used for resuming pagination."""
+"""
+A location in a connection that can be used for resuming pagination.
+"""
 scalar Cursor
 
 """
@@ -292,7 +386,9 @@ A point in time as described by the [ISO
 """
 scalar Datetime
 
-"""All input for the `deleteLily` mutation."""
+"""
+All input for the `deleteLily` mutation.
+"""
 input DeleteLilyInput {
   """
   An arbitrary string value with no semantic meaning. Will be included in the
@@ -302,9 +398,13 @@ input DeleteLilyInput {
   id: Int!
 }
 
-"""The output of our delete `Lily` mutation."""
+"""
+The output of our delete `Lily` mutation.
+"""
 type DeleteLilyPayload {
-  """Reads a single `AhsDatum` that is related to this `Lily`."""
+  """
+  Reads a single `AhsDatum` that is related to this `Lily`.
+  """
   ahsDatumByAhsRef: AhsDatum
 
   """
@@ -314,16 +414,24 @@ type DeleteLilyPayload {
   clientMutationId: String
   deletedLilyNodeId: ID
 
-  """The `Lily` that was deleted by this mutation."""
+  """
+  The `Lily` that was deleted by this mutation.
+  """
   lily: Lily
 
-  """An edge for our `Lily`. May be used by Relay 1."""
+  """
+  An edge for our `Lily`. May be used by Relay 1.
+  """
   lilyEdge(
-    """The method to use when ordering `Lily`."""
+    """
+    The method to use when ordering `Lily`.
+    """
     orderBy: [LiliesOrderBy!] = [PRIMARY_KEY_ASC]
   ): LiliesEdge
 
-  """Reads a single `List` that is related to this `Lily`."""
+  """
+  Reads a single `List` that is related to this `Lily`.
+  """
   list: List
 
   """
@@ -331,11 +439,15 @@ type DeleteLilyPayload {
   """
   query: Query
 
-  """Reads a single `User` that is related to this `Lily`."""
+  """
+  Reads a single `User` that is related to this `Lily`.
+  """
   user: User
 }
 
-"""All input for the `deleteList` mutation."""
+"""
+All input for the `deleteList` mutation.
+"""
 input DeleteListInput {
   """
   An arbitrary string value with no semantic meaning. Will be included in the
@@ -343,11 +455,15 @@ input DeleteListInput {
   """
   clientMutationId: String
 
-  """The primary key for the `List`."""
+  """
+  The primary key for the `List`.
+  """
   id: Int!
 }
 
-"""The output of our delete `List` mutation."""
+"""
+The output of our delete `List` mutation.
+"""
 type DeleteListPayload {
   """
   The exact same `clientMutationId` that was provided in the mutation input,
@@ -356,12 +472,18 @@ type DeleteListPayload {
   clientMutationId: String
   deletedListNodeId: ID
 
-  """The `List` that was deleted by this mutation."""
+  """
+  The `List` that was deleted by this mutation.
+  """
   list: List
 
-  """An edge for our `List`. May be used by Relay 1."""
+  """
+  An edge for our `List`. May be used by Relay 1.
+  """
   listEdge(
-    """The method to use when ordering `List`."""
+    """
+    The method to use when ordering `List`.
+    """
     orderBy: [ListsOrderBy!] = [PRIMARY_KEY_ASC]
   ): ListsEdge
 
@@ -370,11 +492,15 @@ type DeleteListPayload {
   """
   query: Query
 
-  """Reads a single `User` that is related to this `List`."""
+  """
+  Reads a single `User` that is related to this `List`.
+  """
   user: User
 }
 
-"""All input for the `deleteUserAuthentication` mutation."""
+"""
+All input for the `deleteUserAuthentication` mutation.
+"""
 input DeleteUserAuthenticationInput {
   """
   An arbitrary string value with no semantic meaning. Will be included in the
@@ -384,7 +510,9 @@ input DeleteUserAuthenticationInput {
   id: Int!
 }
 
-"""The output of our delete `UserAuthentication` mutation."""
+"""
+The output of our delete `UserAuthentication` mutation.
+"""
 type DeleteUserAuthenticationPayload {
   """
   The exact same `clientMutationId` that was provided in the mutation input,
@@ -398,14 +526,20 @@ type DeleteUserAuthenticationPayload {
   """
   query: Query
 
-  """Reads a single `User` that is related to this `UserAuthentication`."""
+  """
+  Reads a single `User` that is related to this `UserAuthentication`.
+  """
   user: User
 
-  """The `UserAuthentication` that was deleted by this mutation."""
+  """
+  The `UserAuthentication` that was deleted by this mutation.
+  """
   userAuthentication: UserAuthentication
 }
 
-"""All input for the `deleteUserEmail` mutation."""
+"""
+All input for the `deleteUserEmail` mutation.
+"""
 input DeleteUserEmailInput {
   """
   An arbitrary string value with no semantic meaning. Will be included in the
@@ -415,7 +549,9 @@ input DeleteUserEmailInput {
   id: Int!
 }
 
-"""The output of our delete `UserEmail` mutation."""
+"""
+The output of our delete `UserEmail` mutation.
+"""
 type DeleteUserEmailPayload {
   """
   The exact same `clientMutationId` that was provided in the mutation input,
@@ -429,20 +565,30 @@ type DeleteUserEmailPayload {
   """
   query: Query
 
-  """Reads a single `User` that is related to this `UserEmail`."""
+  """
+  Reads a single `User` that is related to this `UserEmail`.
+  """
   user: User
 
-  """The `UserEmail` that was deleted by this mutation."""
+  """
+  The `UserEmail` that was deleted by this mutation.
+  """
   userEmail: UserEmail
 
-  """An edge for our `UserEmail`. May be used by Relay 1."""
+  """
+  An edge for our `UserEmail`. May be used by Relay 1.
+  """
   userEmailEdge(
-    """The method to use when ordering `UserEmail`."""
+    """
+    The method to use when ordering `UserEmail`.
+    """
     orderBy: [UserEmailsOrderBy!] = [PRIMARY_KEY_ASC]
   ): UserEmailsEdge
 }
 
-"""All input for the `forgotPassword` mutation."""
+"""
+All input for the `forgotPassword` mutation.
+"""
 input ForgotPasswordInput {
   """
   An arbitrary string value with no semantic meaning. Will be included in the
@@ -452,7 +598,9 @@ input ForgotPasswordInput {
   email: String!
 }
 
-"""The output of our `forgotPassword` mutation."""
+"""
+The output of our `forgotPassword` mutation.
+"""
 type ForgotPasswordPayload {
   """
   The exact same `clientMutationId` that was provided in the mutation input,
@@ -466,33 +614,49 @@ type ForgotPasswordPayload {
   query: Query
 }
 
-"""A connection to a list of `Lily` values."""
+"""
+A connection to a list of `Lily` values.
+"""
 type LiliesConnection {
   """
   A list of edges which contains the `Lily` and cursor to aid in pagination.
   """
   edges: [LiliesEdge!]!
 
-  """A list of `Lily` objects."""
+  """
+  A list of `Lily` objects.
+  """
   nodes: [Lily!]!
 
-  """Information to aid in pagination."""
+  """
+  Information to aid in pagination.
+  """
   pageInfo: PageInfo!
 
-  """The count of *all* `Lily` you could get from the connection."""
+  """
+  The count of *all* `Lily` you could get from the connection.
+  """
   totalCount: Int!
 }
 
-"""A `Lily` edge in the connection."""
+"""
+A `Lily` edge in the connection.
+"""
 type LiliesEdge {
-  """A cursor for use in pagination."""
+  """
+  A cursor for use in pagination.
+  """
   cursor: Cursor
 
-  """The `Lily` at the end of the edge."""
+  """
+  The `Lily` at the end of the edge.
+  """
   node: Lily!
 }
 
-"""Methods to use when ordering `Lily`."""
+"""
+Methods to use when ordering `Lily`.
+"""
 enum LiliesOrderBy {
   AHS_REF_ASC
   AHS_REF_DESC
@@ -508,20 +672,28 @@ enum LiliesOrderBy {
 }
 
 type Lily {
-  """Reads a single `AhsDatum` that is related to this `Lily`."""
+  """
+  Reads a single `AhsDatum` that is related to this `Lily`.
+  """
   ahsDatumByAhsRef: AhsDatum
   ahsId: String
 
-  """The primary key for the `AHS Data` this `Lily` references."""
+  """
+  The primary key for the `AHS Data` this `Lily` references.
+  """
   ahsRef: Int
   createdAt: Datetime!
   id: Int!
   imgUrl: [String]
 
-  """Reads a single `List` that is related to this `Lily`."""
+  """
+  Reads a single `List` that is related to this `Lily`.
+  """
   list: List
 
-  """The primary key for the `List` this `Lily` belongs to."""
+  """
+  The primary key for the `List` this `Lily` belongs to.
+  """
   listId: Int
   name: String!
   price: BigFloat
@@ -529,7 +701,9 @@ type Lily {
   publicNote: String
   updatedAt: Datetime!
 
-  """Reads a single `User` that is related to this `Lily`."""
+  """
+  Reads a single `User` that is related to this `Lily`.
+  """
   user: User
   userId: Int!
 }
@@ -538,30 +712,44 @@ type Lily {
 A condition to be used against `Lily` object types. All fields are tested for equality and combined with a logical ‘and.’
 """
 input LilyCondition {
-  """Checks for equality with the object’s `ahsRef` field."""
+  """
+  Checks for equality with the object’s `ahsRef` field.
+  """
   ahsRef: Int
 
-  """Checks for equality with the object’s `id` field."""
+  """
+  Checks for equality with the object’s `id` field.
+  """
   id: Int
 
-  """Checks for equality with the object’s `listId` field."""
+  """
+  Checks for equality with the object’s `listId` field.
+  """
   listId: Int
 
-  """Checks for equality with the object’s `userId` field."""
+  """
+  Checks for equality with the object’s `userId` field.
+  """
   userId: Int
 }
 
-"""An input for mutations affecting `Lily`"""
+"""
+An input for mutations affecting `Lily`
+"""
 input LilyInput {
   ahsId: String
 
-  """The primary key for the `AHS Data` this `Lily` references."""
+  """
+  The primary key for the `AHS Data` this `Lily` references.
+  """
   ahsRef: Int
   createdAt: Datetime
   id: Int
   imgUrl: [String]
 
-  """The primary key for the `List` this `Lily` belongs to."""
+  """
+  The primary key for the `List` this `Lily` belongs to.
+  """
   listId: Int
   name: String!
   price: BigFloat
@@ -571,17 +759,23 @@ input LilyInput {
   userId: Int
 }
 
-"""Represents an update to a `Lily`. Fields that are set will be updated."""
+"""
+Represents an update to a `Lily`. Fields that are set will be updated.
+"""
 input LilyPatch {
   ahsId: String
 
-  """The primary key for the `AHS Data` this `Lily` references."""
+  """
+  The primary key for the `AHS Data` this `Lily` references.
+  """
   ahsRef: Int
   createdAt: Datetime
   id: Int
   imgUrl: [String]
 
-  """The primary key for the `List` this `Lily` belongs to."""
+  """
+  The primary key for the `List` this `Lily` belongs to.
+  """
   listId: Int
   name: String
   price: BigFloat
@@ -591,26 +785,42 @@ input LilyPatch {
   userId: Int
 }
 
-"""A list of lilies."""
+"""
+A list of lilies.
+"""
 type List {
-  """A long bio for the `List` written by the `User`."""
+  """
+  A long bio for the `List` written by the `User`.
+  """
   bio: String
 
-  """The time this `List` was created."""
+  """
+  The time this `List` was created.
+  """
   createdAt: Datetime!
 
-  """The primary key for the `List`."""
+  """
+  The primary key for the `List`.
+  """
   id: Int!
 
-  """A short introduction for the `List` written by the `User`."""
+  """
+  A short introduction for the `List` written by the `User`.
+  """
   intro: String
 
-  """Reads and enables pagination through a set of `Lily`."""
+  """
+  Reads and enables pagination through a set of `Lily`.
+  """
   lilies(
-    """Read all values in the set after (below) this cursor."""
+    """
+    Read all values in the set after (below) this cursor.
+    """
     after: Cursor
 
-    """Read all values in the set before (above) this cursor."""
+    """
+    Read all values in the set before (above) this cursor.
+    """
     before: Cursor
 
     """
@@ -618,10 +828,14 @@ type List {
     """
     condition: LilyCondition
 
-    """Only read the first `n` values of the set."""
+    """
+    Only read the first `n` values of the set.
+    """
     first: Int
 
-    """Only read the last `n` values of the set."""
+    """
+    Only read the last `n` values of the set.
+    """
     last: Int
 
     """
@@ -630,20 +844,30 @@ type List {
     """
     offset: Int
 
-    """The method to use when ordering `Lily`."""
+    """
+    The method to use when ordering `Lily`.
+    """
     orderBy: [LiliesOrderBy!] = [PRIMARY_KEY_ASC]
   ): LiliesConnection!
 
-  """The name of the `List` written by the `User`."""
+  """
+  The name of the `List` written by the `User`.
+  """
   name: String!
 
-  """The time this `List` was last modified (or created)."""
+  """
+  The time this `List` was last modified (or created).
+  """
   updatedAt: Datetime!
 
-  """Reads a single `User` that is related to this `List`."""
+  """
+  Reads a single `User` that is related to this `List`.
+  """
   user: User
 
-  """The id of the `User`."""
+  """
+  The id of the `User`.
+  """
   userId: Int!
 }
 
@@ -651,64 +875,100 @@ type List {
 A condition to be used against `List` object types. All fields are tested for equality and combined with a logical ‘and.’
 """
 input ListCondition {
-  """Checks for equality with the object’s `id` field."""
+  """
+  Checks for equality with the object’s `id` field.
+  """
   id: Int
 
-  """Checks for equality with the object’s `userId` field."""
+  """
+  Checks for equality with the object’s `userId` field.
+  """
   userId: Int
 }
 
-"""An input for mutations affecting `List`"""
+"""
+An input for mutations affecting `List`
+"""
 input ListInput {
-  """A long bio for the `List` written by the `User`."""
+  """
+  A long bio for the `List` written by the `User`.
+  """
   bio: String
 
-  """A short introduction for the `List` written by the `User`."""
+  """
+  A short introduction for the `List` written by the `User`.
+  """
   intro: String
 
-  """The name of the `List` written by the `User`."""
+  """
+  The name of the `List` written by the `User`.
+  """
   name: String!
 }
 
-"""Represents an update to a `List`. Fields that are set will be updated."""
+"""
+Represents an update to a `List`. Fields that are set will be updated.
+"""
 input ListPatch {
-  """A long bio for the `List` written by the `User`."""
+  """
+  A long bio for the `List` written by the `User`.
+  """
   bio: String
 
-  """A short introduction for the `List` written by the `User`."""
+  """
+  A short introduction for the `List` written by the `User`.
+  """
   intro: String
 
-  """The name of the `List` written by the `User`."""
+  """
+  The name of the `List` written by the `User`.
+  """
   name: String
 }
 
-"""A connection to a list of `List` values."""
+"""
+A connection to a list of `List` values.
+"""
 type ListsConnection {
   """
   A list of edges which contains the `List` and cursor to aid in pagination.
   """
   edges: [ListsEdge!]!
 
-  """A list of `List` objects."""
+  """
+  A list of `List` objects.
+  """
   nodes: [List!]!
 
-  """Information to aid in pagination."""
+  """
+  Information to aid in pagination.
+  """
   pageInfo: PageInfo!
 
-  """The count of *all* `List` you could get from the connection."""
+  """
+  The count of *all* `List` you could get from the connection.
+  """
   totalCount: Int!
 }
 
-"""A `List` edge in the connection."""
+"""
+A `List` edge in the connection.
+"""
 type ListsEdge {
-  """A cursor for use in pagination."""
+  """
+  A cursor for use in pagination.
+  """
   cursor: Cursor
 
-  """The `List` at the end of the edge."""
+  """
+  The `List` at the end of the edge.
+  """
   node: List!
 }
 
-"""Methods to use when ordering `List`."""
+"""
+Methods to use when ordering `List`.
+"""
 enum ListsOrderBy {
   ID_ASC
   ID_DESC
@@ -732,7 +992,9 @@ type LogoutPayload {
   success: Boolean
 }
 
-"""All input for the `makeEmailPrimary` mutation."""
+"""
+All input for the `makeEmailPrimary` mutation.
+"""
 input MakeEmailPrimaryInput {
   """
   An arbitrary string value with no semantic meaning. Will be included in the
@@ -742,7 +1004,9 @@ input MakeEmailPrimaryInput {
   emailId: Int!
 }
 
-"""The output of our `makeEmailPrimary` mutation."""
+"""
+The output of our `makeEmailPrimary` mutation.
+"""
 type MakeEmailPrimaryPayload {
   """
   The exact same `clientMutationId` that was provided in the mutation input,
@@ -755,13 +1019,19 @@ type MakeEmailPrimaryPayload {
   """
   query: Query
 
-  """Reads a single `User` that is related to this `UserEmail`."""
+  """
+  Reads a single `User` that is related to this `UserEmail`.
+  """
   user: User
   userEmail: UserEmail
 
-  """An edge for our `UserEmail`. May be used by Relay 1."""
+  """
+  An edge for our `UserEmail`. May be used by Relay 1.
+  """
   userEmailEdge(
-    """The method to use when ordering `UserEmail`."""
+    """
+    The method to use when ordering `UserEmail`.
+    """
     orderBy: [UserEmailsOrderBy!] = [PRIMARY_KEY_ASC]
   ): UserEmailsEdge
 }
@@ -770,7 +1040,9 @@ type MakeEmailPrimaryPayload {
 The root mutation type which contains root level fields which mutate data.
 """
 type Mutation {
-  """Enter your old password and a new password to change your password."""
+  """
+  Enter your old password and a new password to change your password.
+  """
   changePassword(
     """
     The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
@@ -790,7 +1062,9 @@ type Mutation {
     input: ConfirmAccountDeletionInput!
   ): ConfirmAccountDeletionPayload
 
-  """Creates a single `Lily`."""
+  """
+  Creates a single `Lily`.
+  """
   createLily(
     """
     The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
@@ -798,7 +1072,9 @@ type Mutation {
     input: CreateLilyInput!
   ): CreateLilyPayload
 
-  """Creates a single `List`."""
+  """
+  Creates a single `List`.
+  """
   createList(
     """
     The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
@@ -806,7 +1082,9 @@ type Mutation {
     input: CreateListInput!
   ): CreateListPayload
 
-  """Creates a single `UserEmail`."""
+  """
+  Creates a single `UserEmail`.
+  """
   createUserEmail(
     """
     The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
@@ -814,7 +1092,9 @@ type Mutation {
     input: CreateUserEmailInput!
   ): CreateUserEmailPayload
 
-  """Deletes a single `Lily` using a unique key."""
+  """
+  Deletes a single `Lily` using a unique key.
+  """
   deleteLily(
     """
     The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
@@ -822,7 +1102,9 @@ type Mutation {
     input: DeleteLilyInput!
   ): DeleteLilyPayload
 
-  """Deletes a single `List` using a unique key."""
+  """
+  Deletes a single `List` using a unique key.
+  """
   deleteList(
     """
     The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
@@ -830,7 +1112,9 @@ type Mutation {
     input: DeleteListInput!
   ): DeleteListPayload
 
-  """Deletes a single `UserAuthentication` using a unique key."""
+  """
+  Deletes a single `UserAuthentication` using a unique key.
+  """
   deleteUserAuthentication(
     """
     The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
@@ -838,7 +1122,9 @@ type Mutation {
     input: DeleteUserAuthenticationInput!
   ): DeleteUserAuthenticationPayload
 
-  """Deletes a single `UserEmail` using a unique key."""
+  """
+  Deletes a single `UserEmail` using a unique key.
+  """
   deleteUserEmail(
     """
     The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
@@ -893,7 +1179,9 @@ type Mutation {
     input: RegisterInput!
   ): RegisterPayload
 
-  """Begin the account deletion flow by requesting the confirmation email"""
+  """
+  Begin the account deletion flow by requesting the confirmation email
+  """
   requestAccountDeletion(
     """
     The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
@@ -924,7 +1212,9 @@ type Mutation {
     input: ResetPasswordInput!
   ): ResetPasswordPayload
 
-  """Updates a single `Lily` using a unique key and a patch."""
+  """
+  Updates a single `Lily` using a unique key and a patch.
+  """
   updateLily(
     """
     The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
@@ -932,7 +1222,9 @@ type Mutation {
     input: UpdateLilyInput!
   ): UpdateLilyPayload
 
-  """Updates a single `List` using a unique key and a patch."""
+  """
+  Updates a single `List` using a unique key and a patch.
+  """
   updateList(
     """
     The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
@@ -940,7 +1232,9 @@ type Mutation {
     input: UpdateListInput!
   ): UpdateListPayload
 
-  """Updates a single `User` using a unique key and a patch."""
+  """
+  Updates a single `User` using a unique key and a patch.
+  """
   updateUser(
     """
     The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
@@ -960,29 +1254,47 @@ type Mutation {
   ): VerifyEmailPayload
 }
 
-"""Information about pagination in a connection."""
+"""
+Information about pagination in a connection.
+"""
 type PageInfo {
-  """When paginating forwards, the cursor to continue."""
+  """
+  When paginating forwards, the cursor to continue.
+  """
   endCursor: Cursor
 
-  """When paginating forwards, are there more items?"""
+  """
+  When paginating forwards, are there more items?
+  """
   hasNextPage: Boolean!
 
-  """When paginating backwards, are there more items?"""
+  """
+  When paginating backwards, are there more items?
+  """
   hasPreviousPage: Boolean!
 
-  """When paginating backwards, the cursor to continue."""
+  """
+  When paginating backwards, the cursor to continue.
+  """
   startCursor: Cursor
 }
 
-"""The root query type which gives access points into the data universe."""
+"""
+The root query type which gives access points into the data universe.
+"""
 type Query {
-  """Reads and enables pagination through a set of `AhsDatum`."""
+  """
+  Reads and enables pagination through a set of `AhsDatum`.
+  """
   ahsData(
-    """Read all values in the set after (below) this cursor."""
+    """
+    Read all values in the set after (below) this cursor.
+    """
     after: Cursor
 
-    """Read all values in the set before (above) this cursor."""
+    """
+    Read all values in the set before (above) this cursor.
+    """
     before: Cursor
 
     """
@@ -990,10 +1302,14 @@ type Query {
     """
     condition: AhsDatumCondition
 
-    """Only read the first `n` values of the set."""
+    """
+    Only read the first `n` values of the set.
+    """
     first: Int
 
-    """Only read the last `n` values of the set."""
+    """
+    Only read the last `n` values of the set.
+    """
     last: Int
 
     """
@@ -1002,21 +1318,31 @@ type Query {
     """
     offset: Int
 
-    """The method to use when ordering `AhsDatum`."""
+    """
+    The method to use when ordering `AhsDatum`.
+    """
     orderBy: [AhsDataOrderBy!] = [PRIMARY_KEY_ASC]
   ): AhsDataConnection
   ahsDatum(id: Int!): AhsDatum
   ahsDatumByAhsId(ahsId: Int!): AhsDatum
 
-  """The currently logged in user (or null if not logged in)."""
+  """
+  The currently logged in user (or null if not logged in).
+  """
   currentUser: User
 
-  """Reads and enables pagination through a set of `Lily`."""
+  """
+  Reads and enables pagination through a set of `Lily`.
+  """
   lilies(
-    """Read all values in the set after (below) this cursor."""
+    """
+    Read all values in the set after (below) this cursor.
+    """
     after: Cursor
 
-    """Read all values in the set before (above) this cursor."""
+    """
+    Read all values in the set before (above) this cursor.
+    """
     before: Cursor
 
     """
@@ -1024,10 +1350,14 @@ type Query {
     """
     condition: LilyCondition
 
-    """Only read the first `n` values of the set."""
+    """
+    Only read the first `n` values of the set.
+    """
     first: Int
 
-    """Only read the last `n` values of the set."""
+    """
+    Only read the last `n` values of the set.
+    """
     last: Int
 
     """
@@ -1036,18 +1366,26 @@ type Query {
     """
     offset: Int
 
-    """The method to use when ordering `Lily`."""
+    """
+    The method to use when ordering `Lily`.
+    """
     orderBy: [LiliesOrderBy!] = [PRIMARY_KEY_ASC]
   ): LiliesConnection
   lily(id: Int!): Lily
   list(id: Int!): List
 
-  """Reads and enables pagination through a set of `List`."""
+  """
+  Reads and enables pagination through a set of `List`.
+  """
   lists(
-    """Read all values in the set after (below) this cursor."""
+    """
+    Read all values in the set after (below) this cursor.
+    """
     after: Cursor
 
-    """Read all values in the set before (above) this cursor."""
+    """
+    Read all values in the set before (above) this cursor.
+    """
     before: Cursor
 
     """
@@ -1055,10 +1393,14 @@ type Query {
     """
     condition: ListCondition
 
-    """Only read the first `n` values of the set."""
+    """
+    Only read the first `n` values of the set.
+    """
     first: Int
 
-    """Only read the last `n` values of the set."""
+    """
+    Only read the last `n` values of the set.
+    """
     last: Int
 
     """
@@ -1067,7 +1409,9 @@ type Query {
     """
     offset: Int
 
-    """The method to use when ordering `List`."""
+    """
+    The method to use when ordering `List`.
+    """
     orderBy: [ListsOrderBy!] = [PRIMARY_KEY_ASC]
   ): ListsConnection
   user(id: Int!): User
@@ -1088,7 +1432,9 @@ type RegisterPayload {
   user: User!
 }
 
-"""All input for the `requestAccountDeletion` mutation."""
+"""
+All input for the `requestAccountDeletion` mutation.
+"""
 input RequestAccountDeletionInput {
   """
   An arbitrary string value with no semantic meaning. Will be included in the
@@ -1097,7 +1443,9 @@ input RequestAccountDeletionInput {
   clientMutationId: String
 }
 
-"""The output of our `requestAccountDeletion` mutation."""
+"""
+The output of our `requestAccountDeletion` mutation.
+"""
 type RequestAccountDeletionPayload {
   """
   The exact same `clientMutationId` that was provided in the mutation input,
@@ -1112,7 +1460,9 @@ type RequestAccountDeletionPayload {
   success: Boolean
 }
 
-"""All input for the `resendEmailVerificationCode` mutation."""
+"""
+All input for the `resendEmailVerificationCode` mutation.
+"""
 input ResendEmailVerificationCodeInput {
   """
   An arbitrary string value with no semantic meaning. Will be included in the
@@ -1122,7 +1472,9 @@ input ResendEmailVerificationCodeInput {
   emailId: Int!
 }
 
-"""The output of our `resendEmailVerificationCode` mutation."""
+"""
+The output of our `resendEmailVerificationCode` mutation.
+"""
 type ResendEmailVerificationCodePayload {
   """
   The exact same `clientMutationId` that was provided in the mutation input,
@@ -1137,7 +1489,9 @@ type ResendEmailVerificationCodePayload {
   success: Boolean
 }
 
-"""All input for the `resetPassword` mutation."""
+"""
+All input for the `resetPassword` mutation.
+"""
 input ResetPasswordInput {
   """
   An arbitrary string value with no semantic meaning. Will be included in the
@@ -1149,7 +1503,9 @@ input ResetPasswordInput {
   userId: Int!
 }
 
-"""The output of our `resetPassword` mutation."""
+"""
+The output of our `resetPassword` mutation.
+"""
 type ResetPasswordPayload {
   """
   The exact same `clientMutationId` that was provided in the mutation input,
@@ -1168,11 +1524,15 @@ type ResetPasswordPayload {
 The root subscription type: contains realtime events you can subscribe to with the `subscription` operation.
 """
 type Subscription {
-  """Triggered when the logged in user's record is updated in some way."""
+  """
+  Triggered when the logged in user's record is updated in some way.
+  """
   currentUserUpdated: UserSubscriptionPayload
 }
 
-"""All input for the `updateLily` mutation."""
+"""
+All input for the `updateLily` mutation.
+"""
 input UpdateLilyInput {
   """
   An arbitrary string value with no semantic meaning. Will be included in the
@@ -1187,9 +1547,13 @@ input UpdateLilyInput {
   patch: LilyPatch!
 }
 
-"""The output of our update `Lily` mutation."""
+"""
+The output of our update `Lily` mutation.
+"""
 type UpdateLilyPayload {
-  """Reads a single `AhsDatum` that is related to this `Lily`."""
+  """
+  Reads a single `AhsDatum` that is related to this `Lily`.
+  """
   ahsDatumByAhsRef: AhsDatum
 
   """
@@ -1198,16 +1562,24 @@ type UpdateLilyPayload {
   """
   clientMutationId: String
 
-  """The `Lily` that was updated by this mutation."""
+  """
+  The `Lily` that was updated by this mutation.
+  """
   lily: Lily
 
-  """An edge for our `Lily`. May be used by Relay 1."""
+  """
+  An edge for our `Lily`. May be used by Relay 1.
+  """
   lilyEdge(
-    """The method to use when ordering `Lily`."""
+    """
+    The method to use when ordering `Lily`.
+    """
     orderBy: [LiliesOrderBy!] = [PRIMARY_KEY_ASC]
   ): LiliesEdge
 
-  """Reads a single `List` that is related to this `Lily`."""
+  """
+  Reads a single `List` that is related to this `Lily`.
+  """
   list: List
 
   """
@@ -1215,11 +1587,15 @@ type UpdateLilyPayload {
   """
   query: Query
 
-  """Reads a single `User` that is related to this `Lily`."""
+  """
+  Reads a single `User` that is related to this `Lily`.
+  """
   user: User
 }
 
-"""All input for the `updateList` mutation."""
+"""
+All input for the `updateList` mutation.
+"""
 input UpdateListInput {
   """
   An arbitrary string value with no semantic meaning. Will be included in the
@@ -1227,7 +1603,9 @@ input UpdateListInput {
   """
   clientMutationId: String
 
-  """The primary key for the `List`."""
+  """
+  The primary key for the `List`.
+  """
   id: Int!
 
   """
@@ -1236,7 +1614,9 @@ input UpdateListInput {
   patch: ListPatch!
 }
 
-"""The output of our update `List` mutation."""
+"""
+The output of our update `List` mutation.
+"""
 type UpdateListPayload {
   """
   The exact same `clientMutationId` that was provided in the mutation input,
@@ -1244,12 +1624,18 @@ type UpdateListPayload {
   """
   clientMutationId: String
 
-  """The `List` that was updated by this mutation."""
+  """
+  The `List` that was updated by this mutation.
+  """
   list: List
 
-  """An edge for our `List`. May be used by Relay 1."""
+  """
+  An edge for our `List`. May be used by Relay 1.
+  """
   listEdge(
-    """The method to use when ordering `List`."""
+    """
+    The method to use when ordering `List`.
+    """
     orderBy: [ListsOrderBy!] = [PRIMARY_KEY_ASC]
   ): ListsEdge
 
@@ -1258,11 +1644,15 @@ type UpdateListPayload {
   """
   query: Query
 
-  """Reads a single `User` that is related to this `List`."""
+  """
+  Reads a single `User` that is related to this `List`.
+  """
   user: User
 }
 
-"""All input for the `updateUser` mutation."""
+"""
+All input for the `updateUser` mutation.
+"""
 input UpdateUserInput {
   """
   An arbitrary string value with no semantic meaning. Will be included in the
@@ -1270,7 +1660,9 @@ input UpdateUserInput {
   """
   clientMutationId: String
 
-  """Unique identifier for the user."""
+  """
+  Unique identifier for the user.
+  """
   id: Int!
 
   """
@@ -1279,7 +1671,9 @@ input UpdateUserInput {
   patch: UserPatch!
 }
 
-"""The output of our update `User` mutation."""
+"""
+The output of our update `User` mutation.
+"""
 type UpdateUserPayload {
   """
   The exact same `clientMutationId` that was provided in the mutation input,
@@ -1292,45 +1686,71 @@ type UpdateUserPayload {
   """
   query: Query
 
-  """The `User` that was updated by this mutation."""
+  """
+  The `User` that was updated by this mutation.
+  """
   user: User
 
-  """An edge for our `User`. May be used by Relay 1."""
+  """
+  An edge for our `User`. May be used by Relay 1.
+  """
   userEdge(
-    """The method to use when ordering `User`."""
+    """
+    The method to use when ordering `User`.
+    """
     orderBy: [UsersOrderBy!] = [PRIMARY_KEY_ASC]
   ): UsersEdge
 }
 
-"""A user who can log in to the application."""
+"""
+A user who can log in to the application.
+"""
 type User {
-  """Optional avatar URL."""
+  """
+  Optional avatar URL.
+  """
   avatarUrl: String
 
-  """A markdown text bio for the user."""
+  """
+  A markdown text bio for the user.
+  """
   bio: String
   createdAt: Datetime!
   hasPassword: Boolean
 
-  """Unique identifier for the user."""
+  """
+  Unique identifier for the user.
+  """
   id: Int!
 
-  """Array of profile photos for the `User`"""
+  """
+  Array of profile photos for the `User`
+  """
   imgUrls: [String]
 
-  """A short introduction for the user."""
+  """
+  A short introduction for the user.
+  """
   intro: String
 
-  """If true, the user has elevated privileges."""
+  """
+  If true, the user has elevated privileges.
+  """
   isAdmin: Boolean!
   isVerified: Boolean!
 
-  """Reads and enables pagination through a set of `Lily`."""
+  """
+  Reads and enables pagination through a set of `Lily`.
+  """
   lilies(
-    """Read all values in the set after (below) this cursor."""
+    """
+    Read all values in the set after (below) this cursor.
+    """
     after: Cursor
 
-    """Read all values in the set before (above) this cursor."""
+    """
+    Read all values in the set before (above) this cursor.
+    """
     before: Cursor
 
     """
@@ -1338,10 +1758,14 @@ type User {
     """
     condition: LilyCondition
 
-    """Only read the first `n` values of the set."""
+    """
+    Only read the first `n` values of the set.
+    """
     first: Int
 
-    """Only read the last `n` values of the set."""
+    """
+    Only read the last `n` values of the set.
+    """
     last: Int
 
     """
@@ -1350,16 +1774,24 @@ type User {
     """
     offset: Int
 
-    """The method to use when ordering `Lily`."""
+    """
+    The method to use when ordering `Lily`.
+    """
     orderBy: [LiliesOrderBy!] = [PRIMARY_KEY_ASC]
   ): LiliesConnection!
 
-  """Reads and enables pagination through a set of `List`."""
+  """
+  Reads and enables pagination through a set of `List`.
+  """
   lists(
-    """Read all values in the set after (below) this cursor."""
+    """
+    Read all values in the set after (below) this cursor.
+    """
     after: Cursor
 
-    """Read all values in the set before (above) this cursor."""
+    """
+    Read all values in the set before (above) this cursor.
+    """
     before: Cursor
 
     """
@@ -1367,10 +1799,14 @@ type User {
     """
     condition: ListCondition
 
-    """Only read the first `n` values of the set."""
+    """
+    Only read the first `n` values of the set.
+    """
     first: Int
 
-    """Only read the last `n` values of the set."""
+    """
+    Only read the last `n` values of the set.
+    """
     last: Int
 
     """
@@ -1379,37 +1815,55 @@ type User {
     """
     offset: Int
 
-    """The method to use when ordering `List`."""
+    """
+    The method to use when ordering `List`.
+    """
     orderBy: [ListsOrderBy!] = [PRIMARY_KEY_ASC]
   ): ListsConnection!
 
-  """Public-facing name (or pseudonym) of the user."""
+  """
+  Public-facing name (or pseudonym) of the user.
+  """
   name: String
   updatedAt: Datetime!
 
-  """Reads and enables pagination through a set of `UserAuthentication`."""
+  """
+  Reads and enables pagination through a set of `UserAuthentication`.
+  """
   userAuthenticationsList(
     """
     A condition to be used in determining which values should be returned by the collection.
     """
     condition: UserAuthenticationCondition
 
-    """Only read the first `n` values of the set."""
+    """
+    Only read the first `n` values of the set.
+    """
     first: Int
 
-    """Skip the first `n` values."""
+    """
+    Skip the first `n` values.
+    """
     offset: Int
 
-    """The method to use when ordering `UserAuthentication`."""
+    """
+    The method to use when ordering `UserAuthentication`.
+    """
     orderBy: [UserAuthenticationsOrderBy!]
   ): [UserAuthentication!]!
 
-  """Reads and enables pagination through a set of `UserEmail`."""
+  """
+  Reads and enables pagination through a set of `UserEmail`.
+  """
   userEmails(
-    """Read all values in the set after (below) this cursor."""
+    """
+    Read all values in the set after (below) this cursor.
+    """
     after: Cursor
 
-    """Read all values in the set before (above) this cursor."""
+    """
+    Read all values in the set before (above) this cursor.
+    """
     before: Cursor
 
     """
@@ -1417,10 +1871,14 @@ type User {
     """
     condition: UserEmailCondition
 
-    """Only read the first `n` values of the set."""
+    """
+    Only read the first `n` values of the set.
+    """
     first: Int
 
-    """Only read the last `n` values of the set."""
+    """
+    Only read the last `n` values of the set.
+    """
     last: Int
 
     """
@@ -1429,14 +1887,20 @@ type User {
     """
     offset: Int
 
-    """The method to use when ordering `UserEmail`."""
+    """
+    The method to use when ordering `UserEmail`.
+    """
     orderBy: [UserEmailsOrderBy!] = [PRIMARY_KEY_ASC]
   ): UserEmailsConnection!
 
-  """A location for the user."""
+  """
+  A location for the user.
+  """
   userLocation: String
 
-  """Public-facing username (or 'handle') of the user."""
+  """
+  Public-facing username (or 'handle') of the user.
+  """
   username: String!
 }
 
@@ -1447,14 +1911,20 @@ type UserAuthentication {
   createdAt: Datetime!
   id: Int!
 
-  """A unique identifier for the user within the login service."""
+  """
+  A unique identifier for the user within the login service.
+  """
   identifier: String!
 
-  """The login service used, e.g. `twitter` or `github`."""
+  """
+  The login service used, e.g. `twitter` or `github`.
+  """
   service: String!
   updatedAt: Datetime!
 
-  """Reads a single `User` that is related to this `UserAuthentication`."""
+  """
+  Reads a single `User` that is related to this `UserAuthentication`.
+  """
   user: User
   userId: Int!
 }
@@ -1464,17 +1934,25 @@ A condition to be used against `UserAuthentication` object types. All fields are
 tested for equality and combined with a logical ‘and.’
 """
 input UserAuthenticationCondition {
-  """Checks for equality with the object’s `id` field."""
+  """
+  Checks for equality with the object’s `id` field.
+  """
   id: Int
 
-  """Checks for equality with the object’s `service` field."""
+  """
+  Checks for equality with the object’s `service` field.
+  """
   service: String
 
-  """Checks for equality with the object’s `userId` field."""
+  """
+  Checks for equality with the object’s `userId` field.
+  """
   userId: Int
 }
 
-"""Methods to use when ordering `UserAuthentication`."""
+"""
+Methods to use when ordering `UserAuthentication`.
+"""
 enum UserAuthenticationsOrderBy {
   ID_ASC
   ID_DESC
@@ -1487,11 +1965,15 @@ enum UserAuthenticationsOrderBy {
   USER_ID_DESC
 }
 
-"""Information about a user's email address."""
+"""
+Information about a user's email address.
+"""
 type UserEmail {
   createdAt: Datetime!
 
-  """The users email address, in `a@b.c` format."""
+  """
+  The users email address, in `a@b.c` format.
+  """
   email: String!
   id: Int!
   isPrimary: Boolean!
@@ -1503,7 +1985,9 @@ type UserEmail {
   isVerified: Boolean!
   updatedAt: Datetime!
 
-  """Reads a single `User` that is related to this `UserEmail`."""
+  """
+  Reads a single `User` that is related to this `UserEmail`.
+  """
   user: User
   userId: Int!
 }
@@ -1513,49 +1997,75 @@ A condition to be used against `UserEmail` object types. All fields are tested
 for equality and combined with a logical ‘and.’
 """
 input UserEmailCondition {
-  """Checks for equality with the object’s `id` field."""
+  """
+  Checks for equality with the object’s `id` field.
+  """
   id: Int
 
-  """Checks for equality with the object’s `isPrimary` field."""
+  """
+  Checks for equality with the object’s `isPrimary` field.
+  """
   isPrimary: Boolean
 
-  """Checks for equality with the object’s `userId` field."""
+  """
+  Checks for equality with the object’s `userId` field.
+  """
   userId: Int
 }
 
-"""An input for mutations affecting `UserEmail`"""
+"""
+An input for mutations affecting `UserEmail`
+"""
 input UserEmailInput {
-  """The users email address, in `a@b.c` format."""
+  """
+  The users email address, in `a@b.c` format.
+  """
   email: String!
 }
 
-"""A connection to a list of `UserEmail` values."""
+"""
+A connection to a list of `UserEmail` values.
+"""
 type UserEmailsConnection {
   """
   A list of edges which contains the `UserEmail` and cursor to aid in pagination.
   """
   edges: [UserEmailsEdge!]!
 
-  """A list of `UserEmail` objects."""
+  """
+  A list of `UserEmail` objects.
+  """
   nodes: [UserEmail!]!
 
-  """Information to aid in pagination."""
+  """
+  Information to aid in pagination.
+  """
   pageInfo: PageInfo!
 
-  """The count of *all* `UserEmail` you could get from the connection."""
+  """
+  The count of *all* `UserEmail` you could get from the connection.
+  """
   totalCount: Int!
 }
 
-"""A `UserEmail` edge in the connection."""
+"""
+A `UserEmail` edge in the connection.
+"""
 type UserEmailsEdge {
-  """A cursor for use in pagination."""
+  """
+  A cursor for use in pagination.
+  """
   cursor: Cursor
 
-  """The `UserEmail` at the end of the edge."""
+  """
+  The `UserEmail` at the end of the edge.
+  """
   node: UserEmail!
 }
 
-"""Methods to use when ordering `UserEmail`."""
+"""
+Methods to use when ordering `UserEmail`.
+"""
 enum UserEmailsOrderBy {
   ID_ASC
   ID_DESC
@@ -1568,40 +2078,64 @@ enum UserEmailsOrderBy {
   USER_ID_DESC
 }
 
-"""Represents an update to a `User`. Fields that are set will be updated."""
+"""
+Represents an update to a `User`. Fields that are set will be updated.
+"""
 input UserPatch {
-  """Optional avatar URL."""
+  """
+  Optional avatar URL.
+  """
   avatarUrl: String
 
-  """A markdown text bio for the user."""
+  """
+  A markdown text bio for the user.
+  """
   bio: String
 
-  """Array of profile photos for the `User`"""
+  """
+  Array of profile photos for the `User`
+  """
   imgUrls: [String]
 
-  """A short introduction for the user."""
+  """
+  A short introduction for the user.
+  """
   intro: String
 
-  """Public-facing name (or pseudonym) of the user."""
+  """
+  Public-facing name (or pseudonym) of the user.
+  """
   name: String
 
-  """A location for the user."""
+  """
+  A location for the user.
+  """
   userLocation: String
 
-  """Public-facing username (or 'handle') of the user."""
+  """
+  Public-facing username (or 'handle') of the user.
+  """
   username: String
 }
 
-"""A `User` edge in the connection."""
+"""
+A `User` edge in the connection.
+"""
 type UsersEdge {
-  """A cursor for use in pagination."""
+  """
+  A cursor for use in pagination.
+  """
   cursor: Cursor
 
-  """The `User` at the end of the edge."""
+  """
+  The `User` at the end of the edge.
+  """
   node: User!
 }
 
-"""Methods to use when ordering `User`."""
+"""
+Methods to use when ordering `User`.
+"""
 enum UsersOrderBy {
   ID_ASC
   ID_DESC
@@ -1617,7 +2151,9 @@ type UserSubscriptionPayload {
   user: User
 }
 
-"""All input for the `verifyEmail` mutation."""
+"""
+All input for the `verifyEmail` mutation.
+"""
 input VerifyEmailInput {
   """
   An arbitrary string value with no semantic meaning. Will be included in the
@@ -1628,7 +2164,9 @@ input VerifyEmailInput {
   userEmailId: Int!
 }
 
-"""The output of our `verifyEmail` mutation."""
+"""
+The output of our `verifyEmail` mutation.
+"""
 type VerifyEmailPayload {
   """
   The exact same `clientMutationId` that was provided in the mutation input,

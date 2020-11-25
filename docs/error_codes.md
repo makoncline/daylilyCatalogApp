@@ -51,6 +51,12 @@ Rewritten, the above rules state:
 
 - VRFY1: you need to verify your email before you can do that
 - VRFY2: the target user needs to verify their email before you can do that
+- CDLEA: cannot delete last email address (or last verified email address if you
+  have verified email addresses)
+
+## Organization membership
+
+- ISMBR: this person is already a member
 
 ## Deleting account
 
