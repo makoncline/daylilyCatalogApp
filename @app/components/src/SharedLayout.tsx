@@ -1,4 +1,4 @@
-import { CrownOutlined, DownOutlined } from "@ant-design/icons";
+import { DownOutlined } from "@ant-design/icons";
 import { QueryResult } from "@apollo/react-common";
 import { useApolloClient } from "@apollo/react-hooks";
 import { companyName, projectName } from "@app/config";
@@ -230,35 +230,6 @@ export function SharedLayout({
                         </a>
                       </Link>
                     </Menu.Item>
-                    {/* {data.currentUser.organizationMemberships.nodes.map(
-                      ({ organization, isOwner }) => (
-                        <Menu.Item key={organization?.id}>
-                          <Link
-                            href={`/o/[slug]`}
-                            as={`/o/${organization?.slug}`}
-                          >
-                            <a>
-                              {organization?.name}
-                              {isOwner ? (
-                                <span>
-                                  {" "}
-                                  <CrownOutlined />
-                                </span>
-                              ) : (
-                                ""
-                              )}
-                            </a>
-                          </Link>
-                        </Menu.Item>
-                      )
-                    )}
-                    <Menu.Item>
-                      <Link href="/create-organization">
-                        <a data-cy="layout-link-create-organization">
-                          Create organization
-                        </a>
-                      </Link>
-                    </Menu.Item> */}
                     <Menu.Item>
                       <a onClick={handleLogout}>Logout</a>
                     </Menu.Item>
