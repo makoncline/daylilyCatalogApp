@@ -125,7 +125,7 @@ it("cannot promote a non-verified email to primary", () =>
     await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot(
       `"You may not make an unverified email primary"`
     );
-    await expect(promise).rejects.toMatchObject({ code: "VRFY1" });
+    await expect(promise).rejects.toMatchObject({ code: "VRIFY" });
   }));
 
 it("cannot see other user's emails (verified or otherwise)", () =>

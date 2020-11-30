@@ -1,4 +1,4 @@
-create function app_private.tg__add_audit_job() returns trigger as $$
+create or replace function app_private.tg__add_audit_job() returns trigger as $$
 declare
   v_user_id int;
   v_type text = TG_ARGV[0];
@@ -57,8 +57,6 @@ comment on function app_private.tg__add_audit_job() is
 
 create index on app_private.sessions (user_id);
 
-drop function app_private.tg_users__make_first_user_admin();
-
 create trigger _500_audit_added
   after insert on app_public.user_emails
   for each row
@@ -78,11 +76,9 @@ create trigger _500_audit_removed
     'email'
   );
 
-  create policy delete_own on app_public.user_emails for delete using (user_id = app_public.current_user_id());
-
 -- Prevent deleting last email
 
-create function app_public.tg_user_emails__prevent_delete_last_email() returns trigger as $$
+create or replace function app_public.tg_user_emails__prevent_delete_last_email() returns trigger as $$
 begin
   if exists (
     with remaining as (
@@ -141,8 +137,7 @@ create trigger _500_audit_removed
     'identifier'
   );
 
-drop function app_public.reset_password;
-create function app_public.reset_password(user_id int, reset_token text, new_password text) returns boolean as $$
+create or replace function app_public.reset_password(user_id int, reset_token text, new_password text) returns boolean as $$
 declare
   v_user app_public.users;
   v_user_secret app_private.user_secrets;
@@ -210,8 +205,7 @@ $$ language plpgsql strict volatile security definer set search_path to pg_catal
 comment on function app_public.reset_password(user_id int, reset_token text, new_password text) is
   E'After triggering forgotPassword, you''ll be sent a reset token. Combine this with your user ID and a new password to reset your password.';
 
-drop function app_public.confirm_account_deletion;
-create function app_public.confirm_account_deletion(token text) returns boolean as $$
+create or replace function app_public.confirm_account_deletion(token text) returns boolean as $$
 declare
   v_user_secret app_private.user_secrets;
   v_token_max_duration interval = interval '3 days';
@@ -250,8 +244,7 @@ comment on function app_public.confirm_account_deletion(token text) is
   E'If you''re certain you want to delete your account, use `requestAccountDeletion` to request an account deletion token, and then supply the token through this mutation to complete account deletion.';
 
 
-drop function app_public.change_password;
-create function app_public.change_password(old_password text, new_password text) returns boolean as $$
+create or replace function app_public.change_password(old_password text, new_password text) returns boolean as $$
 declare
   v_user app_public.users;
   v_user_secret app_private.user_secrets;
@@ -289,9 +282,7 @@ begin
 end;
 $$ language plpgsql strict volatile security definer set search_path to pg_catalog, public, pg_temp;
 
-
-drop function app_private.register_user;
-create function app_private.register_user(
+create or replace function app_private.register_user(
   f_service character varying,
   f_identifier character varying,
   f_profile json,
@@ -362,8 +353,8 @@ comment on function app_private.register_user(f_service character varying, f_ide
   E'Used to register a user from information gleaned from OAuth. Primarily used by link_or_register_user';
 
 
-drop function app_private.link_or_register_user
-create function app_private.link_or_register_user(
+;
+create or replace function app_private.link_or_register_user(
   f_user_id int,
   f_service character varying,
   f_identifier character varying,
@@ -464,3 +455,49 @@ $$ language plpgsql volatile security definer set search_path to pg_catalog, pub
 
 comment on function app_private.link_or_register_user(f_user_id int, f_service character varying, f_identifier character varying, f_profile json, f_auth_details json) is
   E'If you''re logged in, this will link an additional OAuth login to your account if necessary. If you''re logged out it may find if an account already exists (based on OAuth details or email address) and return that, or create a new user account if necessary.';
+
+
+create or replace function app_public.request_account_deletion() returns boolean as $$
+declare
+  v_user_email app_public.user_emails;
+  v_token text;
+  v_token_max_duration interval = interval '3 days';
+begin
+  if app_public.current_user_id() is null then
+    raise exception 'You must log in to delete your account' using errcode = 'LOGIN';
+  end if;
+
+  -- Get the email to send account deletion token to
+  select * into v_user_email
+    from app_public.user_emails
+    where user_id = app_public.current_user_id()
+    order by is_primary desc,
+    is_verified desc,
+    id desc
+    limit 1;
+
+  -- Fetch or generate token
+  update app_private.user_secrets
+  set
+    delete_account_token = (
+      case
+      when delete_account_token is null or delete_account_token_generated < NOW() - v_token_max_duration
+      then encode(gen_random_bytes(7), 'hex')
+      else delete_account_token
+      end
+    ),
+    delete_account_token_generated = (
+      case
+      when delete_account_token is null or delete_account_token_generated < NOW() - v_token_max_duration
+      then now()
+      else delete_account_token_generated
+      end
+    )
+  where user_id = app_public.current_user_id()
+  returning delete_account_token into v_token;
+
+  -- Trigger email send
+  perform graphile_worker.add_job('user__send_delete_account_email', json_build_object('email', v_user_email.email::text, 'token', v_token));
+  return true;
+end;
+$$ language plpgsql strict security definer volatile set search_path to pg_catalog, public, pg_temp;
