@@ -19,7 +19,7 @@ import {
   Popconfirm,
   Tooltip,
 } from "antd";
-import Select, { SelectValue } from "antd/lib/select";
+import Select from "antd/lib/select";
 import { ApolloError } from "apollo-client";
 import axios from "axios";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -70,7 +70,7 @@ export const AddLilyForm = ({
   const [isUploading, setIsUploading] = useState(false);
   const [form] = Form.useForm();
   const { setFieldsValue, getFieldValue } = form;
-  const focusElement = useRef<Select<SelectValue>>(null);
+  const focusElement = useRef<HTMLSelectElement>(null);
   const { data } = useListsQuery();
   const lists = data && data.currentUser && data.currentUser.lists.nodes;
 
