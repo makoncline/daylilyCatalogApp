@@ -2,7 +2,6 @@ import "antd/dist/antd.less";
 import "nprogress/nprogress.css";
 import "../styles.less";
 import "react-markdown-editor-lite/lib/index.css";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 import { ApolloProvider } from "@apollo/react-hooks";
 import { withApollo } from "@app/lib";
