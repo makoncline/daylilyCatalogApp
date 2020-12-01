@@ -10,7 +10,6 @@
     "@ant-design/icons": "^4.1.0",
     "@apollo/react-common": "^3.1.4",
     "@apollo/react-hooks": "^3.1.5",
-    "@app/components": "0.0.0",
     "@app/graphql": "0.0.0",
     "@app/lib": "0.0.0",
     "@types/draft-js": "^0.10.41",
