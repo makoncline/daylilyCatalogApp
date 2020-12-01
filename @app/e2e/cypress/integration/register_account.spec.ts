@@ -10,7 +10,7 @@ context("RegisterAccount", () => {
     cy.getCy("loginpage-button-register").click();
 
     // Assertions
-    cy.url().should("equal", Cypress.env("ROOT_URL") + "/register?next=%2F");
+    cy.url().should("equal", Cypress.env("ROOT_URL") + "/register/?next=%2F");
     cy.getCy("registerpage-name-label").should("exist");
   });
 
@@ -50,7 +50,7 @@ context("RegisterAccount", () => {
     it("prevents creation if username is in use", () => {
       // Setup
       cy.serverCommand("createUser", { username: "testuser" });
-      cy.visit(Cypress.env("ROOT_URL") + "/register");
+      cy.visit(Cypress.env("ROOT_URL") + "/register/");
 
       // Action
       cy.getCy("registerpage-input-name").type("Test User");
