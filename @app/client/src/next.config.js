@@ -2,14 +2,7 @@ require("@app/config");
 const compose = require("lodash/flowRight");
 const AntDDayjsWebpackPlugin = require("antd-dayjs-webpack-plugin");
 
-const {
-  ROOT_URL,
-  T_AND_C_URL,
-  BUCKET,
-  AWSACCESSKEYID,
-  AWSSECRETKEY,
-  AWS_REGION,
-} = process.env;
+const { BUCKET, AWSACCESSKEYID, AWSSECRETKEY, AWS_REGION } = process.env;
 
 if (!process.env.ROOT_URL) {
   if (process.argv[1].endsWith("/depcheck")) {
@@ -53,7 +46,7 @@ if (!process.env.ROOT_URL) {
       },
       poweredByHeader: false,
       distDir: `../.next`,
-      exportTrailingSlash: true,
+      trailingSlash: true,
       lessLoaderOptions: {
         javascriptEnabled: true,
         modifyVars: themeVariables, // make your antd custom effective
