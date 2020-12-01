@@ -35,7 +35,7 @@ function authAvatar(service: string) {
   }
 }
 
-function UnlinkAccountButton({ id }: { id: string }) {
+function UnlinkAccountButton({ id }: { id: number }) {
   const [mutate] = useUnlinkUserAuthenticationMutation();
   const [modalOpen, setModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -111,7 +111,7 @@ const Settings_Accounts: NextPage = () => {
   const query = useSharedQuery();
 
   return (
-    <SettingsLayout href="/settings/accounts" query={query}>
+    <SettingsLayout href="/settings" query={query}>
       <PageHeader title="Linked accounts" />
       {error && !loading ? <ErrorAlert error={error} /> : linkedAccounts}
       <Card style={{ marginTop: "2rem" }} title="Link another account">
