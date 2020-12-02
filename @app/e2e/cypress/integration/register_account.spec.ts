@@ -10,7 +10,10 @@ context("RegisterAccount", () => {
     cy.getCy("loginpage-button-register").click();
 
     // Assertions
-    cy.url().should("equal", Cypress.env("ROOT_URL") + "/register/?next=%2F");
+    cy.url().should(
+      "contains",
+      Cypress.env("ROOT_URL") + "/register/?next=%2F"
+    );
     cy.getCy("registerpage-name-label").should("exist");
   });
 
