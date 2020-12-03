@@ -257,7 +257,7 @@ export function SharedLayout({
                 </span>
               </Dropdown>
             ) : (
-              <Link href={`/login?next=${encodeURIComponent(currentUrl)}`}>
+              <Link href={`/login`}>
                 <a data-cy="header-login-button">Sign in</a>
               </Link>
             )}
