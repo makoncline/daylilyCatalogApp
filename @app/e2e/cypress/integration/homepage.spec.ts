@@ -8,7 +8,7 @@ context("HomePage", () => {
     // Action
 
     // Assertions
-    cy.url().should("contains", Cypress.env("ROOT_URL") + "/");
+    cy.url().should("equal", Cypress.env("ROOT_URL") + "/");
     cy.getCy("header-login-button").should("exist");
   });
 });
