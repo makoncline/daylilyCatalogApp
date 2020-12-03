@@ -102,7 +102,6 @@ export function SharedLayout({
   children,
 }: SharedLayoutProps) {
   const router = useRouter();
-  const currentUrl = router.asPath;
   const client = useApolloClient();
   const [logout] = useLogoutMutation();
   const handleLogout = useCallback(() => {
