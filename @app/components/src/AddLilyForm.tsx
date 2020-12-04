@@ -345,7 +345,6 @@ export const AddLilyForm = ({
 
   return (
     <Modal
-      forceRender
       visible={show}
       title={updateLily ? "Edit Daylily" : "Add a new Daylily"}
       onOk={handleSubmit}
