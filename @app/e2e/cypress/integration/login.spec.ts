@@ -45,7 +45,7 @@ context("Login", () => {
 
     // Assertion
     cy.contains("Incorrect username or passphrase").should("exist");
-    cy.url().should("equal", Cypress.env("ROOT_URL") + "/login"); // Should be on login page still
+    cy.url().should("contains", Cypress.env("ROOT_URL") + "/login"); // Should be on login page still
     cy.getCy("header-login-button").should("exist"); // Should not be logged in
     cy.getCy("layout-dropdown-user").should("not.exist"); // Should not be logged in
     cy.getCy("layout-dropdown-user").should("not.exist"); // Should not be logged in
@@ -53,7 +53,7 @@ context("Login", () => {
     // But can recover
     cy.getCy("loginpage-input-password").type("{backspace}"); // Delete the '!' that shouldn't be there
     cy.getCy("loginpage-button-submit").click();
-    cy.url().should("equal", Cypress.env("ROOT_URL") + "/"); // Should be on homepage
+    cy.url().should("contain", Cypress.env("ROOT_URL") + "/"); // Should be on homepage
     cy.getCy("header-login-button").should("not.exist"); // Should be logged in
     cy.getCy("layout-dropdown-user").should("contain", "Test User"); // Should be logged in
   });

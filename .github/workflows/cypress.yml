@@ -27,19 +27,16 @@ jobs:
         ports:
           - "0.0.0.0:5432:5432"
         # needed because the postgres container does not provide a healthcheck
-        options:
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
-          --health-retries 5
-
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install pg_dump
-        run: sudo apt-get install postgresql-client-10
+        run: sudo apt-get update && sudo apt-get install postgresql-client-10
       - name: Setup
         run: |
           cp .env.ci .env
@@ -51,7 +48,7 @@ jobs:
       - name: Start worker in background
         run: yarn worker start &
       - name: Cypress run
-        uses: cypress-io/github-action@v1
+        uses: cypress-io/github-action@v2
         with:
           wait-on: http://localhost:5678
           working-directory: "@app/e2e"

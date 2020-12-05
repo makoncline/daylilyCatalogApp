@@ -5,9 +5,14 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "cross-env NODE_ENV=test npx --no-install -n \"-r @app/config/env\" jest"
   },
   "dependencies": {
     "dotenv": "^8.2.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.2",
+    "jest": "^25.5.4"
   }
 }

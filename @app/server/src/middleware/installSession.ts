@@ -1,6 +1,6 @@
 import ConnectPgSimple from "connect-pg-simple";
 import ConnectRedis from "connect-redis";
-import { Express } from "express";
+import { Express, RequestHandler } from "express";
 import session from "express-session";
 import * as redis from "redis";
 
@@ -35,7 +35,6 @@ export default (app: Express) => {
        * https://medium.com/mtholla/managing-node-js-express-sessions-with-redis-94cd099d6f2f
        */
       new RedisStore({
-        // @ts-ignore
         client: redis.createClient({
           url: process.env.REDIS_URL,
         }),
@@ -62,11 +61,27 @@ export default (app: Express) => {
     resave: false,
     cookie: {
       maxAge: MAXIMUM_SESSION_DURATION_IN_MILLISECONDS,
+      httpOnly: true, // default
+      sameSite: "lax", // Cannot be 'strict' otherwise OAuth won't work.
+      secure: "auto", // May need to app.set('trust proxy') for this to work.
     },
     store,
     secret: SECRET,
   });
 
-  app.use(sessionMiddleware);
-  getWebsocketMiddlewares(app).push(sessionMiddleware);
+  /**
+   * For security reasons we only enable sessions for requests within the our
+   * own website; external URLs that need to issue requests to us must use a
+   * different authentication method such as bearer tokens.
+   */
+  const wrappedSessionMiddleware: RequestHandler = (req, res, next) => {
+    if (req.isSameOrigin) {
+      sessionMiddleware(req, res, next);
+    } else {
+      next();
+    }
+  };
+
+  app.use(wrappedSessionMiddleware);
+  getWebsocketMiddlewares(app).push(wrappedSessionMiddleware);
 };

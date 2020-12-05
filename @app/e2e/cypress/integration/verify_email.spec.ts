@@ -17,7 +17,6 @@ context("Verify email", () => {
         cy.visit(url);
       }
     );
-
     // Assertion
     cy.contains("Email Verified").should("exist");
   });

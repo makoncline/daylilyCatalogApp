@@ -14,3 +14,4 @@ dist
 dockerBuildCommands.txt
 productionServerDockerCompose.yml
 productionWorkerDockerCompose.yml
+yarn-error.log

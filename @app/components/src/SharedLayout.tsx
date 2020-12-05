@@ -42,9 +42,10 @@ export interface SharedLayoutChildProps {
 }
 
 export enum AuthRestrict {
-  LOGGED_IN = "LOGGED_IN",
-  LOGGED_OUT = "LOGGED_OUT",
-  NEVER = "NEVER",
+  NEVER = 0,
+  LOGGED_OUT = 1 << 0,
+  LOGGED_IN = 1 << 1,
+  NOT_ADMIN = 1 << 2,
 }
 
 export interface SharedLayoutProps {
@@ -101,7 +102,6 @@ export function SharedLayout({
   children,
 }: SharedLayoutProps) {
   const router = useRouter();
-  const currentUrl = router.asPath;
   const client = useApolloClient();
   const [logout] = useLogoutMutation();
   const handleLogout = useCallback(() => {
@@ -112,6 +112,8 @@ export function SharedLayout({
         client.resetStore();
       } catch (e) {
         console.error(e);
+        // Something went wrong; redirect to /logout to force logout.
+        window.location.href = "/logout";
       }
     };
     Router.events.on("routeChangeComplete", reset);
@@ -130,7 +132,14 @@ export function SharedLayout({
       ) : (
         children
       );
-    if (data && data.currentUser && forbidWhen === AuthRestrict.LOGGED_IN) {
+    const forbidsLoggedIn = forbidWhen & AuthRestrict.LOGGED_IN;
+    const forbidsLoggedOut = forbidWhen & AuthRestrict.LOGGED_OUT;
+    const forbidsNotAdmin = forbidWhen & AuthRestrict.NOT_ADMIN;
+    if (
+      data &&
+      data.currentUser &&
+      (forbidsLoggedIn || (forbidsNotAdmin && !data.currentUser.isAdmin))
+    ) {
       return (
         <StandardWidth>
           <Redirect href={"/"} />
@@ -141,7 +150,7 @@ export function SharedLayout({
       data.currentUser === null &&
       !loading &&
       !error &&
-      forbidWhen === AuthRestrict.LOGGED_OUT
+      forbidsLoggedOut
     ) {
       return (
         <Redirect href={`/login?next=${encodeURIComponent(router.asPath)}`} />
@@ -247,7 +256,7 @@ export function SharedLayout({
                 </span>
               </Dropdown>
             ) : (
-              <Link href={`/login?next=${encodeURIComponent(currentUrl)}`}>
+              <Link href={`/login`}>
                 <a data-cy="header-login-button">Sign in</a>
               </Link>
             )}
