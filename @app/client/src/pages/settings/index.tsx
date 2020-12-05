@@ -18,7 +18,7 @@ import {
   tailFormItemLayout,
 } from "@app/lib";
 import { Alert, Button, Form, Input, PageHeader } from "antd";
-import { useForm } from "antd/lib/form/util";
+import { useForm } from "antd/lib/form/Form";
 import { ApolloError } from "apollo-client";
 import { NextPage } from "next";
 import { Store } from "rc-field-form/lib/interface";
@@ -52,6 +52,7 @@ export default Settings_Profile;
 /**
  * These are the values in our form
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface FormValues {
   username: string;
   name: string;

@@ -8,6 +8,8 @@ jobs:
 
     env:
       CI: true
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
 
     strategy:
       matrix:
@@ -15,7 +17,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:10.11
+        image: postgres:11.6
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -23,19 +25,21 @@ jobs:
         ports:
           - "0.0.0.0:5432:5432"
         # needed because the postgres container does not provide a healthcheck
-        options:
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
-          --health-retries 5
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install pg_dump
-        run: sudo apt-get install postgresql-client-10
+        run: |
+          sudo bash -c "echo deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main >> /etc/apt/sources.list.d/pgdg.list"
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo apt-get update
+          sudo apt-get -yqq install postgresql-client-11
       - name: yarn, lint, build and test
         run: |
           cp .env.ci .env
@@ -43,5 +47,5 @@ jobs:
           CONFIRM_DROP=1 yarn setup
           yarn build
           yarn lint
-          yarn test
+          yarn test --ci
           yarn depcheck

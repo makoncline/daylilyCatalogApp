@@ -51,8 +51,7 @@ export default (app: Express) => {
       }
 
       const command = String(rawCommand);
-      // @ts-ignore
-      const payload = rawPayload ? JSON.parse(rawPayload) : {};
+      const payload = rawPayload ? JSON.parse(String(rawPayload)) : {};
 
       // Now run the actual command:
       const result = await runCommand(req, res, rootPgPool, command, payload);
@@ -103,11 +102,6 @@ async function runCommand(
       "delete from app_public.users where username like 'testuser%'"
     );
     return { success: true };
-  } else if (command === "clearTestOrganizations") {
-    await rootPgPool.query(
-      "delete from app_public.organizations where slug like 'test%'"
-    );
-    return { success: true };
   } else if (command === "createUser") {
     if (!payload) {
       throw new Error("Payload required");
@@ -149,7 +143,6 @@ async function runCommand(
       avatarUrl = null,
       password = "TestUserPassword",
       next = "/",
-      orgs = [],
     } = payload;
     const user = await reallyCreateUser(rootPgPool, {
       username,
@@ -159,15 +152,8 @@ async function runCommand(
       avatarUrl,
       password,
     });
-    const otherUser = await reallyCreateUser(rootPgPool, {
-      username: "testuser_other",
-      email: "testuser_other@example.com",
-      name: "testuser_other",
-      verified: true,
-      password: "DOESNT MATTER",
-    });
+
     const session = await createSession(rootPgPool, user.id);
-    const otherSession = await createSession(rootPgPool, otherUser.id);
 
     const client = await rootPgPool.connect();
     try {
@@ -180,34 +166,6 @@ async function runCommand(
       }
       try {
         await setSession(session);
-        await Promise.all(
-          orgs.map(
-            async ([name, slug, owner = true]: [string, string, boolean?]) => {
-              if (!owner) {
-                await setSession(otherSession);
-              }
-              const {
-                rows: [organization],
-              } = await client.query(
-                "select * from app_public.create_organization($1, $2)",
-                [slug, name]
-              );
-              if (!owner) {
-                await client.query(
-                  "select app_public.invite_to_organization($1::uuid, $2::citext, null::citext)",
-                  [organization.id, user.username]
-                );
-                await setSession(session);
-                await client.query(
-                  `select app_public.accept_invitation_to_organization(organization_invitations.id)
-                   from app_public.organization_invitations
-                   where user_id = $1`,
-                  [user.id]
-                );
-              }
-            }
-          )
-        );
       } finally {
         await client.query("commit");
       }

@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 12.3
--- Dumped by pg_dump version 12.2
+-- Dumped by pg_dump version 13.0
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -199,7 +199,7 @@ COMMENT ON COLUMN app_public.users.img_urls IS 'Array of profile photos for the 
 
 CREATE FUNCTION app_private.link_or_register_user(f_user_id integer, f_service character varying, f_identifier character varying, f_profile json, f_auth_details json) RETURNS app_public.users
     LANGUAGE plpgsql SECURITY DEFINER
-    SET search_path TO 'app_public', 'app_private', 'app_hidden', 'public'
+    SET search_path TO 'pg_catalog', 'public', 'pg_temp'
     AS $$
 declare
   v_matched_user_id int;
@@ -233,6 +233,15 @@ begin
         (f_user_id, f_service, f_identifier, f_profile) returning id, user_id into v_matched_authentication_id, v_matched_user_id;
       insert into app_private.user_authentication_secrets (user_authentication_id, details) values
         (v_matched_authentication_id, f_auth_details);
+      perform graphile_worker.add_job(
+        'user__audit',
+        json_build_object(
+          'type', 'linked_account',
+          'user_id', f_user_id,
+          'extra1', f_service,
+          'extra2', f_identifier,
+          'current_user_id', app_public.current_user_id()
+        ));
     elsif v_email is not null then
       -- See if the email is registered
       select * into v_user_email from app_public.user_emails where email = v_email and is_verified is true;
@@ -242,6 +251,15 @@ begin
           (v_user_email.user_id, f_service, f_identifier, f_profile) returning id, user_id into v_matched_authentication_id, v_matched_user_id;
         insert into app_private.user_authentication_secrets (user_authentication_id, details) values
           (v_matched_authentication_id, f_auth_details);
+        perform graphile_worker.add_job(
+          'user__audit',
+          json_build_object(
+            'type', 'linked_account',
+            'user_id', f_user_id,
+            'extra1', f_service,
+            'extra2', f_identifier,
+            'current_user_id', app_public.current_user_id()
+          ));
       end if;
     end if;
   end if;
@@ -433,7 +451,7 @@ COMMENT ON FUNCTION app_private.really_create_user(username public.citext, email
 
 CREATE FUNCTION app_private.register_user(f_service character varying, f_identifier character varying, f_profile json, f_auth_details json, f_email_is_verified boolean DEFAULT false) RETURNS app_public.users
     LANGUAGE plpgsql SECURITY DEFINER
-    SET search_path TO 'app_public', 'app_private', 'app_hidden', 'public'
+    SET search_path TO 'pg_catalog', 'public', 'pg_temp'
     AS $$
 declare
   v_user app_public.users;
@@ -453,8 +471,8 @@ begin
   if v_username is null then
     v_username = coalesce(v_name, 'user');
   end if;
-  v_username = regexp_replace(v_username, '^[^a-z]+', '', 'i');
-  v_username = regexp_replace(v_username, '[^a-z0-9]+', '_', 'i');
+  v_username = regexp_replace(v_username, '^[^a-z]+', '', 'gi');
+  v_username = regexp_replace(v_username, '[^a-z0-9]+', '_', 'gi');
   if v_username is null or length(v_username) < 3 then
     v_username = 'user';
   end if;
@@ -501,6 +519,76 @@ $$;
 --
 
 COMMENT ON FUNCTION app_private.register_user(f_service character varying, f_identifier character varying, f_profile json, f_auth_details json, f_email_is_verified boolean) IS 'Used to register a user from information gleaned from OAuth. Primarily used by link_or_register_user';
+
+
+--
+-- Name: tg__add_audit_job(); Type: FUNCTION; Schema: app_private; Owner: -
+--
+
+CREATE FUNCTION app_private.tg__add_audit_job() RETURNS trigger
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'pg_catalog', 'public', 'pg_temp'
+    AS $_$
+declare
+  v_user_id int;
+  v_type text = TG_ARGV[0];
+  v_user_id_attribute text = TG_ARGV[1];
+  v_extra_attribute1 text = TG_ARGV[2];
+  v_extra_attribute2 text = TG_ARGV[3];
+  v_extra_attribute3 text = TG_ARGV[4];
+  v_extra1 text;
+  v_extra2 text;
+  v_extra3 text;
+begin
+  if v_user_id_attribute is null then
+    raise exception 'Invalid tg__add_audit_job call';
+  end if;
+
+  execute 'select ($1.' || quote_ident(v_user_id_attribute) || ')::int'
+    using (case when TG_OP = 'INSERT' then NEW else OLD end)
+    into v_user_id;
+
+  if v_extra_attribute1 is not null then
+    execute 'select ($1.' || quote_ident(v_extra_attribute1) || ')::text'
+      using (case when TG_OP = 'DELETE' then OLD else NEW end)
+      into v_extra1;
+  end if;
+  if v_extra_attribute2 is not null then
+    execute 'select ($1.' || quote_ident(v_extra_attribute2) || ')::text'
+      using (case when TG_OP = 'DELETE' then OLD else NEW end)
+      into v_extra2;
+  end if;
+  if v_extra_attribute3 is not null then
+    execute 'select ($1.' || quote_ident(v_extra_attribute3) || ')::text'
+      using (case when TG_OP = 'DELETE' then OLD else NEW end)
+      into v_extra3;
+  end if;
+
+  if v_user_id is not null then
+    perform graphile_worker.add_job(
+      'user__audit',
+      json_build_object(
+        'type', v_type,
+        'user_id', v_user_id,
+        'extra1', v_extra1,
+        'extra2', v_extra2,
+        'extra3', v_extra3,
+        'current_user_id', app_public.current_user_id(),
+        'schema', TG_TABLE_SCHEMA,
+        'table', TG_TABLE_NAME
+      ));
+  end if;
+
+  return NEW;
+end;
+$_$;
+
+
+--
+-- Name: FUNCTION tg__add_audit_job(); Type: COMMENT; Schema: app_private; Owner: -
+--
+
+COMMENT ON FUNCTION app_private.tg__add_audit_job() IS 'For notifying a user that an auditable action has taken place. Call with audit event name, user ID attribute name, and optionally another value to be included (e.g. the PK of the table, or some other relevant information). e.g. `tg__add_audit_job(''added_email'', ''user_id'', ''email'')`';
 
 
 --
@@ -618,6 +706,7 @@ $$;
 
 CREATE FUNCTION app_public.change_password(old_password text, new_password text) RETURNS boolean
     LANGUAGE plpgsql STRICT SECURITY DEFINER
+    SET search_path TO 'pg_catalog', 'public', 'pg_temp'
     AS $$
 declare
   v_user app_public.users;
@@ -639,6 +728,13 @@ begin
       set
         password_hash = crypt(new_password, gen_salt('bf'))
       where user_secrets.user_id = v_user.id;
+      perform graphile_worker.add_job(
+        'user__audit',
+        json_build_object(
+          'type', 'change_password',
+          'user_id', v_user.id,
+          'current_user_id', app_public.current_user_id()
+        ));
       return true;
     else
       raise exception 'Incorrect password' using errcode = 'CREDS';
@@ -663,7 +759,7 @@ COMMENT ON FUNCTION app_public.change_password(old_password text, new_password t
 
 CREATE FUNCTION app_public.confirm_account_deletion(token text) RETURNS boolean
     LANGUAGE plpgsql STRICT SECURITY DEFINER
-    SET search_path TO 'app_public', 'app_private', 'app_hidden', 'public'
+    SET search_path TO 'pg_catalog', 'public', 'pg_temp'
     AS $$
 declare
   v_user_secret app_private.user_secrets;
@@ -683,7 +779,13 @@ begin
   end if;
 
   -- Check the token
-  if v_user_secret.delete_account_token = token then
+  if (
+    -- token is still valid
+    v_user_secret.delete_account_token_generated > now() - v_token_max_duration
+  and
+    -- token matches
+    v_user_secret.delete_account_token = token
+  ) then
     -- Token passes; delete their account :(
     delete from app_public.users where id = app_public.current_user_id();
     return true;
@@ -952,7 +1054,7 @@ COMMENT ON FUNCTION app_public.make_email_primary(email_id integer) IS 'Your pri
 
 CREATE FUNCTION app_public.request_account_deletion() RETURNS boolean
     LANGUAGE plpgsql STRICT SECURITY DEFINER
-    SET search_path TO 'app_public', 'app_private', 'app_hidden', 'public'
+    SET search_path TO 'pg_catalog', 'public', 'pg_temp'
     AS $$
 declare
   v_user_email app_public.user_emails;
@@ -967,7 +1069,10 @@ begin
   select * into v_user_email
     from app_public.user_emails
     where user_id = app_public.current_user_id()
-    and is_primary is true;
+    order by is_primary desc,
+    is_verified desc,
+    id desc
+    limit 1;
 
   -- Fetch or generate token
   update app_private.user_secrets
@@ -1039,7 +1144,7 @@ COMMENT ON FUNCTION app_public.resend_email_verification_code(email_id integer) 
 
 CREATE FUNCTION app_public.reset_password(user_id integer, reset_token text, new_password text) RETURNS boolean
     LANGUAGE plpgsql STRICT SECURITY DEFINER
-    SET search_path TO 'app_public', 'app_private', 'app_hidden', 'public'
+    SET search_path TO 'pg_catalog', 'public', 'pg_temp'
     AS $$
 declare
   v_user app_public.users;
@@ -1081,6 +1186,13 @@ begin
         failed_reset_password_attempts = 0,
         first_failed_reset_password_attempt = null
       where user_secrets.user_id = v_user.id;
+      perform graphile_worker.add_job(
+        'user__audit',
+        json_build_object(
+          'type', 'reset_password',
+          'user_id', v_user.id,
+          'current_user_id', app_public.current_user_id()
+        ));
       return true;
     else
       -- Wrong token, bump all the attempt tracking figures
@@ -1177,6 +1289,53 @@ begin
     raise exception 'An account using that email address has already been created.' using errcode='EMTKN';
   end if;
   return NEW;
+end;
+$$;
+
+
+--
+-- Name: tg_user_emails__prevent_delete_last_email(); Type: FUNCTION; Schema: app_public; Owner: -
+--
+
+CREATE FUNCTION app_public.tg_user_emails__prevent_delete_last_email() RETURNS trigger
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'pg_catalog', 'public', 'pg_temp'
+    AS $$
+begin
+  if exists (
+    with remaining as (
+      select user_emails.user_id
+      from app_public.user_emails
+      inner join deleted
+      on user_emails.user_id = deleted.user_id
+      -- Don't delete last verified email
+      where (user_emails.is_verified is true or not exists (
+        select 1
+        from deleted d2
+        where d2.user_id = user_emails.user_id
+        and d2.is_verified is true
+      ))
+      order by user_emails.id asc
+
+      /*
+       * Lock this table to prevent race conditions; see:
+       * https://www.cybertec-postgresql.com/en/triggers-to-enforce-constraints/
+       */
+      for update of user_emails
+    )
+    select 1
+    from app_public.users
+    where id in (
+      select user_id from deleted
+      except
+      select user_id from remaining
+    )
+  )
+  then
+    raise exception 'You must have at least one (verified) email address' using errcode = 'CDLEA';
+  end if;
+
+  return null;
 end;
 $$;
 
@@ -1836,6 +1995,13 @@ ALTER TABLE ONLY app_public.users
 
 
 --
+-- Name: sessions_user_id_idx; Type: INDEX; Schema: app_private; Owner: -
+--
+
+CREATE INDEX sessions_user_id_idx ON app_private.sessions USING btree (user_id);
+
+
+--
 -- Name: ahs_data_ahs_id_idx; Type: INDEX; Schema: app_public; Owner: -
 --
 
@@ -1948,10 +2114,24 @@ CREATE TRIGGER _200_forbid_existing_email BEFORE INSERT ON app_public.user_email
 
 
 --
--- Name: users _200_make_first_user_admin; Type: TRIGGER; Schema: app_public; Owner: -
+-- Name: user_emails _500_audit_added; Type: TRIGGER; Schema: app_public; Owner: -
 --
 
-CREATE TRIGGER _200_make_first_user_admin BEFORE INSERT ON app_public.users FOR EACH ROW WHEN ((new.id = 1)) EXECUTE FUNCTION app_private.tg_users__make_first_user_admin();
+CREATE TRIGGER _500_audit_added AFTER INSERT ON app_public.user_emails FOR EACH ROW EXECUTE FUNCTION app_private.tg__add_audit_job('added_email', 'user_id', 'id', 'email');
+
+
+--
+-- Name: user_authentications _500_audit_removed; Type: TRIGGER; Schema: app_public; Owner: -
+--
+
+CREATE TRIGGER _500_audit_removed AFTER DELETE ON app_public.user_authentications FOR EACH ROW EXECUTE FUNCTION app_private.tg__add_audit_job('unlinked_account', 'user_id', 'service', 'identifier');
+
+
+--
+-- Name: user_emails _500_audit_removed; Type: TRIGGER; Schema: app_public; Owner: -
+--
+
+CREATE TRIGGER _500_audit_removed AFTER DELETE ON app_public.user_emails FOR EACH ROW EXECUTE FUNCTION app_private.tg__add_audit_job('removed_email', 'user_id', 'id', 'email');
 
 
 --
@@ -1973,6 +2153,13 @@ CREATE TRIGGER _500_insert_secrets AFTER INSERT ON app_public.user_emails FOR EA
 --
 
 CREATE TRIGGER _500_insert_secrets AFTER INSERT ON app_public.users FOR EACH ROW EXECUTE FUNCTION app_private.tg_user_secrets__insert_with_user();
+
+
+--
+-- Name: user_emails _500_prevent_delete_last; Type: TRIGGER; Schema: app_public; Owner: -
+--
+
+CREATE TRIGGER _500_prevent_delete_last AFTER DELETE ON app_public.user_emails REFERENCING OLD TABLE AS deleted FOR EACH STATEMENT EXECUTE FUNCTION app_public.tg_user_emails__prevent_delete_last_email();
 
 
 --
@@ -2261,6 +2448,16 @@ GRANT USAGE ON SCHEMA app_hidden TO daylily_catalog_visitor;
 --
 
 GRANT USAGE ON SCHEMA app_public TO daylily_catalog_visitor;
+
+
+--
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: -
+--
+
+REVOKE ALL ON SCHEMA public FROM postgres;
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+GRANT ALL ON SCHEMA public TO daylily_catalog;
+GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --

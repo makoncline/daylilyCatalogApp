@@ -20,7 +20,7 @@ import {
   tailFormItemLayout,
 } from "@app/lib";
 import { Alert, Avatar, Button, Form, Input, List, PageHeader } from "antd";
-import { useForm } from "antd/lib/form/util";
+import { useForm } from "antd/lib/form/Form";
 import { ApolloError } from "apollo-client";
 import { NextPage } from "next";
 import { Store } from "rc-field-form/lib/interface";
@@ -198,6 +198,7 @@ const Settings_Emails: NextPage = () => {
 
 export default Settings_Emails;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface FormValues {
   email: string;
 }

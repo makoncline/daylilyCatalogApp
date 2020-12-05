@@ -12,13 +12,5 @@
     "jsx": "react"
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["node_modules", "dist"],
-  "references": [
-    {
-      "path": "../graphql"
-    },
-    {
-      "path": "../lib"
-    }
-  ]
+  "references": [{ "path": "../graphql" }, { "path": "../lib" }]
 }

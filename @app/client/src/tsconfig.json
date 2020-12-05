@@ -13,17 +13,10 @@
   },
   "exclude": ["node_modules"],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "references": [{
-      "path": "../../config"
-    },
-    {
-      "path": "../../graphql"
-    },
-    {
-      "path": "../../components"
-    },
-    {
-      "path": "../../lib"
-    }
+  "references": [
+    { "path": "../../config" },
+    { "path": "../../graphql" },
+    { "path": "../../components" },
+    { "path": "../../lib" }
   ]
 }
