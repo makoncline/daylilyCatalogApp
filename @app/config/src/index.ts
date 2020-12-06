@@ -10,5 +10,5 @@ export const companyName = projectName; // For copyright ownership
 export const emailLegalText =
   // Envvar here so we can override on the demo website
   process.env.LEGAL_TEXT ||
-  `Copyright &copy; ${new Date().getFullYear()} Daylily Catalog. All
+  `Copyright © ${new Date().getFullYear()} Daylily Catalog. All
   rights reserved.`;
