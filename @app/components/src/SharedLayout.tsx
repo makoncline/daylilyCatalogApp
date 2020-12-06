@@ -177,7 +177,7 @@ export function SharedLayout({
         <Row justify="space-between">
           <Col span={6}>
             <Link href="/">
-              <a>{projectName}</a>
+              <a>Daylily Catalog</a>
             </Link>
           </Col>
           <Col span={12}>
@@ -206,18 +206,12 @@ export function SharedLayout({
                   <Menu>
                     <Menu.Item>
                       <Link href="/">
-                        <a data-cy="layout-link-catalog">
-                          <Warn okay={data.currentUser.isVerified}>
-                            Catalog
-                          </Warn>
-                        </a>
+                        <a data-cy="layout-link-catalog">Catalog</a>
                       </Link>
                     </Menu.Item>
                     <Menu.Item>
                       <Link href="/lists">
-                        <a data-cy="layout-link-lists">
-                          <Warn okay={data.currentUser.isVerified}>Lists</Warn>
-                        </a>
+                        <a data-cy="layout-link-lists">Lists</a>
                       </Link>
                     </Menu.Item>
                     <Menu.Item>

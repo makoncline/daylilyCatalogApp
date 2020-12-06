@@ -39,7 +39,7 @@ async function main() {
   const text = await response.text();
 
   // Check for known text on homepage
-  if (!text.includes("daylily catalog")) {
+  if (!text.includes("Daylily Catalog")) {
     throw new Error("Failed to confirm server works.");
   }
 
