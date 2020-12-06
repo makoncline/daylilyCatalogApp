@@ -3,7 +3,7 @@ const packageJson = require("../../../package.json");
 
 // TODO: customise this with your own settings!
 
-export const fromEmail = '"Daylily Catalog" <no-reply@daylilycatalogcom>';
+export const fromEmail = '"Daylily Catalog" <no-reply@daylilycatalog.com>';
 export const awsRegion = "us-east-1";
 export const projectName = packageJson.name.replace(/[-_]/g, " ");
 export const companyName = projectName; // For copyright ownership
