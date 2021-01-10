@@ -15,6 +15,12 @@ export default function installHelmet(app: Express) {
               directives: {
                 ...helmet.contentSecurityPolicy.getDefaultDirectives(),
                 "script-src": ["'self'", "'unsafe-eval'"],
+                "img-src": [
+                  "'self'",
+                  "daylily-catalog-images.s3.amazonaws.com",
+                  "images.weserv.nl",
+                  "i.imgur.com",
+                ],
               },
             },
           }
