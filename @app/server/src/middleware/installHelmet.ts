@@ -11,18 +11,8 @@ export default function installHelmet(app: Express) {
         ? {
             // Dev needs 'unsafe-eval' due to
             // https://github.com/vercel/next.js/issues/14221
-            contentSecurityPolicy: {
-              directives: {
-                ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-                "script-src": ["'self'", "'unsafe-eval'"],
-                "img-src": [
-                  "'self'",
-                  "daylily-catalog-images.s3.amazonaws.com",
-                  "images.weserv.nl",
-                  "i.imgur.com",
-                ],
-              },
-            },
+            contentSecurityPolicy: false,
+            permittedCrossDomainPolicies: false,
           }
         : {}
     )
