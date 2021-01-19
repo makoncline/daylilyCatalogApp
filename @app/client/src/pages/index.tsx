@@ -1,6 +1,6 @@
-import { Button, Col, Divider, Row, Typography } from "antd";
+import { Button, Col, Row, Typography } from "antd";
 import * as React from "react";
-const { Text, Title, Paragraph } = Typography;
+const { Title, Paragraph } = Typography;
 import { SharedLayout } from "@app/components";
 import { useSharedQuery } from "@app/graphql";
 import { NextPage } from "next";
