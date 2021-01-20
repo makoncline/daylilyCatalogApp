@@ -1,9 +1,13 @@
 import { InboxOutlined } from "@ant-design/icons";
 import { message, Modal, Upload } from "antd";
-import { RcCustomRequestOptions, UploadFile } from "antd/lib/upload/interface";
+import { UploadFile, UploadProps } from "antd/lib/upload/interface";
 import axios from "axios";
 import React, { useState } from "react";
 import slugify from "slugify";
+
+export type RcCustomRequestOptions<T = any> = Parameters<
+  Exclude<UploadProps<T>["customRequest"], undefined>
+>[0];
 
 const { Dragger } = Upload;
 
@@ -99,7 +103,7 @@ export const MultiImageUpload = ({
     return isImage && isLt3M;
   };
 
-  const customRequest = async (option: RcCustomRequestOptions) => {
+  const customRequest = async (option: any) => {
     const { onSuccess, onError, file, onProgress } = option;
     // setIsUploading(true);
     try {
