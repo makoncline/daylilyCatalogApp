@@ -5,11 +5,7 @@ import {
 } from "@app/graphql";
 import { getExceptionFromError } from "@app/lib";
 import { message, Upload } from "antd";
-import {
-  RcCustomRequestOptions,
-  UploadChangeParam,
-  UploadFile,
-} from "antd/lib/upload/interface";
+import { UploadChangeParam, UploadFile } from "antd/lib/upload/interface";
 import axios from "axios";
 import React, { useState } from "react";
 import slugify from "slugify";
@@ -60,7 +56,7 @@ export function AvatarUpload({
 
   const [loading, setLoading] = useState(false);
 
-  const customRequest = async (option: RcCustomRequestOptions) => {
+  const customRequest = async (option: any) => {
     const { onSuccess, onError, file, onProgress } = option;
     try {
       const uploadUrl = await axios

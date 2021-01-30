@@ -102,6 +102,7 @@ export function SharedLayout({
   children,
 }: SharedLayoutProps) {
   const router = useRouter();
+  const currentUrl = router.asPath;
   const client = useApolloClient();
   const [logout] = useLogoutMutation();
   const handleLogout = useCallback(() => {
@@ -119,6 +120,9 @@ export function SharedLayout({
     Router.events.on("routeChangeComplete", reset);
     Router.push("/");
   }, [client, logout]);
+  const forbidsLoggedIn = forbidWhen & AuthRestrict.LOGGED_IN;
+  const forbidsLoggedOut = forbidWhen & AuthRestrict.LOGGED_OUT;
+  const forbidsNotAdmin = forbidWhen & AuthRestrict.NOT_ADMIN;
   const renderChildren = (props: SharedLayoutChildProps) => {
     const inner =
       props.error && !props.loading && !noHandleErrors ? (
@@ -132,9 +136,6 @@ export function SharedLayout({
       ) : (
         children
       );
-    const forbidsLoggedIn = forbidWhen & AuthRestrict.LOGGED_IN;
-    const forbidsLoggedOut = forbidWhen & AuthRestrict.LOGGED_OUT;
-    const forbidsNotAdmin = forbidWhen & AuthRestrict.NOT_ADMIN;
     if (
       data &&
       data.currentUser &&
@@ -205,7 +206,7 @@ export function SharedLayout({
                 overlay={
                   <Menu>
                     <Menu.Item>
-                      <Link href="/">
+                      <Link href="/catalog">
                         <a data-cy="layout-link-catalog">Catalog</a>
                       </Link>
                     </Menu.Item>
@@ -249,8 +250,8 @@ export function SharedLayout({
                   </Warn>
                 </span>
               </Dropdown>
-            ) : (
-              <Link href={`/login`}>
+            ) : forbidsLoggedIn ? null : (
+              <Link href={`/login?next=${encodeURIComponent(currentUrl)}`}>
                 <a data-cy="header-login-button">Sign in</a>
               </Link>
             )}
