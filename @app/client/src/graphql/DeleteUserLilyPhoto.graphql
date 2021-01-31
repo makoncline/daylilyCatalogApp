@@ -1,0 +1,5 @@
+mutation DeleteUserLilyPhoto($id: UUID!) {
+  deleteUserLilyPhoto(input: { id: $id }) {
+    clientMutationId
+  }
+}

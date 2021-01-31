@@ -2,8 +2,11 @@ import { QuestionCircleOutlined } from "@ant-design/icons";
 import {
   Lily,
   useAddLilyMutation,
+  useAddUserLilyPhotoMutation,
   useDeleteLilyMutation,
+  useDeleteUserLilyPhotoMutation,
   useEditLilyMutation,
+  useLilyPhotosQuery,
   useListsQuery,
 } from "@app/graphql";
 import { extractError, formItemLayout, getCodeFromError } from "@app/lib";
@@ -63,6 +66,8 @@ export const AddLilyForm = ({
 }: AddLilyFormProps) => {
   const id = user.id;
   const [addLily] = useAddLilyMutation();
+  const [addUserLilyPhoto] = useAddUserLilyPhotoMutation();
+  const [deleteUserLilyPhoto] = useDeleteUserLilyPhotoMutation();
   const [editLily] = useEditLilyMutation();
   const [deleteLily] = useDeleteLilyMutation();
   const [fileList, setFileList] = useState<any>([]);
@@ -73,6 +78,10 @@ export const AddLilyForm = ({
   const focusElement = useRef<HTMLSelectElement>(null);
   const { data } = useListsQuery();
   const lists = data && data.currentUser && data.currentUser.lists.nodes;
+
+  const { data: userLilyPhotosData } = useLilyPhotosQuery({
+    variables: { id: updateLily?.id || -1 },
+  });
 
   useEffect(() => {
     if (updateLily) {
@@ -154,10 +163,19 @@ export const AddLilyForm = ({
                 setFileList(newFileList);
               },
             })
-            .then((response) => {
+            .then(async (response) => {
               const newFileList = fileList.slice();
               newFileList[i].status = "done";
               setFileList(newFileList);
+              if (updateLily) {
+                await addUserLilyPhoto({
+                  variables: {
+                    userId: id,
+                    lilyId: updateLily.id,
+                    s3Key: file.uid as string,
+                  },
+                });
+              }
               return (
                 response &&
                 response.config &&
@@ -175,7 +193,7 @@ export const AddLilyForm = ({
           throw new Error(err);
         });
     },
-    [fileList]
+    [addUserLilyPhoto, fileList, id, updateLily]
   );
   const handleImgDelete = useCallback(
     (url: any) => {
@@ -188,14 +206,28 @@ export const AddLilyForm = ({
             operation: "delete",
           },
         })
-        .then(() => {
+        .then(async () => {
           //console.log("item deleted");
+          if (updateLily) {
+            const userLilyPhoto = userLilyPhotosData?.lily?.userLilyPhotos.nodes.find(
+              (node) => node.s3Key === `${id}/${fileName}`
+            );
+            const userLilyPhotoId = userLilyPhoto?.id;
+            if (userLilyPhotoId) {
+              await deleteUserLilyPhoto({ variables: { id: userLilyPhotoId } });
+            }
+          }
         })
         .catch((error) => {
           console.log(JSON.stringify(error));
         });
     },
-    [id]
+    [
+      deleteUserLilyPhoto,
+      id,
+      updateLily,
+      userLilyPhotosData?.lily?.userLilyPhotos.nodes,
+    ]
   );
   const handleImages = useCallback(async () => {
     setIsUploading(true);
