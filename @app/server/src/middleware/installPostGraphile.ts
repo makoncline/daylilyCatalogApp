@@ -16,6 +16,7 @@ import { makePgSmartTagsFromFilePlugin } from "postgraphile/plugins";
 
 import { getHttpServer, getWebsocketMiddlewares } from "../app";
 import CreateUploadUrlPlugin from "../plugins/CreateUploadUrlPlugin";
+import DeleteUploadPlugin from "../plugins/DeleteUploadPlugin";
 import PassportLoginPlugin from "../plugins/PassportLoginPlugin";
 import PrimaryKeyMutationsOnlyPlugin from "../plugins/PrimaryKeyMutationsOnlyPlugin";
 import RemoveQueryQueryPlugin from "../plugins/RemoveQueryQueryPlugin";
@@ -183,6 +184,9 @@ export function getPostGraphileOptions({
 
       // Allows API clients to fetch a pre-signed URL for uploading files
       CreateUploadUrlPlugin,
+
+      // Allows API clients to delete objects from s3 bucket
+      DeleteUploadPlugin,
     ],
 
     /*

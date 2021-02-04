@@ -2,8 +2,10 @@ import { PlusOutlined } from "@ant-design/icons";
 import {
   ProfileSettingsForm_UserFragment,
   useCreateUploadUrlMutation,
+  useDeleteUploadMutation,
   useUpdateUserMutation,
 } from "@app/graphql";
+import s3Uri from "amazon-s3-uri";
 import { Upload } from "antd";
 import { UploadFile, UploadProps } from "antd/lib/upload/interface";
 import axios from "axios";
@@ -31,12 +33,14 @@ export function AvatarUpload({
 }) {
   const [updateUser] = useUpdateUserMutation();
   const [createUploadUrl] = useCreateUploadUrlMutation();
+  const [deleteUpload] = useDeleteUploadMutation();
 
   const defaulfFileList: UploadFile<any>[] = imgUrls
     .filter(Boolean)
     .map((imgUrl, i) => {
+      const { key } = s3Uri(imgUrl);
       return {
-        uid: `imgUrl-${i}`,
+        uid: key ?? `image-${i}`,
         status: "done",
         url: imgUrl,
         size: 0,
@@ -102,14 +106,29 @@ export function AvatarUpload({
     console.log("🚀 ~ file: AvatarUpload.tsx ~ line 102 ~ fileList", fileList);
     setFileList(fileList);
     if (file.status === "removed") {
-      await updateUser({
-        variables: {
-          id: user.id,
-          patch: {
-            avatarUrl: null,
+      try {
+        await deleteUpload({
+          variables: {
+            input: {
+              key: file.uid,
+            },
           },
-        },
-      });
+        });
+      } catch (err) {
+        console.log(`Error deleting file with key ${file.uid}: `, err);
+      }
+      try {
+        await updateUser({
+          variables: {
+            id: user.id,
+            patch: {
+              avatarUrl: null,
+            },
+          },
+        });
+      } catch (err) {
+        console.log(`Error updating user with id ${user.id}: `, err);
+      }
     } else if (file.status === "uploading") {
     } else if (file.status === "done") {
       console.log(
