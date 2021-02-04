@@ -245,6 +245,41 @@ type CreateListPayload {
   user: User
 }
 
+"""All input for the `createUploadUrl` mutation."""
+input CreateUploadUrlInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  You must provide the content type (or MIME type) of the content you intend
+  to upload. For further information about content types, see
+  https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types
+  """
+  contentType: String!
+}
+
+"""The output of our `createUploadUrl` mutation."""
+type CreateUploadUrlPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+  key: String!
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Upload content to this signed URL."""
+  uploadUrl: String!
+  url: String!
+}
+
 """All input for the create `UserEmail` mutation."""
 input CreateUserEmailInput {
   """
@@ -281,6 +316,47 @@ type CreateUserEmailPayload {
     """The method to use when ordering `UserEmail`."""
     orderBy: [UserEmailsOrderBy!] = [PRIMARY_KEY_ASC]
   ): UserEmailsEdge
+}
+
+"""All input for the create `UserLilyPhoto` mutation."""
+input CreateUserLilyPhotoInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The `UserLilyPhoto` to be created by this mutation."""
+  userLilyPhoto: UserLilyPhotoInput!
+}
+
+"""The output of our create `UserLilyPhoto` mutation."""
+type CreateUserLilyPhotoPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """Reads a single `Lily` that is related to this `UserLilyPhoto`."""
+  lily: Lily
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `User` that is related to this `UserLilyPhoto`."""
+  user: User
+
+  """The `UserLilyPhoto` that was created by this mutation."""
+  userLilyPhoto: UserLilyPhoto
+
+  """An edge for our `UserLilyPhoto`. May be used by Relay 1."""
+  userLilyPhotoEdge(
+    """The method to use when ordering `UserLilyPhoto`."""
+    orderBy: [UserLilyPhotosOrderBy!] = [PRIMARY_KEY_ASC]
+  ): UserLilyPhotosEdge
 }
 
 """A location in a connection that can be used for resuming pagination."""
@@ -442,6 +518,48 @@ type DeleteUserEmailPayload {
   ): UserEmailsEdge
 }
 
+"""All input for the `deleteUserLilyPhoto` mutation."""
+input DeleteUserLilyPhotoInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """An identifier for this entry."""
+  id: UUID!
+}
+
+"""The output of our delete `UserLilyPhoto` mutation."""
+type DeleteUserLilyPhotoPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+  deletedUserLilyPhotoNodeId: ID
+
+  """Reads a single `Lily` that is related to this `UserLilyPhoto`."""
+  lily: Lily
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `User` that is related to this `UserLilyPhoto`."""
+  user: User
+
+  """The `UserLilyPhoto` that was deleted by this mutation."""
+  userLilyPhoto: UserLilyPhoto
+
+  """An edge for our `UserLilyPhoto`. May be used by Relay 1."""
+  userLilyPhotoEdge(
+    """The method to use when ordering `UserLilyPhoto`."""
+    orderBy: [UserLilyPhotosOrderBy!] = [PRIMARY_KEY_ASC]
+  ): UserLilyPhotosEdge
+}
+
 """All input for the `forgotPassword` mutation."""
 input ForgotPasswordInput {
   """
@@ -532,6 +650,35 @@ type Lily {
   """Reads a single `User` that is related to this `Lily`."""
   user: User
   userId: Int!
+
+  """Reads and enables pagination through a set of `UserLilyPhoto`."""
+  userLilyPhotos(
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: UserLilyPhotoCondition
+
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """The method to use when ordering `UserLilyPhoto`."""
+    orderBy: [UserLilyPhotosOrderBy!] = [PRIMARY_KEY_ASC]
+  ): UserLilyPhotosConnection!
 }
 
 """
@@ -804,6 +951,14 @@ type Mutation {
     input: CreateListInput!
   ): CreateListPayload
 
+  """Get a signed URL for uploading files. It will expire in 5 minutes."""
+  createUploadUrl(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateUploadUrlInput!
+  ): CreateUploadUrlPayload
+
   """Creates a single `UserEmail`."""
   createUserEmail(
     """
@@ -811,6 +966,14 @@ type Mutation {
     """
     input: CreateUserEmailInput!
   ): CreateUserEmailPayload
+
+  """Creates a single `UserLilyPhoto`."""
+  createUserLilyPhoto(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateUserLilyPhotoInput!
+  ): CreateUserLilyPhotoPayload
 
   """Deletes a single `Lily` using a unique key."""
   deleteLily(
@@ -843,6 +1006,14 @@ type Mutation {
     """
     input: DeleteUserEmailInput!
   ): DeleteUserEmailPayload
+
+  """Deletes a single `UserLilyPhoto` using a unique key."""
+  deleteUserLilyPhoto(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteUserLilyPhotoInput!
+  ): DeleteUserLilyPhotoPayload
 
   """
   If you've forgotten your password, give us one of your email addresses and we'll send you a reset token. Note this only works if you have added an email address!
@@ -1066,6 +1237,36 @@ type Query {
   userAuthentication(id: Int!): UserAuthentication
   userByUsername(username: String!): User
   userEmail(id: Int!): UserEmail
+  userLilyPhoto(id: UUID!): UserLilyPhoto
+
+  """Reads and enables pagination through a set of `UserLilyPhoto`."""
+  userLilyPhotos(
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: UserLilyPhotoCondition
+
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """The method to use when ordering `UserLilyPhoto`."""
+    orderBy: [UserLilyPhotosOrderBy!] = [PRIMARY_KEY_ASC]
+  ): UserLilyPhotosConnection
 }
 
 input RegisterInput {
@@ -1163,6 +1364,11 @@ type Subscription {
   """Triggered when the logged in user's record is updated in some way."""
   currentUserUpdated: UserSubscriptionPayload
 }
+
+"""
+A universally unique identifier as defined by [RFC 4122](https://tools.ietf.org/html/rfc4122).
+"""
+scalar UUID
 
 """All input for the `updateLily` mutation."""
 input UpdateLilyInput {
@@ -1425,6 +1631,35 @@ type User {
     orderBy: [UserEmailsOrderBy!] = [PRIMARY_KEY_ASC]
   ): UserEmailsConnection!
 
+  """Reads and enables pagination through a set of `UserLilyPhoto`."""
+  userLilyPhotos(
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: UserLilyPhotoCondition
+
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """The method to use when ordering `UserLilyPhoto`."""
+    orderBy: [UserLilyPhotosOrderBy!] = [PRIMARY_KEY_ASC]
+  ): UserLilyPhotosConnection!
+
   """A location for the user."""
   userLocation: String
 
@@ -1552,6 +1787,85 @@ enum UserEmailsOrderBy {
   ID_DESC
   IS_PRIMARY_ASC
   IS_PRIMARY_DESC
+  NATURAL
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+  USER_ID_ASC
+  USER_ID_DESC
+}
+
+"""A photo relevant to a particular `User`."""
+type UserLilyPhoto {
+  """The time this photo item was added."""
+  createdAt: Datetime!
+
+  """An identifier for this entry."""
+  id: UUID!
+
+  """Reads a single `Lily` that is related to this `UserLilyPhoto`."""
+  lily: Lily
+  lilyId: Int!
+  s3Key: String!
+
+  """Reads a single `User` that is related to this `UserLilyPhoto`."""
+  user: User
+  userId: Int!
+}
+
+"""
+A condition to be used against `UserLilyPhoto` object types. All fields are
+tested for equality and combined with a logical ‘and.’
+"""
+input UserLilyPhotoCondition {
+  """Checks for equality with the object’s `id` field."""
+  id: UUID
+
+  """Checks for equality with the object’s `lilyId` field."""
+  lilyId: Int
+
+  """Checks for equality with the object’s `userId` field."""
+  userId: Int
+}
+
+"""An input for mutations affecting `UserLilyPhoto`"""
+input UserLilyPhotoInput {
+  lilyId: Int!
+  s3Key: String!
+  userId: Int!
+}
+
+"""A connection to a list of `UserLilyPhoto` values."""
+type UserLilyPhotosConnection {
+  """
+  A list of edges which contains the `UserLilyPhoto` and cursor to aid in pagination.
+  """
+  edges: [UserLilyPhotosEdge!]!
+
+  """A list of `UserLilyPhoto` objects."""
+  nodes: [UserLilyPhoto!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `UserLilyPhoto` you could get from the connection."""
+  totalCount: Int!
+}
+
+"""A `UserLilyPhoto` edge in the connection."""
+type UserLilyPhotosEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `UserLilyPhoto` at the end of the edge."""
+  node: UserLilyPhoto!
+}
+
+"""Methods to use when ordering `UserLilyPhoto`."""
+enum UserLilyPhotosOrderBy {
+  ID_ASC
+  ID_DESC
+  LILY_ID_ASC
+  LILY_ID_DESC
   NATURAL
   PRIMARY_KEY_ASC
   PRIMARY_KEY_DESC

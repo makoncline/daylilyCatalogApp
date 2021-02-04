@@ -15,6 +15,7 @@ import {
 import { makePgSmartTagsFromFilePlugin } from "postgraphile/plugins";
 
 import { getHttpServer, getWebsocketMiddlewares } from "../app";
+import CreateUploadUrlPlugin from "../plugins/CreateUploadUrlPlugin";
 import PassportLoginPlugin from "../plugins/PassportLoginPlugin";
 import PrimaryKeyMutationsOnlyPlugin from "../plugins/PrimaryKeyMutationsOnlyPlugin";
 import RemoveQueryQueryPlugin from "../plugins/RemoveQueryQueryPlugin";
@@ -179,6 +180,9 @@ export function getPostGraphileOptions({
 
       // Adds realtime features to our GraphQL schema
       SubscriptionsPlugin,
+
+      // Allows API clients to fetch a pre-signed URL for uploading files
+      CreateUploadUrlPlugin,
     ],
 
     /*

@@ -148,7 +148,10 @@ function ProfileSettingsForm({
         }}
       >
         <Form.Item label="Avatar">
-          <AvatarUpload user={user} />
+          <AvatarUpload
+            user={user}
+            imgUrls={user.avatarUrl ? [user.avatarUrl] : []}
+          />
         </Form.Item>
         <Form.Item
           label="Name"
