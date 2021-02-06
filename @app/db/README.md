@@ -24,3 +24,5 @@ and SQL knowledge to work well.
 
 If you're not very comfortable with SQL then we recommend you use an alternative
 migration framework (for now at least, Graphile Migrate is still young...)
+
+.
