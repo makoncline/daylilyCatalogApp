@@ -1602,6 +1602,13 @@ COMMENT ON COLUMN app_public.lilies.list_id IS 'The primary key for the `List` t
 
 
 --
+-- Name: COLUMN lilies.ahs_ref; Type: COMMENT; Schema: app_public; Owner: -
+--
+
+COMMENT ON COLUMN app_public.lilies.ahs_ref IS 'The primary key for the `AHS Data` this `Lily` references.';
+
+
+--
 -- Name: lilies_id_seq; Type: SEQUENCE; Schema: app_public; Owner: -
 --
 
@@ -2009,6 +2016,13 @@ CREATE INDEX idx_user_emails_primary ON app_public.user_emails USING btree (is_p
 
 
 --
+-- Name: lilies_ahs_ref_idx; Type: INDEX; Schema: app_public; Owner: -
+--
+
+CREATE INDEX lilies_ahs_ref_idx ON app_public.lilies USING btree (ahs_ref);
+
+
+--
 -- Name: lilies_list_id_idx; Type: INDEX; Schema: app_public; Owner: -
 --
 
@@ -2192,6 +2206,14 @@ ALTER TABLE ONLY app_private.user_email_secrets
 
 ALTER TABLE ONLY app_private.user_secrets
     ADD CONSTRAINT user_secrets_user_id_fkey FOREIGN KEY (user_id) REFERENCES app_public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: lilies lilies_ahs_ref_fkey; Type: FK CONSTRAINT; Schema: app_public; Owner: -
+--
+
+ALTER TABLE ONLY app_public.lilies
+    ADD CONSTRAINT lilies_ahs_ref_fkey FOREIGN KEY (ahs_ref) REFERENCES app_public.ahs_data(ahs_id);
 
 
 --
