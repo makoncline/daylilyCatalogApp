@@ -1,5 +1,5 @@
 import {
-  AvatarUpload,
+  AvatarPhotoUpload,
   ErrorAlert,
   MultiImageUpload,
   Redirect,
@@ -148,10 +148,7 @@ function ProfileSettingsForm({
         }}
       >
         <Form.Item label="Avatar">
-          <AvatarUpload
-            user={user}
-            imgUrls={user.avatarUrl ? [user.avatarUrl] : []}
-          />
+          <AvatarPhotoUpload user={user} />
         </Form.Item>
         <Form.Item
           label="Name"

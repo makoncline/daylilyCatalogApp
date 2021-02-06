@@ -85,6 +85,8 @@ if (!process.env.ROOT_URL) {
                 "(typeof window !== 'undefined' ? window.__GRAPHILE_APP__.ROOT_URL : process.env.ROOT_URL)",
               "process.env.T_AND_C_URL":
                 "(typeof window !== 'undefined' ? window.__GRAPHILE_APP__.T_AND_C_URL : process.env.T_AND_C_URL)",
+              "process.env.S3_UPLOAD_BUCKET":
+                "(typeof window !== 'undefined' ? window.__GRAPHILE_APP__.S3_UPLOAD_BUCKET : process.env.S3_UPLOAD_BUCKET)",
             }),
             new webpack.IgnorePlugin(
               // These modules are server-side only; we don't want webpack

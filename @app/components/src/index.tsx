@@ -1,5 +1,5 @@
 export * from "./AddLilyForm";
-export * from "./AvatarUpload";
+export * from "./AvatarPhotoUpload";
 export * from "./ButtonLink";
 export * from "./ErrorAlert";
 export * from "./ErrorOccurred";

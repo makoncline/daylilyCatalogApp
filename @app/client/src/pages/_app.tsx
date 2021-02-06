@@ -17,6 +17,7 @@ declare global {
     __GRAPHILE_APP__: {
       ROOT_URL?: string;
       T_AND_C_URL?: string;
+      S3_UPLOAD_BUCKET?: string;
     };
   }
 }
@@ -34,6 +35,7 @@ if (typeof window !== "undefined") {
   window.__GRAPHILE_APP__ = {
     ROOT_URL: data.query.ROOT_URL,
     T_AND_C_URL: data.query.T_AND_C_URL,
+    S3_UPLOAD_BUCKET: data.query.S3_UPLOAD_BUCKET,
   };
 
   Router.events.on("routeChangeStart", () => {

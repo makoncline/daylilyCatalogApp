@@ -21,6 +21,7 @@ const s3 = new AWS.S3();
 
 interface CreateUploadUrlInput {
   clientMutationId?: string;
+  keyPrefix: string;
   contentType: string;
 }
 
@@ -74,6 +75,7 @@ const CreateUploadUrlPlugin = makeExtendSchemaPlugin(() => ({
       """
       clientMutationId: String
 
+      keyPrefix: String
       """
       You must provide the content type (or MIME type) of the content you intend
       to upload. For further information about content types, see
@@ -146,7 +148,7 @@ const CreateUploadUrlPlugin = makeExtendSchemaPlugin(() => ({
         }
 
         const {
-          input: { contentType, clientMutationId },
+          input: { keyPrefix, contentType, clientMutationId },
         } = args;
 
         if (!ALLOWED_UPLOAD_CONTENT_TYPES.includes(contentType)) {
@@ -156,7 +158,8 @@ const CreateUploadUrlPlugin = makeExtendSchemaPlugin(() => ({
             )}'`
           );
         }
-        const key = `avatars/${user.id}/${uuidv4()}`;
+        const prefix = keyPrefix ? `${keyPrefix}/` : "";
+        const key = `${prefix}${user.id}/${uuidv4()}`;
         const urlPrefix = `https://${S3_UPLOAD_BUCKET}.s3.amazonaws.com`;
         const url = `${urlPrefix}/${key}`;
         const params = {
