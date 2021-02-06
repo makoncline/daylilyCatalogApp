@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 12.3
+-- Dumped from database version 12.5
 -- Dumped by pg_dump version 13.0
 
 SET statement_timeout = 0;
@@ -1589,7 +1589,7 @@ CREATE TABLE app_public.lilies (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     list_id integer,
-    ahs_ref integer,
+    ahs_ref integer GENERATED ALWAYS AS ((ahs_id)::integer) STORED,
     CONSTRAINT lilies_name_check CHECK ((char_length(name) < 70))
 );
 
@@ -1599,13 +1599,6 @@ CREATE TABLE app_public.lilies (
 --
 
 COMMENT ON COLUMN app_public.lilies.list_id IS 'The primary key for the `List` this `Lily` belongs to.';
-
-
---
--- Name: COLUMN lilies.ahs_ref; Type: COMMENT; Schema: app_public; Owner: -
---
-
-COMMENT ON COLUMN app_public.lilies.ahs_ref IS 'The primary key for the `AHS Data` this `Lily` references.';
 
 
 --
@@ -2016,13 +2009,6 @@ CREATE INDEX idx_user_emails_primary ON app_public.user_emails USING btree (is_p
 
 
 --
--- Name: lilies_ahs_ref_idx; Type: INDEX; Schema: app_public; Owner: -
---
-
-CREATE INDEX lilies_ahs_ref_idx ON app_public.lilies USING btree (ahs_ref);
-
-
---
 -- Name: lilies_list_id_idx; Type: INDEX; Schema: app_public; Owner: -
 --
 
@@ -2206,14 +2192,6 @@ ALTER TABLE ONLY app_private.user_email_secrets
 
 ALTER TABLE ONLY app_private.user_secrets
     ADD CONSTRAINT user_secrets_user_id_fkey FOREIGN KEY (user_id) REFERENCES app_public.users(id) ON DELETE CASCADE;
-
-
---
--- Name: lilies lilies_ahs_ref_fkey; Type: FK CONSTRAINT; Schema: app_public; Owner: -
---
-
-ALTER TABLE ONLY app_public.lilies
-    ADD CONSTRAINT lilies_ahs_ref_fkey FOREIGN KEY (ahs_ref) REFERENCES app_public.ahs_data(ahs_id) ON DELETE SET NULL;
 
 
 --
@@ -2605,13 +2583,6 @@ GRANT INSERT(ahs_id),UPDATE(ahs_id) ON TABLE app_public.lilies TO daylily_catalo
 --
 
 GRANT INSERT(list_id),UPDATE(list_id) ON TABLE app_public.lilies TO daylily_catalog_visitor;
-
-
---
--- Name: COLUMN lilies.ahs_ref; Type: ACL; Schema: app_public; Owner: -
---
-
-GRANT INSERT(ahs_ref),UPDATE(ahs_ref) ON TABLE app_public.lilies TO daylily_catalog_visitor;
 
 
 --
