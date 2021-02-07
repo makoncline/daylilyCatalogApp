@@ -1,0 +1,11 @@
+query LilyPhotos($id: Int!) {
+  lily(id: $id) {
+    id
+    userLilyPhotos {
+      nodes {
+        s3Key
+        id
+      }
+    }
+  }
+}

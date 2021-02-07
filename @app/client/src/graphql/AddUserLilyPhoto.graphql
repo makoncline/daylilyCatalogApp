@@ -1,0 +1,16 @@
+mutation AddUserLilyPhoto($userId: Int!, $lilyId: Int!, $s3Key: String!) {
+  createUserLilyPhoto(
+    input: {
+      userLilyPhoto: { userId: $userId, lilyId: $lilyId, s3Key: $s3Key }
+    }
+  ) {
+    clientMutationId
+    userLilyPhoto {
+      id
+      userId
+      lilyId
+      s3Key
+      createdAt
+    }
+  }
+}
