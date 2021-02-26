@@ -17,7 +17,6 @@ export const AvatarPhotoUpload = ({
   const [deleteUpload] = useDeleteUploadMutation();
   const [updateUser] = useUpdateUserMutation();
   const onSuccess = async (file: UploadFile) => {
-    console.log("success: ", file);
     await updateUser({
       variables: {
         id: user.id,
@@ -28,7 +27,6 @@ export const AvatarPhotoUpload = ({
     });
   };
   const onRemove = async (file: UploadFile) => {
-    console.log("remove: ", file);
     await deleteUpload({
       variables: {
         input: {
@@ -53,7 +51,7 @@ export const AvatarPhotoUpload = ({
   return (
     <PhotoUpload
       keys={keys}
-      keyPrefix="ava"
+      keyPrefix="avatars"
       onSuccess={onSuccess}
       onRemove={onRemove}
     />
