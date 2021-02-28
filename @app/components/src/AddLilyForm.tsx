@@ -1,6 +1,7 @@
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import {
   LilyDataFragment,
+  ProfileSettingsForm_UserFragment,
   useAddLilyMutation,
   useDeleteLilyMutation,
   useDeleteUploadMutation,
@@ -49,7 +50,7 @@ export interface AddLilyFormProps {
   setShow: (val: boolean) => void;
   updateLily?: LilyDataFragment | null;
   setUpdateLily: (val: LilyDataFragment | null) => void;
-  user: User;
+  user: ProfileSettingsForm_UserFragment;
 }
 
 export const AddLilyForm = ({
@@ -409,11 +410,18 @@ export const AddLilyForm = ({
           />
         </Form.Item>
         {updateLily && (
-          <LilyPhotoUpload
-            lily={updateLily}
-            fileList={fileList}
-            setFileList={setFileList}
-          />
+          <>
+            <fieldset disabled={!user.isVerified}>
+              <LilyPhotoUpload
+                lily={updateLily}
+                fileList={fileList}
+                setFileList={setFileList}
+              />
+            </fieldset>
+            {!user.isVerified && (
+              <p>You must verify your email address to upload photos.</p>
+            )}
+          </>
         )}
         {error ? (
           <Form.Item label="Error">

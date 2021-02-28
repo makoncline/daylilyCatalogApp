@@ -7,4 +7,5 @@ fragment ProfileSettingsForm_User on User {
   bio
   userLocation
   imgUrls
+  isVerified
 }

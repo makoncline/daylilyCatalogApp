@@ -138,7 +138,14 @@ function ProfileSettingsForm({
         }}
       >
         <Form.Item label="Avatar">
-          <AvatarPhotoUpload user={user} />
+          <>
+            <fieldset disabled={!user.isVerified}>
+              <AvatarPhotoUpload user={user} />
+            </fieldset>
+            {!user.isVerified && (
+              <p>You must verify your email address to upload photos.</p>
+            )}
+          </>
         </Form.Item>
         <Form.Item
           label="Name"
@@ -228,7 +235,14 @@ function ProfileSettingsForm({
       </Button>
 
       <PageHeader title="Edit Profile Photos" />
-      <ProfilePhotoUpload user={user} />
+      <>
+        <fieldset disabled={!user.isVerified}>
+          <ProfilePhotoUpload user={user} />
+        </fieldset>
+        {!user.isVerified && (
+          <p>You must verify your email address to upload photos.</p>
+        )}
+      </>
     </div>
   );
 }

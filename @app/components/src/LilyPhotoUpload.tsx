@@ -24,40 +24,52 @@ export const LilyPhotoUpload = ({
   const onSuccess = async (file: UploadFile) => {
     const imgUrls = localLily.imgUrl ? localLily.imgUrl : [];
     const newImgUrls = file.url ? imgUrls.concat(file.url) : imgUrls;
-    const { data } = await editLily({
-      variables: {
-        id: localLily.id,
-        imgUrl: newImgUrls,
-      },
-    });
-    const newLily = data?.updateLily?.lily;
-    if (newLily) {
-      setLocalLily(newLily);
-      console.log("updated lily photo: ", newLily);
+    try {
+      const { data } = await editLily({
+        variables: {
+          id: localLily.id,
+          imgUrl: newImgUrls,
+        },
+      });
+      const newLily = data?.updateLily?.lily;
+      if (newLily) {
+        setLocalLily(newLily);
+        console.log("updated lily photo: ", newLily);
+      }
+    } catch (err) {
+      throw err;
     }
   };
 
   const onRemove = async (file: UploadFile) => {
-    await deleteUpload({
-      variables: {
-        input: {
-          key: file.uid,
+    try {
+      await deleteUpload({
+        variables: {
+          input: {
+            key: file.uid,
+          },
         },
-      },
-    });
+      });
+    } catch (err) {
+      throw err;
+    }
     const imgUrls = localLily.imgUrl ? localLily.imgUrl : [];
     const imgUrlToRemove = file.url;
     const newImgUrls = imgUrls.filter((url) => url !== imgUrlToRemove);
-    const { data } = await editLily({
-      variables: {
-        id: localLily.id,
-        imgUrl: newImgUrls,
-      },
-    });
-    const newLily = data?.updateLily?.lily;
-    if (newLily) {
-      setLocalLily(newLily);
-      console.log("updated lily photo: ", newLily);
+    try {
+      const { data } = await editLily({
+        variables: {
+          id: localLily.id,
+          imgUrl: newImgUrls,
+        },
+      });
+      const newLily = data?.updateLily?.lily;
+      if (newLily) {
+        setLocalLily(newLily);
+        console.log("updated lily photo: ", newLily);
+      }
+    } catch (err) {
+      throw err;
     }
   };
   return (

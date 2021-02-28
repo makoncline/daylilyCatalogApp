@@ -10,6 +10,7 @@ mutation UpdateUser($id: Int!, $patch: UserPatch!) {
       bio
       userLocation
       imgUrls
+      isVerified
     }
   }
 }
