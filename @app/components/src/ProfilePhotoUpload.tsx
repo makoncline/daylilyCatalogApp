@@ -4,7 +4,7 @@ import {
   useUpdateUserMutation,
 } from "@app/graphql";
 import { UploadFile } from "antd/lib/upload/interface";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import {
   getFileListFromKeys,
@@ -23,28 +23,34 @@ export const ProfilePhotoUpload = ({
     profilePhotoKeys ? getFileListFromKeys(profilePhotoKeys) : []
   );
   const [updateUser] = useUpdateUserMutation();
-  useEffect(() => {
-    const imgUrls = fileList
-      .filter((file) => file.status === "done")
-      .filter((file) => file.url)
-      .map((file) => file.url) as string[];
-    if (imgUrls !== user.imgUrls) {
-      (async function () {
-        await updateUser({
-          variables: {
-            id: user.id,
-            patch: {
-              imgUrls,
-            },
-          },
-        });
-      })();
-    }
-  }, [fileList, updateUser, user.id, user.imgUrls]);
+  const [localUser, setLocalUser] = useState(user);
 
   const [deleteUpload] = useDeleteUploadMutation();
+
   const onSuccess = async (file: UploadFile) => {
-    console.log("file:", file);
+    const imgUrls = localUser.imgUrls ? localUser.imgUrls : [];
+    const newImgUrls = file.url ? imgUrls.concat(file.url) : imgUrls;
+    await updateUser({
+      variables: {
+        id: user.id,
+        patch: {
+          imgUrls,
+        },
+      },
+    });
+    const { data } = await updateUser({
+      variables: {
+        id: localUser.id,
+        patch: {
+          imgUrls: newImgUrls,
+        },
+      },
+    });
+    const newUser = data?.updateUser?.user;
+    if (newUser) {
+      setLocalUser(newUser);
+      console.log("updated user photos: ", newUser);
+    }
   };
 
   const onRemove = async (file: UploadFile) => {
@@ -55,6 +61,22 @@ export const ProfilePhotoUpload = ({
         },
       },
     });
+    const imgUrls = localUser.imgUrls ? localUser.imgUrls : [];
+    const imgUrlToRemove = file.url;
+    const newImgUrls = imgUrls.filter((url) => url !== imgUrlToRemove);
+    const { data } = await updateUser({
+      variables: {
+        id: localUser.id,
+        patch: {
+          imgUrls: newImgUrls,
+        },
+      },
+    });
+    const newUser = data?.updateUser?.user;
+    if (newUser) {
+      setLocalUser(newUser);
+      console.log("deleted user photos: ", newUser);
+    }
   };
   return (
     <PhotoUpload

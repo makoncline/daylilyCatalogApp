@@ -7,8 +7,7 @@ import { UploadFile } from "antd/lib/upload/interface";
 import React, { useState } from "react";
 
 import {
-  getFileListFromKeys,
-  getKeyFromS3Url,
+  getFileListFromUrls,
   getS3UrlFromKey,
   PhotoUpload,
 } from "./PhotoUpload";
@@ -18,24 +17,27 @@ export const AvatarPhotoUpload = ({
 }: {
   user: ProfileSettingsForm_UserFragment;
 }) => {
-  const avatarKey = user.avatarUrl ? getKeyFromS3Url(user.avatarUrl) : null;
+  const [avatarUrl, setAvatarUrl] = useState(user.avatarUrl);
   const [fileList, setFileList] = useState(
-    avatarKey ? getFileListFromKeys([avatarKey]) : []
+    avatarUrl ? getFileListFromUrls([avatarUrl]) : []
   );
   const [deleteUpload] = useDeleteUploadMutation();
   const [updateUser] = useUpdateUserMutation();
   const onSuccess = async (file: UploadFile) => {
+    const newAvatarUrl = getS3UrlFromKey(file.uid);
     await updateUser({
       variables: {
         id: user.id,
         patch: {
-          avatarUrl: getS3UrlFromKey(file.uid),
+          avatarUrl: newAvatarUrl,
         },
       },
     });
+    setAvatarUrl(newAvatarUrl);
   };
 
   const onRemove = async (file: UploadFile) => {
+    console.log("file uid: ", file.uid);
     await deleteUpload({
       variables: {
         input: {
@@ -51,6 +53,7 @@ export const AvatarPhotoUpload = ({
         },
       },
     });
+    setAvatarUrl(null);
   };
   return (
     <PhotoUpload

@@ -80,7 +80,13 @@ const Home: NextPage = () => {
             a description, price, notes, and up to 8 photos for each daylily
             listing.
             <br />
-            <a href="/example/seedlings-2020/">See example daylily listings</a>
+            <a
+              href="https://daylilycatalog.com/example/seedlings-2020/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              See example daylily listings
+            </a>
           </Paragraph>
 
           <Title level={4}>Garden information</Title>
@@ -90,7 +96,13 @@ const Home: NextPage = () => {
             but you can add anything you want! Tell your story, announce a
             special sale, link to your social media pages...
             <br />
-            <a href="/example/">See example garden information</a>
+            <a
+              href="https://daylilycatalog.com/example/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              See example garden information
+            </a>
           </Paragraph>
 
           <Title level={4}>Catalogs</Title>
@@ -130,8 +142,12 @@ const Home: NextPage = () => {
           <Paragraph>
             Without support from the community I could not keep building and
             advancing the site. Please{" "}
-            <a href="https://daylilycatalog.com/thanks/">
-              join these amazing people in sponsoring Daylily Catalog
+            <a
+              href="https://daylilycatalog.com/thanks/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              join the amazing people who pay for Daylily Catalog
             </a>
             .
           </Paragraph>
@@ -143,8 +159,10 @@ const Home: NextPage = () => {
               type="primary"
               block
               href="https://daylilycatalog.com/thanks/"
+              target="_blank"
+              rel="noreferrer"
             >
-              Sponsor Daylily Catalog Today
+              Pay For Daylily Catalog Today
             </Button>
           </Paragraph>
           <Paragraph>Thank you! 🙏</Paragraph>

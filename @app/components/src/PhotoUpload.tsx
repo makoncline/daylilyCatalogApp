@@ -47,6 +47,20 @@ export function getFileListFromKeys(keys: Array<string>): UploadFile<any>[] {
   });
 }
 
+export function getFileListFromUrls(urls: Array<string>): UploadFile<any>[] {
+  return urls.filter(Boolean).map((url) => {
+    const key = getKeyFromS3Url(url) || url;
+    return {
+      uid: key,
+      status: "done",
+      url,
+      size: 0,
+      name: "",
+      type: "",
+    };
+  });
+}
+
 export function PhotoUpload({
   keyPrefix,
   maxCount = 1,

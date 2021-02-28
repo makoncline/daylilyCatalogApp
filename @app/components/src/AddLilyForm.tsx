@@ -1,8 +1,9 @@
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import {
-  Lily,
+  LilyDataFragment,
   useAddLilyMutation,
   useDeleteLilyMutation,
+  useDeleteUploadMutation,
   useEditLilyMutation,
   useListsQuery,
 } from "@app/graphql";
@@ -21,10 +22,10 @@ import {
 } from "antd";
 import Select from "antd/lib/select";
 import { ApolloError } from "apollo-client";
-import axios from "axios";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-import { ImgUpload } from "./ImgUpload";
+import { LilyPhotoUpload } from "./LilyPhotoUpload";
+import { getFileListFromUrls } from "./PhotoUpload";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -46,8 +47,8 @@ export interface AddLilyFormProps {
   setError: (error: Error | ApolloError | null) => void;
   show: boolean;
   setShow: (val: boolean) => void;
-  updateLily?: Lily | null;
-  setUpdateLily: (val: any) => void;
+  updateLily?: LilyDataFragment | null;
+  setUpdateLily: (val: LilyDataFragment | null) => void;
   user: User;
 }
 
@@ -65,36 +66,32 @@ export const AddLilyForm = ({
   const [addLily] = useAddLilyMutation();
   const [editLily] = useEditLilyMutation();
   const [deleteLily] = useDeleteLilyMutation();
-  const [fileList, setFileList] = useState<any>([]);
   const [dataSource, setDataSource] = useState<Array<ILily>>([]);
-  const [isUploading, setIsUploading] = useState(false);
   const [form] = Form.useForm();
-  const { setFieldsValue, getFieldValue } = form;
+  const { setFieldsValue } = form;
   const focusElement = useRef<HTMLSelectElement>(null);
   const { data } = useListsQuery();
-  const lists = data && data.currentUser && data.currentUser.lists.nodes;
+  const lists = data?.currentUser?.lists.nodes;
+  const [deleteUpload] = useDeleteUploadMutation();
+  const lilyPhotoUrls = updateLily?.imgUrl
+    ? (updateLily.imgUrl as Array<string>)
+    : [];
+  const [fileList, setFileList] = useState(
+    lilyPhotoUrls ? getFileListFromUrls(lilyPhotoUrls) : []
+  );
 
   useEffect(() => {
     if (updateLily) {
-      setFieldsValue({ name: updateLily?.name });
+      setFieldsValue({ name: updateLily.name });
       setFieldsValue({ list: updateLily.list ? updateLily.list.id : 0 });
-      setFieldsValue({ price: updateLily?.price });
-      setFieldsValue({ ahsId: updateLily?.ahsId });
-      setFieldsValue({ publicNote: updateLily?.publicNote });
-      setFieldsValue({ privateNote: updateLily?.privateNote });
-      if (updateLily.imgUrl && updateLily.imgUrl.length) {
-        setFileList(
-          updateLily.imgUrl.map((url: any) => {
-            const fileName = url && url.substring(url.lastIndexOf("/") + 1);
-            return {
-              uid: `${id}/${fileName}`,
-              name: fileName,
-              status: "done",
-              url,
-            };
-          })
-        );
-      }
+      setFieldsValue({ price: updateLily.price });
+      setFieldsValue({ ahsId: updateLily.ahsId });
+      setFieldsValue({ publicNote: updateLily.publicNote });
+      setFieldsValue({ privateNote: updateLily.privateNote });
+      const lilyPhotoUrls = updateLily.imgUrl
+        ? (updateLily.imgUrl as Array<string>)
+        : [];
+      setFileList(lilyPhotoUrls ? getFileListFromUrls(lilyPhotoUrls) : []);
     }
   }, [updateLily, id, setFieldsValue]);
 
@@ -106,179 +103,78 @@ export const AddLilyForm = ({
     }
   }, [show, updateLily]);
 
-  useEffect(() => {
-    setIsUploading(false);
-  }, [error]);
-
-  const handleCancle = () => {
-    if (isUploading) return;
+  const handleCancel = () => {
     resetForm();
+    onComplete();
   };
 
   const resetForm = useCallback(() => {
-    setFileList([]);
-    setIsUploading(false);
     setUpdateLily(null);
+    setFileList([]);
     setDataSource([]);
     setError(null);
     setShow(false);
     form.resetFields();
-  }, [
-    setFileList,
-    setIsUploading,
-    setUpdateLily,
-    setDataSource,
-    setError,
-    setShow,
-    form,
-  ]);
+  }, [setFileList, setUpdateLily, setDataSource, setError, setShow, form]);
 
-  const handleImgUpload = useCallback(
-    async (file: any, i: number) => {
-      return await axios
-        .get(`${process.env.ROOT_URL}/api/s3`, {
-          params: {
-            key: file.uid,
-            operation: "put",
-          },
-        })
-        .then(async (response) => {
-          const url = response.data.url;
-          return await axios
-            .put(url, file.originFileObj, {
-              onUploadProgress: (e) => {
-                const progress = Math.round((e.loaded / e.total) * 100);
-                const newFileList = fileList.slice();
-                newFileList[i].status = "uploading";
-                newFileList[i].percent = progress;
-                setFileList(newFileList);
-              },
-            })
-            .then((response) => {
-              const newFileList = fileList.slice();
-              newFileList[i].status = "done";
-              setFileList(newFileList);
-              return (
-                response &&
-                response.config &&
-                response.config.url &&
-                response.config.url.split("?")[0]
-              );
-            })
-            .catch((err) => {
-              console.log(err);
-              throw new Error(err);
-            });
-        })
-        .catch((err) => {
-          console.log(err);
-          throw new Error(err);
-        });
-    },
-    [fileList]
-  );
-  const handleImgDelete = useCallback(
-    (url: any) => {
-      const fileName =
-        url && decodeURIComponent(url.substring(url.lastIndexOf("/") + 1));
-      axios
-        .get(`${process.env.ROOT_URL}/api/s3`, {
-          params: {
-            key: `${id}/${fileName}`,
-            operation: "delete",
-          },
-        })
-        .then(() => {
-          //console.log("item deleted");
-        })
-        .catch((error) => {
-          console.log(JSON.stringify(error));
-        });
-    },
-    [id]
-  );
-  const handleImages = useCallback(async () => {
-    setIsUploading(true);
-    if (updateLily && updateLily.imgUrl) {
-      const prevImgUrls = updateLily.imgUrl;
-      const imgToDelete = prevImgUrls.filter((url: any) => {
-        return !fileList.some((file: any) => file.url === url);
+  async function handelAdd() {
+    try {
+      const {
+        name,
+        price,
+        publicNote,
+        privateNote,
+        ahsId,
+        list,
+      } = await form.validateFields();
+      const { data } = await addLily({
+        variables: {
+          name: name,
+          price: price || null,
+          publicNote: publicNote || null,
+          privateNote: privateNote || null,
+          ahsId: ahsId || null,
+          listId: list || null,
+        },
       });
-      imgToDelete.forEach((url: any) => handleImgDelete(url));
-    }
-    //add any new files
-    const isDone = await Promise.all(
-      fileList
-        .filter((file: any) => file.status !== "error")
-        .map((file: any, i: number) => {
-          if (!file.url) {
-            return handleImgUpload(file, i);
-          }
-        })
-        .filter((file: any) => file)
-    );
-    setIsUploading(false);
-    return isDone;
-  }, [fileList, handleImgUpload, updateLily, handleImgDelete]);
-
-  const handleSubmit = useCallback(
-    async (e) => {
-      e.preventDefault();
-      try {
-        setError(null);
-        const values = await form.validateFields();
-        const prevImgUrls = fileList
-          .filter((file: any) => file.url)
-          .map((file: any) => file.url);
-        const newImgUrls: any = await handleImages();
-        const imgUrls = [...prevImgUrls, ...(await newImgUrls)];
-        if (updateLily) {
-          await editLily({
-            variables: {
-              id: updateLily.id,
-              imgUrl: imgUrls,
-              name: values.name,
-              price: values.price || null,
-              publicNote: values.publicNote || null,
-              privateNote: values.privateNote || null,
-              ahsId: values.ahsId || null,
-              listId: values.list || null,
-            },
-          });
-        } else {
-          await addLily({
-            variables: {
-              imgUrl: imgUrls,
-              name: values.name,
-              price: values.price || null,
-              publicNote: values.publicNote || null,
-              privateNote: values.privateNote || null,
-              ahsId: values.ahsId || null,
-              listId: values.list || null,
-            },
-          });
-        }
-        const messageText = updateLily ? "Daylily edited" : "Daylily added";
-        message.success(messageText);
-        resetForm();
-        onComplete();
-      } catch (e) {
-        setError(e);
+      const lily = data?.createLily?.lily;
+      if (lily) {
+        setUpdateLily(lily);
       }
-    },
-    [
-      setError,
-      fileList,
-      handleImages,
-      resetForm,
-      form,
-      updateLily,
-      onComplete,
-      editLily,
-      addLily,
-    ]
-  );
+      message.success(`Daylily ${name} added`);
+    } catch (err) {
+      setError(err);
+    }
+  }
 
+  async function handleSave() {
+    if (updateLily) {
+      try {
+        const {
+          name,
+          price,
+          publicNote,
+          privateNote,
+          ahsId,
+          list,
+        } = await form.validateFields();
+        await editLily({
+          variables: {
+            id: updateLily.id,
+            name: name,
+            price: price || null,
+            publicNote: publicNote || null,
+            privateNote: privateNote || null,
+            ahsId: ahsId || null,
+            listId: list || null,
+          },
+        });
+        message.success(`Daylily ${name} Updated`);
+      } catch (err) {
+        setError(err);
+      }
+    }
+  }
   interface ILily {
     id: number;
     name: string;
@@ -309,47 +205,53 @@ export const AddLilyForm = ({
     }
   }
 
-  function onSelect(value: any) {
+  function onSelect(value: string): void {
     const selection = dataSource.filter(
       (item: ILily) => item.name === value
     )[0];
-    console.log(selection);
-    const imgVal = getFieldValue("imgUrl");
-    if (!imgVal) {
-      setFieldsValue({ imgUrl: selection.image });
-    }
-    setFieldsValue({ ahsId: selection.id + "" });
-    if (selection.image) {
-      if (!fileList.some((file: any) => file.url === selection.image)) {
-        setFileList([
-          ...fileList,
-          {
-            uid: -fileList.length,
-            name: selection.name,
-            status: "done",
-            url: selection.image,
-          },
-        ]);
-      }
-    }
+    setFieldsValue({ ahsId: `${selection.id}` });
     setDataSource([]);
   }
 
-  const handleDelete = async (id: any) => {
-    fileList.forEach((file: any) => handleImgDelete(file.url));
-    deleteLily({ variables: { id } });
-    resetForm();
-    handleCancle();
-    message.success("Daylily deleted");
+  async function deleteImages(): Promise<boolean> {
+    for (let file of fileList) {
+      try {
+        await deleteUpload({
+          variables: {
+            input: {
+              key: file.uid,
+            },
+          },
+        });
+      } catch (err) {
+        console.log(`Error deleting file: `, file);
+        return false;
+      }
+    }
+    return true;
+  }
+
+  const handleDelete = async (id: number) => {
+    try {
+      if (await deleteImages()) {
+        await deleteLily({ variables: { id } });
+        resetForm();
+        handleCancel();
+        message.success("Daylily deleted");
+      }
+    } catch (err) {
+      console.log(`Error deleting daylily: `, id);
+      setError(err);
+    }
   };
 
   return (
     <Modal
       visible={show}
       title={updateLily ? "Edit Daylily" : "Add a new Daylily"}
-      onOk={handleSubmit}
+      onOk={handleSave}
       style={{ top: 20 }}
-      onCancel={handleCancle}
+      onCancel={handleCancel}
       footer={
         updateLily
           ? [
@@ -359,40 +261,24 @@ export const AddLilyForm = ({
                 onConfirm={() => handleDelete(updateLily.id)}
                 okText="Yes"
                 cancelText="No"
-                disabled={isUploading}
               >
-                <Button
-                  type="primary"
-                  danger
-                  style={{ float: "left" }}
-                  disabled={isUploading}
-                >
+                <Button type="primary" danger style={{ float: "left" }}>
                   Delete
                 </Button>
               </Popconfirm>,
-              <Button key={2} onClick={handleCancle} disabled={isUploading}>
-                Cancel
+              <Button key={2} onClick={handleCancel}>
+                CLOSE
               </Button>,
-              <Button
-                key={3}
-                type="primary"
-                onClick={handleSubmit}
-                loading={isUploading}
-              >
-                {isUploading ? "Uploading, please wait." : "SAVE"}
+              <Button key={3} type="primary" onClick={handleSave}>
+                SAVE
               </Button>,
             ]
           : [
-              <Button key={1} onClick={handleCancle} disabled={isUploading}>
-                Cancel
+              <Button key={1} onClick={handleCancel}>
+                CLOSE
               </Button>,
-              <Button
-                key={2}
-                type="primary"
-                onClick={handleSubmit}
-                loading={isUploading}
-              >
-                {isUploading ? "Uploading, please wait." : "OK"}
+              <Button key={2} type="primary" onClick={handelAdd}>
+                SAVE
               </Button>,
             ]
       }
@@ -400,7 +286,7 @@ export const AddLilyForm = ({
       <Form
         {...formItemLayout}
         form={form}
-        onFinish={handleSubmit}
+        onFinish={handleSave}
         initialValues={{ list: 0 }}
       >
         <Form.Item
@@ -430,7 +316,6 @@ export const AddLilyForm = ({
             onSelect={onSelect}
             onBlur={() => setDataSource([])}
             allowClear
-            disabled={isUploading}
           />
         </Form.Item>
         <Form.Item
@@ -444,7 +329,7 @@ export const AddLilyForm = ({
           }
           name="list"
         >
-          <Select data-cy="addLilyForm-input-list" disabled={isUploading}>
+          <Select data-cy="addLilyForm-input-list">
             <Option key="none" value={0}>
               None
             </Option>
@@ -468,11 +353,7 @@ export const AddLilyForm = ({
           }
           name="ahsId"
         >
-          <TextArea
-            data-cy="settingslilies-input-ahsId"
-            autoSize
-            disabled={isUploading}
-          />
+          <TextArea data-cy="settingslilies-input-ahsId" autoSize />
         </Form.Item>
 
         <Form.Item
@@ -493,7 +374,6 @@ export const AddLilyForm = ({
             parser={(value) => `${value}`.replace(/\$\s?|(,*)/g, "")}
             precision={2}
             data-cy="addLilyForm-input-price"
-            disabled={isUploading}
           />
         </Form.Item>
         <Form.Item
@@ -510,7 +390,6 @@ export const AddLilyForm = ({
           <TextArea
             data-cy="addLilyForm-input-publicNote"
             autoSize={{ minRows: 2 }}
-            disabled={isUploading}
           />
         </Form.Item>
         <Form.Item
@@ -527,14 +406,15 @@ export const AddLilyForm = ({
           <TextArea
             data-cy="addLilyForm-input-privateNote"
             autoSize={{ minRows: 2 }}
-            disabled={isUploading}
           />
         </Form.Item>
-        <ImgUpload
-          fileList={[fileList, setFileList]}
-          user={user}
-          isUploading={isUploading}
-        />
+        {updateLily && (
+          <LilyPhotoUpload
+            lily={updateLily}
+            fileList={fileList}
+            setFileList={setFileList}
+          />
+        )}
         {error ? (
           <Form.Item label="Error">
             <Alert

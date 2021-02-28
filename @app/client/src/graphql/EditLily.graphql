@@ -2,7 +2,7 @@
 
 mutation EditLily(
   $id: Int!
-  $name: String!
+  $name: String
   $imgUrl: [String]
   $price: BigFloat
   $publicNote: String
@@ -24,6 +24,10 @@ mutation EditLily(
       id: $id
     }
   ) {
+    lily {
+      id
+      ...LilyData
+    }
     user {
       id
       lilies {
