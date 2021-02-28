@@ -13,6 +13,7 @@ export * from "./ListTable";
 export * from "./MultiImageUpload";
 export * from "./NewAddLilyForm";
 export * from "./PasswordStrength";
+export * from "./ProfilePhotoUpload";
 export * from "./Redirect";
 export * from "./SettingsLayout";
 export * from "./SharedLayout";

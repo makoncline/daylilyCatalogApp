@@ -1,5 +1,6 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { useCreateUploadUrlMutation } from "@app/graphql";
+import s3Uri from "amazon-s3-uri";
 import { Modal, Upload } from "antd";
 import { UploadFile, UploadProps } from "antd/lib/upload/interface";
 import axios from "axios";
@@ -18,25 +19,23 @@ const ALLOWED_UPLOAD_CONTENT_TYPES = [
 ];
 const accept = ALLOWED_UPLOAD_CONTENT_TYPES.join(",");
 
-export const bucketUrl = `https://${process.env.S3_UPLOAD_BUCKET}.s3.amazonaws.com`;
+export function getKeyFromS3Url(url: string): string {
+  try {
+    return s3Uri(url).key;
+  } catch (err) {
+    console.log(`Error: ${url} is not a valid s3 url.`);
+    return "";
+  }
+}
 
-export function PhotoUpload({
-  keys,
-  keyPrefix,
-  maxCount = 1,
-  onSuccess,
-  onRemove,
-}: {
-  keys: string[];
-  keyPrefix?: string;
-  maxCount?: number;
-  onSuccess: (file: UploadFile) => void;
-  onRemove: (file: UploadFile) => void;
-}) {
-  const [createUploadUrl] = useCreateUploadUrlMutation();
+export function getS3UrlFromKey(key: string): string {
+  const bucketUrl = `https://${process.env.S3_UPLOAD_BUCKET}.s3.amazonaws.com`;
+  return `${bucketUrl}/${key}`;
+}
 
-  const defaulfFileList: UploadFile<any>[] = keys.filter(Boolean).map((key) => {
-    const url = `${bucketUrl}/${key}`;
+export function getFileListFromKeys(keys: Array<string>): UploadFile<any>[] {
+  return keys.filter(Boolean).map((key) => {
+    const url = getS3UrlFromKey(key);
     return {
       uid: key,
       status: "done",
@@ -46,7 +45,25 @@ export function PhotoUpload({
       type: "",
     };
   });
-  const [fileList, setFileList] = useState(defaulfFileList);
+}
+
+export function PhotoUpload({
+  keyPrefix,
+  maxCount = 1,
+  onSuccess,
+  onRemove,
+  fileList,
+  setFileList,
+}: {
+  keyPrefix?: string;
+  maxCount?: number;
+  onSuccess: (file: UploadFile) => void;
+  onRemove: (file: UploadFile) => void;
+  fileList: UploadFile<any>[];
+  setFileList: (fileList: UploadFile<any>[]) => void;
+}) {
+  const [createUploadUrl] = useCreateUploadUrlMutation();
+
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
 

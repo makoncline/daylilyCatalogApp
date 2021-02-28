@@ -3,17 +3,25 @@ import {
   useDeleteUploadMutation,
   useUpdateUserMutation,
 } from "@app/graphql";
-import s3Uri from "amazon-s3-uri";
 import { UploadFile } from "antd/lib/upload/interface";
-import React from "react";
+import React, { useState } from "react";
 
-import { bucketUrl, PhotoUpload } from "./PhotoUpload";
+import {
+  getFileListFromKeys,
+  getKeyFromS3Url,
+  getS3UrlFromKey,
+  PhotoUpload,
+} from "./PhotoUpload";
 
 export const AvatarPhotoUpload = ({
   user,
 }: {
   user: ProfileSettingsForm_UserFragment;
 }) => {
+  const avatarKey = user.avatarUrl ? getKeyFromS3Url(user.avatarUrl) : null;
+  const [fileList, setFileList] = useState(
+    avatarKey ? getFileListFromKeys([avatarKey]) : []
+  );
   const [deleteUpload] = useDeleteUploadMutation();
   const [updateUser] = useUpdateUserMutation();
   const onSuccess = async (file: UploadFile) => {
@@ -21,11 +29,12 @@ export const AvatarPhotoUpload = ({
       variables: {
         id: user.id,
         patch: {
-          avatarUrl: `${bucketUrl}/${file.uid}`,
+          avatarUrl: getS3UrlFromKey(file.uid),
         },
       },
     });
   };
+
   const onRemove = async (file: UploadFile) => {
     await deleteUpload({
       variables: {
@@ -43,17 +52,13 @@ export const AvatarPhotoUpload = ({
       },
     });
   };
-  let keys: string[] = [];
-  if (user.avatarUrl) {
-    const { key } = s3Uri(user.avatarUrl);
-    keys = [key];
-  }
   return (
     <PhotoUpload
-      keys={keys}
-      keyPrefix="avatars"
+      keyPrefix="avatar"
       onSuccess={onSuccess}
       onRemove={onRemove}
+      fileList={fileList}
+      setFileList={setFileList}
     />
   );
 };

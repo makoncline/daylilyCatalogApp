@@ -1,7 +1,7 @@
 import {
   AvatarPhotoUpload,
   ErrorAlert,
-  MultiImageUpload,
+  ProfilePhotoUpload,
   Redirect,
   SettingsLayout,
   Wysiwyg,
@@ -122,16 +122,6 @@ function ProfileSettingsForm({
       form.setFieldsValue({ bio: text });
     }
   };
-  const afterUpload = async (imgUrls: string[]) => {
-    await updateUser({
-      variables: {
-        id: user.id,
-        patch: {
-          imgUrls: imgUrls,
-        },
-      },
-    });
-  };
   return (
     <div>
       <PageHeader title="Edit profile" />
@@ -238,11 +228,7 @@ function ProfileSettingsForm({
       </Button>
 
       <PageHeader title="Edit Profile Photos" />
-      <MultiImageUpload
-        userId={user.id}
-        imgUrls={user.imgUrls ? user.imgUrls : []}
-        afterUpload={afterUpload}
-      />
+      <ProfilePhotoUpload user={user} />
     </div>
   );
 }
