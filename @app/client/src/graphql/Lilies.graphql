@@ -3,6 +3,7 @@
 query Lilies {
   currentUser {
     id
+    ...ProfileSettingsForm_User
     lilies {
       nodes {
         id

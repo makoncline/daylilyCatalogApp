@@ -1,7 +1,7 @@
 import {
-  AvatarUpload,
+  AvatarPhotoUpload,
   ErrorAlert,
-  MultiImageUpload,
+  ProfilePhotoUpload,
   Redirect,
   SettingsLayout,
   Wysiwyg,
@@ -122,16 +122,6 @@ function ProfileSettingsForm({
       form.setFieldsValue({ bio: text });
     }
   };
-  const afterUpload = async (imgUrls: string[]) => {
-    await updateUser({
-      variables: {
-        id: user.id,
-        patch: {
-          imgUrls: imgUrls,
-        },
-      },
-    });
-  };
   return (
     <div>
       <PageHeader title="Edit profile" />
@@ -148,7 +138,14 @@ function ProfileSettingsForm({
         }}
       >
         <Form.Item label="Avatar">
-          <AvatarUpload user={user} />
+          <>
+            <fieldset disabled={!user.isVerified}>
+              <AvatarPhotoUpload user={user} />
+            </fieldset>
+            {!user.isVerified && (
+              <p>You must verify your email address to upload photos.</p>
+            )}
+          </>
         </Form.Item>
         <Form.Item
           label="Name"
@@ -238,11 +235,14 @@ function ProfileSettingsForm({
       </Button>
 
       <PageHeader title="Edit Profile Photos" />
-      <MultiImageUpload
-        userId={user.id}
-        imgUrls={user.imgUrls ? user.imgUrls : []}
-        afterUpload={afterUpload}
-      />
+      <>
+        <fieldset disabled={!user.isVerified}>
+          <ProfilePhotoUpload user={user} />
+        </fieldset>
+        {!user.isVerified && (
+          <p>You must verify your email address to upload photos.</p>
+        )}
+      </>
     </div>
   );
 }

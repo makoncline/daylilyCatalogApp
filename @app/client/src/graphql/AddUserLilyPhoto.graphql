@@ -1,0 +1,11 @@
+mutation AddUserLilyPhoto($id: String!, $lilyId: Int!) {
+  createUserLilyPhoto(input: { userLilyPhoto: { id: $id, lilyId: $lilyId } }) {
+    clientMutationId
+    userLilyPhoto {
+      id
+      userId
+      lilyId
+      createdAt
+    }
+  }
+}

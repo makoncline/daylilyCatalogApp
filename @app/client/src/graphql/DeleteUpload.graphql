@@ -1,0 +1,5 @@
+mutation DeleteUpload($input: DeleteUploadInput!) {
+  deleteUpload(input: $input) {
+    success
+  }
+}

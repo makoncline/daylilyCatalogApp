@@ -21,6 +21,10 @@ mutation AddLily(
       }
     }
   ) {
+    lily {
+      id
+      ...LilyData
+    }
     user {
       id
       lilies {

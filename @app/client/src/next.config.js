@@ -2,8 +2,6 @@ require("@app/config");
 const compose = require("lodash/flowRight");
 const AntDDayjsWebpackPlugin = require("antd-dayjs-webpack-plugin");
 
-const { BUCKET, AWSACCESSKEYID, AWSSECRETKEY, AWS_REGION } = process.env;
-
 if (!process.env.ROOT_URL) {
   if (process.argv[1].endsWith("/depcheck")) {
     /* NOOP */
@@ -38,12 +36,6 @@ if (!process.env.ROOT_URL) {
       withCss,
       withLess
     )({
-      serverRuntimeConfig: {
-        BUCKET: BUCKET,
-        AWSACCESSKEYID: AWSACCESSKEYID,
-        AWSSECRETKEY: AWSSECRETKEY,
-        AWS_REGION: AWS_REGION,
-      },
       poweredByHeader: false,
       distDir: `../.next`,
       trailingSlash: false,
@@ -93,6 +85,8 @@ if (!process.env.ROOT_URL) {
                 "(typeof window !== 'undefined' ? window.__GRAPHILE_APP__.ROOT_URL : process.env.ROOT_URL)",
               "process.env.T_AND_C_URL":
                 "(typeof window !== 'undefined' ? window.__GRAPHILE_APP__.T_AND_C_URL : process.env.T_AND_C_URL)",
+              "process.env.S3_UPLOAD_BUCKET":
+                "(typeof window !== 'undefined' ? window.__GRAPHILE_APP__.S3_UPLOAD_BUCKET : process.env.S3_UPLOAD_BUCKET)",
             }),
             new webpack.IgnorePlugin(
               // These modules are server-side only; we don't want webpack

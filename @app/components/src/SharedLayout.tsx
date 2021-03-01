@@ -8,7 +8,7 @@ import {
   useCurrentUserUpdatedSubscription,
   useLogoutMutation,
 } from "@app/graphql";
-import { Avatar, Col, Dropdown, Layout, Menu, Row, Typography } from "antd";
+import { Col, Dropdown, Layout, Menu, Row, Typography } from "antd";
 import { ApolloError } from "apollo-client";
 import Head from "next/head";
 import Link from "next/link";
@@ -18,6 +18,7 @@ import { useCallback } from "react";
 
 import { ErrorAlert, H3, StandardWidth, Warn } from ".";
 import { Redirect } from "./Redirect";
+import { UserAvatar } from "./UserAvatar";
 
 const { Header, Content, Footer } = Layout;
 const { Text } = Typography;
@@ -234,14 +235,8 @@ export function SharedLayout({
                   data-cy="layout-dropdown-user"
                   style={{ whiteSpace: "nowrap" }}
                 >
-                  {data.currentUser.avatarUrl ? (
-                    <Avatar src={`${data.currentUser.avatarUrl}`} />
-                  ) : (
-                    <Avatar>
-                      {(data.currentUser.name && data.currentUser.name[0]) ||
-                        "?"}
-                    </Avatar>
-                  )}
+                  <UserAvatar user={data.currentUser} />
+
                   <Warn okay={data.currentUser.isVerified}>
                     <span style={{ marginLeft: 8, marginRight: 8 }}>
                       {data.currentUser.name}

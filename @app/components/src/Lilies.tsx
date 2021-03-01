@@ -1,4 +1,4 @@
-import { useLiliesQuery } from "@app/graphql";
+import { LilyDataFragment, useLiliesQuery } from "@app/graphql";
 import { Button, Input } from "antd";
 import { ApolloError } from "apollo-client";
 import React, { useState } from "react";
@@ -7,7 +7,7 @@ import { AddLilyForm, LiliesTable } from "./";
 
 export const Lilies = () => {
   const [showAddLilyForm, setShowAddLilyForm] = useState(false);
-  const [updateLily, setUpdateLily] = useState(null);
+  const [updateLily, setUpdateLily] = useState<LilyDataFragment | null>(null);
   const [formError, setFormError] = useState<Error | ApolloError | null>(null);
   const [nameFilter, setNameFilter]: [
     string,

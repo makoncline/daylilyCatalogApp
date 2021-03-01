@@ -34,6 +34,7 @@ Rewritten, the above rules state:
 - NUNIQ: not unique (from PostgreSQL 23505)
 - NTFND: not found
 - BADFK: foreign key violation (from PostgreSQL 23503)
+- MSCFG: server misconfigured
 
 ## Registration
 

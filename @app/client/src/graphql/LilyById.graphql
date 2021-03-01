@@ -1,0 +1,6 @@
+query LilyById($id: Int!) {
+  lily(id: $id) {
+    id
+    ...LilyData
+  }
+}
