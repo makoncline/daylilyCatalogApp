@@ -87,7 +87,14 @@ export function SettingsLayout({
           <Redirect href={`/login?next=${encodeURIComponent(fullHref)}`} />
         ) : (
           <Layout style={{ minHeight: contentMinHeight }} hasSider>
-            <Sider>
+            <Sider
+              breakpoint="md"
+              collapsedWidth="0"
+              zeroWidthTriggerStyle={{
+                color: "#757575",
+                boxShadow: "0 2px 2px #f0f1f2",
+              }}
+            >
               <Menu selectedKeys={[href]}>
                 {Object.keys(pages).map((pageHref) => (
                   <Menu.Item key={pageHref}>
@@ -110,7 +117,7 @@ export function SettingsLayout({
                 ))}
               </Menu>
             </Sider>
-            <Content>
+            <Content style={{ paddingLeft: "36px" }}>
               <StandardWidth>{children}</StandardWidth>
             </Content>
           </Layout>

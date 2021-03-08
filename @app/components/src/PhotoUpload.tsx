@@ -23,7 +23,6 @@ export function getKeyFromS3Url(url: string): string {
   try {
     return s3Uri(url).key;
   } catch (err) {
-    console.log(`Error: ${url} is not a valid s3 url.`);
     return "";
   }
 }

@@ -16,7 +16,7 @@ import Router, { useRouter } from "next/router";
 import * as React from "react";
 import { useCallback } from "react";
 
-import { ErrorAlert, H3, StandardWidth, Warn } from ".";
+import { ErrorAlert, P, StandardWidth, Warn } from ".";
 import { Redirect } from "./Redirect";
 import { UserAvatar } from "./UserAvatar";
 
@@ -171,41 +171,36 @@ export function SharedLayout({
           boxShadow: "0 2px 8px #f0f1f2",
           zIndex: 1,
           overflow: "hidden",
+          padding: "0 5%",
         }}
       >
         <Head>
           <title>{title ? `${title} — ${projectName}` : projectName}</title>
         </Head>
         <Row justify="space-between">
-          <Col span={6}>
-            <Link href="/">
-              <a>Daylily Catalog</a>
-            </Link>
-          </Col>
-          <Col span={12}>
-            <H3
-              style={{
-                margin: 0,
-                padding: 0,
-                textAlign: "center",
-                lineHeight: "64px",
-              }}
-              data-cy="layout-header-title"
-            >
+          <Col>
+            <P data-cy="layout-header-title">
               {titleHref ? (
                 <Link href={titleHref} as={titleHrefAs}>
-                  <a data-cy="layout-header-titlelink">{title}</a>
+                  <a data-cy="layout-header-titlelink">
+                    <strong>{title}</strong>
+                  </a>
                 </Link>
               ) : (
                 title
               )}
-            </H3>
+            </P>
           </Col>
-          <Col span={6} style={{ textAlign: "right" }}>
+          <Col style={{ textAlign: "right" }}>
             {data && data.currentUser ? (
               <Dropdown
                 overlay={
                   <Menu>
+                    <Menu.Item>
+                      <Link href="/">
+                        <a data-cy="layout-link-home">Home</a>
+                      </Link>
+                    </Menu.Item>
                     <Menu.Item>
                       <Link href="/catalog">
                         <a data-cy="layout-link-catalog">Catalog</a>
