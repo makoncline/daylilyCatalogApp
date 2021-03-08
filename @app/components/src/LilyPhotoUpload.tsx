@@ -34,7 +34,6 @@ export const LilyPhotoUpload = ({
       const newLily = data?.updateLily?.lily;
       if (newLily) {
         setLocalLily(newLily);
-        console.log("updated lily photo: ", newLily);
       }
     } catch (err) {
       throw err;
@@ -66,7 +65,6 @@ export const LilyPhotoUpload = ({
       const newLily = data?.updateLily?.lily;
       if (newLily) {
         setLocalLily(newLily);
-        console.log("updated lily photo: ", newLily);
       }
     } catch (err) {
       throw err;

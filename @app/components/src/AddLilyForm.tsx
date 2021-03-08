@@ -11,7 +11,6 @@ import {
 import { extractError, formItemLayout, getCodeFromError } from "@app/lib";
 import {
   Alert,
-  AutoComplete,
   Button,
   Form,
   Input,
@@ -19,12 +18,13 @@ import {
   message,
   Modal,
   Popconfirm,
+  Select,
   Tooltip,
 } from "antd";
-import Select from "antd/lib/select";
 import { ApolloError } from "apollo-client";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
+import { AhsCard } from "./AhsCard";
 import { LilyPhotoUpload } from "./LilyPhotoUpload";
 import { getFileListFromUrls } from "./PhotoUpload";
 
@@ -69,7 +69,7 @@ export const AddLilyForm = ({
   const [deleteLily] = useDeleteLilyMutation();
   const [dataSource, setDataSource] = useState<Array<ILily>>([]);
   const [form] = Form.useForm();
-  const { setFieldsValue } = form;
+  const { setFieldsValue, getFieldValue } = form;
   const focusElement = useRef<HTMLSelectElement>(null);
   const { data } = useListsQuery();
   const lists = data?.currentUser?.lists.nodes;
@@ -93,6 +93,7 @@ export const AddLilyForm = ({
         ? (updateLily.imgUrl as Array<string>)
         : [];
       setFileList(lilyPhotoUrls ? getFileListFromUrls(lilyPhotoUrls) : []);
+      setAhsId(updateLily.ahsId || "");
     }
   }, [updateLily, id, setFieldsValue]);
 
@@ -207,10 +208,18 @@ export const AddLilyForm = ({
   }
 
   function onSelect(value: string): void {
+    if (!value) {
+      return;
+    }
     const selection = dataSource.filter(
       (item: ILily) => item.name === value
     )[0];
     setFieldsValue({ ahsId: `${selection.id}` });
+    setAhsId(selection.id + "");
+    const name = getFieldValue("name");
+    if (!name) {
+      setFieldsValue({ name: selection.name });
+    }
     setDataSource([]);
   }
 
@@ -246,6 +255,13 @@ export const AddLilyForm = ({
     }
   };
 
+  const [ahsId, setAhsId] = useState("");
+
+  function handleUnlink() {
+    setFieldsValue({ ahsId: null, "ahs-lily": null });
+    setAhsId(getFieldValue("ahsId"));
+  }
+
   return (
     <Modal
       visible={show}
@@ -268,18 +284,18 @@ export const AddLilyForm = ({
                 </Button>
               </Popconfirm>,
               <Button key={2} onClick={handleCancel}>
-                CLOSE
+                Close
               </Button>,
               <Button key={3} type="primary" onClick={handleSave}>
-                SAVE
+                Save
               </Button>,
             ]
           : [
               <Button key={1} onClick={handleCancel}>
-                CLOSE
+                Close
               </Button>,
               <Button key={2} type="primary" onClick={handelAdd}>
-                SAVE
+                Save
               </Button>,
             ]
       }
@@ -307,17 +323,7 @@ export const AddLilyForm = ({
             },
           ]}
         >
-          <AutoComplete
-            data-cy="addLilyForm-input-name"
-            ref={focusElement}
-            options={dataSource.map((item: ILily) => {
-              return { value: item.name };
-            })}
-            onSearch={onSearch}
-            onSelect={onSelect}
-            onBlur={() => setDataSource([])}
-            allowClear
-          />
+          <Input />
         </Form.Item>
         <Form.Item
           label={
@@ -342,21 +348,9 @@ export const AddLilyForm = ({
               ))}
           </Select>
         </Form.Item>
-        <Form.Item
-          style={{ display: "none" }}
-          label={
-            <span data-cy="addLilyForm-ahsId-label">
-              AHS ID&nbsp;
-              <Tooltip title="Enter an AHS ID, if you'd like.">
-                <QuestionCircleOutlined />
-              </Tooltip>
-            </span>
-          }
-          name="ahsId"
-        >
-          <TextArea data-cy="settingslilies-input-ahsId" autoSize />
+        <Form.Item style={{ display: "none" }} label="AHS ID" name="ahsId">
+          <Input data-cy="settingslilies-input-ahsId" />
         </Form.Item>
-
         <Form.Item
           label={
             <span data-cy="addLilyForm-price-label">
@@ -409,6 +403,42 @@ export const AddLilyForm = ({
             autoSize={{ minRows: 2 }}
           />
         </Form.Item>
+        {!ahsId && (
+          <Form.Item
+            label={
+              <span data-cy="addLilyForm-ahs-lily-label">
+                Link to&nbsp;
+                <Tooltip title="Select a registered cultivar from the drop down list to link registration data and, possibly, a photo">
+                  <QuestionCircleOutlined />
+                </Tooltip>
+              </span>
+            }
+            name="ahs-lily"
+          >
+            <Select
+              showSearch
+              defaultActiveFirstOption={false}
+              showArrow={false}
+              filterOption={false}
+              onSearch={onSearch}
+              onChange={onSelect}
+              notFoundContent={null}
+              onBlur={() => setDataSource([])}
+              allowClear
+            >
+              {dataSource.map((item: ILily) => (
+                <Option key={item.id} value={item.name}>
+                  {item.name}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+        )}
+        {ahsId && (
+          <div style={{ marginBottom: "1rem" }}>
+            <AhsCard ahsId={ahsId} handleUnlink={handleUnlink} />
+          </div>
+        )}
         {updateLily && (
           <>
             <fieldset disabled={!user.isVerified}>

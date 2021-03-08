@@ -35,6 +35,15 @@ const DataButton = (ahsId: any) => (
 
 export function LiliesTable(props: any) {
   // const height = useWindowSize()[1];
+  const dataSource = props.dataSource.map((item) => {
+    if (!item.ahsDatumByAhsRef?.image || item.imgUrl?.length) {
+      return { ...item, avatar: item.imgUrl[0] ? [item.imgUrl[0]] : [] };
+    }
+    return {
+      ...item,
+      avatar: item.ahsDatumByAhsRef.image ? [item.ahsDatumByAhsRef.image] : [],
+    };
+  });
 
   const truncate = (input: string, length: number) =>
     input && input.length > length
@@ -53,14 +62,14 @@ export function LiliesTable(props: any) {
     ("" + a).localeCompare(b + "", "en", { numeric: true });
 
   const filters = Array.from(
-    new Set(props.dataSource.map((item) => item && item.list && item.list.name))
+    new Set(dataSource.map((item) => item && item.list && item.list.name))
   ).map((item) => {
     return { value: item, text: item };
   });
 
   return (
     <Table
-      dataSource={props.dataSource}
+      dataSource={dataSource}
       pagination={{
         position: ["topRight", "bottomRight"],
         defaultPageSize: 25,
@@ -99,12 +108,12 @@ export function LiliesTable(props: any) {
       />
       <Column
         title="📷"
-        dataIndex="imgUrl"
-        key="imgUrl"
+        dataIndex="avatar"
+        key="avatar"
         width={72}
         sortDirections={["descend", "ascend"]}
         sorter={(a: any, b: any) => a.imgUrl.length - b.imgUrl.length}
-        render={(imgUrl: any) => (
+        render={(avatar: any) => (
           <div
             style={{
               width: "100%",
@@ -113,10 +122,10 @@ export function LiliesTable(props: any) {
               justifyContent: "center",
             }}
           >
-            {imgUrl && imgUrl.length ? (
+            {avatar && avatar.length ? (
               <Avatar
                 size={64}
-                src={`https://images.weserv.nl/?url=${imgUrl[0]}&w=100&h=100&fit=cover`}
+                src={`https://images.weserv.nl/?url=${avatar[0]}&w=100&h=100&fit=cover`}
               />
             ) : (
               <Avatar size={64} src={"https://i.imgur.com/0cGzAR8.png"} />

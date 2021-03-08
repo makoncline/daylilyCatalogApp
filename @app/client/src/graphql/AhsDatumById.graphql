@@ -1,0 +1,12 @@
+query AhsDatumById($ahsId: Int!) {
+  ahsData(condition: { ahsId: $ahsId }) {
+    nodes {
+      id
+      ahsId
+      name
+      hybridizer
+      year
+      image
+    }
+  }
+}
