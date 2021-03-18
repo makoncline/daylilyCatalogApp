@@ -116,6 +116,7 @@ export const AddLilyForm = ({
     setDataSource([]);
     setError(null);
     setShow(false);
+    setAhsId("");
     form.resetFields();
   }, [setFileList, setUpdateLily, setDataSource, setError, setShow, form]);
 
