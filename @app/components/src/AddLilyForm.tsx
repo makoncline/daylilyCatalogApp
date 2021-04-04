@@ -138,6 +138,7 @@ export const AddLilyForm = ({
           privateNote: privateNote || null,
           ahsId: ahsId || null,
           listId: list || null,
+          imgUrl: [],
         },
       });
       const lily = data?.createLily?.lily;

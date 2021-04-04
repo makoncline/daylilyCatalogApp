@@ -36,12 +36,18 @@ const DataButton = (ahsId: any) => (
 export function LiliesTable(props: any) {
   // const height = useWindowSize()[1];
   const dataSource = props.dataSource.map((item) => {
-    if (!item.ahsDatumByAhsRef?.image || item.imgUrl?.length) {
-      return { ...item, avatar: item.imgUrl[0] ? [item.imgUrl[0]] : [] };
+    if (item.imgUrl?.length) {
+      return { ...item, avatar: [item.imgUrl[0]] };
+    }
+    if (item.ahsDatumByAhsRef?.image) {
+      return {
+        ...item,
+        avatar: [item.ahsDatumByAhsRef.image],
+      };
     }
     return {
       ...item,
-      avatar: item.ahsDatumByAhsRef.image ? [item.ahsDatumByAhsRef.image] : [],
+      avatar: [],
     };
   });
 
