@@ -4,36 +4,37 @@ import {
   useEditLilyMutation,
 } from "@app/graphql";
 import { UploadFile } from "antd/lib/upload/interface";
-import React, { useState } from "react";
+import React from "react";
 
 import { PhotoUpload } from "./PhotoUpload";
 
 export const LilyPhotoUpload = ({
   lily,
+  setLily,
   fileList,
   setFileList,
 }: {
   lily: LilyDataFragment;
+  setLily: (val: LilyDataFragment | null) => void;
   fileList: UploadFile<any>[];
   setFileList: (fileList: UploadFile<any>[]) => void;
 }) => {
   const [deleteUpload] = useDeleteUploadMutation();
   const [editLily] = useEditLilyMutation();
-  const [localLily, setLocalLily] = useState(lily);
 
   const onSuccess = async (file: UploadFile) => {
-    const imgUrls = localLily.imgUrl ? localLily.imgUrl : [];
+    const imgUrls = lily.imgUrl ? lily.imgUrl : [];
     const newImgUrls = file.url ? imgUrls.concat(file.url) : imgUrls;
     try {
       const { data } = await editLily({
         variables: {
-          id: localLily.id,
+          id: lily.id,
           imgUrl: newImgUrls,
         },
       });
       const newLily = data?.updateLily?.lily;
       if (newLily) {
-        setLocalLily(newLily);
+        setLily(newLily);
       }
     } catch (err) {
       throw err;
@@ -52,19 +53,19 @@ export const LilyPhotoUpload = ({
     } catch (err) {
       throw err;
     }
-    const imgUrls = localLily.imgUrl ? localLily.imgUrl : [];
+    const imgUrls = lily.imgUrl ? lily.imgUrl : [];
     const imgUrlToRemove = file.url;
     const newImgUrls = imgUrls.filter((url) => url !== imgUrlToRemove);
     try {
       const { data } = await editLily({
         variables: {
-          id: localLily.id,
+          id: lily.id,
           imgUrl: newImgUrls,
         },
       });
       const newLily = data?.updateLily?.lily;
       if (newLily) {
-        setLocalLily(newLily);
+        setLily(newLily);
       }
     } catch (err) {
       throw err;

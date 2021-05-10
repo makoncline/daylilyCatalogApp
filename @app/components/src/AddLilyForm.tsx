@@ -308,6 +308,7 @@ export const AddLilyForm = ({
         onFinish={handleSave}
         initialValues={{ list: 0 }}
       >
+        <p>{updateLily && updateLily.id}</p>
         <Form.Item
           label={
             <span data-cy="addLilyForm-name-label">
@@ -446,6 +447,7 @@ export const AddLilyForm = ({
             <fieldset disabled={!user.isVerified}>
               <LilyPhotoUpload
                 lily={updateLily}
+                setLily={setUpdateLily}
                 fileList={fileList}
                 setFileList={setFileList}
               />
