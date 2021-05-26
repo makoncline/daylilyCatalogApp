@@ -180,7 +180,7 @@ export const AddLilyForm = ({
     }
   }
   interface ILily {
-    id: number;
+    ahs_id: number;
     name: string;
     image: string;
   }
@@ -199,7 +199,7 @@ export const AddLilyForm = ({
     try {
       // @ts-ignore
       const response = await fetch(
-        `https://data.daylilycatalog.com/ahs/search/${searchText}`
+        `https://data.daylilycatalog.com/ahs/newsearch/${searchText}`
       );
       const resJson = await response.json();
       return resJson || [];
@@ -216,8 +216,8 @@ export const AddLilyForm = ({
     const selection = dataSource.filter(
       (item: ILily) => item.name === value
     )[0];
-    setFieldsValue({ ahsId: `${selection.id}` });
-    setAhsId(selection.id + "");
+    setFieldsValue({ ahsId: `${selection.ahs_id}` });
+    setAhsId(selection.ahs_id + "");
     const name = getFieldValue("name");
     if (!name) {
       setFieldsValue({ name: selection.name });
@@ -308,7 +308,37 @@ export const AddLilyForm = ({
         onFinish={handleSave}
         initialValues={{ list: 0 }}
       >
-        <p>{updateLily && updateLily.id}</p>
+        {!ahsId && (
+          <Form.Item
+            label={
+              <span data-cy="addLilyForm-ahs-lily-label">
+                Link to&nbsp;
+                <Tooltip title="Type the name of a registered cultivar to link registration data and, possibly, a photo">
+                  <QuestionCircleOutlined />
+                </Tooltip>
+              </span>
+            }
+            name="ahs-lily"
+          >
+            <Select
+              showSearch
+              defaultActiveFirstOption={false}
+              showArrow={false}
+              filterOption={false}
+              onSearch={onSearch}
+              onChange={onSelect}
+              notFoundContent={null}
+              onBlur={() => setDataSource([])}
+              allowClear
+            >
+              {dataSource.map((item: ILily) => (
+                <Option key={item.ahs_id} value={item.name}>
+                  {item.name}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+        )}
         <Form.Item
           label={
             <span data-cy="addLilyForm-name-label">
@@ -406,37 +436,6 @@ export const AddLilyForm = ({
             autoSize={{ minRows: 2 }}
           />
         </Form.Item>
-        {!ahsId && (
-          <Form.Item
-            label={
-              <span data-cy="addLilyForm-ahs-lily-label">
-                Link to&nbsp;
-                <Tooltip title="Select a registered cultivar from the drop down list to link registration data and, possibly, a photo">
-                  <QuestionCircleOutlined />
-                </Tooltip>
-              </span>
-            }
-            name="ahs-lily"
-          >
-            <Select
-              showSearch
-              defaultActiveFirstOption={false}
-              showArrow={false}
-              filterOption={false}
-              onSearch={onSearch}
-              onChange={onSelect}
-              notFoundContent={null}
-              onBlur={() => setDataSource([])}
-              allowClear
-            >
-              {dataSource.map((item: ILily) => (
-                <Option key={item.id} value={item.name}>
-                  {item.name}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-        )}
         {ahsId && (
           <div style={{ marginBottom: "1rem" }}>
             <AhsCard ahsId={ahsId} handleUnlink={handleUnlink} />
