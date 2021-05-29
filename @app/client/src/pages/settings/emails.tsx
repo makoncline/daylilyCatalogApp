@@ -1,3 +1,4 @@
+import { ApolloError } from "@apollo/client";
 import {
   ErrorAlert,
   P,
@@ -21,7 +22,6 @@ import {
 } from "@app/lib";
 import { Alert, Avatar, Button, Form, Input, List, PageHeader } from "antd";
 import { useForm } from "antd/lib/form/Form";
-import { ApolloError } from "apollo-client";
 import { NextPage } from "next";
 import { Store } from "rc-field-form/lib/interface";
 import React, { useCallback, useState } from "react";
@@ -149,7 +149,7 @@ const Settings_Emails: NextPage = () => {
           <PageHeader title="Email addresses" />
           <P>
             <Strong>
-              Account notices will be sent your your primary email address.
+              Account notices will be sent your primary email address.
             </Strong>{" "}
             Additional email addresses may be added to help with account
             recovery (or to change your primary email), but they cannot be used
