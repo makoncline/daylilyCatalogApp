@@ -134,7 +134,7 @@ export function LiliesTable(props: any) {
                 src={`https://images.weserv.nl/?url=${avatar[0]}&w=100&h=100&fit=cover`}
               />
             ) : (
-              <Avatar size={64} src={"https://i.imgur.com/0cGzAR8.png"} />
+              <Avatar size={64} src={"/flowerPlaceholder.png"} />
             )}
           </div>
         )}
