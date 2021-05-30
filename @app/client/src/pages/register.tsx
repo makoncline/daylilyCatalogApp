@@ -1,5 +1,5 @@
 import { QuestionCircleOutlined } from "@ant-design/icons";
-import { ApolloError, useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/react-hooks";
 import {
   AuthRestrict,
   PasswordStrength,
@@ -18,6 +18,7 @@ import {
 } from "@app/lib";
 import { Alert, Button, Form, Input, Tooltip } from "antd";
 import { useForm } from "antd/lib/form/Form";
+import { ApolloError } from "apollo-client";
 import { NextPage } from "next";
 import Router from "next/router";
 import { Store } from "rc-field-form/lib/interface";
@@ -43,7 +44,7 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
   const [error, setError] = useState<Error | ApolloError | null>(null);
   const [passwordStrength, setPasswordStrength] = useState<number>(0);
   const [passwordSuggestions, setPasswordSuggestions] = useState<string[]>([]);
-  const next: string = isSafe(rawNext) ? rawNext! : "/catalog";
+  const next: string = isSafe(rawNext) ? rawNext! : "/";
   const query = useSharedQuery();
 
   const [register] = useRegisterMutation({});

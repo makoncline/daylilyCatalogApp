@@ -34,7 +34,7 @@ export const LilyRow = (props: any) => {
           lily.imgUrl ? (
             <Avatar size="large" src={lily.imgUrl[0]} />
           ) : (
-            <Avatar size="large" src={"/flowerPlaceholder.png"} />
+            <Avatar size="large" src={"https://i.imgur.com/0cGzAR8.png"} />
           )
         }
         title={

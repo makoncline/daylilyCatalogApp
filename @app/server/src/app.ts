@@ -89,8 +89,10 @@ export async function makeApp({
    * When we're using websockets, we may want them to have access to
    * sessions/etc for authentication.
    */
-  const websocketMiddlewares: Middleware<express.Request, express.Response>[] =
-    [];
+  const websocketMiddlewares: Middleware<
+    express.Request,
+    express.Response
+  >[] = [];
   app.set("websocketMiddlewares", websocketMiddlewares);
 
   /*
@@ -107,9 +109,6 @@ export async function makeApp({
   await middleware.installCSRFProtection(app);
   await middleware.installPassport(app);
   await middleware.installLogging(app);
-  if (process.env.FORCE_SSL) {
-    await middleware.installForceSSL(app);
-  }
   // These are our assets: images/etc; served out of the /@app/server/public folder (if present)
   await middleware.installSharedStatic(app);
   if (isTest || isDev) {
