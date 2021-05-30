@@ -1,3 +1,4 @@
+import { ApolloError } from "@apollo/client";
 import {
   AvatarPhotoUpload,
   ErrorAlert,
@@ -19,7 +20,6 @@ import {
 } from "@app/lib";
 import { Alert, Button, Form, Input, PageHeader } from "antd";
 import { useForm } from "antd/lib/form/Form";
-import { ApolloError } from "apollo-client";
 import { NextPage } from "next";
 import { Store } from "rc-field-form/lib/interface";
 import React, { useCallback, useState } from "react";
