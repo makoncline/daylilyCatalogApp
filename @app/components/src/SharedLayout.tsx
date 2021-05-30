@@ -1,6 +1,5 @@
 import { DownOutlined } from "@ant-design/icons";
-import { QueryResult } from "@apollo/react-common";
-import { useApolloClient } from "@apollo/react-hooks";
+import { ApolloError, QueryResult, useApolloClient } from "@apollo/client";
 import { companyName, projectName } from "@app/config";
 import {
   SharedLayout_QueryFragment,
@@ -9,7 +8,6 @@ import {
   useLogoutMutation,
 } from "@app/graphql";
 import { Col, Dropdown, Layout, Menu, Row, Typography } from "antd";
-import { ApolloError } from "apollo-client";
 import Head from "next/head";
 import Link from "next/link";
 import Router, { useRouter } from "next/router";
@@ -226,19 +224,18 @@ export function SharedLayout({
                   </Menu>
                 }
               >
-                <span
+                <div
                   data-cy="layout-dropdown-user"
-                  style={{ whiteSpace: "nowrap" }}
+                  style={{ whiteSpace: "nowrap", height: "75%" }}
                 >
                   <UserAvatar user={data.currentUser} />
-
                   <Warn okay={data.currentUser.isVerified}>
                     <span style={{ marginLeft: 8, marginRight: 8 }}>
                       {data.currentUser.name}
                     </span>
                     <DownOutlined />
                   </Warn>
-                </span>
+                </div>
               </Dropdown>
             ) : forbidsLoggedIn ? null : (
               <Link href={`/login?next=${encodeURIComponent(currentUrl)}`}>

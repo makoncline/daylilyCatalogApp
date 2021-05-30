@@ -15,7 +15,7 @@ const Li = ({ children, ...props }: any) => (
 const Home: NextPage = () => {
   const query = useSharedQuery();
   return (
-    <SharedLayout title="" query={query}>
+    <SharedLayout title="Daylily Catalog" query={query}>
       <Row justify="space-between" gutter={32}>
         <Col xs={24} sm={16}>
           <Title data-cy="homepage-header">
