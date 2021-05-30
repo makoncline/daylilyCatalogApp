@@ -21,7 +21,6 @@ context("Login", () => {
     cy.getCy("loginpage-input-username").type("testuser");
     cy.getCy("loginpage-input-password").type(PASSWORD);
     cy.getCy("loginpage-button-submit").click();
-    cy.wait(5000);
 
     // Assertion
     cy.url().should("equal", Cypress.env("ROOT_URL") + "/"); // Should be on homepage

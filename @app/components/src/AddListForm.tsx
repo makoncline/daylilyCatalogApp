@@ -1,5 +1,4 @@
 import { QuestionCircleOutlined } from "@ant-design/icons";
-import { ApolloError } from "@apollo/client";
 import {
   List,
   useAddListMutation,
@@ -18,6 +17,7 @@ import {
   Tooltip,
 } from "antd";
 import TextArea from "antd/lib/input/TextArea";
+import { ApolloError } from "apollo-client";
 import React, {
   Dispatch,
   SetStateAction,
@@ -174,7 +174,7 @@ export const AddListForm = ({
               message={`Saving list failed`}
               description={
                 <span>
-                  {formError ? extractError(formError) : null}
+                  {extractError(formError).message}
                   {getCodeFromError(formError) ? (
                     <span>
                       {" "}

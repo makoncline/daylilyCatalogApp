@@ -1,6 +1,4 @@
 // @ts-nocheck
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-
 import { convertFromRaw, convertToRaw, EditorState } from "draft-js";
 import { draftjsToMd, mdToDraftjs } from "draftjs-md-converter";
 import dynamic from "next/dynamic";

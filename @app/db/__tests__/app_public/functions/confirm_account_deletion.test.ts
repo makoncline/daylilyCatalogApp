@@ -14,7 +14,9 @@ it("can delete account with verified emails", () =>
     const { token, email } = jobs[0].payload;
     expect(email).toEqual(user._email);
     expect(token).toBeTruthy();
-    const { rows } = await client.query(
+    const {
+      rows,
+    } = await client.query(
       "select app_public.confirm_account_deletion($1) as deleted",
       [token]
     );
@@ -36,7 +38,9 @@ it("can delete account with no verified emails", () =>
     const { token, email } = jobs[0].payload;
     expect(email).toEqual(user._email);
     expect(token).toBeTruthy();
-    const { rows } = await client.query(
+    const {
+      rows,
+    } = await client.query(
       "select app_public.confirm_account_deletion($1) as deleted",
       [token]
     );

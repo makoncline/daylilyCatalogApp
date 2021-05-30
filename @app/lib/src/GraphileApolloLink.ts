@@ -4,7 +4,7 @@ import {
   NextLink,
   Observable,
   Operation,
-} from "@apollo/client";
+} from "apollo-link";
 import { Request, Response } from "express";
 import { execute, getOperationAST } from "graphql";
 import { HttpRequestHandler } from "postgraphile";
@@ -49,21 +49,20 @@ export class GraphileApolloLink extends ApolloLink {
             return;
           }
           const schema = await postgraphileMiddleware.getGraphQLSchema();
-          const data =
-            await postgraphileMiddleware.withPostGraphileContextFromReqRes(
-              req,
-              res,
-              {},
-              (context) =>
-                execute(
-                  schema,
-                  operation.query,
-                  rootValue || {},
-                  context,
-                  operation.variables,
-                  operation.operationName
-                )
-            );
+          const data = await postgraphileMiddleware.withPostGraphileContextFromReqRes(
+            req,
+            res,
+            {},
+            (context) =>
+              execute(
+                schema,
+                operation.query,
+                rootValue || {},
+                context,
+                operation.variables,
+                operation.operationName
+              )
+          );
           if (!observer.closed) {
             observer.next(data);
             observer.complete();

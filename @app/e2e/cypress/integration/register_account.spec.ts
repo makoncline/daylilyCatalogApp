@@ -35,6 +35,7 @@ context("RegisterAccount", () => {
     it("enables account creation", () => {
       // Setup
       cy.visit(Cypress.env("ROOT_URL") + "/register");
+      cy.wait(5000);
       cy.getCy("header-login-button").should("not.exist"); // No login button on register page
       // Action
       cy.getCy("registerpage-input-name").type("Test User");
@@ -43,7 +44,6 @@ context("RegisterAccount", () => {
       cy.getCy("registerpage-input-password").type("Really Good Password");
       cy.getCy("registerpage-input-password2").type("Really Good Password");
       cy.getCy("registerpage-submit-button").click();
-      cy.wait(5000);
       // Assertions
       cy.url().should("equal", Cypress.env("ROOT_URL") + "/"); // Should be on homepage
       cy.getCy("header-login-button").should("not.exist");
