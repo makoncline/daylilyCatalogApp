@@ -89,18 +89,18 @@ export const MultiImageUpload = ({
   const handleBeforeUpload = (file: UploadFile) => {
     if (fileList.length >= 8) return false;
     file.uid = getUid(userId, file.name);
-    const isImage = file?.type?.startsWith("image/");
+    const isImage = file.type.startsWith("image/");
     if (!isImage) {
       message.error("You can only upload image files!");
       file.status = "error";
     }
-    const isLt3M = file?.size && file.size / 1024 / 1024 < 3;
+    const isLt3M = file.size / 1024 / 1024 < 3;
     if (!isLt3M) {
       message.error("Image file size must smaller than 3MB!");
       file.status = "error";
     }
 
-    return isImage && isLt3M ? true : false;
+    return isImage && isLt3M;
   };
 
   const customRequest = async (option: any) => {

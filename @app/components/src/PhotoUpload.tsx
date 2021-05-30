@@ -21,7 +21,7 @@ const accept = ALLOWED_UPLOAD_CONTENT_TYPES.join(",");
 
 export function getKeyFromS3Url(url: string): string {
   try {
-    return s3Uri(url).key!!;
+    return s3Uri(url).key;
   } catch (err) {
     return "";
   }
@@ -104,7 +104,7 @@ export function PhotoUpload({
   }
 
   async function action(file: UploadFile): Promise<string> {
-    const contentType = file.type || "N/A";
+    const contentType = file.type;
     const { data: uploadUrlData } = await createUploadUrl({
       variables: {
         input: {
