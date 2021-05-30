@@ -13,7 +13,6 @@ import {
   poolFromUrl,
 } from "../../__tests__/helpers";
 import { getPostGraphileOptions } from "../src/middleware/installPostGraphile";
-import handleErrors from "../src/utils/handleErrors";
 
 export * from "../../__tests__/helpers";
 
@@ -31,10 +30,8 @@ export async function createUserAndLogIn() {
   }
 }
 
-let known: Record<
-  string,
-  { counter: number; values: Map<unknown, string> }
-> = {};
+let known: Record<string, { counter: number; values: Map<unknown, string> }> =
+  {};
 beforeEach(() => {
   known = {};
 });
@@ -206,7 +203,7 @@ export const runGraphQLQuery = async function runGraphQLQuery(
         // Expand errors
         if (result.errors) {
           if (options.handleErrors) {
-            result.errors = handleErrors(result.errors);
+            result.errors = options.handleErrors(result.errors);
           } else {
             // This does a similar transform that PostGraphile does to errors.
             // It's not the same. Sorry.

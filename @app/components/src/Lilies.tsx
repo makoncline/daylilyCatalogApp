@@ -1,6 +1,6 @@
+import { ApolloError } from "@apollo/client";
 import { LilyDataFragment, useLiliesQuery } from "@app/graphql";
 import { Button, Input } from "antd";
-import { ApolloError } from "apollo-client";
 import React, { useState } from "react";
 
 import { AddLilyForm, LiliesTable } from "./";
