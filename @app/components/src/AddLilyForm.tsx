@@ -1,4 +1,5 @@
 import { QuestionCircleOutlined } from "@ant-design/icons";
+import { ApolloError } from "@apollo/client";
 import {
   LilyDataFragment,
   ProfileSettingsForm_UserFragment,
@@ -21,7 +22,6 @@ import {
   Select,
   Tooltip,
 } from "antd";
-import { ApolloError } from "apollo-client";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { AhsCard } from "./AhsCard";
@@ -122,14 +122,8 @@ export const AddLilyForm = ({
 
   async function handelAdd() {
     try {
-      const {
-        name,
-        price,
-        publicNote,
-        privateNote,
-        ahsId,
-        list,
-      } = await form.validateFields();
+      const { name, price, publicNote, privateNote, ahsId, list } =
+        await form.validateFields();
       const { data } = await addLily({
         variables: {
           name: name,
@@ -154,14 +148,8 @@ export const AddLilyForm = ({
   async function handleSave() {
     if (updateLily) {
       try {
-        const {
-          name,
-          price,
-          publicNote,
-          privateNote,
-          ahsId,
-          list,
-        } = await form.validateFields();
+        const { name, price, publicNote, privateNote, ahsId, list } =
+          await form.validateFields();
         await editLily({
           variables: {
             id: updateLily.id,

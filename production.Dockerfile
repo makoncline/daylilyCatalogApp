@@ -7,7 +7,7 @@ ARG TARGET="server"
 ################################################################################
 # Build stage 1 - `yarn build`
 
-FROM node:12-alpine as builder
+FROM node:14 as builder
 # Import our shared args
 ARG NODE_ENV
 ARG ROOT_URL
@@ -29,7 +29,7 @@ RUN yarn run build
 ################################################################################
 # Build stage 2 - COPY the relevant things (multiple steps)
 
-FROM node:12-alpine as clean
+FROM node:14 as clean
 # Import our shared args
 ARG NODE_ENV
 ARG ROOT_URL
@@ -52,7 +52,7 @@ COPY --from=builder /app/@app/server/dist/ /app/@app/server/dist/
 COPY --from=builder /app/@app/worker/package.json /app/@app/worker/
 COPY --from=builder /app/@app/worker/templates/ /app/@app/worker/templates/
 COPY --from=builder /app/@app/worker/dist/ /app/@app/worker/dist/
-COPY --from=builder /app/data/ /app/data
+COPY --from=builder /app/data/amazon-rds-ca-cert.pem /app/data/amazon-rds-ca-cert.pem
 
 # Shared args shouldn't be overridable at runtime (because they're baked into
 # the built JS).
@@ -66,7 +66,7 @@ RUN rm -Rf /app/node_modules /app/@app/*/node_modules
 ################################################################################
 # Build stage FINAL - COPY everything, once, and then do a clean `yarn install`
 
-FROM node:12-alpine
+FROM node:14
 
 EXPOSE $PORT
 WORKDIR /app/
