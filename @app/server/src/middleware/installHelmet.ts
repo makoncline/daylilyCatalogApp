@@ -21,6 +21,7 @@ const CSP_DIRECTIVES = {
     // it.
     ROOT_URL.replace(/^http/, "ws"),
     "*.s3.amazonaws.com",
+    "*.daylilycatalog.com",
   ],
   "img-src": [
     "'self'",
