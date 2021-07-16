@@ -1219,6 +1219,73 @@ COMMENT ON FUNCTION app_public.reset_password(user_id integer, reset_token text,
 
 
 --
+-- Name: ahs_data; Type: TABLE; Schema: app_public; Owner: -
+--
+
+CREATE TABLE app_public.ahs_data (
+    id integer NOT NULL,
+    ahs_id integer NOT NULL,
+    name text,
+    hybridizer text,
+    year text,
+    scape_height text,
+    bloom_size text,
+    bloom_season text,
+    ploidy text,
+    foliage_type text,
+    bloom_habit text,
+    seedling_num text,
+    color text,
+    form text,
+    parentage text,
+    image text,
+    fragrance text,
+    budcount text,
+    branches text,
+    sculpting text,
+    foliage text,
+    flower text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: TABLE ahs_data; Type: COMMENT; Schema: app_public; Owner: -
+--
+
+COMMENT ON TABLE app_public.ahs_data IS 'The results of scraping daylilies.org daylily database.';
+
+
+--
+-- Name: COLUMN ahs_data.id; Type: COMMENT; Schema: app_public; Owner: -
+--
+
+COMMENT ON COLUMN app_public.ahs_data.id IS 'The primary key for the `AHS Data`.';
+
+
+--
+-- Name: COLUMN ahs_data.ahs_id; Type: COMMENT; Schema: app_public; Owner: -
+--
+
+COMMENT ON COLUMN app_public.ahs_data.ahs_id IS 'The id of the `AHS Data` from the daylilies.org database.';
+
+
+--
+-- Name: search_ahs_lilies(text); Type: FUNCTION; Schema: app_public; Owner: -
+--
+
+CREATE FUNCTION app_public.search_ahs_lilies(search text) RETURNS SETOF app_public.ahs_data
+    LANGUAGE sql STABLE
+    AS $$
+    select *
+    from app_public.ahs_data
+    where
+      name ilike (search || '%')
+  $$;
+
+
+--
 -- Name: tg__graphql_subscription(); Type: FUNCTION; Schema: app_public; Owner: -
 --
 
@@ -1498,59 +1565,6 @@ CREATE TABLE app_private.user_secrets (
 --
 
 COMMENT ON TABLE app_private.user_secrets IS 'The contents of this table should never be visible to the user. Contains data mostly related to authentication.';
-
-
---
--- Name: ahs_data; Type: TABLE; Schema: app_public; Owner: -
---
-
-CREATE TABLE app_public.ahs_data (
-    id integer NOT NULL,
-    ahs_id integer NOT NULL,
-    name text,
-    hybridizer text,
-    year text,
-    scape_height text,
-    bloom_size text,
-    bloom_season text,
-    ploidy text,
-    foliage_type text,
-    bloom_habit text,
-    seedling_num text,
-    color text,
-    form text,
-    parentage text,
-    image text,
-    fragrance text,
-    budcount text,
-    branches text,
-    sculpting text,
-    foliage text,
-    flower text,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
---
--- Name: TABLE ahs_data; Type: COMMENT; Schema: app_public; Owner: -
---
-
-COMMENT ON TABLE app_public.ahs_data IS 'The results of scraping daylilies.org daylily database.';
-
-
---
--- Name: COLUMN ahs_data.id; Type: COMMENT; Schema: app_public; Owner: -
---
-
-COMMENT ON COLUMN app_public.ahs_data.id IS 'The primary key for the `AHS Data`.';
-
-
---
--- Name: COLUMN ahs_data.ahs_id; Type: COMMENT; Schema: app_public; Owner: -
---
-
-COMMENT ON COLUMN app_public.ahs_data.ahs_id IS 'The id of the `AHS Data` from the daylilies.org database.';
 
 
 --
