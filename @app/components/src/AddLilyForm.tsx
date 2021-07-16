@@ -7,7 +7,9 @@ import {
   useDeleteLilyMutation,
   useDeleteUploadMutation,
   useEditLilyMutation,
-  useListsQuery,  useSearchAhsLiliesLazyQuery} from "@app/graphql";
+  useListsQuery,
+  useSearchAhsLiliesLazyQuery,
+} from "@app/graphql";
 import { extractError, formItemLayout, getCodeFromError } from "@app/lib";
 import {
   Alert,
@@ -79,15 +81,15 @@ export const AddLilyForm = ({
   const [fileList, setFileList] = useState(
     lilyPhotoUrls ? getFileListFromUrls(lilyPhotoUrls) : []
   );
-  const [searchAhsLilies, {data: searchData}]= useSearchAhsLiliesLazyQuery({
+  const [searchAhsLilies, { data: searchData }] = useSearchAhsLiliesLazyQuery({
     variables: {
-       search: ''
+      search: "",
     },
   });
 
   useEffect(() => {
-    setDataSource(searchData?.searchAhsLilies?.nodes ?? [])
-  }, [searchData])
+    setDataSource(searchData?.searchAhsLilies?.nodes ?? []);
+  }, [searchData]);
 
   useEffect(() => {
     if (updateLily) {
@@ -186,9 +188,9 @@ export const AddLilyForm = ({
     if (searchText.length >= 2) {
       searchAhsLilies({
         variables: {
-           search: searchText
+          search: searchText,
         },
-      })
+      });
     } else {
       setDataSource([]);
     }
