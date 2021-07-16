@@ -37,7 +37,7 @@ jobs:
       - name: "Run pgRITA checks"
         uses: pgrita/action@main
         env:
-          DATABASE_URL: postgres://postgres:postgres@localhost/daylily-catalog
+          DATABASE_URL: postgres://postgres:postgres@localhost/daylily_catalog
           PGRITA_TOKEN: ${{ secrets.PGRITA_TOKEN }}
         with:
           project: daylily_catalog
