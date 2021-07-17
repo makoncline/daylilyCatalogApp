@@ -1,6 +1,7 @@
 export * from "./AddLilyForm";
 export * from "./AvatarPhotoUpload";
 export * from "./ButtonLink";
+export * from "./Checkout";
 export * from "./ErrorAlert";
 export * from "./ErrorOccurred";
 export * from "./FourOhFour";

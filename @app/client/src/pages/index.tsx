@@ -1,7 +1,7 @@
 import { Button, Col, Row, Typography } from "antd";
 import * as React from "react";
 const { Title, Paragraph } = Typography;
-import { SharedLayout } from "@app/components";
+import { Checkout, SharedLayout } from "@app/components";
 import { useSharedQuery } from "@app/graphql";
 import { NextPage } from "next";
 
@@ -16,6 +16,7 @@ const Home: NextPage = () => {
   const query = useSharedQuery();
   return (
     <SharedLayout title="Daylily Catalog" query={query}>
+      <Checkout plan="price_1H0g0wES4FMms4g4uWGtuDI7" />
       <Row justify="space-between" gutter={32}>
         <Col xs={24} sm={16}>
           <Title data-cy="homepage-header">

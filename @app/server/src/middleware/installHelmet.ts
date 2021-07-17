@@ -23,6 +23,9 @@ const CSP_DIRECTIVES = {
     "*.s3.amazonaws.com",
     "*.daylilycatalog.com",
   ],
+  "script-src": ["'self'", "'unsafe-eval'", "*.stripe.com"],
+  "script-src-elem": ["'self'", "'unsafe-eval'", "*.stripe.com"],
+  "frame-src": ["'self'", "*.stripe.com"],
   "img-src": [
     "'self'",
     "data:",
