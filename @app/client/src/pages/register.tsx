@@ -43,7 +43,7 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
   const [error, setError] = useState<Error | ApolloError | null>(null);
   const [passwordStrength, setPasswordStrength] = useState<number>(0);
   const [passwordSuggestions, setPasswordSuggestions] = useState<string[]>([]);
-  const next: string = isSafe(rawNext) ? rawNext! : "/catalog";
+  const next: string = isSafe(rawNext) ? rawNext! : "/";
   const query = useSharedQuery();
 
   const [register] = useRegisterMutation({});
