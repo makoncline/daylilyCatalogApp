@@ -30,6 +30,13 @@ context("RegisterAccount", () => {
   });
 
   context("Account creation", () => {
+    const resizeObserverLoopErrRe = /^[^(ResizeObserver loop limit exceeded)]/;
+    Cypress.on("uncaught:exception", (err) => {
+      /* returning false here prevents Cypress from failing the test */
+      if (resizeObserverLoopErrRe.test(err.message)) {
+        return false;
+      }
+    });
     beforeEach(() => cy.serverCommand("clearTestUsers"));
 
     it("enables account creation", () => {

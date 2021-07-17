@@ -8,6 +8,7 @@ import {
   useDeleteUploadMutation,
   useEditLilyMutation,
   useListsQuery,
+  useSearchAhsLiliesLazyQuery,
 } from "@app/graphql";
 import { extractError, formItemLayout, getCodeFromError } from "@app/lib";
 import {
@@ -80,6 +81,15 @@ export const AddLilyForm = ({
   const [fileList, setFileList] = useState(
     lilyPhotoUrls ? getFileListFromUrls(lilyPhotoUrls) : []
   );
+  const [searchAhsLilies, { data: searchData }] = useSearchAhsLiliesLazyQuery({
+    variables: {
+      search: "",
+    },
+  });
+
+  useEffect(() => {
+    setDataSource(searchData?.searchAhsLilies?.nodes ?? []);
+  }, [searchData]);
 
   useEffect(() => {
     if (updateLily) {
@@ -168,34 +178,24 @@ export const AddLilyForm = ({
     }
   }
   interface ILily {
-    ahs_id: number;
-    name: string;
-    image: string;
+    id: number;
+    ahsId: number;
+    name: string | null;
+    image: string | null;
   }
 
   const onSearch = async (searchText: string) => {
     if (searchText.length >= 2) {
-      const searchResult = await searchAhs(searchText);
-      setDataSource(searchResult);
+      searchAhsLilies({
+        variables: {
+          search: searchText,
+        },
+      });
     } else {
       setDataSource([]);
     }
     setFieldsValue({ ahsId: "" });
   };
-
-  async function searchAhs(searchText: string) {
-    try {
-      // @ts-ignore
-      const response = await fetch(
-        `https://data.daylilycatalog.com/ahs/newsearch/${searchText}`
-      );
-      const resJson = await response.json();
-      return resJson || [];
-    } catch (err) {
-      console.log(err);
-      return [];
-    }
-  }
 
   function onSelect(value: string): void {
     if (!value) {
@@ -204,8 +204,8 @@ export const AddLilyForm = ({
     const selection = dataSource.filter(
       (item: ILily) => item.name === value
     )[0];
-    setFieldsValue({ ahsId: `${selection.ahs_id}` });
-    setAhsId(selection.ahs_id + "");
+    setFieldsValue({ ahsId: `${selection.ahsId}` });
+    setAhsId(selection.ahsId + "");
     const name = getFieldValue("name");
     if (!name) {
       setFieldsValue({ name: selection.name });
@@ -320,7 +320,7 @@ export const AddLilyForm = ({
               allowClear
             >
               {dataSource.map((item: ILily) => (
-                <Option key={item.ahs_id} value={item.name}>
+                <Option key={item.ahsId} value={item.name!!}>
                   {item.name}
                 </Option>
               ))}
