@@ -245,6 +245,44 @@ type CreateListPayload {
   user: User
 }
 
+"""All input for the create `StripeCustomer` mutation."""
+input CreateStripeCustomerInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The `StripeCustomer` to be created by this mutation."""
+  stripeCustomer: StripeCustomerInput!
+}
+
+"""The output of our create `StripeCustomer` mutation."""
+type CreateStripeCustomerPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """The `StripeCustomer` that was created by this mutation."""
+  stripeCustomer: StripeCustomer
+
+  """An edge for our `StripeCustomer`. May be used by Relay 1."""
+  stripeCustomerEdge(
+    """The method to use when ordering `StripeCustomer`."""
+    orderBy: [StripeCustomersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): StripeCustomersEdge
+
+  """Reads a single `User` that is related to this `StripeCustomer`."""
+  user: User
+}
+
 """All input for the `createUploadUrl` mutation."""
 input CreateUploadUrlInput {
   """
@@ -448,6 +486,43 @@ type DeleteListPayload {
   query: Query
 
   """Reads a single `User` that is related to this `List`."""
+  user: User
+}
+
+"""All input for the `deleteStripeCustomer` mutation."""
+input DeleteStripeCustomerInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  userId: Int!
+}
+
+"""The output of our delete `StripeCustomer` mutation."""
+type DeleteStripeCustomerPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+  deletedStripeCustomerNodeId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """The `StripeCustomer` that was deleted by this mutation."""
+  stripeCustomer: StripeCustomer
+
+  """An edge for our `StripeCustomer`. May be used by Relay 1."""
+  stripeCustomerEdge(
+    """The method to use when ordering `StripeCustomer`."""
+    orderBy: [StripeCustomersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): StripeCustomersEdge
+
+  """Reads a single `User` that is related to this `StripeCustomer`."""
   user: User
 }
 
@@ -975,6 +1050,14 @@ type Mutation {
     input: CreateListInput!
   ): CreateListPayload
 
+  """Creates a single `StripeCustomer`."""
+  createStripeCustomer(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateStripeCustomerInput!
+  ): CreateStripeCustomerPayload
+
   """Get a signed URL for uploading files. It will expire in 5 minutes."""
   createUploadUrl(
     """
@@ -1014,6 +1097,14 @@ type Mutation {
     """
     input: DeleteListInput!
   ): DeleteListPayload
+
+  """Deletes a single `StripeCustomer` using a unique key."""
+  deleteStripeCustomer(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteStripeCustomerInput!
+  ): DeleteStripeCustomerPayload
   deleteUpload(
     """
     The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
@@ -1133,6 +1224,14 @@ type Mutation {
     """
     input: UpdateListInput!
   ): UpdateListPayload
+
+  """Updates a single `StripeCustomer` using a unique key and a patch."""
+  updateStripeCustomer(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateStripeCustomerInput!
+  ): UpdateStripeCustomerPayload
 
   """Updates a single `User` using a unique key and a patch."""
   updateUser(
@@ -1285,6 +1384,36 @@ type Query {
     offset: Int
     search: String!
   ): AhsDataConnection
+  stripeCustomer(userId: Int!): StripeCustomer
+
+  """Reads and enables pagination through a set of `StripeCustomer`."""
+  stripeCustomers(
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: StripeCustomerCondition
+
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """The method to use when ordering `StripeCustomer`."""
+    orderBy: [StripeCustomersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): StripeCustomersConnection
   user(id: Int!): User
   userAuthentication(id: Int!): UserAuthentication
   userByUsername(username: String!): User
@@ -1409,6 +1538,75 @@ type ResetPasswordPayload {
   success: Boolean
 }
 
+type StripeCustomer {
+  createdAt: Datetime!
+  stripeId: String
+  updatedAt: Datetime!
+
+  """Reads a single `User` that is related to this `StripeCustomer`."""
+  user: User
+  userId: Int!
+}
+
+"""
+A condition to be used against `StripeCustomer` object types. All fields are
+tested for equality and combined with a logical ‘and.’
+"""
+input StripeCustomerCondition {
+  """Checks for equality with the object’s `userId` field."""
+  userId: Int
+}
+
+"""An input for mutations affecting `StripeCustomer`"""
+input StripeCustomerInput {
+  createdAt: Datetime
+  stripeId: String
+  updatedAt: Datetime
+  userId: Int
+}
+
+"""
+Represents an update to a `StripeCustomer`. Fields that are set will be updated.
+"""
+input StripeCustomerPatch {
+  stripeId: String
+}
+
+"""A connection to a list of `StripeCustomer` values."""
+type StripeCustomersConnection {
+  """
+  A list of edges which contains the `StripeCustomer` and cursor to aid in pagination.
+  """
+  edges: [StripeCustomersEdge!]!
+
+  """A list of `StripeCustomer` objects."""
+  nodes: [StripeCustomer!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `StripeCustomer` you could get from the connection."""
+  totalCount: Int!
+}
+
+"""A `StripeCustomer` edge in the connection."""
+type StripeCustomersEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `StripeCustomer` at the end of the edge."""
+  node: StripeCustomer!
+}
+
+"""Methods to use when ordering `StripeCustomer`."""
+enum StripeCustomersOrderBy {
+  NATURAL
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+  USER_ID_ASC
+  USER_ID_DESC
+}
+
 """
 The root subscription type: contains realtime events you can subscribe to with the `subscription` operation.
 """
@@ -1504,6 +1702,47 @@ type UpdateListPayload {
   query: Query
 
   """Reads a single `User` that is related to this `List`."""
+  user: User
+}
+
+"""All input for the `updateStripeCustomer` mutation."""
+input UpdateStripeCustomerInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `StripeCustomer` being updated.
+  """
+  patch: StripeCustomerPatch!
+  userId: Int!
+}
+
+"""The output of our update `StripeCustomer` mutation."""
+type UpdateStripeCustomerPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """The `StripeCustomer` that was updated by this mutation."""
+  stripeCustomer: StripeCustomer
+
+  """An edge for our `StripeCustomer`. May be used by Relay 1."""
+  stripeCustomerEdge(
+    """The method to use when ordering `StripeCustomer`."""
+    orderBy: [StripeCustomersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): StripeCustomersEdge
+
+  """Reads a single `User` that is related to this `StripeCustomer`."""
   user: User
 }
 
@@ -1630,6 +1869,38 @@ type User {
 
   """Public-facing name (or pseudonym) of the user."""
   name: String
+
+  """Reads a single `StripeCustomer` that is related to this `User`."""
+  stripeCustomer: StripeCustomer
+
+  """Reads and enables pagination through a set of `StripeCustomer`."""
+  stripeCustomers(
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: StripeCustomerCondition
+
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """The method to use when ordering `StripeCustomer`."""
+    orderBy: [StripeCustomersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): StripeCustomersConnection! @deprecated(reason: "Please use stripeCustomer instead")
   updatedAt: Datetime!
 
   """Reads and enables pagination through a set of `UserAuthentication`."""

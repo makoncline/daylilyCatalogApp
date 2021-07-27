@@ -1,0 +1,10 @@
+mutation CreateStripeCustomer($stripeId: String) {
+  createStripeCustomer(input: { stripeCustomer: { stripeId: $stripeId } }) {
+    user {
+      id
+      stripeCustomer {
+        stripeId
+      }
+    }
+  }
+}
