@@ -1,7 +1,6 @@
 import { Request, RequestHandler, Response } from "express";
 import Stripe from "stripe";
 
-import { saveStripeCustomer } from "../db/saveStripeCustomer";
 import getStripe from "../utils/getStripe";
 import { createCustomer } from "./customer";
 
@@ -36,7 +35,6 @@ export const createCheckoutSession: RequestHandler = async (
         try {
           const stripeCustomer = await createCustomer(userId, userEmail);
           const stripeId = stripeCustomer.id;
-          await saveStripeCustomer(stripeId, userId);
           params.customer = stripeId;
         } catch (err) {
           res.status(500).json({ statusCode: 500, message: err.message });
