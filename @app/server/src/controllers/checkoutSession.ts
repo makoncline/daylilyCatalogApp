@@ -1,6 +1,7 @@
 import { Request, RequestHandler, Response } from "express";
 import Stripe from "stripe";
 
+import { saveStripeCustomer } from "../db/saveStripeCustomer";
 import getStripe from "../utils/getStripe";
 import { createCustomer } from "./customer";
 
@@ -18,18 +19,25 @@ export const createCheckoutSession: RequestHandler = async (
     } else {
       const stripe = getStripe();
       const params: Stripe.Checkout.SessionCreateParams = {
+        // required
+        mode: "subscription",
         payment_method_types: ["card"],
         line_items: [{ price: plan, quantity: 1 }],
-        success_url: `${process.env.ROOT_URL}/success`,
-        cancel_url: `${process.env.ROOT_URL}/cancel`,
-        mode: "subscription",
+        // success_url: `${process.env.ROOT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+        success_url: `${process.env.ROOT_URL}`,
+        cancel_url: `${process.env.ROOT_URL}`,
+        // optional
+        client_reference_id: userId,
+        metadata: { userEmail: userEmail },
       };
       if (stripeCustomerId) {
         params.customer = stripeCustomerId;
       } else {
         try {
           const stripeCustomer = await createCustomer(userId, userEmail);
-          params.customer = stripeCustomer.id;
+          const stripeId = stripeCustomer.id;
+          await saveStripeCustomer(stripeId, userId);
+          params.customer = stripeId;
         } catch (err) {
           res.status(500).json({ statusCode: 500, message: err.message });
         }

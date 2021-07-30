@@ -1,9 +1,4 @@
-import {
-  StripeCustomerDocument,
-  useCreateStripeCustomerMutation,
-  useStripeCustomerQuery,
-} from "@app/graphql";
-import { check } from "prettier";
+import { useStripeCustomerQuery } from "@app/graphql";
 import React from "react";
 import type { Stripe } from "stripe";
 
@@ -11,12 +6,10 @@ import { fetchPostJsonCsrf } from "./util/apiHelpers";
 import getStripe from "./util/getStripe";
 
 export const Checkout = ({ plan }: { plan: string }) => {
-  const [createStripeCustomer] = useCreateStripeCustomerMutation();
   const { data } = useStripeCustomerQuery();
   const userId = data?.currentUser?.id;
   const userEmail = data?.currentUser?.userEmails.nodes[0].email;
-  const stripeCustomerId = data?.currentUser?.stripeCustomer?.stripeId;
-  console.log(data);
+  const stripeCustomerId = data?.currentUser?.stripeCustomer?.id;
 
   async function redirectToCheckout(event: React.MouseEvent<HTMLElement>) {
     event.preventDefault();
@@ -29,19 +22,6 @@ export const Checkout = ({ plan }: { plan: string }) => {
         stripeCustomerId,
       }
     );
-    const customer = checkoutSession.customer?.toString();
-    if (!stripeCustomerId && customer) {
-      try {
-        await createStripeCustomer({
-          variables: {
-            stripeId: customer,
-          },
-        });
-      } catch (err) {
-        console.error(err.message);
-      }
-    }
-    console.log("checkoutSession: ", checkoutSession);
 
     if ((checkoutSession as any).statusCode === 500) {
       console.error((checkoutSession as any).message);

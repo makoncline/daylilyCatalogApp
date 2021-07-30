@@ -45,6 +45,7 @@ export async function makeApp({
    */
   const app = express();
 
+  app.use("/api/webhook", express.raw({ type: "*/*" }));
   app.use(express.json());
 
   /*

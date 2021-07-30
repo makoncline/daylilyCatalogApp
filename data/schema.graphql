@@ -283,6 +283,49 @@ type CreateStripeCustomerPayload {
   user: User
 }
 
+"""All input for the create `StripeSubscription` mutation."""
+input CreateStripeSubscriptionInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The `StripeSubscription` to be created by this mutation."""
+  stripeSubscription: StripeSubscriptionInput!
+}
+
+"""The output of our create `StripeSubscription` mutation."""
+type CreateStripeSubscriptionPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  Reads a single `StripeCustomer` that is related to this `StripeSubscription`.
+  """
+  customer: StripeCustomer
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """The `StripeSubscription` that was created by this mutation."""
+  stripeSubscription: StripeSubscription
+
+  """An edge for our `StripeSubscription`. May be used by Relay 1."""
+  stripeSubscriptionEdge(
+    """The method to use when ordering `StripeSubscription`."""
+    orderBy: [StripeSubscriptionsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): StripeSubscriptionsEdge
+
+  """Reads a single `User` that is related to this `StripeSubscription`."""
+  user: User
+}
+
 """All input for the `createUploadUrl` mutation."""
 input CreateUploadUrlInput {
   """
@@ -496,7 +539,7 @@ input DeleteStripeCustomerInput {
   payload verbatim. May be used to track mutations by the client.
   """
   clientMutationId: String
-  userId: Int!
+  id: String!
 }
 
 """The output of our delete `StripeCustomer` mutation."""
@@ -523,6 +566,48 @@ type DeleteStripeCustomerPayload {
   ): StripeCustomersEdge
 
   """Reads a single `User` that is related to this `StripeCustomer`."""
+  user: User
+}
+
+"""All input for the `deleteStripeSubscription` mutation."""
+input DeleteStripeSubscriptionInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: String!
+}
+
+"""The output of our delete `StripeSubscription` mutation."""
+type DeleteStripeSubscriptionPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  Reads a single `StripeCustomer` that is related to this `StripeSubscription`.
+  """
+  customer: StripeCustomer
+  deletedStripeSubscriptionNodeId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """The `StripeSubscription` that was deleted by this mutation."""
+  stripeSubscription: StripeSubscription
+
+  """An edge for our `StripeSubscription`. May be used by Relay 1."""
+  stripeSubscriptionEdge(
+    """The method to use when ordering `StripeSubscription`."""
+    orderBy: [StripeSubscriptionsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): StripeSubscriptionsEdge
+
+  """Reads a single `User` that is related to this `StripeSubscription`."""
   user: User
 }
 
@@ -1058,6 +1143,14 @@ type Mutation {
     input: CreateStripeCustomerInput!
   ): CreateStripeCustomerPayload
 
+  """Creates a single `StripeSubscription`."""
+  createStripeSubscription(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateStripeSubscriptionInput!
+  ): CreateStripeSubscriptionPayload
+
   """Get a signed URL for uploading files. It will expire in 5 minutes."""
   createUploadUrl(
     """
@@ -1105,6 +1198,14 @@ type Mutation {
     """
     input: DeleteStripeCustomerInput!
   ): DeleteStripeCustomerPayload
+
+  """Deletes a single `StripeSubscription` using a unique key."""
+  deleteStripeSubscription(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteStripeSubscriptionInput!
+  ): DeleteStripeSubscriptionPayload
   deleteUpload(
     """
     The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
@@ -1232,6 +1333,14 @@ type Mutation {
     """
     input: UpdateStripeCustomerInput!
   ): UpdateStripeCustomerPayload
+
+  """Updates a single `StripeSubscription` using a unique key and a patch."""
+  updateStripeSubscription(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateStripeSubscriptionInput!
+  ): UpdateStripeSubscriptionPayload
 
   """Updates a single `User` using a unique key and a patch."""
   updateUser(
@@ -1384,7 +1493,8 @@ type Query {
     offset: Int
     search: String!
   ): AhsDataConnection
-  stripeCustomer(userId: Int!): StripeCustomer
+  stripeCustomer(id: String!): StripeCustomer
+  stripeCustomerByUserId(userId: Int!): StripeCustomer
 
   """Reads and enables pagination through a set of `StripeCustomer`."""
   stripeCustomers(
@@ -1414,6 +1524,38 @@ type Query {
     """The method to use when ordering `StripeCustomer`."""
     orderBy: [StripeCustomersOrderBy!] = [PRIMARY_KEY_ASC]
   ): StripeCustomersConnection
+  stripeSubscription(id: String!): StripeSubscription
+  stripeSubscriptionByCustomerId(customerId: String!): StripeSubscription
+  stripeSubscriptionByUserId(userId: Int!): StripeSubscription
+
+  """Reads and enables pagination through a set of `StripeSubscription`."""
+  stripeSubscriptions(
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: StripeSubscriptionCondition
+
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """The method to use when ordering `StripeSubscription`."""
+    orderBy: [StripeSubscriptionsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): StripeSubscriptionsConnection
   user(id: Int!): User
   userAuthentication(id: Int!): UserAuthentication
   userByUsername(username: String!): User
@@ -1540,7 +1682,41 @@ type ResetPasswordPayload {
 
 type StripeCustomer {
   createdAt: Datetime!
-  stripeId: String
+  id: String!
+
+  """
+  Reads a single `StripeSubscription` that is related to this `StripeCustomer`.
+  """
+  stripeSubscriptionByCustomerId: StripeSubscription
+
+  """Reads and enables pagination through a set of `StripeSubscription`."""
+  stripeSubscriptionsByCustomerId(
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: StripeSubscriptionCondition
+
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """The method to use when ordering `StripeSubscription`."""
+    orderBy: [StripeSubscriptionsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): StripeSubscriptionsConnection! @deprecated(reason: "Please use stripeSubscriptionByCustomerId instead")
   updatedAt: Datetime!
 
   """Reads a single `User` that is related to this `StripeCustomer`."""
@@ -1553,6 +1729,9 @@ A condition to be used against `StripeCustomer` object types. All fields are
 tested for equality and combined with a logical ‘and.’
 """
 input StripeCustomerCondition {
+  """Checks for equality with the object’s `id` field."""
+  id: String
+
   """Checks for equality with the object’s `userId` field."""
   userId: Int
 }
@@ -1560,7 +1739,7 @@ input StripeCustomerCondition {
 """An input for mutations affecting `StripeCustomer`"""
 input StripeCustomerInput {
   createdAt: Datetime
-  stripeId: String
+  id: String!
   updatedAt: Datetime
   userId: Int
 }
@@ -1569,7 +1748,10 @@ input StripeCustomerInput {
 Represents an update to a `StripeCustomer`. Fields that are set will be updated.
 """
 input StripeCustomerPatch {
-  stripeId: String
+  createdAt: Datetime
+  id: String
+  updatedAt: Datetime
+  userId: Int
 }
 
 """A connection to a list of `StripeCustomer` values."""
@@ -1600,6 +1782,105 @@ type StripeCustomersEdge {
 
 """Methods to use when ordering `StripeCustomer`."""
 enum StripeCustomersOrderBy {
+  ID_ASC
+  ID_DESC
+  NATURAL
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+  USER_ID_ASC
+  USER_ID_DESC
+}
+
+type StripeSubscription {
+  createdAt: Datetime!
+
+  """
+  Reads a single `StripeCustomer` that is related to this `StripeSubscription`.
+  """
+  customer: StripeCustomer
+  customerId: String!
+  id: String!
+  subscriptionInfo: StripeSubscriptionInfo
+  updatedAt: Datetime!
+
+  """Reads a single `User` that is related to this `StripeSubscription`."""
+  user: User
+  userId: Int!
+}
+
+"""
+A condition to be used against `StripeSubscription` object types. All fields are
+tested for equality and combined with a logical ‘and.’
+"""
+input StripeSubscriptionCondition {
+  """Checks for equality with the object’s `customerId` field."""
+  customerId: String
+
+  """Checks for equality with the object’s `id` field."""
+  id: String
+
+  """Checks for equality with the object’s `userId` field."""
+  userId: Int
+}
+
+type StripeSubscriptionInfo {
+  status: String!
+}
+
+"""An input for mutations affecting `StripeSubscription`"""
+input StripeSubscriptionInput {
+  createdAt: Datetime
+  customerId: String!
+  id: String!
+  updatedAt: Datetime
+  userId: Int
+}
+
+"""
+Represents an update to a `StripeSubscription`. Fields that are set will be updated.
+"""
+input StripeSubscriptionPatch {
+  createdAt: Datetime
+  customerId: String
+  id: String
+  updatedAt: Datetime
+  userId: Int
+}
+
+"""A connection to a list of `StripeSubscription` values."""
+type StripeSubscriptionsConnection {
+  """
+  A list of edges which contains the `StripeSubscription` and cursor to aid in pagination.
+  """
+  edges: [StripeSubscriptionsEdge!]!
+
+  """A list of `StripeSubscription` objects."""
+  nodes: [StripeSubscription!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """
+  The count of *all* `StripeSubscription` you could get from the connection.
+  """
+  totalCount: Int!
+}
+
+"""A `StripeSubscription` edge in the connection."""
+type StripeSubscriptionsEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `StripeSubscription` at the end of the edge."""
+  node: StripeSubscription!
+}
+
+"""Methods to use when ordering `StripeSubscription`."""
+enum StripeSubscriptionsOrderBy {
+  CUSTOMER_ID_ASC
+  CUSTOMER_ID_DESC
+  ID_ASC
+  ID_DESC
   NATURAL
   PRIMARY_KEY_ASC
   PRIMARY_KEY_DESC
@@ -1712,12 +1993,12 @@ input UpdateStripeCustomerInput {
   payload verbatim. May be used to track mutations by the client.
   """
   clientMutationId: String
+  id: String!
 
   """
   An object where the defined keys will be set on the `StripeCustomer` being updated.
   """
   patch: StripeCustomerPatch!
-  userId: Int!
 }
 
 """The output of our update `StripeCustomer` mutation."""
@@ -1743,6 +2024,52 @@ type UpdateStripeCustomerPayload {
   ): StripeCustomersEdge
 
   """Reads a single `User` that is related to this `StripeCustomer`."""
+  user: User
+}
+
+"""All input for the `updateStripeSubscription` mutation."""
+input UpdateStripeSubscriptionInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: String!
+
+  """
+  An object where the defined keys will be set on the `StripeSubscription` being updated.
+  """
+  patch: StripeSubscriptionPatch!
+}
+
+"""The output of our update `StripeSubscription` mutation."""
+type UpdateStripeSubscriptionPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  Reads a single `StripeCustomer` that is related to this `StripeSubscription`.
+  """
+  customer: StripeCustomer
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """The `StripeSubscription` that was updated by this mutation."""
+  stripeSubscription: StripeSubscription
+
+  """An edge for our `StripeSubscription`. May be used by Relay 1."""
+  stripeSubscriptionEdge(
+    """The method to use when ordering `StripeSubscription`."""
+    orderBy: [StripeSubscriptionsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): StripeSubscriptionsEdge
+
+  """Reads a single `User` that is related to this `StripeSubscription`."""
   user: User
 }
 
@@ -1901,6 +2228,38 @@ type User {
     """The method to use when ordering `StripeCustomer`."""
     orderBy: [StripeCustomersOrderBy!] = [PRIMARY_KEY_ASC]
   ): StripeCustomersConnection! @deprecated(reason: "Please use stripeCustomer instead")
+
+  """Reads a single `StripeSubscription` that is related to this `User`."""
+  stripeSubscription: StripeSubscription
+
+  """Reads and enables pagination through a set of `StripeSubscription`."""
+  stripeSubscriptions(
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: StripeSubscriptionCondition
+
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """The method to use when ordering `StripeSubscription`."""
+    orderBy: [StripeSubscriptionsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): StripeSubscriptionsConnection! @deprecated(reason: "Please use stripeSubscription instead")
   updatedAt: Datetime!
 
   """Reads and enables pagination through a set of `UserAuthentication`."""
