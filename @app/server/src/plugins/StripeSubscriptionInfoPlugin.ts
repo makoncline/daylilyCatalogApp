@@ -22,7 +22,7 @@ const StripeSubscriptionInfoPlugin = makeExtendSchemaPlugin(() => {
         status: String!
       }
       extend type StripeSubscription {
-        subscriptionInfo: StripeSubscriptionInfo
+        subscriptionInfo: StripeSubscriptionInfo @requires(columns: ["id"])
       }
     `,
     resolvers: {
@@ -30,17 +30,13 @@ const StripeSubscriptionInfoPlugin = makeExtendSchemaPlugin(() => {
         async subscriptionInfo(
           subscription: Stripe.Response<Stripe.Subscription>
         ) {
-          if (subscription.id) {
-            try {
-              return await getStripeSubscriptionInfo(subscription.id);
-            } catch (e) {
-              console.error(
-                "Error occurred fetching stripe subscription info:"
-              );
-              console.error(e);
-            }
+          const { id } = subscription;
+          try {
+            return await getStripeSubscriptionInfo(id);
+          } catch (e) {
+            console.error("Error occurred fetching stripe subscription info:");
+            console.error(e);
           }
-          return null;
         },
       },
     },
