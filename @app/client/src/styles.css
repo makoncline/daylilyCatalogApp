@@ -1,0 +1,13 @@
+:root {
+  /* base colors */
+  --light-grey: #d9d9d9;
+  --grey: rgb(125, 125, 134);
+  --blue: rgb(55, 112, 235);
+  --green: rgb(68, 134, 79);
+
+  /* color uses */
+  --free-plan-color: var(--grey);
+  --pro-plan-color: var(--blue);
+  --custom-plan-color: var(--green);
+  --border-color-main: var(--light-grey);
+}
