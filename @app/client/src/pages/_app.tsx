@@ -1,7 +1,7 @@
-import "antd/dist/antd.less";
 import "nprogress/nprogress.css";
 import "../styles.less";
 import "../styles.css";
+import "antd/dist/antd.less";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 import { ApolloClient, ApolloProvider } from "@apollo/client";

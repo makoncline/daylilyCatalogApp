@@ -58,5 +58,3 @@ grant
   update,
   delete
 on table app_public.stripe_subscriptions to :DATABASE_VISITOR;
-
-

@@ -1,15 +1,17 @@
 import { useStripeCustomerQuery } from "@app/graphql";
+import { Button } from "antd";
 import React from "react";
 import type { Stripe } from "stripe";
 
 import { fetchPostJsonCsrf } from "./util/apiHelpers";
 import getStripe from "./util/getStripe";
 
-export const Checkout = ({ plan }: { plan: string }) => {
+export const CheckoutButton = () => {
   const { data } = useStripeCustomerQuery();
   const userId = data?.currentUser?.id;
   const userEmail = data?.currentUser?.userEmails.nodes[0].email;
   const stripeCustomerId = data?.currentUser?.stripeCustomer?.id;
+  const plan = process.env.NEXT_PUBLIC_STRIPE_PLAN;
 
   async function redirectToCheckout(event: React.MouseEvent<HTMLElement>) {
     event.preventDefault();
@@ -35,5 +37,9 @@ export const Checkout = ({ plan }: { plan: string }) => {
     console.warn(error.message);
   }
 
-  return <button onClick={redirectToCheckout}>checkout</button>;
+  return (
+    <Button type="primary" block onClick={redirectToCheckout}>
+      Purchase Membership
+    </Button>
+  );
 };
