@@ -23,8 +23,8 @@ export const createCheckoutSession: RequestHandler = async (
         payment_method_types: ["card"],
         line_items: [{ price: plan, quantity: 1 }],
         // success_url: `${process.env.ROOT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-        success_url: `${process.env.ROOT_URL}`,
-        cancel_url: `${process.env.ROOT_URL}`,
+        success_url: `${process.env.ROOT_URL}/membership`,
+        cancel_url: `${process.env.ROOT_URL}/membership`,
         // optional
         client_reference_id: userId,
         metadata: { userEmail: userEmail },

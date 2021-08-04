@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { saveStripeSubscription } from "../db/saveStripeSubscription";
+import { deleteStripeSubscription, saveStripeSubscription } from "../db";
 import getStripe from "../utils/getStripe";
 // import { createCustomer } from "./customer";
 
@@ -38,24 +38,44 @@ export const stripeWebhooks = async (req: Request, res: Response) => {
 
   switch (eventType) {
     case "checkout.session.completed":
-      // Payment is successful and the subscription is created.
-      // You should provision the subscription and save the customer ID to your database.
-      const { customer, subscription, client_reference_id } = data.object ?? {};
-      if (!customer || !subscription || !client_reference_id) {
-        res.status(400).json({
-          statusCode: 400,
-          message: `request missing required parameter, {customer: ${customer}, subscription: ${subscription}, client_reference_id: ${client_reference_id}}`,
-        });
-        return;
+      {
+        // Payment is successful and the subscription is created.
+        // You should provision the subscription and save the customer ID to your database.
+        const { customer, subscription, client_reference_id } =
+          data.object ?? {};
+        if (!customer || !subscription || !client_reference_id) {
+          res.status(400).json({
+            statusCode: 400,
+            message: `request missing required parameter, {customer: ${customer}, subscription: ${subscription}, client_reference_id: ${client_reference_id}}`,
+          });
+          return;
+        }
+        try {
+          await saveStripeSubscription(
+            subscription,
+            client_reference_id,
+            customer
+          );
+        } catch (err) {
+          res.status(500).json({ statusCode: 500, message: err.message });
+        }
       }
-      try {
-        await saveStripeSubscription(
-          subscription,
-          client_reference_id,
-          customer
-        );
-      } catch (err) {
-        res.status(500).json({ statusCode: 500, message: err.message });
+      break;
+    case "customer.subscription.deleted":
+      {
+        const { id: subscription } = data.object ?? {};
+        if (!subscription) {
+          res.status(400).json({
+            statusCode: 400,
+            message: `request missing required parameter, {subscription: ${subscription}}`,
+          });
+          return;
+        }
+        try {
+          await deleteStripeSubscription(subscription);
+        } catch (err) {
+          res.status(500).json({ statusCode: 500, message: err.message });
+        }
       }
       break;
     case "invoice.paid":

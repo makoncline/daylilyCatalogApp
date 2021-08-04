@@ -1,4 +1,5 @@
 import {
+  BillingPortalButton,
   CheckoutButton,
   Col,
   ErrorAlert,
@@ -39,71 +40,74 @@ export default Membership;
 const Plans = ({ active }: { active: boolean }) => {
   return (
     <Style>
-      <Row justify="start" align="top" gutter={[36, 36]}>
-        <Col xs={24} md={12}>
-          <Card
-            className="pricing-card"
-            title={
-              <div className="title_container">
-                <Title level={3} className="free">
-                  Free
-                </Title>
-                <Text className="free">$0 per month</Text>
+      {active && <BillingPortalButton />}
+      {!active && (
+        <Row justify="start" align="top" gutter={[36, 36]}>
+          <Col xs={24} md={12}>
+            <Card
+              className="pricing-card"
+              title={
+                <div className="title_container">
+                  <Title level={3} className="free">
+                    Free
+                  </Title>
+                  <Text className="free">$0 per month</Text>
+                </div>
+              }
+              actions={[
+                <Button key="start_for_free" block className="free" disabled>
+                  {active
+                    ? "Included in your current plan"
+                    : "This is your current plan"}
+                </Button>,
+              ]}
+            >
+              <div className="detail_container">
+                <Text>Get started easily</Text>
+                <Text>Limit 100 daylily listings</Text>
               </div>
-            }
-            actions={[
-              <Button key="start_for_free" block className="free" disabled>
-                {active
-                  ? "Included in your current plan"
-                  : "This is your current plan"}
-              </Button>,
-            ]}
-          >
-            <div className="detail_container">
-              <Text>Get started easily</Text>
-              <Text>Limit 100 daylily listings</Text>
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} md={12}>
-          <Card
-            className="pricing-card"
-            title={
-              <div className="title_container">
-                <Title level={3} className="pro">
-                  Pro
-                </Title>
-                <Text className="pro">From $10 per month</Text>
-                <Text type="secondary">For gardeners selling daylilies</Text>
+            </Card>
+          </Col>
+          <Col xs={24} md={12}>
+            <Card
+              className="pricing-card"
+              title={
+                <div className="title_container">
+                  <Title level={3} className="pro">
+                    Pro
+                  </Title>
+                  <Text className="pro">From $10 per month</Text>
+                  <Text type="secondary">For gardeners selling daylilies</Text>
+                </div>
+              }
+              actions={[
+                active ? (
+                  <Button
+                    key="purchase_membership"
+                    block
+                    className="pro"
+                    disabled
+                  >
+                    This is your current plan
+                  </Button>
+                ) : (
+                  <CheckoutButton />
+                ),
+              ]}
+            >
+              <div className="detail_container">
+                <Text>
+                  All our <a href="#features"> standard features</a>
+                </Text>
+                <Text>Unlimited daylily listings</Text>
+                <Text>Upload your own photos</Text>
+                <Text>Website to share catalog</Text>
+                <Text>Download data as spreadsheet</Text>
               </div>
-            }
-            actions={[
-              active ? (
-                <Button
-                  key="purchase_membership"
-                  block
-                  className="pro"
-                  disabled
-                >
-                  This is your current plan
-                </Button>
-              ) : (
-                <CheckoutButton />
-              ),
-            ]}
-          >
-            <div className="detail_container">
-              <Text>
-                All our <a href="#features"> standard features</a>
-              </Text>
-              <Text>Unlimited daylily listings</Text>
-              <Text>Upload your own photos</Text>
-              <Text>Website to share catalog</Text>
-              <Text>Download data as spreadsheet</Text>
-            </div>
-          </Card>
-        </Col>
-      </Row>
+            </Card>
+          </Col>
+        </Row>
+      )}
     </Style>
   );
 };
