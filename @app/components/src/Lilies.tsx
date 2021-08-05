@@ -31,7 +31,9 @@ export const Lilies = () => {
     setUpdateLily(lily);
     setShowAddLilyForm(true);
   }
-
+  const isActive =
+    user.stripeSubscription?.subscriptionInfo?.status == "active";
+  const isOverFreeLimit = userLilies.length >= 99;
   return (
     <>
       <Button
@@ -47,9 +49,17 @@ export const Lilies = () => {
           marginBottom: "1rem",
           display: "block",
         }}
+        disabled={!isActive && isOverFreeLimit}
       >
         Add daylily
       </Button>
+      {!isActive && isOverFreeLimit && (
+        <p>
+          You have reached the free plan limit. You must have an active
+          membership to add more daylilies.
+        </p>
+      )}
+      <p></p>
       <Input
         placeholder="Filter catalog by name..."
         value={nameFilter}
