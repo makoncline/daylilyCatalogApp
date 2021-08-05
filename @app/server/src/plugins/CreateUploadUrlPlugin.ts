@@ -4,6 +4,7 @@ import { PoolClient } from "pg";
 import { v4 as uuidv4 } from "uuid";
 
 import { OurGraphQLContext } from "../middleware/installPostGraphile";
+import { getStripeSubscriptionInfo } from "./StripeSubscriptionInfoPlugin";
 
 const S3_UPLOAD_KEY = process.env.S3_UPLOAD_KEY;
 const S3_UPLOAD_SECRET = process.env.S3_UPLOAD_SECRET;
@@ -29,6 +30,7 @@ interface CreateUploadUrlInput {
 interface User {
   id: string;
   isVerified: boolean;
+  isActive: boolean;
 }
 
 async function getCurrentUser(pool: PoolClient): Promise<User | null> {
@@ -36,14 +38,21 @@ async function getCurrentUser(pool: PoolClient): Promise<User | null> {
     const {
       rows: [row],
     } = await pool.query(
-      "select id, is_verified from app_public.users where id = app_public.current_user_id()"
+      "select u.id as user_id, u.is_verified as is_verified, ss.id as subscription_id from app_public.users u full join app_public.stripe_subscriptions ss on u.id = ss.user_id where u.id = app_public.current_user_id()"
     );
     if (!row) {
       return null;
     }
+    let isActive = false;
+    if (row.subscription_id) {
+      const subscription = await getStripeSubscriptionInfo(row.subscription_id);
+      const { status } = subscription ?? {};
+      isActive = status == "active";
+    }
     return {
       id: row.id,
       isVerified: row.is_verified,
+      isActive,
     };
   } catch (err) {
     throw err;
@@ -132,6 +141,7 @@ const CreateUploadUrlPlugin = makeExtendSchemaPlugin(() => ({
         }
 
         const user = await getCurrentUser(context.pgClient);
+        console.log("user: ", user);
 
         if (!user) {
           const err = new Error("Login required");
@@ -142,6 +152,15 @@ const CreateUploadUrlPlugin = makeExtendSchemaPlugin(() => ({
 
         if (!user.isVerified) {
           const err = new Error("Only verified users may upload files");
+          // @ts-ignore
+          err.code = "DNIED";
+          throw err;
+        }
+
+        if (!user.isActive) {
+          const err = new Error(
+            "Only users with active subscription may upload files"
+          );
           // @ts-ignore
           err.code = "DNIED";
           throw err;

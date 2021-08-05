@@ -251,7 +251,8 @@ export const AddLilyForm = ({
     setFieldsValue({ ahsId: null, "ahs-lily": null });
     setAhsId(getFieldValue("ahsId"));
   }
-
+  const isActive =
+    user.stripeSubscription?.subscriptionInfo?.status == "active";
   return (
     <Modal
       visible={show}
@@ -431,7 +432,7 @@ export const AddLilyForm = ({
         )}
         {updateLily && (
           <>
-            <fieldset disabled={!user.isVerified}>
+            <fieldset disabled={!user.isVerified || !isActive}>
               <LilyPhotoUpload
                 lily={updateLily}
                 setLily={setUpdateLily}
@@ -441,6 +442,9 @@ export const AddLilyForm = ({
             </fieldset>
             {!user.isVerified && (
               <p>You must verify your email address to upload photos.</p>
+            )}
+            {user.isVerified && !isActive && (
+              <p>You must have an active membership to upload photos.</p>
             )}
           </>
         )}

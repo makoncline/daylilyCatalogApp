@@ -122,6 +122,9 @@ function ProfileSettingsForm({
       form.setFieldsValue({ bio: text });
     }
   };
+
+  const isActive =
+    user.stripeSubscription?.subscriptionInfo?.status == "active";
   return (
     <div>
       <PageHeader title="Edit profile" />
@@ -139,11 +142,14 @@ function ProfileSettingsForm({
       >
         <Form.Item label="Avatar">
           <>
-            <fieldset disabled={!user.isVerified}>
+            <fieldset disabled={!user.isVerified || !isActive}>
               <AvatarPhotoUpload user={user} />
             </fieldset>
             {!user.isVerified && (
               <p>You must verify your email address to upload photos.</p>
+            )}
+            {user.isVerified && !isActive && (
+              <p>You must have an active membership to upload photos.</p>
             )}
           </>
         </Form.Item>

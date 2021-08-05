@@ -4,7 +4,7 @@ import type Stripe from "stripe";
 import getStripe from "../utils/getStripe";
 const stripe = getStripe();
 
-async function getStripeSubscriptionInfo(
+export async function getStripeSubscriptionInfo(
   subscriptionId: string
 ): Promise<Stripe.Response<Stripe.Subscription> | null> {
   try {

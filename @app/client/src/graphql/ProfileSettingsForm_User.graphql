@@ -8,4 +8,10 @@ fragment ProfileSettingsForm_User on User {
   userLocation
   imgUrls
   isVerified
+  stripeSubscription {
+    id
+    subscriptionInfo {
+      status
+    }
+  }
 }
