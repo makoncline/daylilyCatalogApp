@@ -235,6 +235,11 @@ export function SharedLayout({
                       </Link>
                     </Menu.Item>
                     <Menu.Item>
+                      <Link href="/membership">
+                        <a data-cy="layout-link-membership">Membership</a>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item>
                       <a onClick={handleLogout}>Logout</a>
                     </Menu.Item>
                   </Menu>

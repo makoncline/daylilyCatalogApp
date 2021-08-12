@@ -4,6 +4,8 @@
   --grey: rgb(125, 125, 134);
   --blue: rgb(55, 112, 235);
   --green: rgb(245, 255, 246);
+  --white: white;
+  --black: black;
 
   /* color uses */
   --free-plan-color: var(--grey);
@@ -23,4 +25,7 @@
   --spacing-sm: var(--size-sm);
   --spacing-md: var(--size-md);
   --spacing-lg: var(--size-lg);
+  --spacing-xl: var(--size-xl);
+
+  --hairline: 1px solid var(--light-grey);
 }

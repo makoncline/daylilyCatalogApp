@@ -38,7 +38,12 @@ export const CheckoutButton = () => {
   }
 
   return (
-    <Button type="primary" block onClick={redirectToCheckout}>
+    <Button
+      type="primary"
+      block
+      onClick={redirectToCheckout}
+      className="pro price-button"
+    >
       Purchase Membership
     </Button>
   );

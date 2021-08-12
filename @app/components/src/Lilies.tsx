@@ -1,7 +1,10 @@
 import { ApolloError } from "@apollo/client";
 import { LilyDataFragment, useLiliesQuery } from "@app/graphql";
-import { Button, Input } from "antd";
+import { Button, Input, Space, Typography } from "antd";
 import React, { useState } from "react";
+import styled from "styled-components";
+
+const { Text } = Typography;
 
 import { AddLilyForm, LiliesTable } from "./";
 
@@ -35,7 +38,20 @@ export const Lilies = () => {
     user.stripeSubscription?.subscriptionInfo?.status == "active";
   const isOverFreeLimit = userLilies.length >= 99;
   return (
-    <>
+    <Style>
+      {!isActive && isOverFreeLimit && (
+        <div className="over-limit">
+          <Space direction="vertical">
+            <Text>
+              You have reached the free plan limit. You must have an active
+              membership to add more daylilies.
+            </Text>
+            <Button type="primary" href={`${process.env.ROOT_URL}/membership`}>
+              Become a Daylily Catalog Member
+            </Button>
+          </Space>
+        </div>
+      )}
       <Button
         type="primary"
         onClick={() => {
@@ -53,12 +69,6 @@ export const Lilies = () => {
       >
         Add daylily
       </Button>
-      {!isActive && isOverFreeLimit && (
-        <p>
-          You have reached the free plan limit. You must have an active
-          membership to add more daylilies.
-        </p>
-      )}
       <p></p>
       <Input
         placeholder="Filter catalog by name..."
@@ -82,6 +92,21 @@ export const Lilies = () => {
         setUpdateLily={setUpdateLily}
         user={user}
       />
-    </>
+    </Style>
   );
 };
+
+const Style = styled.div`
+  .over-limit {
+    margin: var(--spacing-sm) auto var(--spacing-lg);
+    max-width: 400px;
+    border: var(--hairline);
+    padding: var(--spacing-sm);
+    .ant-btn {
+      height: var(--spacing-xl);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+`;

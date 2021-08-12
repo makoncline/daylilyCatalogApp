@@ -21,14 +21,18 @@ import {
   Modal,
   Popconfirm,
   Select,
+  Space,
   Tooltip,
+  Typography,
 } from "antd";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import styled from "styled-components";
 
 import { AhsCard } from "./AhsCard";
 import { LilyPhotoUpload } from "./LilyPhotoUpload";
 import { getFileListFromUrls } from "./PhotoUpload";
 
+const { Text } = Typography;
 const { TextArea } = Input;
 const { Option } = Select;
 export interface FormValues {
@@ -444,7 +448,21 @@ export const AddLilyForm = ({
               <p>You must verify your email address to upload photos.</p>
             )}
             {user.isVerified && !isActive && (
-              <p>You must have an active membership to upload photos.</p>
+              <Style>
+                <div className="over-limit">
+                  <Space direction="vertical">
+                    <Text>
+                      You must have an active membership to upload photos.
+                    </Text>
+                    <Button
+                      type="primary"
+                      href={`${process.env.ROOT_URL}/membership`}
+                    >
+                      Become a Daylily Catalog Member
+                    </Button>
+                  </Space>
+                </div>
+              </Style>
             )}
           </>
         )}
@@ -471,3 +489,18 @@ export const AddLilyForm = ({
     </Modal>
   );
 };
+
+const Style = styled.div`
+  .over-limit {
+    margin: var(--spacing-sm) auto var(--spacing-lg);
+    max-width: 400px;
+    border: var(--hairline);
+    padding: var(--spacing-sm);
+    .ant-btn {
+      height: var(--spacing-xl);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+`;
