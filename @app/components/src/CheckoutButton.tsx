@@ -1,5 +1,6 @@
 import { useStripeCustomerQuery } from "@app/graphql";
 import { Button } from "antd";
+import { useRouter } from "next/router";
 import React from "react";
 import type { Stripe } from "stripe";
 
@@ -12,6 +13,7 @@ export const CheckoutButton = () => {
   const userEmail = data?.currentUser?.userEmails.nodes[0].email;
   const stripeCustomerId = data?.currentUser?.stripeCustomer?.id;
   const plan = process.env.NEXT_PUBLIC_STRIPE_PLAN;
+  const router = useRouter();
 
   async function redirectToCheckout(event: React.MouseEvent<HTMLElement>) {
     event.preventDefault();
@@ -27,6 +29,7 @@ export const CheckoutButton = () => {
 
     if ((checkoutSession as any).statusCode === 500) {
       console.error((checkoutSession as any).message);
+      router.reload();
       return;
     }
 

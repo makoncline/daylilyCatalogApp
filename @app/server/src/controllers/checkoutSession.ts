@@ -1,6 +1,7 @@
 import { Request, RequestHandler, Response } from "express";
 import Stripe from "stripe";
 
+import { saveStripeSubscription } from "../db";
 import getStripe from "../utils/getStripe";
 import { createCustomer } from "./customer";
 
@@ -30,6 +31,27 @@ export const createCheckoutSession: RequestHandler = async (
         metadata: { userEmail: userEmail },
       };
       if (stripeCustomerId) {
+        const subscriptions = await stripe.subscriptions.list({
+          customer: stripeCustomerId,
+          status: "active",
+          limit: 1,
+        });
+        const hasActiveSubscription = subscriptions.data.length > 0;
+        if (hasActiveSubscription) {
+          const activeSubscriptionId = subscriptions.data[0].id;
+          saveStripeSubscription(
+            activeSubscriptionId,
+            userId,
+            stripeCustomerId
+          );
+          res
+            .status(500)
+            .json({
+              statusCode: 500,
+              message:
+                "Customer already has active subscription. Saving it to db. Try refreshing.",
+            });
+        }
         params.customer = stripeCustomerId;
       } else {
         try {
