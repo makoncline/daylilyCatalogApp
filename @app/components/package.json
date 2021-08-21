@@ -20,7 +20,7 @@
     "axios": "^0.21.1",
     "draft-js": "^0.11.7",
     "draftjs-md-converter": "^1.5.0",
-    "next": "^10.2.3",
+    "next": "^11.1.0",
     "rc-upload": "^4.3.0",
     "react": "^17.0.2",
     "react-draft-wysiwyg": "^1.14.7",
