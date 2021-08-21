@@ -2,6 +2,7 @@ import { SyncOutlined } from "@ant-design/icons";
 import { ApolloError } from "@apollo/client";
 import { Alert, Button, Result } from "antd";
 import Paragraph from "antd/lib/typography/Paragraph";
+import Link from "next/link";
 import React from "react";
 
 export interface ErrorAlertProps {
@@ -43,7 +44,10 @@ export function ErrorAlert({ error }: ErrorAlertProps) {
       subTitle={
         <span>
           We're really sorry, but an unexpected error occurred. Please{" "}
-          <a href="/">return to the homepage</a> and try again.
+          <Link href="/">
+            <a>return to the homepage</a>
+          </Link>
+          and try again.
         </span>
       }
     >

@@ -33,6 +33,7 @@ if (!process.env.ROOT_URL) {
     }
 
     return compose(withAntdLess)({
+      webpack5: false,
       modifyVars: themeVariables,
       javascriptEnabled: true,
       cssLoaderOptions: {

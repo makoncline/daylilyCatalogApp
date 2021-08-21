@@ -2,6 +2,7 @@ import { InboxOutlined } from "@ant-design/icons";
 import { message, Modal, Upload } from "antd";
 import { UploadFile, UploadProps } from "antd/lib/upload/interface";
 import axios from "axios";
+import Image from "next/image";
 import React, { useState } from "react";
 import slugify from "slugify";
 
@@ -185,7 +186,7 @@ export const MultiImageUpload = ({
         </p>
       </Dragger>
       <Modal visible={previewVisible} footer={null} onCancel={handleCancel}>
-        <img alt="example" style={{ width: "100%" }} src={previewImage} />
+        <Image alt="example" width="100%" src={previewImage} />
       </Modal>
     </div>
   );

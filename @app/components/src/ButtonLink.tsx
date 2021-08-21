@@ -6,7 +6,7 @@ import React from "react";
 export function ButtonLink(props: ButtonProps & { href: string; as?: string }) {
   const { href, as, ...rest } = props;
   return (
-    <Link href={href} as={as}>
+    <Link href={href} as={as} passHref>
       <Button {...rest} />
     </Link>
   );
