@@ -1,11 +1,9 @@
 import { Pool } from "pg";
 
 export const queryDb = async (query: string, values: any[]) => {
+  const connectionString = process.env.DATABASE_URL;
   const pool: Pool = new Pool({
-    user: process.env.DATABASE_SUPERUSER,
-    host: process.env.DATABASE_HOST,
-    database: process.env.DATABASE_NAME,
-    password: process.env.DATABASE_SUPERUSER_PASSWORD,
+    connectionString,
   });
   const res = await pool.query(query, values);
   await pool.end();
