@@ -44,13 +44,11 @@ export const createCheckoutSession: RequestHandler = async (
             userId,
             stripeCustomerId
           );
-          res
-            .status(500)
-            .json({
-              statusCode: 500,
-              message:
-                "Customer already has active subscription. Saving it to db. Try refreshing.",
-            });
+          res.status(500).json({
+            statusCode: 500,
+            message:
+              "Customer already has active subscription. Saving it to db. Try refreshing.",
+          });
         }
         params.customer = stripeCustomerId;
       } else {

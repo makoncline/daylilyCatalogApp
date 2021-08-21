@@ -15,8 +15,7 @@ if (!process.env.ROOT_URL) {
   // You *must not* use `process.env` in here, because we need to check we have
   // those variables. To enforce this, we've deliberately shadowed process.
   module.exports = () => {
-    const withCss = require("@zeit/next-css");
-    const withLess = require("@zeit/next-less");
+    const withAntdLess = require("next-plugin-antd-less");
     const lessToJS = require("less-vars-to-js");
     const fs = require("fs");
     const path = require("path");
@@ -33,20 +32,16 @@ if (!process.env.ROOT_URL) {
       require.extensions[".css"] = () => {};
     }
 
-    return compose(
-      withCss,
-      withLess
-    )({
-      poweredByHeader: false,
-      distDir: `../.next`,
-      trailingSlash: false,
-      lessLoaderOptions: {
-        javascriptEnabled: true,
-        modifyVars: themeVariables,
-      },
+    return compose(withAntdLess)({
+      modifyVars: themeVariables,
+      javascriptEnabled: true,
       cssLoaderOptions: {
         url: false,
       },
+
+      poweredByHeader: false,
+      distDir: `../.next`,
+      trailingSlash: false,
 
       webpack(config, { webpack, dev, isServer }) {
         if (dev) config.devtool = "cheap-module-source-map";

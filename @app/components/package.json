@@ -2,6 +2,7 @@
   "name": "@app/components",
   "version": "0.0.0",
   "main": "dist/index.js",
+  "license": "SEE LICENSE IN LICENSE.md",
   "scripts": {
     "build": "tsc -b",
     "test": "cross-env NODE_ENV=test NODE_OPTIONS=\"$NODE_OPTIONS -r @app/config/env\" jest"
@@ -26,6 +27,7 @@
     "react-highlight-words": "^0.16.0",
     "slugify": "^1.5.3",
     "stripe": "^8.163.0",
+    "styled-components": "^5.3.0",
     "tslib": "^2.2.0"
   },
   "devDependencies": {
