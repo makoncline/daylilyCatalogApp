@@ -1,5 +1,4 @@
 require("@app/config");
-const compose = require("lodash/flowRight");
 const AntDDayjsWebpackPlugin = require("antd-dayjs-webpack-plugin");
 
 if (!process.env.ROOT_URL) {
@@ -32,7 +31,7 @@ if (!process.env.ROOT_URL) {
       require.extensions[".css"] = () => {};
     }
 
-    return compose(withAntdLess)({
+    return withAntdLess({
       webpack5: false,
       modifyVars: {
         hack: 'true;@import "~antd/lib/style/themes/default.less";',
