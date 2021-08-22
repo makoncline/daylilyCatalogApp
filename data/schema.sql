@@ -116,6 +116,7 @@ CREATE TABLE app_public.users (
     bio text,
     user_location text,
     img_urls text[] DEFAULT '{}'::text[],
+    free_until timestamp with time zone,
     CONSTRAINT users_avatar_url_check CHECK ((avatar_url ~ '^https?://[^/]+'::text)),
     CONSTRAINT users_intro_check CHECK ((char_length(intro) < 280)),
     CONSTRAINT users_user_location_check CHECK ((char_length(user_location) < 140)),

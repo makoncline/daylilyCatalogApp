@@ -1,5 +1,5 @@
 --! Previous: sha1:aa9dd8224368d1154370aac1ede23c195e4d147f
---! Hash: sha1:4bc261639bfbf84816780369f8303613deeb292f
+--! Hash: sha1:2386c4163cd6f67a57db3524a5d3c75baa8a6204
 
 drop table if exists app_public.stripe_subscriptions;
 drop table if exists app_public.stripe_customers;
@@ -61,3 +61,9 @@ grant
   update,
   delete
 on table app_public.stripe_subscriptions to :DATABASE_VISITOR;
+
+alter table if exists app_public.users
+drop column if exists free_until;
+
+alter table app_public.users
+add column free_until timestamptz;

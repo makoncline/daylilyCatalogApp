@@ -257,6 +257,8 @@ export const AddLilyForm = ({
   }
   const isActive =
     user.stripeSubscription?.subscriptionInfo?.status == "active";
+  const isFree = user.freeUntil ? new Date() < new Date(user.freeUntil) : false;
+  const isPhotoUploadActive = user.isVerified && (isFree || isActive);
   return (
     <Modal
       visible={show}
@@ -436,7 +438,7 @@ export const AddLilyForm = ({
         )}
         {updateLily && (
           <>
-            <fieldset disabled={!user.isVerified || !isActive}>
+            <fieldset disabled={!isPhotoUploadActive}>
               <LilyPhotoUpload
                 lily={updateLily}
                 setLily={setUpdateLily}
@@ -447,7 +449,7 @@ export const AddLilyForm = ({
             {!user.isVerified && (
               <p>You must verify your email address to upload photos.</p>
             )}
-            {user.isVerified && !isActive && (
+            {!isPhotoUploadActive && (
               <Style>
                 <div className="over-limit">
                   <Space direction="vertical">

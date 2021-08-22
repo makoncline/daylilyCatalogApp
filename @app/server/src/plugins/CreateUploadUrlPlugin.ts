@@ -31,6 +31,7 @@ interface User {
   id: string;
   isVerified: boolean;
   isActive: boolean;
+  isFree: boolean;
 }
 
 async function getCurrentUser(pool: PoolClient): Promise<User | null> {
@@ -38,7 +39,7 @@ async function getCurrentUser(pool: PoolClient): Promise<User | null> {
     const {
       rows: [row],
     } = await pool.query(
-      "select u.id as user_id, u.is_verified as is_verified, ss.id as subscription_id from app_public.users u full join app_public.stripe_subscriptions ss on u.id = ss.user_id where u.id = app_public.current_user_id()"
+      "select u.id as user_id, u.is_verified as is_verified, ss.id as subscription_id, u.free_until as free_until from app_public.users u full join app_public.stripe_subscriptions ss on u.id = ss.user_id where u.id = app_public.current_user_id()"
     );
     if (!row) {
       return null;
@@ -49,10 +50,12 @@ async function getCurrentUser(pool: PoolClient): Promise<User | null> {
       const { status } = subscription ?? {};
       isActive = status == "active";
     }
+    const isFree = new Date() < new Date(row.free_until);
     return {
       id: row.id,
       isVerified: row.is_verified,
       isActive,
+      isFree,
     };
   } catch (err) {
     throw err;
@@ -157,7 +160,7 @@ const CreateUploadUrlPlugin = makeExtendSchemaPlugin(() => ({
           throw err;
         }
 
-        if (!user.isActive) {
+        if (!user.isActive && !user.isFree) {
           const err = new Error(
             "Only users with active subscription may upload files"
           );

@@ -37,9 +37,11 @@ export const Lilies = () => {
   const isActive =
     user.stripeSubscription?.subscriptionInfo?.status == "active";
   const isOverFreeLimit = userLilies.length >= 99;
+  const isFree = user.freeUntil ? new Date() < new Date(user.freeUntil) : false;
+  const isAddActive = isFree || isActive || !isOverFreeLimit;
   return (
     <Style>
-      {!isActive && isOverFreeLimit && (
+      {!isAddActive && (
         <div className="over-limit">
           <Space direction="vertical">
             <Text>
@@ -65,7 +67,7 @@ export const Lilies = () => {
           marginBottom: "1rem",
           display: "block",
         }}
-        disabled={!isActive && isOverFreeLimit}
+        disabled={!isAddActive}
       >
         Add daylily
       </Button>

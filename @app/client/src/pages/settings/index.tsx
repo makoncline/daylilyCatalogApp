@@ -136,6 +136,8 @@ function ProfileSettingsForm({
 
   const isActive =
     user.stripeSubscription?.subscriptionInfo?.status == "active";
+  const isFree = user.freeUntil ? new Date() < new Date(user.freeUntil) : false;
+  const isPhotoUploadActive = user.isVerified && (isFree || isActive);
   return (
     <Style>
       <PageHeader title="Edit profile" />
@@ -153,13 +155,13 @@ function ProfileSettingsForm({
       >
         <Form.Item label="Avatar" className="avatar-container">
           <Space>
-            <fieldset disabled={!user.isVerified || !isActive}>
+            <fieldset disabled={!isPhotoUploadActive}>
               <AvatarPhotoUpload user={user} />
             </fieldset>
             {!user.isVerified && (
               <p>You must verify your email address to upload photos.</p>
             )}
-            {user.isVerified && !isActive && (
+            {!isPhotoUploadActive && (
               <div className="over-limit">
                 <Space direction="vertical">
                   <Text>
@@ -265,11 +267,24 @@ function ProfileSettingsForm({
 
       <PageHeader title="Edit Profile Photos" />
       <>
-        <fieldset disabled={!user.isVerified}>
+        <fieldset disabled={!isPhotoUploadActive}>
           <ProfilePhotoUpload user={user} />
         </fieldset>
         {!user.isVerified && (
           <p>You must verify your email address to upload photos.</p>
+        )}
+        {!isPhotoUploadActive && (
+          <div className="over-limit">
+            <Space direction="vertical">
+              <Text>You must have an active membership to upload photos.</Text>
+              <Button
+                type="primary"
+                href={`${process.env.ROOT_URL}/membership`}
+              >
+                Become a Daylily Catalog Member
+              </Button>
+            </Space>
+          </div>
         )}
       </>
     </Style>
