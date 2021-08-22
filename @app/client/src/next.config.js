@@ -35,6 +35,7 @@ if (!process.env.ROOT_URL) {
       webpack5: false,
       modifyVars: {
         hack: 'true;@import "~antd/lib/style/themes/default.less";',
+        hack2: 'true;@import "~antd/dist/antd.less";',
         ...themeVariables,
       },
 
