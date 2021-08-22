@@ -34,11 +34,9 @@ if (!process.env.ROOT_URL) {
 
     return compose(withAntdLess)({
       webpack5: false,
-      modifyVars: themeVariables,
-      lessVarsFilePath: "../assets/antd-custom.less",
-      javascriptEnabled: true,
-      cssLoaderOptions: {
-        url: false,
+      modifyVars: {
+        hack: 'true;@import "~antd/lib/style/themes/default.less";',
+        ...themeVariables,
       },
 
       poweredByHeader: false,
