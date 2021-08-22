@@ -2,7 +2,7 @@
   "presets": ["next/babel"],
   "plugins": [
     "babel-plugin-styled-components",
-    ["import", { "libraryName": "antd", "style": true }, "antd"],
+    ["import", { "libraryName": "antd", "style": true }],
     [
       "import",
       {

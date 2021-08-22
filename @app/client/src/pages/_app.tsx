@@ -1,6 +1,5 @@
 import "nprogress/nprogress.css";
-import "antd/dist/antd.less";
-import "../styles.less";
+require("../styles.less");
 import "../styles.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
