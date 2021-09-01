@@ -10,10 +10,11 @@ import getStripe from "./util/getStripe";
 export const CheckoutButton = () => {
   const { data } = useStripeCustomerQuery();
   const userId = data?.currentUser?.id;
-  const userEmail = data?.currentUser?.userEmails.nodes[0].email;
+  const userEmail = data?.currentUser?.userEmails?.nodes[0]?.email;
   const stripeCustomerId = data?.currentUser?.stripeCustomer?.id;
   const plan = process.env.NEXT_PUBLIC_STRIPE_PLAN;
   const router = useRouter();
+  const hasPrimaryEmail = !!userEmail;
 
   async function redirectToCheckout(event: React.MouseEvent<HTMLElement>) {
     event.preventDefault();
@@ -46,6 +47,7 @@ export const CheckoutButton = () => {
       block
       onClick={redirectToCheckout}
       className="pro price-button"
+      disabled={!hasPrimaryEmail}
     >
       Purchase Membership
     </Button>

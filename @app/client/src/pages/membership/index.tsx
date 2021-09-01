@@ -18,12 +18,13 @@ const { Title, Text } = Typography;
 const Membership: NextPage = () => {
   const query = useMembershipQuery();
   const { data, loading, error } = query;
+  const isVerified = !!data?.currentUser?.isVerified;
   const isSubscriptionActive =
     data?.currentUser?.stripeSubscription?.subscriptionInfo?.status == "active";
   return (
     <SharedLayout title="Membership" query={query}>
       {data && data.currentUser ? (
-        <Plans active={isSubscriptionActive} />
+        <Plans active={isSubscriptionActive} isVerified={isVerified} />
       ) : loading ? (
         "Loading..."
       ) : error ? (
@@ -125,9 +126,27 @@ const Style = styled.div`
       }
     }
   }
+  .over-limit {
+    margin: var(--spacing-sm) auto var(--spacing-lg);
+    max-width: 400px;
+    border: var(--hairline);
+    padding: var(--spacing-sm);
+    .ant-btn {
+      height: var(--spacing-xl);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
 `;
 
-const Plans = ({ active }: { active: boolean }) => {
+const Plans = ({
+  active,
+  isVerified,
+}: {
+  active: boolean;
+  isVerified: boolean;
+}) => {
   return (
     <Style>
       {active && (
@@ -196,7 +215,24 @@ const Plans = ({ active }: { active: boolean }) => {
                       </div>
                     }
                     actions={[
-                      active ? (
+                      !isVerified ? (
+                        <div className="over-limit">
+                          <Space direction="vertical">
+                            <Text>
+                              You must verify your email address to purchase a
+                              membership. A verification link has been sent to
+                              your email address. Please click the link in that
+                              email to continue.
+                            </Text>
+                            <Button
+                              type="primary"
+                              href={`${process.env.ROOT_URL}/settings/emails`}
+                            >
+                              View email settings
+                            </Button>
+                          </Space>
+                        </div>
+                      ) : active ? (
                         <Button
                           key="purchase_membership"
                           block

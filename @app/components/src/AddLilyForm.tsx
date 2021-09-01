@@ -447,9 +447,25 @@ export const AddLilyForm = ({
               />
             </fieldset>
             {!user.isVerified && (
-              <p>You must verify your email address to upload photos.</p>
+              <Style>
+                <div className="over-limit">
+                  <Space direction="vertical">
+                    <Text>
+                      You must verify your email address to upload photos. A
+                      verification link has been sent to your email address.
+                      Please click the link in that email to verify.
+                    </Text>
+                    <Button
+                      type="primary"
+                      href={`${process.env.ROOT_URL}/settings/emails`}
+                    >
+                      View email settings
+                    </Button>
+                  </Space>
+                </div>
+              </Style>
             )}
-            {!isPhotoUploadActive && (
+            {user.isVerified && !isPhotoUploadActive && (
               <Style>
                 <div className="over-limit">
                   <Space direction="vertical">
