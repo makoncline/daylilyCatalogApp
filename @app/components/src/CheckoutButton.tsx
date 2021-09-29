@@ -48,6 +48,7 @@ export const CheckoutButton = () => {
       onClick={redirectToCheckout}
       className="pro price-button"
       disabled={!hasPrimaryEmail}
+      data-cy="checkout"
     >
       Purchase Membership
     </Button>
