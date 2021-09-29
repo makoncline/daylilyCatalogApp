@@ -116,7 +116,6 @@ CREATE TABLE app_public.users (
     bio text,
     user_location text,
     img_urls text[] DEFAULT '{}'::text[],
-    free_until timestamp with time zone,
     CONSTRAINT users_avatar_url_check CHECK ((avatar_url ~ '^https?://[^/]+'::text)),
     CONSTRAINT users_intro_check CHECK ((char_length(intro) < 280)),
     CONSTRAINT users_user_location_check CHECK ((char_length(user_location) < 140)),
@@ -1737,31 +1736,6 @@ ALTER SEQUENCE app_public.lists_id_seq OWNED BY app_public.lists.id;
 
 
 --
--- Name: stripe_customers; Type: TABLE; Schema: app_public; Owner: -
---
-
-CREATE TABLE app_public.stripe_customers (
-    id text NOT NULL,
-    user_id integer DEFAULT app_public.current_user_id() NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
---
--- Name: stripe_subscriptions; Type: TABLE; Schema: app_public; Owner: -
---
-
-CREATE TABLE app_public.stripe_subscriptions (
-    id text NOT NULL,
-    user_id integer DEFAULT app_public.current_user_id() NOT NULL,
-    customer_id text NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
---
 -- Name: user_authentications; Type: TABLE; Schema: app_public; Owner: -
 --
 
@@ -1987,46 +1961,6 @@ ALTER TABLE ONLY app_public.lists
 
 
 --
--- Name: stripe_customers stripe_customers_pkey; Type: CONSTRAINT; Schema: app_public; Owner: -
---
-
-ALTER TABLE ONLY app_public.stripe_customers
-    ADD CONSTRAINT stripe_customers_pkey PRIMARY KEY (id);
-
-
---
--- Name: stripe_customers stripe_customers_user_id_key; Type: CONSTRAINT; Schema: app_public; Owner: -
---
-
-ALTER TABLE ONLY app_public.stripe_customers
-    ADD CONSTRAINT stripe_customers_user_id_key UNIQUE (user_id);
-
-
---
--- Name: stripe_subscriptions stripe_subscriptions_customer_id_key; Type: CONSTRAINT; Schema: app_public; Owner: -
---
-
-ALTER TABLE ONLY app_public.stripe_subscriptions
-    ADD CONSTRAINT stripe_subscriptions_customer_id_key UNIQUE (customer_id);
-
-
---
--- Name: stripe_subscriptions stripe_subscriptions_pkey; Type: CONSTRAINT; Schema: app_public; Owner: -
---
-
-ALTER TABLE ONLY app_public.stripe_subscriptions
-    ADD CONSTRAINT stripe_subscriptions_pkey PRIMARY KEY (id);
-
-
---
--- Name: stripe_subscriptions stripe_subscriptions_user_id_key; Type: CONSTRAINT; Schema: app_public; Owner: -
---
-
-ALTER TABLE ONLY app_public.stripe_subscriptions
-    ADD CONSTRAINT stripe_subscriptions_user_id_key UNIQUE (user_id);
-
-
---
 -- Name: user_authentications uniq_user_authentications; Type: CONSTRAINT; Schema: app_public; Owner: -
 --
 
@@ -2124,27 +2058,6 @@ CREATE INDEX lists_user_id_idx ON app_public.lists USING btree (user_id);
 
 
 --
--- Name: stripe_customers_user_id_idx; Type: INDEX; Schema: app_public; Owner: -
---
-
-CREATE INDEX stripe_customers_user_id_idx ON app_public.stripe_customers USING btree (user_id);
-
-
---
--- Name: stripe_subscriptions_customer_id_idx; Type: INDEX; Schema: app_public; Owner: -
---
-
-CREATE INDEX stripe_subscriptions_customer_id_idx ON app_public.stripe_subscriptions USING btree (customer_id);
-
-
---
--- Name: stripe_subscriptions_user_id_idx; Type: INDEX; Schema: app_public; Owner: -
---
-
-CREATE INDEX stripe_subscriptions_user_id_idx ON app_public.stripe_subscriptions USING btree (user_id);
-
-
---
 -- Name: uniq_user_emails_primary_email; Type: INDEX; Schema: app_public; Owner: -
 --
 
@@ -2184,20 +2097,6 @@ CREATE TRIGGER _100_timestamps BEFORE INSERT OR UPDATE ON app_public.lilies FOR 
 --
 
 CREATE TRIGGER _100_timestamps BEFORE INSERT OR UPDATE ON app_public.lists FOR EACH ROW EXECUTE FUNCTION app_private.tg__timestamps();
-
-
---
--- Name: stripe_customers _100_timestamps; Type: TRIGGER; Schema: app_public; Owner: -
---
-
-CREATE TRIGGER _100_timestamps BEFORE INSERT OR UPDATE ON app_public.stripe_customers FOR EACH ROW EXECUTE FUNCTION app_private.tg__timestamps();
-
-
---
--- Name: stripe_subscriptions _100_timestamps; Type: TRIGGER; Schema: app_public; Owner: -
---
-
-CREATE TRIGGER _100_timestamps BEFORE INSERT OR UPDATE ON app_public.stripe_subscriptions FOR EACH ROW EXECUTE FUNCTION app_private.tg__timestamps();
 
 
 --
@@ -2356,30 +2255,6 @@ ALTER TABLE ONLY app_public.lists
 
 
 --
--- Name: stripe_customers stripe_customers_user_id_fkey; Type: FK CONSTRAINT; Schema: app_public; Owner: -
---
-
-ALTER TABLE ONLY app_public.stripe_customers
-    ADD CONSTRAINT stripe_customers_user_id_fkey FOREIGN KEY (user_id) REFERENCES app_public.users(id);
-
-
---
--- Name: stripe_subscriptions stripe_subscriptions_customer_id_fkey; Type: FK CONSTRAINT; Schema: app_public; Owner: -
---
-
-ALTER TABLE ONLY app_public.stripe_subscriptions
-    ADD CONSTRAINT stripe_subscriptions_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES app_public.stripe_customers(id);
-
-
---
--- Name: stripe_subscriptions stripe_subscriptions_user_id_fkey; Type: FK CONSTRAINT; Schema: app_public; Owner: -
---
-
-ALTER TABLE ONLY app_public.stripe_subscriptions
-    ADD CONSTRAINT stripe_subscriptions_user_id_fkey FOREIGN KEY (user_id) REFERENCES app_public.users(id);
-
-
---
 -- Name: user_authentications user_authentications_user_id_fkey; Type: FK CONSTRAINT; Schema: app_public; Owner: -
 --
 
@@ -2453,20 +2328,6 @@ CREATE POLICY delete_own ON app_public.user_emails FOR DELETE USING ((user_id = 
 
 
 --
--- Name: stripe_customers delete_self; Type: POLICY; Schema: app_public; Owner: -
---
-
-CREATE POLICY delete_self ON app_public.stripe_customers FOR DELETE USING ((user_id = app_public.current_user_id()));
-
-
---
--- Name: stripe_subscriptions delete_self; Type: POLICY; Schema: app_public; Owner: -
---
-
-CREATE POLICY delete_self ON app_public.stripe_subscriptions FOR DELETE USING ((user_id = app_public.current_user_id()));
-
-
---
 -- Name: users delete_self; Type: POLICY; Schema: app_public; Owner: -
 --
 
@@ -2485,20 +2346,6 @@ CREATE POLICY insert_lilies ON app_public.lilies FOR INSERT WITH CHECK ((user_id
 --
 
 CREATE POLICY insert_own ON app_public.user_emails FOR INSERT WITH CHECK ((user_id = app_public.current_user_id()));
-
-
---
--- Name: stripe_customers insert_self; Type: POLICY; Schema: app_public; Owner: -
---
-
-CREATE POLICY insert_self ON app_public.stripe_customers FOR INSERT WITH CHECK ((user_id = app_public.current_user_id()));
-
-
---
--- Name: stripe_subscriptions insert_self; Type: POLICY; Schema: app_public; Owner: -
---
-
-CREATE POLICY insert_self ON app_public.stripe_subscriptions FOR INSERT WITH CHECK ((user_id = app_public.current_user_id()));
 
 
 --
@@ -2544,20 +2391,6 @@ CREATE POLICY select_all ON app_public.lists FOR SELECT USING (true);
 
 
 --
--- Name: stripe_customers select_all; Type: POLICY; Schema: app_public; Owner: -
---
-
-CREATE POLICY select_all ON app_public.stripe_customers FOR SELECT USING (true);
-
-
---
--- Name: stripe_subscriptions select_all; Type: POLICY; Schema: app_public; Owner: -
---
-
-CREATE POLICY select_all ON app_public.stripe_subscriptions FOR SELECT USING (true);
-
-
---
 -- Name: users select_all; Type: POLICY; Schema: app_public; Owner: -
 --
 
@@ -2586,36 +2419,10 @@ CREATE POLICY select_own ON app_public.user_emails FOR SELECT USING ((user_id = 
 
 
 --
--- Name: stripe_customers; Type: ROW SECURITY; Schema: app_public; Owner: -
---
-
-ALTER TABLE app_public.stripe_customers ENABLE ROW LEVEL SECURITY;
-
---
--- Name: stripe_subscriptions; Type: ROW SECURITY; Schema: app_public; Owner: -
---
-
-ALTER TABLE app_public.stripe_subscriptions ENABLE ROW LEVEL SECURITY;
-
---
 -- Name: lilies update_lilies; Type: POLICY; Schema: app_public; Owner: -
 --
 
 CREATE POLICY update_lilies ON app_public.lilies FOR UPDATE USING ((user_id = app_public.current_user_id()));
-
-
---
--- Name: stripe_customers update_self; Type: POLICY; Schema: app_public; Owner: -
---
-
-CREATE POLICY update_self ON app_public.stripe_customers FOR UPDATE USING ((user_id = app_public.current_user_id()));
-
-
---
--- Name: stripe_subscriptions update_self; Type: POLICY; Schema: app_public; Owner: -
---
-
-CREATE POLICY update_self ON app_public.stripe_subscriptions FOR UPDATE USING ((user_id = app_public.current_user_id()));
 
 
 --
@@ -2854,20 +2661,6 @@ GRANT INSERT(bio),UPDATE(bio) ON TABLE app_public.lists TO daylily_catalog_visit
 --
 
 GRANT SELECT,USAGE ON SEQUENCE app_public.lists_id_seq TO daylily_catalog_visitor;
-
-
---
--- Name: TABLE stripe_customers; Type: ACL; Schema: app_public; Owner: -
---
-
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE app_public.stripe_customers TO daylily_catalog_visitor;
-
-
---
--- Name: TABLE stripe_subscriptions; Type: ACL; Schema: app_public; Owner: -
---
-
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE app_public.stripe_subscriptions TO daylily_catalog_visitor;
 
 
 --
