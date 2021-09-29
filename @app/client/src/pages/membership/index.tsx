@@ -175,9 +175,9 @@ const Plans = ({
                         <Title level={3} className="free">
                           Free
                         </Title>
-                        <Text className="free">$0 per month</Text>
+                        <Text className="free">$0 per year</Text>
                         <Text type="secondary">
-                          For evaluation and hobby gardeners
+                          For hobby gardeners and evaluation
                         </Text>
                       </div>
                     }
@@ -208,9 +208,9 @@ const Plans = ({
                         <Title level={3} className="pro">
                           Pro
                         </Title>
-                        <Text className="pro">$10 per month</Text>
+                        <Text className="pro">$60 per year</Text>
                         <Text type="secondary">
-                          For hybridizers and serious gardeners
+                          For serious gardeners and hybridizers
                         </Text>
                       </div>
                     }
@@ -227,6 +227,7 @@ const Plans = ({
                             <Button
                               type="primary"
                               href={`${process.env.ROOT_URL}/settings/emails`}
+                              data-cy="view-email-settings"
                             >
                               View email settings
                             </Button>
@@ -250,8 +251,8 @@ const Plans = ({
                     <div className="detail_container">
                       <Text>All our standard features</Text>
                       <Text>Unlimited daylily listings</Text>
-                      <Text>Upload your own photos</Text>
-                      <Text>Website to share catalog</Text>
+                      <Text>Upload garden and daylily photos</Text>
+                      <Text>Website for your catalog</Text>
                     </div>
                   </Card>
                 </Col>

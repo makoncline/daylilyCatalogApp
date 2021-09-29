@@ -105,7 +105,7 @@ const Pricing = () => {
     <SharedLayout title="Pricing" query={query}>
       <Style>
         <div className="container">
-          <Space direction="vertical">
+          <Space direction="vertical" size="large">
             <div className="membership-title">
               <Title level={2}>Pick a plan to start your Daylily Catalog</Title>
             </div>
@@ -119,7 +119,7 @@ const Pricing = () => {
                         <Title level={3} className="free">
                           Free
                         </Title>
-                        <Text className="free">$0 per month</Text>
+                        <Text className="free">$0 per year</Text>
                         <Text type="secondary">
                           For hobby gardeners and evaluation
                         </Text>
@@ -131,7 +131,8 @@ const Pricing = () => {
                         block
                         type="primary"
                         className="free price-button"
-                        href={`${process.env.ROOT_URL}/login`}
+                        href={`${process.env.ROOT_URL}/catalog`}
+                        data-cy="free"
                       >
                         Start for free
                       </Button>,
@@ -141,7 +142,7 @@ const Pricing = () => {
                       <Text>
                         All our <a href="#features"> standard features</a>
                       </Text>
-                      <Text>100 daylily listings</Text>
+                      <Text>Limit 100 daylily listings</Text>
                     </div>
                   </Card>
                 </Col>
@@ -153,9 +154,9 @@ const Pricing = () => {
                         <Title level={3} className="pro">
                           Pro
                         </Title>
-                        <Text className="pro">From $10 per month</Text>
+                        <Text className="pro">$60 per year</Text>
                         <Text type="secondary">
-                          For gardeners selling daylilies
+                          For serious gardeners and hybridizers
                         </Text>
                       </div>
                     }
@@ -166,6 +167,7 @@ const Pricing = () => {
                         type="primary"
                         className="pro price-button"
                         href={`${process.env.ROOT_URL}/membership`}
+                        data-cy="get-membership"
                       >
                         Get started
                       </Button>,
@@ -176,8 +178,8 @@ const Pricing = () => {
                         All our <a href="#features"> standard features</a>
                       </Text>
                       <Text>Unlimited daylily listings</Text>
-                      <Text>Upload your own photos</Text>
-                      <Text>Website to share catalog</Text>
+                      <Text>Upload garden and daylily photos</Text>
+                      <Text>Website for your catalog</Text>
                     </div>
                   </Card>
                 </Col>
@@ -185,14 +187,14 @@ const Pricing = () => {
             </div>
             <Divider />
             <div className="feature-style">
-              <Space direction="vertical">
+              <Space direction="vertical" size="large">
                 <Title level={2} id="features">
                   Daylily Catalog Standard Features
                 </Title>
-                <Row gutter={[16, 16]}>
+                <Row gutter={[24, 24]}>
                   <Col sm={12}>
                     <div>
-                      <Row gutter={16}>
+                      <Row gutter={24}>
                         <Col span={4}>
                           <span className="icon">🌼</span>
                         </Col>
@@ -209,7 +211,7 @@ const Pricing = () => {
                   </Col>
                   <Col sm={12}>
                     <div>
-                      <Row gutter={16}>
+                      <Row gutter={24}>
                         <Col span={4}>
                           <span className="icon">📸</span>
                         </Col>
@@ -226,7 +228,7 @@ const Pricing = () => {
                   </Col>
                   <Col sm={12}>
                     <div>
-                      <Row gutter={16}>
+                      <Row gutter={24}>
                         <Col span={4}>
                           <span className="icon">📗</span>
                         </Col>
@@ -243,7 +245,7 @@ const Pricing = () => {
                   </Col>
                   <Col sm={12}>
                     <div>
-                      <Row gutter={16}>
+                      <Row gutter={24}>
                         <Col span={4}>
                           <span className="icon">🏡</span>
                         </Col>
