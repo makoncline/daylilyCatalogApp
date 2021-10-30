@@ -21,14 +21,18 @@ import {
   Modal,
   Popconfirm,
   Select,
+  Space,
   Tooltip,
+  Typography,
 } from "antd";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import styled from "styled-components";
 
 import { AhsCard } from "./AhsCard";
 import { LilyPhotoUpload } from "./LilyPhotoUpload";
 import { getFileListFromUrls } from "./PhotoUpload";
 
+const { Text } = Typography;
 const { TextArea } = Input;
 const { Option } = Select;
 export interface FormValues {
@@ -251,7 +255,10 @@ export const AddLilyForm = ({
     setFieldsValue({ ahsId: null, "ahs-lily": null });
     setAhsId(getFieldValue("ahsId"));
   }
-
+  const isActive =
+    user.stripeSubscription?.subscriptionInfo?.status == "active";
+  const isFree = user.freeUntil ? new Date() < new Date(user.freeUntil) : false;
+  const isPhotoUploadActive = user.isVerified && (isFree || isActive);
   return (
     <Modal
       visible={show}
@@ -431,7 +438,7 @@ export const AddLilyForm = ({
         )}
         {updateLily && (
           <>
-            <fieldset disabled={!user.isVerified}>
+            <fieldset disabled={!isPhotoUploadActive}>
               <LilyPhotoUpload
                 lily={updateLily}
                 setLily={setUpdateLily}
@@ -440,7 +447,40 @@ export const AddLilyForm = ({
               />
             </fieldset>
             {!user.isVerified && (
-              <p>You must verify your email address to upload photos.</p>
+              <Style>
+                <div className="over-limit">
+                  <Space direction="vertical">
+                    <Text>
+                      You must verify your email address to upload photos. A
+                      verification link has been sent to your email address.
+                      Please click the link in that email to verify.
+                    </Text>
+                    <Button
+                      type="primary"
+                      href={`${process.env.ROOT_URL}/settings/emails`}
+                    >
+                      View email settings
+                    </Button>
+                  </Space>
+                </div>
+              </Style>
+            )}
+            {user.isVerified && !isPhotoUploadActive && (
+              <Style>
+                <div className="over-limit">
+                  <Space direction="vertical">
+                    <Text>
+                      You must have an active membership to upload photos.
+                    </Text>
+                    <Button
+                      type="primary"
+                      href={`${process.env.ROOT_URL}/membership`}
+                    >
+                      Become a Daylily Catalog Member
+                    </Button>
+                  </Space>
+                </div>
+              </Style>
             )}
           </>
         )}
@@ -467,3 +507,18 @@ export const AddLilyForm = ({
     </Modal>
   );
 };
+
+const Style = styled.div`
+  .over-limit {
+    margin: var(--spacing-sm) auto var(--spacing-lg);
+    max-width: 400px;
+    border: var(--hairline);
+    padding: var(--spacing-sm);
+    .ant-btn {
+      height: var(--spacing-xl);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+`;

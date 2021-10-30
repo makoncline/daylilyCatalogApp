@@ -1,4 +1,3 @@
-import cors from "cors";
 import express, { Express } from "express";
 import { Server } from "http";
 import { Middleware } from "postgraphile";
@@ -46,7 +45,9 @@ export async function makeApp({
    */
   const app = express();
 
-  app.use(cors());
+  app.use("/api/webhook", express.raw({ type: "*/*" }));
+  app.use(express.json());
+
   /*
    * In production, we may need to enable the 'trust proxy' setting so that the
    * server knows it's running in SSL mode, and so the logs can log the true
@@ -122,6 +123,8 @@ export async function makeApp({
    * Error handling middleware
    */
   await middleware.installErrorHandler(app);
+
+  await middleware.installRoutes(app);
 
   return app;
 }

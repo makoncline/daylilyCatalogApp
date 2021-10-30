@@ -1,0 +1,15 @@
+query Membership {
+  currentUser {
+    id
+    stripeCustomer {
+      id
+    }
+    stripeSubscription {
+      id
+      subscriptionInfo {
+        status
+      }
+    }
+    ...SharedLayout_User
+  }
+}

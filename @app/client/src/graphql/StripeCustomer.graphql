@@ -1,0 +1,21 @@
+query StripeCustomer {
+  currentUser {
+    id
+    userEmails(condition: { isPrimary: true }) {
+      nodes {
+        id
+        email
+        isVerified
+      }
+    }
+    stripeCustomer {
+      id
+    }
+    stripeSubscription {
+      id
+      subscriptionInfo {
+        status
+      }
+    }
+  }
+}

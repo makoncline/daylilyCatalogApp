@@ -8,6 +8,7 @@ module.exports = {
     "plugin:import/errors",
     "plugin:import/typescript",
     "prettier",
+    "plugin:@next/next/recommended",
   ],
   plugins: [
     "jest",
@@ -46,6 +47,7 @@ module.exports = {
     es6: true,
   },
   rules: {
+    "@next/next/no-html-link-for-pages": [2, "./@app/client/src/pages"],
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "error",
     "@typescript-eslint/no-unused-vars": [

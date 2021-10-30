@@ -2,6 +2,7 @@
   "name": "@app/components",
   "version": "0.0.0",
   "main": "dist/index.js",
+  "license": "SEE LICENSE IN LICENSE.md",
   "scripts": {
     "build": "tsc -b",
     "test": "cross-env NODE_ENV=test NODE_OPTIONS=\"$NODE_OPTIONS -r @app/config/env\" jest"
@@ -11,6 +12,7 @@
     "@apollo/client": "^3.3.19",
     "@app/graphql": "0.0.0",
     "@app/lib": "0.0.0",
+    "@stripe/stripe-js": "^1.16.0",
     "@types/draft-js": "^0.11.3",
     "@types/react-draft-wysiwyg": "^1.13.2",
     "amazon-s3-uri": "^0.1.0",
@@ -18,12 +20,14 @@
     "axios": "^0.21.1",
     "draft-js": "^0.11.7",
     "draftjs-md-converter": "^1.5.0",
-    "next": "^10.2.3",
+    "next": "^11.1.0",
     "rc-upload": "^4.3.0",
     "react": "^17.0.2",
     "react-draft-wysiwyg": "^1.14.7",
     "react-highlight-words": "^0.16.0",
     "slugify": "^1.5.3",
+    "stripe": "^8.163.0",
+    "styled-components": "^5.3.0",
     "tslib": "^2.2.0"
   },
   "devDependencies": {

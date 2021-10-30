@@ -1,6 +1,7 @@
 import { InboxOutlined } from "@ant-design/icons";
 import { message, Modal, Upload } from "antd";
 import axios from "axios";
+import Image from "next/image";
 import React, { useState } from "react";
 import slugify from "slugify";
 
@@ -133,7 +134,7 @@ export const ImgUpload = (props: any) => {
         </Dragger>
       )}
       <Modal visible={previewVisible} footer={null} onCancel={handleCancel}>
-        <img alt="example" style={{ width: "100%" }} src={previewImage} />
+        <Image alt="example" width="100%" src={previewImage} />
       </Modal>
     </div>
   );

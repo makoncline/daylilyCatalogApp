@@ -52,6 +52,7 @@ describe("when account doesn't already exist", () => {
         "avatar_url": "http://example.com/avatar.jpg",
         "bio": null,
         "created_at": "[DATE]",
+        "free_until": null,
         "id": "[ID]",
         "img_urls": Array [],
         "intro": null,

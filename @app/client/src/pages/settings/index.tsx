@@ -18,11 +18,22 @@ import {
   getCodeFromError,
   tailFormItemLayout,
 } from "@app/lib";
-import { Alert, Button, Form, Input, PageHeader } from "antd";
+import {
+  Alert,
+  Button,
+  Form,
+  Input,
+  PageHeader,
+  Space,
+  Typography,
+} from "antd";
 import { useForm } from "antd/lib/form/Form";
 import { NextPage } from "next";
 import { Store } from "rc-field-form/lib/interface";
 import React, { useCallback, useState } from "react";
+import styled from "styled-components";
+
+const { Text } = Typography;
 
 const Settings_Profile: NextPage = () => {
   const [formError, setFormError] = useState<Error | ApolloError | null>(null);
@@ -122,8 +133,13 @@ function ProfileSettingsForm({
       form.setFieldsValue({ bio: text });
     }
   };
+
+  const isActive =
+    user.stripeSubscription?.subscriptionInfo?.status == "active";
+  const isFree = user.freeUntil ? new Date() < new Date(user.freeUntil) : false;
+  const isPhotoUploadActive = user.isVerified && (isFree || isActive);
   return (
-    <div>
+    <Style>
       <PageHeader title="Edit profile" />
       <Form
         {...formItemLayout}
@@ -137,15 +153,44 @@ function ProfileSettingsForm({
           userLocation: user.userLocation,
         }}
       >
-        <Form.Item label="Avatar">
-          <>
-            <fieldset disabled={!user.isVerified}>
+        <Form.Item label="Avatar" className="avatar-container">
+          <Space>
+            <fieldset disabled={!isPhotoUploadActive}>
               <AvatarPhotoUpload user={user} />
             </fieldset>
             {!user.isVerified && (
-              <p>You must verify your email address to upload photos.</p>
+              <div className="over-limit">
+                <Space direction="vertical">
+                  <Text>
+                    You must verify your email address to upload photos. A
+                    verification link has been sent to your email address.
+                    Please click the link in that email to verify.
+                  </Text>
+                  <Button
+                    type="primary"
+                    href={`${process.env.ROOT_URL}/settings/emails`}
+                  >
+                    View email settings
+                  </Button>
+                </Space>
+              </div>
             )}
-          </>
+            {user.isVerified && !isPhotoUploadActive && (
+              <div className="over-limit">
+                <Space direction="vertical">
+                  <Text>
+                    You must have an active membership to upload photos.
+                  </Text>
+                  <Button
+                    type="primary"
+                    href={`${process.env.ROOT_URL}/membership`}
+                  >
+                    Become a Daylily Catalog Member
+                  </Button>
+                </Space>
+              </div>
+            )}
+          </Space>
         </Form.Item>
         <Form.Item
           label="Name"
@@ -236,13 +281,55 @@ function ProfileSettingsForm({
 
       <PageHeader title="Edit Profile Photos" />
       <>
-        <fieldset disabled={!user.isVerified}>
+        <fieldset disabled={!isPhotoUploadActive}>
           <ProfilePhotoUpload user={user} />
         </fieldset>
         {!user.isVerified && (
-          <p>You must verify your email address to upload photos.</p>
+          <div className="over-limit">
+            <Space direction="vertical">
+              <Text>
+                You must verify your email address to upload photos. A
+                verification link has been sent to your email address. Please
+                click the link in that email to verify.
+              </Text>
+              <Button
+                type="primary"
+                href={`${process.env.ROOT_URL}/settings/emails`}
+              >
+                View email settings
+              </Button>
+            </Space>
+          </div>
+        )}
+        {user.isVerified && !isPhotoUploadActive && (
+          <div className="over-limit">
+            <Space direction="vertical">
+              <Text>You must have an active membership to upload photos.</Text>
+              <Button
+                type="primary"
+                href={`${process.env.ROOT_URL}/membership`}
+              >
+                Become a Daylily Catalog Member
+              </Button>
+            </Space>
+          </div>
         )}
       </>
-    </div>
+    </Style>
   );
 }
+
+const Style = styled.div`
+  .over-limit {
+    margin: var(--spacing-sm) auto var(--spacing-lg);
+    max-width: 400px;
+    border: var(--hairline);
+    padding: var(--spacing-sm);
+    .ant-btn {
+      height: var(--spacing-xl);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+`;

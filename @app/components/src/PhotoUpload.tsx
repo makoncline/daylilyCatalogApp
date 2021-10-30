@@ -4,6 +4,7 @@ import s3Uri from "amazon-s3-uri";
 import { Modal, Upload } from "antd";
 import { UploadFile, UploadProps } from "antd/lib/upload/interface";
 import axios from "axios";
+import Image from "next/image";
 import { UploadRequestOption } from "rc-upload/lib/interface";
 import React, { useState } from "react";
 
@@ -172,7 +173,7 @@ export function PhotoUpload({
         footer={null}
         onCancel={() => setPreviewVisible(false)}
       >
-        <img alt="preview image" style={{ width: "100%" }} src={previewImage} />
+        <Image alt="preview image" width="100%" src={previewImage} />
       </Modal>
     </div>
   );

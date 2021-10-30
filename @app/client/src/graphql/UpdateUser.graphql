@@ -1,16 +1,11 @@
+#import "./ProfileSettingsForm_User.graphql"
+
 mutation UpdateUser($id: Int!, $patch: UserPatch!) {
   updateUser(input: { id: $id, patch: $patch }) {
     clientMutationId
     user {
       id
-      name
-      username
-      avatarUrl
-      intro
-      bio
-      userLocation
-      imgUrls
-      isVerified
+      ...ProfileSettingsForm_User
     }
   }
 }

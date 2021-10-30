@@ -20,6 +20,7 @@ import DeleteUploadPlugin from "../plugins/DeleteUploadPlugin";
 import PassportLoginPlugin from "../plugins/PassportLoginPlugin";
 import PrimaryKeyMutationsOnlyPlugin from "../plugins/PrimaryKeyMutationsOnlyPlugin";
 import RemoveQueryQueryPlugin from "../plugins/RemoveQueryQueryPlugin";
+import StripeSubscriptionInfoPlugin from "../plugins/StripeSubscriptionInfoPlugin";
 import SubscriptionsPlugin from "../plugins/SubscriptionsPlugin";
 import handleErrors from "../utils/handleErrors";
 import { getAuthPgPool, getRootPgPool } from "./installDatabasePools";
@@ -187,6 +188,8 @@ export function getPostGraphileOptions({
 
       // Allows API clients to delete objects from s3 bucket
       DeleteUploadPlugin,
+
+      StripeSubscriptionInfoPlugin,
     ],
 
     /*

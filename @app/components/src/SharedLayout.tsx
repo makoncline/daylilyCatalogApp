@@ -14,7 +14,7 @@ import Router, { useRouter } from "next/router";
 import * as React from "react";
 import { useCallback } from "react";
 
-import { ErrorAlert, P, StandardWidth, Warn } from ".";
+import { ErrorAlert, H1, P, StandardWidth, Warn } from ".";
 import { Redirect } from "./Redirect";
 import { UserAvatar } from "./UserAvatar";
 
@@ -101,7 +101,7 @@ export function SharedLayout({
   children,
 }: SharedLayoutProps) {
   const router = useRouter();
-  const currentUrl = router.asPath;
+  const currentUrl = router?.asPath;
   const client = useApolloClient();
   const [logout] = useLogoutMutation();
   const handleLogout = useCallback(() => {
@@ -177,17 +177,33 @@ export function SharedLayout({
         </Head>
         <Row justify="space-between">
           <Col>
-            <P data-cy="layout-header-title">
+            <P data-cy="layout-header-logo">
+              <Link href="/">
+                <a data-cy="layout-header-homelink">
+                  <strong>Home</strong>
+                </a>
+              </Link>
+            </P>
+          </Col>
+          <Col span={12}>
+            <H1
+              style={{
+                margin: 0,
+                padding: 0,
+                textAlign: "center",
+                lineHeight: "64px",
+                fontSize: "1.2rem",
+              }}
+              data-cy="layout-header-title"
+            >
               {titleHref ? (
                 <Link href={titleHref} as={titleHrefAs}>
-                  <a data-cy="layout-header-titlelink">
-                    <strong>{title}</strong>
-                  </a>
+                  <a data-cy="layout-header-titlelink">{title}</a>
                 </Link>
               ) : (
                 title
               )}
-            </P>
+            </H1>
           </Col>
           <Col style={{ textAlign: "right" }}>
             {data && data.currentUser ? (
@@ -216,6 +232,11 @@ export function SharedLayout({
                             Settings
                           </Warn>
                         </a>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item>
+                      <Link href="/membership">
+                        <a data-cy="layout-link-membership">Membership</a>
                       </Link>
                     </Menu.Item>
                     <Menu.Item>
