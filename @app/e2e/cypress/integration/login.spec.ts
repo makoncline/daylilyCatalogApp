@@ -21,10 +21,9 @@ context("Login", () => {
     cy.getCy("loginpage-input-username").type("testuser");
     cy.getCy("loginpage-input-password").type(PASSWORD);
     cy.getCy("loginpage-button-submit").click();
-    cy.wait(5000);
 
     // Assertion
-    cy.url().should("equal", Cypress.env("ROOT_URL") + "/"); // Should be on homepage
+    cy.url({ timeout: 10000 }).should("equal", Cypress.env("ROOT_URL") + "/"); // Should be on homepage
     cy.getCy("header-login-button").should("not.exist"); // Should be logged in
     cy.getCy("layout-dropdown-user").should("contain", "Test User"); // Should be logged in
   });
@@ -55,7 +54,7 @@ context("Login", () => {
     // But can recover
     cy.getCy("loginpage-input-password").type("{backspace}"); // Delete the '!' that shouldn't be there
     cy.getCy("loginpage-button-submit").click();
-    cy.url().should("contain", Cypress.env("ROOT_URL") + "/"); // Should be on homepage
+    cy.url({ timeout: 10000 }).should("contain", Cypress.env("ROOT_URL") + "/"); // Should be on homepage
     cy.getCy("header-login-button").should("not.exist"); // Should be logged in
     cy.getCy("layout-dropdown-user").should("contain", "Test User"); // Should be logged in
   });

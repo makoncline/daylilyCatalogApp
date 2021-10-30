@@ -6,19 +6,21 @@ context("Manage emails", () => {
   it("can navigate to manage emails page", () => {
     // Setup
     cy.login({ next: "/", verified: true });
-    cy.wait(5000);
 
     // Action
     cy.getCy("layout-dropdown-user").trigger("mouseover");
     cy.getCy("layout-link-settings").click();
-    cy.wait(5000);
-
-    cy.url().should("equal", Cypress.env("ROOT_URL") + "/settings");
+    cy.url({ timeout: 20000 }).should(
+      "equal",
+      Cypress.env("ROOT_URL") + "/settings"
+    );
     cy.getCy("settingslayout-link-emails").click();
-    cy.wait(5000);
 
     // Assertion
-    cy.url().should("equal", Cypress.env("ROOT_URL") + "/settings/emails");
+    cy.url({ timeout: 20000 }).should(
+      "equal",
+      Cypress.env("ROOT_URL") + "/settings/emails"
+    );
   });
 
   it("can add an email, verify it, make it primary, and delete original email", () => {
