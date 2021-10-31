@@ -15,3 +15,4 @@ dockerBuildCommands.txt
 productionServerDockerCompose.yml
 productionWorkerDockerCompose.yml
 yarn-error.log
+prod-docker-compose.yml

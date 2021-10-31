@@ -176,7 +176,7 @@ export function SharedLayout({
           <title>{title ? `${title} — ${projectName}` : projectName}</title>
         </Head>
         <Row justify="space-between">
-          <Col>
+          <Col xs={0}>
             <P data-cy="layout-header-logo">
               <Link href="/">
                 <a data-cy="layout-header-homelink">
@@ -185,7 +185,7 @@ export function SharedLayout({
               </Link>
             </P>
           </Col>
-          <Col span={12}>
+          <Col>
             <H1
               style={{
                 margin: 0,

@@ -94,6 +94,11 @@ export function SettingsLayout({
                 color: "#757575",
                 boxShadow: "0 2px 2px #f0f1f2",
               }}
+              style={{
+                position: "absolute",
+                zIndex: 1,
+                borderBottom: "var(--hairline)",
+              }}
             >
               <Menu selectedKeys={[href]}>
                 {Object.keys(pages).map((pageHref) => (

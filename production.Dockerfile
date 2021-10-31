@@ -1,8 +1,10 @@
 # Global args, set before the first FROM, shared by all stages
 ARG PORT=5678
 ARG NODE_ENV="production"
-ARG ROOT_URL="http://localhost:${PORT}"
+ARG ROOT_URL="https://app.daylilycatalog.com"
 ARG TARGET="server"
+ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_live_51JKXpdEojuAWz3AptNhyV6ayZDzP0YfBNgsxN7XzVhl7ayoBqyAgNA7BZRiXUMeFQvFUTwVBz7YS2EgMRk16kaUN00WYas7HYA"
+ARG NEXT_PUBLIC_STRIPE_PLAN="price_1JetCGEojuAWz3ApRn8aEB86"
 
 ################################################################################
 # Build stage 1 - `yarn build`
@@ -11,6 +13,8 @@ FROM node:14 as builder
 # Import our shared args
 ARG NODE_ENV
 ARG ROOT_URL
+ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+ARG NEXT_PUBLIC_STRIPE_PLAN
 
 # Cache node_modules for as long as possible
 COPY lerna.json package.json yarn.lock /app/
@@ -33,6 +37,8 @@ FROM node:14 as clean
 # Import our shared args
 ARG NODE_ENV
 ARG ROOT_URL
+ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+ARG NEXT_PUBLIC_STRIPE_PLAN
 
 # Copy over selectively just the tings we need, try and avoid the rest
 COPY --from=builder /app/lerna.json /app/package.json /app/yarn.lock /app/
@@ -81,6 +87,8 @@ ARG PORT
 ARG NODE_ENV
 ARG ROOT_URL
 ARG TARGET
+ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+ARG NEXT_PUBLIC_STRIPE_PLAN
 
 LABEL description="My PostGraphile-powered $TARGET"
 

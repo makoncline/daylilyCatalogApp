@@ -21,9 +21,11 @@ import {
 import {
   Alert,
   Button,
+  Col,
   Form,
   Input,
   PageHeader,
+  Row,
   Space,
   Typography,
 } from "antd";
@@ -155,41 +157,50 @@ function ProfileSettingsForm({
       >
         <Form.Item label="Avatar" className="avatar-container">
           <Space>
-            <fieldset disabled={!isPhotoUploadActive}>
-              <AvatarPhotoUpload user={user} />
-            </fieldset>
-            {!user.isVerified && (
-              <div className="over-limit">
-                <Space direction="vertical">
-                  <Text>
-                    You must verify your email address to upload photos. A
-                    verification link has been sent to your email address.
-                    Please click the link in that email to verify.
-                  </Text>
-                  <Button
-                    type="primary"
-                    href={`${process.env.ROOT_URL}/settings/emails`}
-                  >
-                    View email settings
-                  </Button>
-                </Space>
-              </div>
-            )}
-            {user.isVerified && !isPhotoUploadActive && (
-              <div className="over-limit">
-                <Space direction="vertical">
-                  <Text>
-                    You must have an active membership to upload photos.
-                  </Text>
-                  <Button
-                    type="primary"
-                    href={`${process.env.ROOT_URL}/membership`}
-                  >
-                    Become a Daylily Catalog Member
-                  </Button>
-                </Space>
-              </div>
-            )}
+            <Row>
+              <Col>
+                <fieldset disabled={!isPhotoUploadActive}>
+                  <AvatarPhotoUpload user={user} />
+                </fieldset>
+              </Col>
+
+              {!user.isVerified && (
+                <Col>
+                  <div className="over-limit">
+                    <Space direction="vertical">
+                      <Text>
+                        You must verify your email address to upload photos. A
+                        verification link has been sent to your email address.
+                        Please click the link in that email to verify.
+                      </Text>
+                      <Button
+                        type="primary"
+                        href={`${process.env.ROOT_URL}/settings/emails`}
+                      >
+                        View email settings
+                      </Button>
+                    </Space>
+                  </div>
+                </Col>
+              )}
+              {user.isVerified && !isPhotoUploadActive && (
+                <Col>
+                  <div className="over-limit">
+                    <Space direction="vertical">
+                      <Text>
+                        You must have an active membership to upload photos.
+                      </Text>
+                      <Button
+                        type="primary"
+                        href={`${process.env.ROOT_URL}/membership`}
+                      >
+                        Become a Daylily Catalog Member
+                      </Button>
+                    </Space>
+                  </div>
+                </Col>
+              )}
+            </Row>
           </Space>
         </Form.Item>
         <Form.Item
