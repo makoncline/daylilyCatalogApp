@@ -4,6 +4,7 @@ import Link from "next/link";
 import { NextRouter, useRouter } from "next/router";
 import * as qs from "querystring";
 import React from "react";
+import styled from "styled-components";
 
 import { Redirect } from "./Redirect";
 import {
@@ -122,12 +123,19 @@ export function SettingsLayout({
                 ))}
               </Menu>
             </Sider>
-            <Content style={{ paddingLeft: "36px" }}>
+            <StyledContent>
               <StandardWidth>{children}</StandardWidth>
-            </Content>
+            </StyledContent>
           </Layout>
         )
       }
     </SharedLayout>
   );
 }
+
+const StyledContent = styled(Content)`
+  padding-left: 36px;
+  @media (min-width: 768px) {
+    padding-left: 200px;
+  }
+`;
