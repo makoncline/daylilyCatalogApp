@@ -29,6 +29,7 @@ export const createCheckoutSession: RequestHandler = async (
         // optional
         client_reference_id: userId,
         metadata: { userEmail: userEmail },
+        allow_promotion_codes: true,
       };
       if (stripeCustomerId) {
         const subscriptions = await stripe.subscriptions.list({
