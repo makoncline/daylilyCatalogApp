@@ -1,15 +1,17 @@
 import "nprogress/nprogress.css";
 require("../styles.less");
-import "../styles.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 import { ApolloClient, ApolloProvider } from "@apollo/client";
+import { Baseline, GlobalStyle } from "@app/design/src/components";
 import { withApollo } from "@app/lib";
 import { notification } from "antd";
 import App from "next/app";
 import Router from "next/router";
 import NProgress from "nprogress";
 import * as React from "react";
+
+import { OverrideStyles } from "../OverrideStyles";
 
 declare global {
   interface Window {
@@ -76,6 +78,9 @@ class MyApp extends App<{ apollo: ApolloClient<any> }> {
 
     return (
       <ApolloProvider client={apollo}>
+        <Baseline />
+        <GlobalStyle />
+        <OverrideStyles />
         <Component {...pageProps} />
       </ApolloProvider>
     );
