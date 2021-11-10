@@ -702,6 +702,18 @@ type DeleteUserEmailPayload {
   ): UserEmailsEdge
 }
 
+"""All input for the `deleteUser` mutation."""
+input DeleteUserInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """Unique identifier for the user."""
+  id: Int!
+}
+
 """All input for the `deleteUserLilyPhoto` mutation."""
 input DeleteUserLilyPhotoInput {
   """
@@ -742,6 +754,30 @@ type DeleteUserLilyPhotoPayload {
     """The method to use when ordering `UserLilyPhoto`."""
     orderBy: [UserLilyPhotosOrderBy!] = [PRIMARY_KEY_ASC]
   ): UserLilyPhotosEdge
+}
+
+"""The output of our delete `User` mutation."""
+type DeleteUserPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+  deletedUserNodeId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """The `User` that was deleted by this mutation."""
+  user: User
+
+  """An edge for our `User`. May be used by Relay 1."""
+  userEdge(
+    """The method to use when ordering `User`."""
+    orderBy: [UsersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): UsersEdge
 }
 
 """All input for the `forgotPassword` mutation."""
@@ -1213,6 +1249,14 @@ type Mutation {
     input: DeleteUploadInput!
   ): DeleteUploadPayload
 
+  """Deletes a single `User` using a unique key."""
+  deleteUser(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteUserInput!
+  ): DeleteUserPayload
+
   """Deletes a single `UserAuthentication` using a unique key."""
   deleteUserAuthentication(
     """
@@ -1590,6 +1634,35 @@ type Query {
     """The method to use when ordering `UserLilyPhoto`."""
     orderBy: [UserLilyPhotosOrderBy!] = [PRIMARY_KEY_ASC]
   ): UserLilyPhotosConnection
+
+  """Reads and enables pagination through a set of `User`."""
+  users(
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: UserCondition
+
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """The method to use when ordering `User`."""
+    orderBy: [UsersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): UsersConnection
 }
 
 input RegisterInput {
@@ -2392,6 +2465,17 @@ enum UserAuthenticationsOrderBy {
   USER_ID_DESC
 }
 
+"""
+A condition to be used against `User` object types. All fields are tested for equality and combined with a logical ‘and.’
+"""
+input UserCondition {
+  """Checks for equality with the object’s `id` field."""
+  id: Int
+
+  """Checks for equality with the object’s `username` field."""
+  username: String
+}
+
 """Information about a user's email address."""
 type UserEmail {
   createdAt: Datetime!
@@ -2577,6 +2661,23 @@ input UserPatch {
 type UserSubscriptionPayload {
   event: String
   user: User
+}
+
+"""A connection to a list of `User` values."""
+type UsersConnection {
+  """
+  A list of edges which contains the `User` and cursor to aid in pagination.
+  """
+  edges: [UsersEdge!]!
+
+  """A list of `User` objects."""
+  nodes: [User!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `User` you could get from the connection."""
+  totalCount: Int!
 }
 
 """A `User` edge in the connection."""

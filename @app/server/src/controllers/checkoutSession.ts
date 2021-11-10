@@ -57,14 +57,14 @@ export const createCheckoutSession: RequestHandler = async (
           const stripeCustomer = await createCustomer(userId, userEmail);
           const stripeId = stripeCustomer.id;
           params.customer = stripeId;
-        } catch (err) {
+        } catch (err: any) {
           res.status(500).json({ statusCode: 500, message: err.message });
         }
       }
       try {
         const checkoutSession = await stripe.checkout.sessions.create(params);
         res.status(200).json(checkoutSession);
-      } catch (err) {
+      } catch (err: any) {
         res.status(500).json({ statusCode: 500, message: err.message });
       }
     }

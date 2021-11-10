@@ -32,6 +32,13 @@ if (!process.env.ROOT_URL) {
     }
 
     return withAntdLess({
+      images: {
+        domains: [
+          "daylily-catalog-images-stage.s3.amazonaws.com",
+          "daylily-catalog-images.s3.amazonaws.com",
+          "daylilies.org",
+        ],
+      },
       webpack5: false,
       modifyVars: {
         hack: 'true;@import "~antd/lib/style/themes/default.less";',

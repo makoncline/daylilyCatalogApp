@@ -1,0 +1,18 @@
+query Users {
+  users {
+    nodes {
+      id
+      name
+      username
+      intro
+      avatarUrl
+      updatedAt
+      userLocation
+      stripeSubscription {
+        subscriptionInfo {
+          status
+        }
+      }
+    }
+  }
+}
