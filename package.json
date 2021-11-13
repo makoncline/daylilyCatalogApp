@@ -26,6 +26,7 @@
     "--shortcuts to run commands in workspaces--": "",
     "client": "yarn workspace @app/client",
     "components": "yarn workspace @app/components",
+    "design": "yarn workspace @app/design",
     "db": "yarn workspace @app/db",
     "e2e": "yarn workspace @app/e2e",
     "graphql": "yarn workspace @app/graphql",

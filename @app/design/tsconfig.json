@@ -11,6 +11,13 @@
     "module": "commonjs",
     "jsx": "react"
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.css"],
-  "references": []
+  "include": ["src/**/*"],
+  "references": [
+    {
+      "path": "../graphql"
+    },
+    {
+      "path": "../lib"
+    }
+  ]
 }

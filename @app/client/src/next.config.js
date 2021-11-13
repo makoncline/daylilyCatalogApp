@@ -38,7 +38,6 @@ if (!process.env.ROOT_URL) {
         hack2: 'true;@import "~antd/dist/antd.less";',
         ...themeVariables,
       },
-
       poweredByHeader: false,
       distDir: `../.next`,
       trailingSlash: false,
@@ -69,6 +68,16 @@ if (!process.env.ROOT_URL) {
 
         return {
           ...config,
+          module: {
+            rules: [
+              ...config.module.rules,
+              {
+                test: /\.tsx?$/,
+                use: "babel-loader",
+                exclude: /node_modules/,
+              },
+            ],
+          },
           plugins: [
             ...config.plugins,
             new webpack.DefinePlugin({

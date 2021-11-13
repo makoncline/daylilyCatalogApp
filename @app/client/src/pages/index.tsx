@@ -255,13 +255,13 @@ const Style = styled.div`
   max-width: 60rem;
   margin: auto;
   &:first-child {
-    margin-top: var(--spacing-xl);
+    margin-top: var(--spacing-lg);
   }
   & > * {
-    margin-bottom: var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
   }
   .ant-btn {
-    height: var(--spacing-xl);
+    height: var(--spacing-lg);
     display: flex;
     align-items: center;
     justify-content: center;
