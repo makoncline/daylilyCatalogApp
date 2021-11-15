@@ -16,16 +16,18 @@ export const GlobalStyle = createGlobalStyle`
 
     /* Color intentions */
     --color-text: var(--black);
-    --color-icon: var(--text);
+    --color-text-light: var(--gray);
     --color-bg: var(--white);
     --color-header-bg: var(--gray);
-    --color-primary: var(--gray);
+    --color-primary: var(--blue);
     --color-hairline: var(--light-grey);
     --color-button-text: var(--white);
     --color-button-bg: var(--color-primary);
+    --color-navigation-background: var(--white);
+    --color-nav-text: var(--color-text);
+    --color-nav-text-light: var(--color-text-light);
 
     /* sizes */
-    --max-width: 900px;
     --size-1: 0.25rem;
     --size-2: 0.5rem;
     --size-3: 0.75rem;
@@ -38,7 +40,13 @@ export const GlobalStyle = createGlobalStyle`
     --size-16: 4rem;
     --size-20: 5rem;
 
+    /* size intentions */
+    --max-width: 900px;
+    --width-header: 90%;
+
+
     /* spacing */
+    --spacing-xs: var(--size-1);
     --spacing-sm: var(--size-2);
     --spacing-md: var(--size-4);
     --spacing-lg: var(--size-8);
@@ -46,8 +54,8 @@ export const GlobalStyle = createGlobalStyle`
     /* css variables for text sizing */
     --font-size-1: var(--size-1);
     --font-size-2: var(--size-2);
-    --font-size-3: var(--size-2);
-    --font-size-3: var(--size-4);
+    --font-size-3: var(--size-3);
+    --font-size-4: var(--size-4);
 
       /* Type */
     --heading-font: "Space Mono", monospace;
@@ -65,8 +73,6 @@ export const GlobalStyle = createGlobalStyle`
 
     /* Styles */
     --container-padding: var(--spacing-md);
-    --header-height: var(--size-16) ;
-    --footer-height: var(--size-12);
     --border-radius: var(--size-2);
     --max-width: 64rem;
   }

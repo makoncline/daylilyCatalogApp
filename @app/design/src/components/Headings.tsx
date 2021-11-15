@@ -1,10 +1,10 @@
-// import styled from "styled-components";
+import styled from "styled-components";
 
-// import { above } from "../utilities";
+import { above } from "../utilities";
 
-// export const Heading = styled.h1`
-//   font-size: 2rem;
-//   ${above.md`
-//     color: blue;
-//   `}
-// `;
+export const Heading = styled.h1`
+  font-size: 2rem;
+  ${above.md`
+    color: blue;
+  `}
+`;

@@ -1,13 +1,14 @@
 import React from "react";
 import styled from "styled-components";
 
-import { elevation } from "../utilities";
+import { Navigation } from ".";
+
 type Props = {
   children: React.ReactNode;
   href?: string;
 } & (
+  | React.InputHTMLAttributes<HTMLInputElement>
   | React.ButtonHTMLAttributes<HTMLButtonElement>
-  | React.AnchorHTMLAttributes<HTMLAnchorElement>
 );
 
 export const Button = ({ children, href, ...other }: Props) => {
@@ -15,14 +16,16 @@ export const Button = ({ children, href, ...other }: Props) => {
   return (
     <>
       {isLink ? (
-        <StyledLink
-          href={href}
-          {...(other as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
-        >
-          {children}
-        </StyledLink>
+        <form style={{ display: "inline" }} action={href} method="get">
+          <StyledButton
+            type="submit"
+            value={children as string}
+            {...(other as React.InputHTMLAttributes<HTMLInputElement>)}
+          />
+        </form>
       ) : (
         <StyledButton
+          as={"button"}
           {...(other as React.ButtonHTMLAttributes<HTMLButtonElement>)}
         >
           {children}
@@ -32,31 +35,35 @@ export const Button = ({ children, href, ...other }: Props) => {
   );
 };
 
-const StyledLink = styled.a``;
-const StyledButton = styled.button`
-  color: var(--color, var(--color-button-text));
+const StyledButton = styled.input`
+  border: 0;
+  border-radius: 0.25rem;
   background: var(--background, var(--color-button-bg));
-  padding: var(--spacing-sm) var(--spacing-lg);
-  border-radius: var(--border-radius);
+  color: var(--color, var(--color-button-text));
+  font-family: -system-ui, sans-serif;
   font-size: var(--font-size-button);
-  border: none;
-  transition: 0.3s ease box-shadow;
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  ${elevation[1]};
-  &:hover {
-    ${elevation[2]};
-  }
+  line-height: 1.2;
+  white-space: nowrap;
+  text-decoration: none;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  margin: var(--spacing-xs);
+  cursor: pointer;
 `;
 
-// export const IconButton = styled(Button)`
-//   background: transparent;
-//   box-shadow: none;
-//   width: var(--size-12);
-//   height: var(--size-12);
-//   padding: 0;
-//   &:hover {
-//     box-shadow: none;
-//   }
-// `;
+export const IconButton = styled(Button)`
+  background: transparent;
+  width: var(--size-12);
+  height: var(--size-12);
+  font-size: var(--h4);
+  padding: 0;
+  color: var(--color, var(--color-text));
+  &:hover {
+    color: var(--color-hover, var(--color-text-light));
+  }
+  ${Navigation as any} {
+    color: var(--color-nav-text);
+    &:hover {
+      color: var(--color-nav-text-light);
+    }
+  }
+`;
