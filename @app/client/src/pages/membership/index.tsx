@@ -40,7 +40,7 @@ export default Membership;
 
 const Style = styled.div`
   .container {
-    width: var(--container-width);
+    width: var(--max-width);
     max-width: calc(100% - var(--spacing-lg));
     padding: var(--spacing-lg) 0;
     margin: auto;
@@ -49,7 +49,7 @@ const Style = styled.div`
     width: 100%;
   }
   button {
-    height: var(--spacing-xl);
+    height: var(--spacing-lg);
   }
   h1,
   h2 {
@@ -132,7 +132,7 @@ const Style = styled.div`
     border: var(--hairline);
     padding: var(--spacing-sm);
     .ant-btn {
-      height: var(--spacing-xl);
+      height: var(--spacing-lg);
       display: flex;
       justify-content: center;
       align-items: center;

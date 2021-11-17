@@ -8,7 +8,7 @@ const { Title, Text } = Typography;
 
 const Style = styled.div`
   .container {
-    width: var(--container-width);
+    width: var(--max-width);
     max-width: calc(100% - var(--spacing-lg));
     padding: var(--spacing-lg) 0;
     margin: auto;
@@ -27,7 +27,7 @@ const Style = styled.div`
   .pricing-card {
     width: 100%;
     .price-button {
-      height: var(--spacing-xl);
+      height: var(--spacing-lg);
       display: flex;
       justify-content: center;
       align-items: center;

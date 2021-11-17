@@ -44,6 +44,7 @@
     { "path": "@app/components" },
     { "path": "@app/graphql" },
     { "path": "@app/server" },
-    { "path": "@app/worker" }
+    { "path": "@app/worker" },
+    { "path": "@app/design" }
   ]
 }

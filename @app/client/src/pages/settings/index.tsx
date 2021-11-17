@@ -337,7 +337,7 @@ const Style = styled.div`
     border: var(--hairline);
     padding: var(--spacing-sm);
     .ant-btn {
-      height: var(--spacing-xl);
+      height: var(--spacing-lg);
       display: flex;
       justify-content: center;
       align-items: center;

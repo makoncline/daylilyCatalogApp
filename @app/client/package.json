@@ -11,6 +11,7 @@
     "@apollo/client": "^3.4.8",
     "@app/components": "0.0.0",
     "@app/config": "0.0.0",
+    "@app/design": "0.0.0",
     "@app/graphql": "0.0.0",
     "@app/lib": "0.0.0",
     "@stripe/stripe-js": "^1.17.1",
@@ -38,6 +39,7 @@
     "webpack": "^4.43.0"
   },
   "devDependencies": {
+    "babel-loader": "^8.2.3",
     "babel-plugin-import": "^1.13.3",
     "babel-plugin-styled-components": "^1.13.2",
     "cross-env": "^7.0.3",
