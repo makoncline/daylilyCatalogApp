@@ -4,27 +4,54 @@ import styled from "styled-components";
 import { above } from "../utilities";
 import { IconButton } from ".";
 
-type Props = {
+type NavProps = {
   logo?: React.ReactNode;
-  links: Link[];
+  links: LinkProps[];
+  linkComponent?: LinkComponent;
 };
 
-type Link = {
+type LinkProps = {
   href: string;
   label: string;
 };
 
-export const Navigation = ({ logo, links }: Props) => {
+type LinkComponent = ({
+  href,
+  label,
+  children,
+  ...other
+}: {
+  href: string;
+  label: string;
+  children?: React.ReactNode;
+}) => JSX.Element;
+
+const LinkComponentDefault = ({
+  href,
+  label,
+}: {
+  href: string;
+  label: string;
+}) => (
+  <a href={href}>
+    <span>{label}</span>
+  </a>
+);
+
+export const Navigation = ({
+  logo,
+  links,
+  linkComponent = LinkComponentDefault,
+}: NavProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const handleToggle = () => setIsOpen(!isOpen);
+  const NavLink = linkComponent;
   const Links = ({ ...props }) => (
     <div {...props}>
       <ul className="nav--links">
         {links.map((link, index) => (
           <li key={index}>
-            <a href={link.href}>
-              <span>{link.label}</span>
-            </a>
+            <NavLink {...link} />
           </li>
         ))}
       </ul>

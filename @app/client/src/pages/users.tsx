@@ -1,3 +1,4 @@
+import { Layout } from "@app/design";
 import { useUsersQuery } from "@app/graphql";
 import Image from "next/image";
 import React from "react";
@@ -9,7 +10,7 @@ const User = () => {
   if (error) return <p>Error :(</p>;
   const users = data?.users?.nodes;
   return (
-    <>
+    <Layout>
       {users &&
         users.map((user) => (
           // user card with an image, name, location, and bio
@@ -30,7 +31,7 @@ const User = () => {
             </div>
           </div>
         ))}
-    </>
+    </Layout>
   );
 };
 
