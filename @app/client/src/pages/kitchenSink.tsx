@@ -34,8 +34,22 @@ export default function KitchenSink() {
           pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
           culpa qui officia deserunt mollit anim id est laborum.{" "}
         </p>
-        <Button onClick={() => alert("click!")}>I'm a button</Button>
-        <Button href="#">I'm a link </Button>
+        <div
+          style={{
+            display: "flex",
+            gap: "1rem",
+          }}
+        >
+          <Button onClick={() => alert("click!")}>I'm a button</Button>
+          <Button href="#">I'm a link </Button>
+        </div>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
       </main>
     </>
   );

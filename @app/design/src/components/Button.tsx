@@ -1,8 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 
-import { Navigation } from ".";
-
 type Props = {
   children: React.ReactNode;
   href?: string;
@@ -36,34 +34,34 @@ export const Button = ({ children, href, ...other }: Props) => {
 };
 
 const StyledButton = styled.input`
-  border: 0;
-  border-radius: 0.25rem;
-  background: var(--background, var(--color-button-bg));
-  color: var(--color, var(--color-button-text));
+  border: 1px solid var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-text-light-primary);
   font-family: -system-ui, sans-serif;
   font-size: var(--font-size-button);
   line-height: 1.2;
   white-space: nowrap;
   text-decoration: none;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  margin: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-md);
   cursor: pointer;
+  &:hover {
+    background: var(--color-primary-light);
+    border-color: var(--color-primary-light);
+    color: var(--color-text-light-secondary);
+  }
 `;
 
 export const IconButton = styled(Button)`
   background: transparent;
+  border-color: transparent;
+  color: var(--color-text-primary);
   width: var(--size-12);
   height: var(--size-12);
   font-size: var(--h4);
   padding: 0;
-  color: var(--color, var(--color-text));
   &:hover {
-    color: var(--color-hover, var(--color-text-light));
-  }
-  ${Navigation as any} {
-    color: var(--color-nav-text);
-    &:hover {
-      color: var(--color-nav-text-light);
-    }
+    background: transparent;
+    border-color: transparent;
+    color: var(--color-text-secondary);
   }
 `;

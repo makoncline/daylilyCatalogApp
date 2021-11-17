@@ -22,7 +22,9 @@ export const Navigation = ({ logo, links }: Props) => {
       <ul className="nav--links">
         {links.map((link, index) => (
           <li key={index}>
-            <a href={link.href}>{link.label}</a>
+            <a href={link.href}>
+              <span>{link.label}</span>
+            </a>
           </li>
         ))}
       </ul>
@@ -59,7 +61,7 @@ const StyledNavigation = styled.nav`
     align-items: center;
     padding-top: var(--spacing-sm);
     padding-bottom: var(--spacing-sm);
-    background-color: var(--color-navigation-background);
+    background-color: var(--color-nav-bg);
     width: var(--width-header);
     margin: 0 auto;
   }
@@ -68,12 +70,14 @@ const StyledNavigation = styled.nav`
     padding: 0;
     list-style: none;
   }
+  li {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
   .logo {
     margin: 0;
   }
   a {
     text-decoration: none;
-    padding: var(--spacing-sm) var(--spacing-md);
     text-transform: uppercase;
     text-align: center;
     display: block;
@@ -81,11 +85,13 @@ const StyledNavigation = styled.nav`
   .nav--links {
     margin-top: var(--spacing-sm);
   }
-  .nav--links a {
-    color: var(--color-link-nav);
+  .nav--links a span {
+    color: var(--color-text-primary);
+    border-bottom: 1px solid transparent;
   }
-  .nav--links a:hover {
-    color: var(--color-link-nav-hover);
+  .nav--links a:hover span {
+    color: var(--color-text-secondary);
+    border-color: var(--color-text-secondary);
   }
   .nav--main--links {
     display: none;
@@ -100,6 +106,7 @@ const StyledNavigation = styled.nav`
     }
     .nav--links {
       display: flex;
+      justify-content: center;
     }
     .nav--links--toggle{
       display: none;

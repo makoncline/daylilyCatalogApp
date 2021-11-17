@@ -8,24 +8,31 @@ export const GlobalStyle = createGlobalStyle`
     --gray: gray;
     --light-green: lightGreen;
     --dark-green: darkGreen;
-    --blue: blue;
+    --blue: #2563EB;
+    --light-blue: #3B82F6;
+    --dark-blue: #1D4ED8;
     --light-grey: #d9d9d9;
     --grey: rgb(125, 125, 134);
     --blue: rgb(55, 112, 235);
     --green: rgb(245, 255, 246);
 
     /* Color intentions */
-    --color-text: var(--black);
-    --color-text-light: var(--gray);
+    --color-text-primary: var(--black);
+    --color-text-secondary: var(--gray);
+    --color-text-light-primary: var(--white);
+    --color-text-light-secondary: var(--light-grey);
+
     --color-bg: var(--white);
     --color-header-bg: var(--gray);
     --color-primary: var(--blue);
+    --color-primary-light: var(--light-blue);
+    --color-primary-dark: var(--light-blue);
     --color-hairline: var(--light-grey);
-    --color-button-text: var(--white);
-    --color-button-bg: var(--color-primary);
-    --color-navigation-background: var(--white);
-    --color-nav-text: var(--color-text);
-    --color-nav-text-light: var(--color-text-light);
+    /* navigation */
+    --color-nav-bg: var(--white);
+    --color-nav-text: var(--color-text-primary);
+    --color-nav-text-hover: var(--color-text-primary-secondary);
+
 
     /* sizes */
     --size-1: 0.25rem;
