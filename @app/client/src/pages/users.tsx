@@ -1,4 +1,5 @@
-import { Layout } from "@app/design";
+import { NextLayout } from "@app/components";
+import { Card } from "@app/design";
 import { useUsersQuery } from "@app/graphql";
 import Image from "next/image";
 import React from "react";
@@ -10,28 +11,29 @@ const User = () => {
   if (error) return <p>Error :(</p>;
   const users = data?.users?.nodes;
   return (
-    <Layout>
+    <NextLayout>
       {users &&
         users.map((user) => (
-          // user card with an image, name, location, and bio
-          <div className="card" key={user.id}>
+          <Card key={user.id}>
             {user.avatarUrl && (
-              <Image
-                src={user.avatarUrl}
-                alt="user avatar"
-                width={200}
-                height={200}
-                objectFit="cover"
-              />
+              <Card.Image>
+                <Image
+                  src={user.avatarUrl}
+                  alt="user avatar"
+                  width={200}
+                  height={200}
+                  objectFit="cover"
+                />
+              </Card.Image>
             )}
             <div className="card-body">
               <h5 className="card-title">{user.name}</h5>
               <p className="card-text">{user.userLocation}</p>
               <p className="card-text">{user.intro}</p>
             </div>
-          </div>
+          </Card>
         ))}
-    </Layout>
+    </NextLayout>
   );
 };
 

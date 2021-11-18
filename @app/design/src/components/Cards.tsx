@@ -1,9 +1,17 @@
+import React from "react";
 import styled from "styled-components";
 
-import { elevation } from "../utilities";
+export const Card = ({ children }: { children: React.ReactNode }) => {
+  return <StyledCard>{children}</StyledCard>;
+};
 
-export const Card = styled.div`
-  border-radius: var(--border-radius);
-  padding: var(--spacing-md);
-  ${elevation[1]};
+const Image = ({ children }: { children: React.ReactNode }) => {
+  return <StyledImage>{children}</StyledImage>;
+};
+
+Card.Image = Image;
+
+const StyledImage = styled.div``;
+const StyledCard = styled.div`
+  border: var(--hairline);
 `;

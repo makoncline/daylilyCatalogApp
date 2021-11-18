@@ -1,24 +1,15 @@
-import { Button, Navigation } from "@app/design";
-import Link from "next/link";
+import { Button, Nav, NavLink, TextLogo } from "@app/design";
 import React from "react";
 
 // page to display examples of various components
 export default function KitchenSink() {
-  const navLinks = [
-    { href: "#", label: "Home" },
-    { href: "#", label: "About" },
-    { href: "#", label: "Contact" },
-  ];
-  const NavLogo = () => {
-    return (
-      <h1>
-        <Link href="/">Logo</Link>
-      </h1>
-    );
-  };
   return (
     <>
-      <Navigation logo={<NavLogo />} links={navLinks} />
+      <Nav logo={<TextLogo href="/">Logo</TextLogo>}>
+        <NavLink href="#">Home</NavLink>
+        <NavLink href="#">About</NavLink>
+        <NavLink href="#">Contact</NavLink>
+      </Nav>
       <main>
         <h1>This is example text</h1>
         <h2>This is example text</h2>

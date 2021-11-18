@@ -5,67 +5,56 @@ import { above } from "../utilities";
 import { IconButton } from ".";
 
 type NavProps = {
-  logo?: React.ReactNode;
-  links: LinkProps[];
-  linkComponent?: LinkComponent;
+  logo: React.ReactNode;
+  children: React.ReactNode;
 };
 
-type LinkProps = {
-  href: string;
-  label: string;
+type NavLinkProps = {
+  href?: string;
+  children: string;
 };
 
-type LinkComponent = ({
-  href,
-  label,
-  children,
-  ...other
-}: {
-  href: string;
-  label: string;
-  children?: React.ReactNode;
-}) => JSX.Element;
-
-const LinkComponentDefault = ({
-  href,
-  label,
-}: {
-  href: string;
-  label: string;
-}) => (
-  <a href={href}>
-    <span>{label}</span>
-  </a>
+export const NavLink = ({ href, children }: NavLinkProps) => (
+  <li>
+    <a href={href}>
+      <span>{children}</span>
+    </a>
+  </li>
 );
 
-export const Navigation = ({
-  logo,
-  links,
-  linkComponent = LinkComponentDefault,
-}: NavProps) => {
+type TextLogoProps = {
+  href?: string;
+  children: string;
+};
+
+export const TextLogo = ({ href, children }: TextLogoProps) => {
+  return (
+    <h1 className="nav--text-logo">
+      <a href={href}>{children}</a>
+    </h1>
+  );
+};
+
+export const Nav = ({ logo, children }: NavProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const handleToggle = () => setIsOpen(!isOpen);
-  const NavLink = linkComponent;
-  const Links = ({ ...props }) => (
-    <div {...props}>
-      <ul className="nav--links">
-        {links.map((link, index) => (
-          <li key={index}>
-            <NavLink {...link} />
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
   React.useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
   }, [isOpen]);
+  const closeOnResize = () => setIsOpen(false);
+  React.useEffect(() => {
+    window.addEventListener("resize", closeOnResize);
+    return () => window.removeEventListener("resize", closeOnResize);
+  });
+  const Links = () => <ul className="nav--links">{children}</ul>;
   return (
     <StyledNavigation>
       <div className={`nav ${isOpen && "nav--open"}`}>
         <div className={`nav--main`}>
           <div className="nav--logo">{logo}</div>
-          <Links className="nav--main--links" />
+          <div className="nav--main--links">
+            <Links />
+          </div>
           <IconButton className="nav--links--toggle" onClick={handleToggle}>
             {isOpen ? "✕ " : "☰"}
           </IconButton>
@@ -109,9 +98,6 @@ const StyledNavigation = styled.nav`
     text-align: center;
     display: block;
   }
-  .nav--links {
-    margin-top: var(--spacing-sm);
-  }
   .nav--links a span {
     color: var(--color-text-primary);
     border-bottom: 1px solid transparent;
@@ -126,6 +112,9 @@ const StyledNavigation = styled.nav`
   .nav--open {
     height: 100vh;
   }
+  .nav--text-logo {
+    margin-bottom: 0;
+  }
 
   ${above.sm`
     .nav{
@@ -135,7 +124,7 @@ const StyledNavigation = styled.nav`
       display: flex;
       justify-content: center;
     }
-    .nav--links--toggle{
+    .nav--links--toggle, .nav--mobile--links{
       display: none;
     }
     .nav--main--links {
