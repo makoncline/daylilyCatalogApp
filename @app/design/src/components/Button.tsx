@@ -9,7 +9,7 @@ type Props = {
   | React.ButtonHTMLAttributes<HTMLButtonElement>
 );
 
-export const Button = ({ children, href, ...other }: Props) => {
+export const Button = ({ children, href, ...rest }: Props) => {
   const isLink = typeof href === "string";
   return (
     <>
@@ -18,13 +18,13 @@ export const Button = ({ children, href, ...other }: Props) => {
           <StyledButton
             type="submit"
             value={children as string}
-            {...(other as React.InputHTMLAttributes<HTMLInputElement>)}
+            {...(rest as React.InputHTMLAttributes<HTMLInputElement>)}
           />
         </form>
       ) : (
         <StyledButton
           as={"button"}
-          {...(other as React.ButtonHTMLAttributes<HTMLButtonElement>)}
+          {...(rest as React.ButtonHTMLAttributes<HTMLButtonElement>)}
         >
           {children}
         </StyledButton>

@@ -26,5 +26,6 @@ export * from "./SocialLoginOptions";
 export * from "./SpinPadded";
 export * from "./StandardWidth";
 export * from "./Text";
+export * from "./UserCard";
 export * from "./Warn";
 export * from "./Wysiwyg";

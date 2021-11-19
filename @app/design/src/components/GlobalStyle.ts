@@ -28,6 +28,9 @@ export const GlobalStyle = createGlobalStyle`
     --color-primary-light: var(--light-blue);
     --color-primary-dark: var(--light-blue);
     --color-hairline: var(--light-grey);
+    /* cards */
+    --color-card-bg: var(--white);
+
     /* navigation */
     --color-nav-bg: var(--white);
     --color-nav-text: var(--color-text-primary);
@@ -76,7 +79,7 @@ export const GlobalStyle = createGlobalStyle`
     --line-height: 1.65;
     --font-weight-base: 400;
 
-    --hairline: 1px solid var(--hairline-color);
+    --hairline: 1px solid var(--color-hairline);
 
     /* Styles */
     --container-padding: var(--spacing-md);
