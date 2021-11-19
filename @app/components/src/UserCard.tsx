@@ -15,8 +15,8 @@ export const UserCard = ({
 }) => {
   return (
     <>
-      <Card size="20rem" gridTemplate="3fr 3fr" fitHeight>
-        <Card.Image fitHeight>
+      <Card size="30rem" sizeProp="height">
+        <Card.Image>
           {image && <Image src={image} alt="user avatar" layout="fill" />}
         </Card.Image>
         <Card.Body>

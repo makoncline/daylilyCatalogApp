@@ -1,60 +1,58 @@
 import React from "react";
 import styled from "styled-components";
 
-import { absolute, elevation } from "../utilities";
+import { elevation } from "../utilities";
 
 export const Card = ({
   size,
   gridTemplate,
-  fitHeight,
+  sizeProp = "width",
   children,
   ...rest
 }: {
   size?: string;
   gridTemplate?: string;
-  fitHeight?: boolean;
+  sizeProp?: "width" | "height";
   children: React.ReactNode;
 }) => {
-  const CardComponent = fitHeight ? StyledCardConstrainedHeight : StyledCard;
+  const gridTemplateDefault =
+    sizeProp === "height"
+      ? `1fr / ${size || "1fr"} 1fr`
+      : `${size || "1fr"} 1fr / 1fr`;
   return (
     <>
-      <CardComponent
+      <CardWrapper
         style={
           {
             "--size": size,
-            "--grid-template": gridTemplate,
+            "--width": sizeProp === "width" ? size : "",
+            "--height": sizeProp === "height" ? size : "",
+            "--grid-template": gridTemplate || gridTemplateDefault,
           } as React.CSSProperties
         }
         {...rest}
       >
         {children}
-      </CardComponent>
+      </CardWrapper>
     </>
   );
 };
 
 const Body = ({ children, ...rest }: { children: React.ReactNode }) => {
-  return <StyledCardBody {...rest}>{children}</StyledCardBody>;
+  return <BodyWrapper {...rest}>{children}</BodyWrapper>;
 };
 Card.Body = Body;
 
-const Image = ({
-  fitHeight,
-  children,
-  ...rest
-}: {
-  fitHeight?: boolean;
-  children: React.ReactNode;
-}) => {
-  const ImageComponent = fitHeight ? StyledImageFitHeight : StyledImage;
-  return <ImageComponent {...rest}>{children}</ImageComponent>;
+const Image = ({ children, ...rest }: { children: React.ReactNode }) => {
+  return <ImageWrapper {...rest}>{children}</ImageWrapper>;
 };
 Card.Image = Image;
 
-const StyledCard = styled.article`
-  width: var(--size, 100%);
+const CardWrapper = styled.article`
+  width: var(--width, 100%);
+  height: var(--height, 100%);
   display: grid;
-  grid-template-rows: var(--grid-template, none);
+  grid-template: var(--grid-template);
   background: var(--color-card-bg);
   border-radius: var(--border-radius);
   margin: var(--spacing-md);
@@ -63,36 +61,16 @@ const StyledCard = styled.article`
   ${elevation[3]}
 `;
 
-const StyledCardConstrainedHeight = styled(StyledCard)`
+const ImageWrapper = styled.div`
   width: 100%;
-  height: var(--size, 100%);
-  grid-template-rows: unset;
-  grid-template-columns: var(--grid-template, 1fr 1fr);
-`;
-
-const StyledImage = styled.div`
-  width: 100%;
-  height: 0;
-  padding-top: 100%;
+  height: 100%;
   position: relative;
   img {
+    object-position: center;
     object-fit: cover;
-    width: 100%;
-    height: 100%;
-    ${absolute({ x: 0, y: 0 })}
-    vertical-align: top;
-  }
-  .fit-height {
   }
 `;
 
-const StyledImageFitHeight = styled(StyledImage)`
-  padding-top: unset;
-  height: 100%;
-  width: 0;
-  padding-left: 100%;
-`;
-
-const StyledCardBody = styled.div`
+const BodyWrapper = styled.div`
   margin: var(--spacing-md);
 `;
