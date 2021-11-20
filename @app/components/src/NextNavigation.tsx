@@ -1,5 +1,5 @@
-import { Nav, NavLink, TextLogo } from "@app/design";
-import Link from "next/link";
+import { Link, Nav, TextLogo } from "@app/design";
+import NextLink from "next/link";
 import React from "react";
 
 export const NextNavigation = () => (
@@ -15,9 +15,9 @@ const NextNavLink = ({
   href: string;
   children: string;
 }) => (
-  <Link href={href} passHref>
-    <NavLink>{children}</NavLink>
-  </Link>
+  <NextLink href={href} passHref>
+    <Link>{children}</Link>
+  </NextLink>
 );
 
 const NextTextLogo = ({
@@ -27,7 +27,7 @@ const NextTextLogo = ({
   href: string;
   children: string;
 }) => (
-  <Link href={href} passHref>
+  <NextLink href={href} passHref>
     <TextLogo>{children}</TextLogo>
-  </Link>
+  </NextLink>
 );

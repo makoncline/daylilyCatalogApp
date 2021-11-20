@@ -2,37 +2,11 @@ import React from "react";
 import styled from "styled-components";
 
 import { above } from "../utilities";
-import { IconButton } from ".";
+import { Heading, IconButton } from ".";
 
 type NavProps = {
   logo: React.ReactNode;
   children: React.ReactNode;
-};
-
-type NavLinkProps = {
-  href?: string;
-  children: string;
-};
-
-export const NavLink = ({ href, children }: NavLinkProps) => (
-  <li>
-    <a href={href}>
-      <span>{children}</span>
-    </a>
-  </li>
-);
-
-type TextLogoProps = {
-  href?: string;
-  children: string;
-};
-
-export const TextLogo = ({ href, children }: TextLogoProps) => {
-  return (
-    <h1 className="nav--text-logo">
-      <a href={href}>{children}</a>
-    </h1>
-  );
 };
 
 export const Nav = ({ logo, children }: NavProps) => {
@@ -46,88 +20,78 @@ export const Nav = ({ logo, children }: NavProps) => {
     window.addEventListener("resize", closeOnResize);
     return () => window.removeEventListener("resize", closeOnResize);
   });
-  const Links = () => <ul className="nav--links">{children}</ul>;
   return (
-    <StyledNavigation>
-      <div className={`nav ${isOpen && "nav--open"}`}>
-        <div className={`nav--main`}>
-          <div className="nav--logo">{logo}</div>
-          <div className="nav--main--links">
-            <Links />
-          </div>
-          <IconButton className="nav--links--toggle" onClick={handleToggle}>
-            {isOpen ? "✕ " : "☰"}
-          </IconButton>
-        </div>
-        <div className="nav--mobile--links">{isOpen && <Links />}</div>
-      </div>
-    </StyledNavigation>
+    <Wrapper className={`${isOpen && "nav--open"}`}>
+      <Main>
+        <Logo>{logo}</Logo>
+        <NavItems>{children}</NavItems>
+        <IconButton onClick={handleToggle}>{isOpen ? "✕ " : "☰"}</IconButton>
+      </Main>
+      <Mobile>{isOpen && <NavItems>{children}</NavItems>}</Mobile>
+    </Wrapper>
   );
 };
 
-const StyledNavigation = styled.nav`
-  .nav {
-    position: relative;
-    display: flex;
-    flex-direction: column;
+type TextLogoProps = {
+  href?: string;
+  children: string;
+};
+
+export const TextLogo = ({ href, children }: TextLogoProps) => {
+  return (
+    <Heading level={2}>
+      <a href={href}>{children}</a>
+    </Heading>
+  );
+};
+
+export const Mobile = styled.div`
+  ${above.sm`
+    display: none;
+  `}
+`;
+const Logo = styled.div``;
+const Main = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
+  background-color: var(--color-nav-bg);
+  width: var(--width-header);
+  margin: 0 auto;
+`;
+const Wrapper = styled.nav`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  .nav--open {
+    height: 100vh;
   }
-  .nav--main {
-    display: flex;
-    justify-content: space-between;
+  ${above.sm`
     align-items: center;
-    padding-top: var(--spacing-sm);
-    padding-bottom: var(--spacing-sm);
-    background-color: var(--color-nav-bg);
-    width: var(--width-header);
-    margin: 0 auto;
-  }
-  ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  li {
-    padding: var(--spacing-sm) var(--spacing-md);
-  }
-  .logo {
-    margin: 0;
-  }
-  a {
-    text-decoration: none;
-    text-transform: uppercase;
-    text-align: center;
-    display: block;
-  }
-  .nav--links a span {
-    color: var(--color-text-primary);
-    border-bottom: 1px solid transparent;
-  }
-  .nav--links a:hover span {
-    color: var(--color-text-secondary);
-    border-color: var(--color-text-secondary);
-  }
-  .nav--main--links {
+  `}
+`;
+
+export const NavItem = styled.li`
+  padding: var(--spacing-sm) var(--spacing-md);
+`;
+
+const NavItems = styled.ul`
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  ${Main as any} & {
     display: none;
   }
   .nav--open {
     height: 100vh;
   }
-  .nav--text-logo {
-    margin-bottom: 0;
-  }
-
   ${above.sm`
-    .nav{
-      align-items: center;
-    }
-    .nav--links {
-      display: flex;
-      justify-content: center;
-    }
-    .nav--links--toggle, .nav--mobile--links{
+    ${Mobile as any} & {
       display: none;
     }
-    .nav--main--links {
+    ${Main as any} & {
       display: unset;
     }
   `}

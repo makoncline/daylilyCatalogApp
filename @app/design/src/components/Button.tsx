@@ -1,6 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 
+import { above } from "../utilities";
+import { Mobile } from "./";
+
 type Props = {
   children: React.ReactNode;
   href?: string;
@@ -63,5 +66,10 @@ export const IconButton = styled(Button)`
     background: transparent;
     border-color: transparent;
     color: var(--color-text-secondary);
+  }
+  ${Mobile as any} & {
+    ${above.sm`
+      display: none;
+    `}
   }
 `;
