@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import { elevation } from "../utilities";
+import { below } from "../utilities";
 
 export const Card = ({
   size,
@@ -49,16 +49,20 @@ const Image = ({ children, ...rest }: { children: React.ReactNode }) => {
 Card.Image = Image;
 
 const CardWrapper = styled.article`
-  width: var(--width, 100%);
+  width: var(--width, unset);
   height: var(--height, 100%);
   display: grid;
   grid-template: var(--grid-template);
-  background: var(--color-card-bg);
   border-radius: var(--border-radius);
-  margin: var(--spacing-md);
   overflow: hidden;
   cursor: pointer;
-  ${elevation[3]}
+  &:hover {
+    background: var(--color-bg--secondary-glint);
+  }
+  ${below.md`
+    grid-template: var(--size, 1fr) 1fr / 1fr;
+    height: unset;
+  `}
 `;
 
 const ImageWrapper = styled.div`
@@ -72,5 +76,5 @@ const ImageWrapper = styled.div`
 `;
 
 const BodyWrapper = styled.div`
-  margin: var(--spacing-md);
+  margin: var(--container-padding);
 `;

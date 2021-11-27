@@ -37,9 +37,9 @@ export const Button = ({ children, href, ...rest }: Props) => {
 };
 
 const StyledButton = styled.input`
-  border: 1px solid var(--color-primary);
   background: var(--color-primary);
-  color: var(--color-text-light-primary);
+  border: 1px solid var(--color-primary);
+  color: var(--color-txt--reversed);
   font-family: -system-ui, sans-serif;
   font-size: var(--font-size-button);
   line-height: 1.2;
@@ -48,16 +48,16 @@ const StyledButton = styled.input`
   padding: var(--spacing-xs) var(--spacing-md);
   cursor: pointer;
   &:hover {
-    background: var(--color-primary-light);
-    border-color: var(--color-primary-light);
-    color: var(--color-text-light-secondary);
+    background: var(--color-primary-glint);
+    border-color: var(--color-primary-glint);
+    color: var(--color-txt--subtle-reversed);
   }
 `;
 
 export const IconButton = styled(Button)`
   background: transparent;
   border-color: transparent;
-  color: var(--color-text-primary);
+  color: var(--color-txt);
   width: var(--size-12);
   height: var(--size-12);
   font-size: var(--h4);
@@ -65,7 +65,7 @@ export const IconButton = styled(Button)`
   &:hover {
     background: transparent;
     border-color: transparent;
-    color: var(--color-text-secondary);
+    color: var(--color-txt--subtle);
   }
   ${Mobile as any} & {
     ${above.sm`

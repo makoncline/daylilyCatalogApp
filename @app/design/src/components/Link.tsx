@@ -14,13 +14,13 @@ export const Link = ({
 };
 const StyledLink = styled.a`
   ${NavItem as any} & {
-    color: var(--color-text-primary);
+    color: var(--color-txt);
     text-decoration: none;
     text-transform: uppercase;
     text-align: center;
     display: block;
     &:hover {
-      color: var(--color-text-secondary);
+      color: var(--color-txt--subtle);
       text-decoration: underline;
     }
   }

@@ -1,4 +1,4 @@
-import { Card } from "@app/design";
+import { Card, Heading } from "@app/design";
 import Image from "next/image";
 import React from "react";
 
@@ -15,14 +15,14 @@ export const UserCard = ({
 }) => {
   return (
     <>
-      <Card size="20rem" sizeProp="height">
+      <Card size="20rem" sizeProp="height" gridTemplate="1fr / 1fr 1fr">
         <Card.Image>
           {image && <Image src={image} alt="user avatar" layout="fill" />}
         </Card.Image>
         <Card.Body>
-          <h2 className="card-title">{name}</h2>
-          {location && <p className="card-text">{location}</p>}
-          {intro && <p className="card-text">{intro}</p>}
+          <Heading level={2}>{name}</Heading>
+          {location && <p>{location}</p>}
+          {intro && <p>{intro}</p>}
         </Card.Body>
       </Card>
     </>

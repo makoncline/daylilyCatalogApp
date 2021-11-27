@@ -12,22 +12,26 @@ type NavProps = {
 export const Nav = ({ logo, children }: NavProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const handleToggle = () => setIsOpen(!isOpen);
-  React.useEffect(() => {
-    document.body.style.overflow = isOpen ? "hidden" : "";
-  }, [isOpen]);
   const closeOnResize = () => setIsOpen(false);
+  React.useEffect(() => {
+    document.body.style.overflow = isOpen ? "hidden" : "unset";
+  }, [isOpen]);
   React.useEffect(() => {
     window.addEventListener("resize", closeOnResize);
     return () => window.removeEventListener("resize", closeOnResize);
   });
   return (
-    <Wrapper className={`${isOpen && "nav--open"}`}>
+    <Wrapper>
       <Main>
-        <Logo>{logo}</Logo>
+        <div>{logo}</div>
         <NavItems>{children}</NavItems>
         <IconButton onClick={handleToggle}>{isOpen ? "✕ " : "☰"}</IconButton>
       </Main>
-      <Mobile>{isOpen && <NavItems>{children}</NavItems>}</Mobile>
+      <Mobile>
+        {isOpen && (
+          <NavItems className={`${isOpen && "nav--open"}`}>{children}</NavItems>
+        )}
+      </Mobile>
     </Wrapper>
   );
 };
@@ -39,29 +43,15 @@ type TextLogoProps = {
 
 export const TextLogo = ({ href, children }: TextLogoProps) => {
   return (
-    <Heading level={2}>
-      <a href={href}>{children}</a>
-    </Heading>
+    <a href={href}>
+      <Heading level={2}>{children}</Heading>
+    </a>
   );
 };
 
-export const Mobile = styled.div`
-  ${above.sm`
-    display: none;
-  `}
-`;
-const Logo = styled.div``;
-const Main = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: var(--spacing-sm);
-  padding-bottom: var(--spacing-sm);
-  background-color: var(--color-nav-bg);
-  width: var(--width-header);
-  margin: 0 auto;
-`;
 const Wrapper = styled.nav`
+  padding: var(--spacing-lg) 0;
+  background-color: var(--color-bg--main);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -71,6 +61,21 @@ const Wrapper = styled.nav`
   ${above.sm`
     align-items: center;
   `}
+`;
+
+export const Mobile = styled.div`
+  ${above.sm`
+    display: none;
+  `}
+`;
+const Main = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
+  width: var(--width-header);
+  margin: 0 auto;
 `;
 
 export const NavItem = styled.li`
@@ -83,9 +88,6 @@ const NavItems = styled.ul`
   list-style: none;
   ${Main as any} & {
     display: none;
-  }
-  .nav--open {
-    height: 100vh;
   }
   ${above.sm`
     ${Mobile as any} & {

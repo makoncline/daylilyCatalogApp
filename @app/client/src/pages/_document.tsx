@@ -35,7 +35,7 @@ class MyDocument extends Document {
 
   render() {
     return (
-      <Html>
+      <Html className="dark">
         <Head>
           <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
         </Head>

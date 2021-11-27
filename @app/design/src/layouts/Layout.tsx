@@ -12,9 +12,16 @@ export const Layout = ({ navigation, children, footer }: Props) => {
     <>
       {navigation}
       <StyledMain>{children}</StyledMain>
+      <Space />
       {footer}
     </>
   );
 };
 
-const StyledMain = styled.main``;
+const StyledMain = styled.main`
+  padding: var(--sheet-padding);
+`;
+
+const Space = styled.div`
+  height: 50vh;
+`;
