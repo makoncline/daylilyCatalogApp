@@ -1,0 +1,6 @@
+@import "@app/design/src/styles/index.css";
+
+:where(html) {
+  --pro-plan-color: #3055ee;
+  --border-color-main: #f0f0f0;
+}

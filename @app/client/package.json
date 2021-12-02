@@ -29,7 +29,7 @@
     "lodash": "^4.17.21",
     "net": "^1.0.2",
     "next": "^11.1.0",
-    "next-plugin-antd-less": "1.3.0",
+    "next-plugin-antd-less": "1.5.2",
     "nprogress": "^0.2.0",
     "rc-field-form": "~1.21.2",
     "react": "^17.0.2",

@@ -99,7 +99,7 @@ const Users = () => {
   const { data, loading, error } = useUsersQuery();
 
   const { headers, values: users } = useReactTable({
-    rawData: data?.users?.nodes,
+    rawData: data?.users?.nodes || [],
   });
 
   if (loading) return <p>Loading...</p>;
