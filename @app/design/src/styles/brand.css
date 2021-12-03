@@ -6,8 +6,10 @@
   scrollbar-color: var(--scrollbar-color) transparent;
   accent-color: var(--brand);
   caret-color: var(--brand);
+}
 
-  @media (--OSlight) {
+@media (prefers-color-scheme: light) {
+  :where(html) {
     --scrollbar-color: var(--gray-4);
   }
 }

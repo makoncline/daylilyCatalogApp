@@ -20,13 +20,11 @@
   block-size: 100%;
   font-family: var(--font-sans);
   line-height: var(--font-lineheight-3);
-
-  @media (--motionOK) {
+}
+@media screen and (prefers-reduced-motion: no-preference) {
+  html {
     scroll-behavior: smooth;
   }
-}
-
-@media (--motionOK) {
   :focus-visible {
     transition: outline-offset 0.25s var(--ease-2);
     outline-offset: 5px;
@@ -248,6 +246,7 @@
 
 :where(details) {
   padding-inline: var(--size-3);
+
   padding-block: var(--size-2);
   background: var(--surface-2);
   border-radius: var(--radius-2);
