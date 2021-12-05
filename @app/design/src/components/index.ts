@@ -4,3 +4,4 @@ export * from "./Headings";
 export * from "./Hr";
 export * from "./Link";
 export * from "./Nav";
+export * from "./Space";

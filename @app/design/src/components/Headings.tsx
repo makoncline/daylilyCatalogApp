@@ -9,12 +9,13 @@ type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 export const Heading = ({
   level,
   children,
-  ...rest
+  ...props
 }: {
   level: HeadingLevel;
   children: React.ReactNode;
+  [props: string]: unknown;
 }) => (
-  <StyledHeading as={`h${level}`} {...rest}>
+  <StyledHeading as={`h${level}`} {...props}>
     {children}
   </StyledHeading>
 );

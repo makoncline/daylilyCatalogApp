@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { NextLayout, UserCard } from "@app/components";
-import { Button, FancyHeading } from "@app/design";
+import { FancyHeading } from "@app/design";
 import { useUsersQuery } from "@app/graphql";
 import React from "react";
 import { useFilters, useGlobalFilter, useTable } from "react-table";

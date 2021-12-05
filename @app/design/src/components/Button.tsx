@@ -5,38 +5,27 @@ import { above } from "../utilities";
 import { Mobile as MoblieNav } from "./";
 
 type Props = {
-  children: React.ReactNode;
+  children: string;
   href?: string;
-} & (
-  | React.InputHTMLAttributes<HTMLInputElement>
-  | React.ButtonHTMLAttributes<HTMLButtonElement>
-);
+  [other: string]: unknown;
+};
 
-export const Button = ({ children, href, ...rest }: Props) => {
+export const Button = ({ children, href, ...props }: Props) => {
   const isLink = typeof href === "string";
   return (
     <>
       {isLink ? (
         <form style={{ display: "inline" }} action={href} method="get">
-          <StyledButton
-            type="submit"
-            value={children as string}
-            {...(rest as React.InputHTMLAttributes<HTMLInputElement>)}
-          />
+          <StyledButton {...props}>{children}</StyledButton>
         </form>
       ) : (
-        <StyledButton
-          as={"button"}
-          {...(rest as React.ButtonHTMLAttributes<HTMLButtonElement>)}
-        >
-          {children}
-        </StyledButton>
+        <StyledButton {...props}>{children}</StyledButton>
       )}
     </>
   );
 };
 
-const StyledButton = styled.input`
+const StyledButton = styled.button`
   display: inline-flex;
   white-space: nowrap;
 
