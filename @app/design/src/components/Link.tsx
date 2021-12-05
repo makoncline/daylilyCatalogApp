@@ -13,14 +13,14 @@ export const Link = ({
   return <StyledLink href={href}>{children}</StyledLink>;
 };
 const StyledLink = styled.a`
-  ${NavItem as any} & {
-    color: var(--color-txt);
+  ${NavItem} & {
+    color: var(--text-1);
     text-decoration: none;
     text-transform: uppercase;
     text-align: center;
     display: block;
     &:hover {
-      color: var(--color-txt--subtle);
+      color: var(--text-2);
       text-decoration: underline;
     }
   }

@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { NextLayout, UserCard } from "@app/components";
-import { FancyHeading } from "@app/design";
+import { Button, FancyHeading } from "@app/design";
 import { useUsersQuery } from "@app/graphql";
 import React from "react";
 import { useFilters, useGlobalFilter, useTable } from "react-table";
@@ -154,15 +154,13 @@ function DefaultColumnFilter({
 }
 
 const HeadingWrapper = styled.div`
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 const UsersWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  gap: var(--size-4);
 `;
-const FilterWrapper = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--spacing-md);
-`;
+const FilterWrapper = styled.div``;

@@ -4,8 +4,8 @@
   --scrollbar-color: var(--gray-7);
 
   scrollbar-color: var(--scrollbar-color) transparent;
-  accent-color: var(--brand);
-  caret-color: var(--brand);
+  accent-color: var(--primary);
+  caret-color: var(--primary);
 }
 
 @media (prefers-color-scheme: light) {
@@ -15,5 +15,5 @@
 }
 
 :focus-visible {
-  outline-color: var(--brand);
+  outline-color: var(--primary);
 }

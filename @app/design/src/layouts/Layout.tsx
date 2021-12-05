@@ -18,9 +18,7 @@ export const Layout = ({ navigation, children, footer }: Props) => {
   );
 };
 
-const StyledMain = styled.main`
-  padding: var(--sheet-padding);
-`;
+const StyledMain = styled.main``;
 
 const Space = styled.div`
   height: 50vh;

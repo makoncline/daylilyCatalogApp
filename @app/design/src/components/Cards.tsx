@@ -17,8 +17,8 @@ export const Card = ({
 }) => {
   const gridTemplateDefault =
     sizeProp === "height"
-      ? `1fr / ${size || "1fr"} 1fr`
-      : `${size || "1fr"} 1fr / 1fr`;
+      ? `1fr / ${size || "auto"} 1fr`
+      : `${size || "auto"} 1fr / 1fr`;
   return (
     <>
       <CardWrapper
@@ -53,11 +53,11 @@ const CardWrapper = styled.article`
   height: var(--height, 100%);
   display: grid;
   grid-template: var(--grid-template);
-  border-radius: var(--border-radius);
+  border-radius: var(--radius-2);
   overflow: hidden;
   cursor: pointer;
   &:hover {
-    background: var(--color-bg--secondary-glint);
+    background: var(--surface-3);
   }
   ${below.md`
     grid-template: var(--size, 1fr) 1fr / 1fr;
@@ -66,6 +66,7 @@ const CardWrapper = styled.article`
 `;
 
 const ImageWrapper = styled.div`
+  aspect-ratio: var(--ratio-box);
   width: 100%;
   height: 100%;
   position: relative;
@@ -76,5 +77,5 @@ const ImageWrapper = styled.div`
 `;
 
 const BodyWrapper = styled.div`
-  margin: var(--container-padding);
+  margin: var(--size-4);
 `;

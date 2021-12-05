@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { above } from "../utilities";
-import { Mobile } from "./";
+import { Mobile as MoblieNav } from "./";
 
 type Props = {
   children: React.ReactNode;
@@ -37,37 +37,49 @@ export const Button = ({ children, href, ...rest }: Props) => {
 };
 
 const StyledButton = styled.input`
-  background: var(--color-primary);
-  border: 1px solid var(--color-primary);
-  color: var(--color-txt--reversed);
-  font-family: -system-ui, sans-serif;
-  font-size: var(--font-size-button);
-  line-height: 1.2;
+  display: inline-flex;
   white-space: nowrap;
-  text-decoration: none;
-  padding: var(--spacing-xs) var(--spacing-md);
-  cursor: pointer;
-  &:hover {
-    background: var(--color-primary-glint);
-    border-color: var(--color-primary-glint);
-    color: var(--color-txt--subtle-reversed);
+
+  font-size: var(--font-size-1);
+  font-weight: var(--font-weight-7);
+
+  padding-inline: var(--size-3);
+  padding-block: var(--size-1);
+
+  color: var(--text-1);
+  border: var(--border-size-2) solid var(--text-1);
+  background-color: transparent;
+  border-radius: var(--radius-2);
+  :hover {
+    cursor: pointer;
+    border-color: var(--text-2);
+    color: var(--text-2);
+
+    @media (prefers-color-scheme: light) {
+      text-shadow: 0 1px 0 var(--shadow-color);
+    }
+  }
+
+  &:active {
+    position: relative;
+    inset-block-start: 1px;
   }
 `;
 
 export const IconButton = styled(Button)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background: transparent;
   border-color: transparent;
-  color: var(--color-txt);
-  width: var(--size-12);
-  height: var(--size-12);
-  font-size: var(--h4);
-  padding: 0;
+  width: var(--size-10);
+  height: var(--size-10);
   &:hover {
     background: transparent;
     border-color: transparent;
-    color: var(--color-txt--subtle);
+    color: var(--text-2);
   }
-  ${Mobile as any} & {
+  ${MoblieNav} & {
     ${above.sm`
       display: none;
     `}

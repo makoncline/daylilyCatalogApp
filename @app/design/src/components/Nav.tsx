@@ -23,7 +23,7 @@ export const Nav = ({ logo, children }: NavProps) => {
   return (
     <Wrapper>
       <Main>
-        <div>{logo}</div>
+        <LogoWrapper>{logo}</LogoWrapper>
         <NavItems>{children}</NavItems>
         <IconButton onClick={handleToggle}>{isOpen ? "✕ " : "☰"}</IconButton>
       </Main>
@@ -44,17 +44,21 @@ type TextLogoProps = {
 export const TextLogo = ({ href, children }: TextLogoProps) => {
   return (
     <a href={href}>
-      <Heading level={2}>{children}</Heading>
+      <Heading level={3}>{children}</Heading>
     </a>
   );
 };
 
-const Wrapper = styled.nav`
-  padding: var(--spacing-lg) 0;
-  background-color: var(--color-bg--main);
+const LogoWrapper = styled.div`
+  margin-inline-end: auto;
+`;
+export const Wrapper = styled.nav`
+  padding: var(--size-4) 0;
   position: relative;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-self: stretch;
   .nav--open {
     height: 100vh;
   }
@@ -72,28 +76,28 @@ const Main = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: var(--spacing-sm);
-  padding-bottom: var(--spacing-sm);
-  width: var(--width-header);
+  padding-top: var(--size-2);
+  padding-bottom: var(--size-2);
+  width: 100%;
   margin: 0 auto;
 `;
 
 export const NavItem = styled.li`
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--size-2) var(--size-3);
 `;
 
 const NavItems = styled.ul`
   margin: 0;
   padding: 0;
   list-style: none;
-  ${Main as any} & {
+  ${Main} & {
     display: none;
   }
   ${above.sm`
-    ${Mobile as any} & {
+    ${Mobile} & {
       display: none;
     }
-    ${Main as any} & {
+    ${Main} & {
       display: unset;
     }
   `}
