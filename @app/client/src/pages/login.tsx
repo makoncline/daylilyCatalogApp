@@ -1,21 +1,19 @@
-import { LockOutlined, UserAddOutlined, UserOutlined } from "@ant-design/icons";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { ApolloError, useApolloClient } from "@apollo/client";
 import {
   AuthRestrict,
-  ButtonLink,
-  Col,
   Redirect,
-  Row,
   SharedLayout,
   SharedLayoutChildProps,
 } from "@app/components";
+import { Button, Space } from "@app/design";
 import { useLoginMutation, useSharedQuery } from "@app/graphql";
 import {
   extractError,
   getCodeFromError,
   resetWebsocketConnection,
 } from "@app/lib";
-import { Alert, Button, Form, Input } from "antd";
+import { Alert, Form, Input } from "antd";
 import { useForm } from "antd/lib/form/Form";
 import { NextPage } from "next";
 import Link from "next/link";
@@ -53,52 +51,31 @@ const Login: NextPage<LoginProps> = ({ next: rawNext }) => {
         currentUser ? (
           <Redirect href={next} />
         ) : (
-          <Row justify="center" style={{ marginTop: 32 }}>
+          <>
             {showLogin ? (
-              <Col xs={24} sm={12}>
-                <Row>
-                  <LoginForm
-                    onSuccessRedirectTo={next}
-                    onCancel={() => setShowLogin(false)}
-                    error={error}
-                    setError={setError}
-                  />
-                </Row>
-              </Col>
+              <LoginForm
+                onSuccessRedirectTo={next}
+                onCancel={() => setShowLogin(false)}
+                error={error}
+                setError={setError}
+              />
             ) : (
-              <Col xs={24} sm={12}>
-                <Row style={{ marginBottom: 8 }}>
-                  <Col span={24}>
-                    <Button
-                      data-cy="loginpage-button-withusername"
-                      icon={<UserOutlined />}
-                      size="large"
-                      block
-                      onClick={() => setShowLogin(true)}
-                      type="primary"
-                    >
-                      Sign in with E-mail or Username
-                    </Button>
-                  </Col>
-                </Row>
-                <Row justify="center">
-                  <Col flex={1}>
-                    <ButtonLink
-                      icon={<UserAddOutlined />}
-                      size="large"
-                      block
-                      type="default"
-                      href={`/register?next=${encodeURIComponent(next)}`}
-                    >
-                      <a data-cy="loginpage-button-register">
-                        Create an account
-                      </a>
-                    </ButtonLink>
-                  </Col>
-                </Row>
-              </Col>
+              <Space direction="column">
+                <Button
+                  data-cy="loginpage-button-withusername"
+                  onClick={() => setShowLogin(true)}
+                >
+                  Sign in with E-mail or Username
+                </Button>
+                <Button
+                  href={`/register?next=${encodeURIComponent(next)}`}
+                  block
+                >
+                  Create an account
+                </Button>
+              </Space>
             )}
-          </Row>
+          </>
         )
       }
     </SharedLayout>

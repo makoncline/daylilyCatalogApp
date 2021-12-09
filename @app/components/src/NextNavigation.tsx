@@ -1,10 +1,34 @@
-import { Link, Nav, TextLogo } from "@app/design";
+import { Button, Link, Nav, TextLogo } from "@app/design";
 import NextLink from "next/link";
 import React from "react";
 
-export const NextNavigation = () => (
+type Props = {
+  handleLogout: () => void;
+  isLoggedIn: boolean;
+  currentUrl: string;
+};
+
+export const NextNavigation = ({
+  handleLogout,
+  isLoggedIn,
+  currentUrl,
+}: Props) => (
   <Nav logo={<NextTextLogo href="/">Daylily Catalog</NextTextLogo>}>
-    <NextNavLink href="/users">Users</NextNavLink>
+    {isLoggedIn ? (
+      <>
+        <NextNavLink href="/users">Users</NextNavLink>
+        <NextNavLink href="/catalog">Catalog</NextNavLink>
+        <NextNavLink href="/lists">Lists</NextNavLink>
+        <NextNavLink href="/settings">Settings</NextNavLink>{" "}
+        {/* put a warning here if not verified*/}
+        <NextNavLink href="/membership">Membership</NextNavLink>
+        <Button onClick={handleLogout}>Logout</Button>
+      </>
+    ) : (
+      <NextNavLink href={`/login?next=${encodeURIComponent(currentUrl)}`}>
+        Sign in
+      </NextNavLink>
+    )}
   </Nav>
 );
 

@@ -14,7 +14,7 @@ import Router, { useRouter } from "next/router";
 import * as React from "react";
 import { useCallback } from "react";
 
-import { ErrorAlert, H1, P, StandardWidth, Warn } from ".";
+import { ErrorAlert, H1, NextLayout, P, StandardWidth, Warn } from ".";
 import { Redirect } from "./Redirect";
 import { UserAvatar } from "./UserAvatar";
 
@@ -162,9 +162,20 @@ export function SharedLayout({
   const { data, loading, error } = query;
 
   return (
-    <Layout>
+    <>
       {data && data.currentUser ? <CurrentUserUpdatedSubscription /> : null}
-      <Header
+      <NextLayout
+        handleLogout={handleLogout}
+        isLoggedIn={!!data?.currentUser}
+        currentUrl={currentUrl}
+      >
+        {renderChildren({
+          error,
+          loading,
+          currentUser: data && data.currentUser,
+        })}
+      </NextLayout>
+      {/* <Header
         style={{
           boxShadow: "0 2px 8px #f0f1f2",
           zIndex: 1,
@@ -281,7 +292,7 @@ export function SharedLayout({
             justifyContent: "space-between",
           }}
         >
-          <Text>
+          <p>
             Copyright &copy; {new Date().getFullYear()} {companyName}. All
             rights reserved.
             {process.env.T_AND_C_URL ? (
@@ -295,9 +306,9 @@ export function SharedLayout({
                 </a>
               </span>
             ) : null}
-          </Text>
+          </p>
         </div>
-      </Footer>
-    </Layout>
+      </Footer> */}
+    </>
   );
 }

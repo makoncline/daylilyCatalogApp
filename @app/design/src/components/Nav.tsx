@@ -87,7 +87,9 @@ export const NavItem = styled.li`
 `;
 
 const NavItems = styled.ul`
-  margin: 0;
+  display: flex;
+  gap: var(--size-3);
+  flex-direction: column;
   padding: 0;
   list-style: none;
   ${Main} & {
@@ -98,7 +100,10 @@ const NavItems = styled.ul`
       display: none;
     }
     ${Main} & {
-      display: unset;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin: 0;
     }
   `}
 `;

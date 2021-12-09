@@ -9,14 +9,16 @@ type Props = {
 
 export const Layout = ({ navigation, children, footer }: Props) => {
   return (
-    <>
+    <Wrapper>
       {navigation}
       <StyledMain>{children}</StyledMain>
       <Space />
       {footer}
-    </>
+    </Wrapper>
   );
 };
+
+const Wrapper = styled.div``;
 
 const StyledMain = styled.main``;
 

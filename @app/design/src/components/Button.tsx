@@ -15,8 +15,10 @@ export const Button = ({ children, href, ...props }: Props) => {
   return (
     <>
       {isLink ? (
-        <form style={{ display: "inline" }} action={href} method="get">
-          <StyledButton {...props}>{children}</StyledButton>
+        <form action={href} method="get">
+          <StyledButton style={{ width: "100%" }} {...props}>
+            {children}
+          </StyledButton>
         </form>
       ) : (
         <StyledButton {...props}>{children}</StyledButton>
@@ -27,6 +29,7 @@ export const Button = ({ children, href, ...props }: Props) => {
 
 const StyledButton = styled.button`
   display: inline-flex;
+  justify-content: center;
   white-space: nowrap;
 
   font-size: var(--font-size-1);

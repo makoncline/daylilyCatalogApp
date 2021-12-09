@@ -27,4 +27,5 @@ body {
 
 body > * {
   grid-column: 2;
+  width: 100%;
 }
