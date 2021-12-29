@@ -1,17 +1,15 @@
 @import "brand.css";
 
-*,
-::before,
-::after {
+:where(*, ::before, ::after) {
   box-sizing: border-box;
 }
 
-* {
+:where(*) {
   background-origin: border-box;
   background-repeat: no-repeat;
   margin: 0;
 }
-*:not(fieldset) {
+:where(*:not(fieldset)) {
   border-width: 0;
   border-style: solid;
 }

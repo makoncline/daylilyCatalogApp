@@ -1,29 +1,30 @@
-import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { ApolloError, useApolloClient } from "@apollo/client";
 import {
   AuthRestrict,
+  Link,
   Redirect,
   SharedLayout,
   SharedLayoutChildProps,
 } from "@app/components";
-import { Button, Space } from "@app/design";
+import {
+  Button,
+  Error,
+  Form as NewForm,
+  FormGroup,
+  Input as NewInput,
+  Label,
+  Space,
+} from "@app/design";
 import { useLoginMutation, useSharedQuery } from "@app/graphql";
 import {
   extractError,
   getCodeFromError,
   resetWebsocketConnection,
 } from "@app/lib";
-import { Alert, Form, Input } from "antd";
-import { useForm } from "antd/lib/form/Form";
+import { Alert } from "antd";
 import { NextPage } from "next";
-import Link from "next/link";
 import Router from "next/router";
-import { Store } from "rc-field-form/lib/interface";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-
-function hasErrors(fieldsError: Object) {
-  return Object.keys(fieldsError).some((field) => fieldsError[field]);
-}
+import React, { useCallback, useState } from "react";
 
 interface LoginProps {
   next: string | null;
@@ -53,12 +54,20 @@ const Login: NextPage<LoginProps> = ({ next: rawNext }) => {
         ) : (
           <>
             {showLogin ? (
-              <LoginForm
-                onSuccessRedirectTo={next}
-                onCancel={() => setShowLogin(false)}
-                error={error}
-                setError={setError}
-              />
+              <Space>
+                {/* <LoginForm
+                  onSuccessRedirectTo={next}
+                  onCancel={() => setShowLogin(false)}
+                  error={error}
+                  setError={setError}
+                /> */}
+                <NewLoginForm
+                  onSuccessRedirectTo={next}
+                  onCancel={() => setShowLogin(false)}
+                  error={error}
+                  setError={setError}
+                />
+              </Space>
             ) : (
               <Space direction="column">
                 <Button
@@ -88,111 +97,144 @@ Login.getInitialProps = async ({ query }) => ({
 
 export default Login;
 
-interface LoginFormProps {
+interface NewLoginFormProps {
   onSuccessRedirectTo: string;
   error: Error | ApolloError | null;
   setError: (error: Error | ApolloError | null) => void;
   onCancel: () => void;
 }
 
-function LoginForm({
+function NewLoginForm({
   onSuccessRedirectTo,
-  onCancel,
   error,
   setError,
-}: LoginFormProps) {
-  const [form] = useForm();
+  onCancel,
+}: NewLoginFormProps) {
+  const [state, setState] = React.useState<{
+    values: { username: string; password: string };
+    errors: { username?: string; password?: string };
+  }>({
+    values: {
+      username: "",
+      password: "",
+    },
+    errors: {},
+  });
   const [login] = useLoginMutation({});
   const client = useApolloClient();
 
   const [submitDisabled, setSubmitDisabled] = useState(false);
+
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const name = event.target.name;
+    setState({
+      ...state,
+      values: {
+        ...state.values,
+        [name]: event.target.value,
+      },
+      errors: {},
+    });
+    setSubmitDisabled(hasError());
+  }
+
   const handleSubmit = useCallback(
-    async (values: Store) => {
+    async (event) => {
+      event.preventDefault();
       setError(null);
+      if (state.values.username.length === 0) {
+        setState({
+          ...state,
+          errors: { ...state.errors, username: "Please input your username" },
+        });
+        console.log("no username");
+        return;
+      }
+      if (state.values.password.length === 0) {
+        setState({
+          ...state,
+          errors: { ...state.errors, password: "Please input your passphrase" },
+        });
+        console.log("no password");
+        return;
+      }
       try {
         await login({
           variables: {
-            username: values.username,
-            password: values.password,
+            username: state.values.username,
+            password: state.values.password,
           },
         });
         // Success: refetch
         resetWebsocketConnection();
         client.resetStore();
         Router.push(onSuccessRedirectTo);
-      } catch (e) {
+      } catch (e: any) {
         const code = getCodeFromError(e);
         if (code === "CREDS") {
-          form.setFields([
-            {
-              name: "password",
-              value: form.getFieldValue("password"),
-              errors: ["Incorrect username or passphrase"],
+          setState({
+            ...state,
+            errors: {
+              ...state.errors,
+              password: "Incorrect username or passphrase",
             },
-          ]);
+          });
           setSubmitDisabled(true);
         } else {
           setError(e);
         }
       }
     },
-    [client, form, login, onSuccessRedirectTo, setError]
+    [state, client, login, onSuccessRedirectTo, setError]
   );
 
-  const focusElement = useRef<Input>(null);
-  useEffect(
-    () => void (focusElement.current && focusElement.current!.focus()),
-    [focusElement]
-  );
-
-  const handleValuesChange = useCallback(() => {
-    setSubmitDisabled(hasErrors(form.getFieldsError().length !== 0));
-  }, [form]);
+  function hasError() {
+    return Object.keys(state.errors).length !== 0;
+  }
 
   const code = getCodeFromError(error);
 
   return (
-    <Form
-      form={form}
-      layout="vertical"
-      onFinish={handleSubmit}
-      onValuesChange={handleValuesChange}
-      style={{ width: "100%" }}
-    >
-      <Form.Item
-        name="username"
-        rules={[{ required: true, message: "Please input your username" }]}
-      >
-        <Input
-          size="large"
-          prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-          placeholder="E-mail or Username"
+    <NewForm onSubmit={handleSubmit}>
+      <FormGroup>
+        <Label htmlFor="username" hidden>
+          Username
+        </Label>
+        <NewInput
+          name="username"
+          id="username"
+          type="text"
+          value={state.values.username}
+          onChange={handleChange}
+          placeholder="👤    E-mail or Username"
           autoComplete="email username"
-          ref={focusElement}
           data-cy="loginpage-input-username"
         />
-      </Form.Item>
-      <Form.Item
-        name="password"
-        rules={[{ required: true, message: "Please input your passphrase" }]}
-      >
-        <Input
-          prefix={<LockOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-          size="large"
+        {state.errors.username && <Error>{state.errors.username}</Error>}
+      </FormGroup>
+      <FormGroup>
+        <Label htmlFor="password" hidden>
+          Passphrase
+        </Label>
+        <NewInput
+          name="password"
+          id="password"
           type="password"
-          placeholder="Passphrase"
+          value={state.values.password}
+          onChange={handleChange}
+          placeholder="🔒    Passphrase"
           autoComplete="current-password"
           data-cy="loginpage-input-password"
         />
-      </Form.Item>
-      <Form.Item>
+        {state.errors.password && <Error>{state.errors.password}</Error>}
+      </FormGroup>
+      <FormGroup>
         <Link href="/forgot">
           <a>Forgotten passphrase?</a>
         </Link>
-      </Form.Item>
-
+      </FormGroup>
       {error ? (
-        <Form.Item>
+        <FormGroup>
           <Alert
             type="error"
             message={`Sign in failed`}
@@ -208,11 +250,10 @@ function LoginForm({
               </span>
             }
           />
-        </Form.Item>
+        </FormGroup>
       ) : null}
-      <Form.Item>
+      <FormGroup direction="row">
         <Button
-          type="primary"
           htmlType="submit"
           disabled={submitDisabled}
           data-cy="loginpage-button-submit"
@@ -222,7 +263,7 @@ function LoginForm({
         <a style={{ marginLeft: 16 }} onClick={onCancel}>
           Use a different sign in method
         </a>
-      </Form.Item>
-    </Form>
+      </FormGroup>
+    </NewForm>
   );
 }

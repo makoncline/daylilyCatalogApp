@@ -5,6 +5,7 @@
   --primary--glint: var(--blue-4);
   --secondary: var(--violet-5);
   --secondary--glint: var(--violet-4);
+  --danger: var(--red-5);
 
   --link: var(--indigo-7);
   --link-visited: var(--grape-7);
