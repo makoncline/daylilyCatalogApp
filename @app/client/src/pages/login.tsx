@@ -9,9 +9,9 @@ import {
 import {
   Button,
   Error,
-  Form as NewForm,
+  Form,
   FormGroup,
-  Input as NewInput,
+  Input,
   Label,
   Space,
 } from "@app/design";
@@ -21,7 +21,6 @@ import {
   getCodeFromError,
   resetWebsocketConnection,
 } from "@app/lib";
-import { Alert } from "antd";
 import { NextPage } from "next";
 import Router from "next/router";
 import React, { useCallback, useState } from "react";
@@ -54,20 +53,12 @@ const Login: NextPage<LoginProps> = ({ next: rawNext }) => {
         ) : (
           <>
             {showLogin ? (
-              <Space>
-                {/* <LoginForm
-                  onSuccessRedirectTo={next}
-                  onCancel={() => setShowLogin(false)}
-                  error={error}
-                  setError={setError}
-                /> */}
-                <NewLoginForm
-                  onSuccessRedirectTo={next}
-                  onCancel={() => setShowLogin(false)}
-                  error={error}
-                  setError={setError}
-                />
-              </Space>
+              <LoginForm
+                onSuccessRedirectTo={next}
+                onCancel={() => setShowLogin(false)}
+                error={error}
+                setError={setError}
+              />
             ) : (
               <Space direction="column">
                 <Button
@@ -97,19 +88,19 @@ Login.getInitialProps = async ({ query }) => ({
 
 export default Login;
 
-interface NewLoginFormProps {
+interface LoginFormProps {
   onSuccessRedirectTo: string;
   error: Error | ApolloError | null;
   setError: (error: Error | ApolloError | null) => void;
   onCancel: () => void;
 }
 
-function NewLoginForm({
+function LoginForm({
   onSuccessRedirectTo,
   error,
   setError,
   onCancel,
-}: NewLoginFormProps) {
+}: LoginFormProps) {
   const [state, setState] = React.useState<{
     values: { username: string; password: string };
     errors: { username?: string; password?: string };
@@ -120,8 +111,6 @@ function NewLoginForm({
     },
     errors: {},
   });
-  const [login] = useLoginMutation({});
-  const client = useApolloClient();
 
   const [submitDisabled, setSubmitDisabled] = useState(false);
 
@@ -137,6 +126,9 @@ function NewLoginForm({
     });
     setSubmitDisabled(hasError());
   }
+
+  const [login] = useLoginMutation({});
+  const client = useApolloClient();
 
   const handleSubmit = useCallback(
     async (event) => {
@@ -195,12 +187,12 @@ function NewLoginForm({
   const code = getCodeFromError(error);
 
   return (
-    <NewForm onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit}>
       <FormGroup>
         <Label htmlFor="username" hidden>
           Username
         </Label>
-        <NewInput
+        <Input
           name="username"
           id="username"
           type="text"
@@ -216,7 +208,7 @@ function NewLoginForm({
         <Label htmlFor="password" hidden>
           Passphrase
         </Label>
-        <NewInput
+        <Input
           name="password"
           id="password"
           type="password"
@@ -235,21 +227,18 @@ function NewLoginForm({
       </FormGroup>
       {error ? (
         <FormGroup>
-          <Alert
-            type="error"
-            message={`Sign in failed`}
-            description={
-              <span>
-                {extractError(error).message}
-                {code ? (
-                  <span>
-                    {" "}
-                    (Error code: <code>ERR_{code}</code>)
-                  </span>
-                ) : null}
-              </span>
-            }
-          />
+          <Error>
+            <p>Sign in failed</p>
+            <span>
+              {extractError(error).message}
+              {code ? (
+                <span>
+                  {" "}
+                  (Error code: <code>ERR_{code}</code>)
+                </span>
+              ) : null}
+            </span>
+          </Error>
         </FormGroup>
       ) : null}
       <FormGroup direction="row">
@@ -264,6 +253,6 @@ function NewLoginForm({
           Use a different sign in method
         </a>
       </FormGroup>
-    </NewForm>
+    </Form>
   );
 }

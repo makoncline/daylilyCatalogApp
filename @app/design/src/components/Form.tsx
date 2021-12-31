@@ -27,7 +27,7 @@ export const FormGroup = styled.div`
   flex-direction: ${(props: FormGroupProps) =>
     props.direction === "row" ? "row" : "column"};
   align-items: ${(props: FormGroupProps) =>
-    props.direction === "row" ? "center" : "flex-start"};
+    props.direction === "row" ? "center" : "stretch"};
   gap: var(--size-2);
 `;
 
