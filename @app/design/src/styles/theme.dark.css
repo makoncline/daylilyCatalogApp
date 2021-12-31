@@ -8,6 +8,7 @@
     --secondary: var(--violet-5);
     --secondary--glint: var(--violet-4);
     --danger: var(--red-5);
+    --success: var(--green-5);
 
     --link: var(--indigo-3);
     --link-visited: var(--grape-3);

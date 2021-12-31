@@ -1,4 +1,3 @@
-import { QuestionCircleOutlined } from "@ant-design/icons";
 import { ApolloError, useApolloClient } from "@apollo/client";
 import {
   AuthRestrict,
@@ -6,28 +5,18 @@ import {
   Redirect,
   SharedLayout,
 } from "@app/components";
+import { Button, Error, Form, FormGroup, Input, Label } from "@app/design";
 import { useRegisterMutation, useSharedQuery } from "@app/graphql";
 import {
   extractError,
-  formItemLayout,
   getCodeFromError,
   getExceptionFromError,
   resetWebsocketConnection,
   setPasswordInfo,
-  tailFormItemLayout,
 } from "@app/lib";
-import { Alert, Button, Form, Input, Tooltip } from "antd";
-import { useForm } from "antd/lib/form/Form";
 import { NextPage } from "next";
 import Router from "next/router";
-import { Store } from "rc-field-form/lib/interface";
-import React, {
-  FocusEvent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { FocusEvent, useCallback, useState } from "react";
 
 import { isSafe } from "./login";
 
@@ -49,10 +38,37 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
   const [register] = useRegisterMutation({});
   const client = useApolloClient();
   const [confirmDirty, setConfirmDirty] = useState(false);
-  const [form] = useForm();
+
+  const [state, setState] = React.useState<{
+    values: {
+      username: string;
+      email: string;
+      password: string;
+      confirm: string;
+      name: string;
+    };
+    errors: {
+      username?: string;
+      email?: string;
+      password?: string;
+      confirm?: string;
+      name?: string;
+    };
+  }>({
+    values: {
+      username: "",
+      email: "",
+      password: "",
+      confirm: "",
+      name: "",
+    },
+    errors: {},
+  });
 
   const handleSubmit = useCallback(
-    async (values: Store) => {
+    async (event) => {
+      event.preventDefault();
+      const { values, errors } = state;
       try {
         await register({
           variables: {
@@ -66,56 +82,52 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
         resetWebsocketConnection();
         client.resetStore();
         Router.push(next);
-      } catch (e) {
+      } catch (e: any) {
         const code = getCodeFromError(e);
         const exception = getExceptionFromError(e);
         const fields: any = exception && exception["fields"];
         if (code === "WEAKP") {
-          form.setFields([
-            {
-              name: "password",
-              value: form.getFieldValue("password"),
-              errors: [
+          setState({
+            ...state,
+            errors: {
+              ...errors,
+              password:
                 "The server believes this passphrase is too weak, please make it stronger",
-              ],
             },
-          ]);
+          });
         } else if (code === "EMTKN") {
-          form.setFields([
-            {
-              name: "email",
-              value: form.getFieldValue("email"),
-              errors: [
+          setState({
+            ...state,
+            errors: {
+              ...errors,
+              email:
                 "An account with this email address has already been registered, consider using the 'Forgot passphrase' function.",
-              ],
             },
-          ]);
+          });
         } else if (code === "NUNIQ" && fields && fields[0] === "username") {
-          form.setFields([
-            {
-              name: "username",
-              value: form.getFieldValue("username"),
-              errors: [
+          setState({
+            ...state,
+            errors: {
+              ...errors,
+              username:
                 "An account with this username has already been registered, please try a different username.",
-              ],
             },
-          ]);
+          });
         } else if (code === "23514") {
-          form.setFields([
-            {
-              name: "username",
-              value: form.getFieldValue("username"),
-              errors: [
+          setState({
+            ...state,
+            errors: {
+              ...errors,
+              username:
                 "This username is not allowed; usernames must be between 2 and 24 characters long (inclusive), must start with a letter, and must contain only alphanumeric characters and underscores.",
-              ],
             },
-          ]);
+          });
         } else {
           setError(e);
         }
       }
     },
-    [form, register, client, next]
+    [state, register, client, next]
   );
 
   const handleConfirmBlur = useCallback(
@@ -126,21 +138,6 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
     [setConfirmDirty, confirmDirty]
   );
 
-  const compareToFirstPassword = useCallback(
-    async (_rule: any, value: any) => {
-      if (value && value !== form.getFieldValue("password")) {
-        throw "Make sure your passphrase is the same in both passphrase boxes.";
-      }
-    },
-    [form]
-  );
-
-  const focusElement = useRef<Input>(null);
-  useEffect(
-    () => void (focusElement.current && focusElement.current!.focus()),
-    [focusElement]
-  );
-
   const [passwordIsFocussed, setPasswordIsFocussed] = useState(false);
   const [passwordIsDirty, setPasswordIsDirty] = useState(false);
   const setPasswordFocussed = useCallback(() => {
@@ -149,24 +146,80 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
   const setPasswordNotFocussed = useCallback(() => {
     setPasswordIsFocussed(false);
   }, [setPasswordIsFocussed]);
-  const handleValuesChange = useCallback(
-    (changedValues) => {
-      setPasswordInfo(
-        { setPasswordStrength, setPasswordSuggestions },
-        changedValues
-      );
-      setPasswordIsDirty(form.isFieldTouched("password"));
-      if (changedValues.confirm) {
-        if (form.isFieldTouched("password")) {
-          form.validateFields(["password"]);
-        }
-      } else if (changedValues.password) {
-        if (form.isFieldTouched("confirm")) {
-          form.validateFields(["confirm"]);
-        }
+
+  const validateConfirm = useCallback(
+    (confirm) => {
+      const password = state.values.password;
+      if (confirm && confirm !== password) {
+        return "Make sure your passphrase is the same in both passphrase boxes.";
+      } else {
+        return;
       }
     },
-    [form]
+    [state.values.password]
+  );
+
+  const validateUsername = useCallback((username: string) => {
+    if (username.length < 2) {
+      return "Username must be at least 2 characters long.";
+    } else if (username.length > 24) {
+      return "Username must be no more than 24 characters long.";
+    } else if (!/^([a-zA-Z]|$)/.test(username)) {
+      return "Username must start with a letter.";
+    } else if (!/^([^_]|_[^_]|_$)*$/.test(username)) {
+      return "Username must not contain two underscores next to each other.";
+    } else if (!/^[a-zA-Z0-9_]*$/.test(username)) {
+      return "Username must contain only alphanumeric characters and underscores.";
+    } else {
+      return;
+    }
+  }, []);
+
+  const validateEmail = useCallback((email: string) => {
+    if (
+      !/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+        email
+      )
+    ) {
+      return "Please enter a valid email address.";
+    } else {
+      return;
+    }
+  }, []);
+
+  const handleChange = useCallback(
+    (event) => {
+      const { name, value } = event.target;
+      let errors = { ...state.errors };
+      setPasswordInfo(
+        { setPasswordStrength, setPasswordSuggestions },
+        { [name]: value }
+      );
+      setPasswordIsDirty(state.values.password.length > 0);
+      if (name === "password") {
+        if (state.values.confirm.length > 0) {
+          errors.confirm = validateConfirm(value);
+        }
+      }
+      if (name === "email") {
+        errors.email = validateEmail(value);
+      }
+      if (name === "confirm") {
+        errors.confirm = validateConfirm(value);
+      }
+      if (name === "username") {
+        errors.username = validateUsername(value);
+      }
+      setState({
+        ...state,
+        values: {
+          ...state.values,
+          [name]: value,
+        },
+        errors,
+      });
+    },
+    [state, validateConfirm, validateUsername, validateEmail]
   );
 
   const code = getCodeFromError(error);
@@ -180,175 +233,114 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
         currentUser ? (
           <Redirect href={next} />
         ) : (
-          <Form
-            {...formItemLayout}
-            form={form}
-            onFinish={handleSubmit}
-            onValuesChange={handleValuesChange}
-          >
-            <Form.Item
-              label={
-                <span data-cy="registerpage-name-label">
-                  Name&nbsp;
-                  <Tooltip title="What is your name?">
-                    <QuestionCircleOutlined />
-                  </Tooltip>
-                </span>
-              }
-              name="name"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your name.",
-                  whitespace: true,
-                },
-              ]}
-            >
+          <Form onSubmit={handleSubmit}>
+            <FormGroup>
+              <Label htmlFor="name">Name</Label>
               <Input
-                ref={focusElement}
+                id="name"
+                name="name"
+                type="text"
                 autoComplete="name"
                 data-cy="registerpage-input-name"
+                value={state.values.name}
+                onChange={handleChange}
+                placeholder="What is your name?"
               />
-            </Form.Item>
-            <Form.Item
-              label={
-                <span>
-                  Username&nbsp;
-                  <Tooltip title="What do you want others to call you?">
-                    <QuestionCircleOutlined />
-                  </Tooltip>
-                </span>
-              }
-              name="username"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your username.",
-                  whitespace: true,
-                },
-                {
-                  min: 2,
-                  message: "Username must be at least 2 characters long.",
-                },
-                {
-                  max: 24,
-                  message: "Username must be no more than 24 characters long.",
-                },
-                {
-                  pattern: /^([a-zA-Z]|$)/,
-                  message: "Username must start with a letter.",
-                },
-                {
-                  pattern: /^([^_]|_[^_]|_$)*$/,
-                  message:
-                    "Username must not contain two underscores next to each other.",
-                },
-                {
-                  pattern: /^[a-zA-Z0-9_]*$/,
-                  message:
-                    "Username must contain only alphanumeric characters and underscores.",
-                },
-              ]}
-            >
+              {state.errors.name && <Error>{state.errors.name}</Error>}
+            </FormGroup>
+            <FormGroup>
+              <Label htmlFor="username">Username</Label>
               <Input
+                id="username"
+                name="username"
+                type="text"
                 autoComplete="username"
                 data-cy="registerpage-input-username"
+                value={state.values.username}
+                onChange={handleChange}
+                placeholder="What would you like people to call you?"
               />
-            </Form.Item>
-            <Form.Item
-              label="E-mail"
-              name="email"
-              rules={[
-                {
-                  type: "email",
-                  message: "The input is not valid E-mail.",
-                },
-                {
-                  required: true,
-                  message: "Please input your E-mail.",
-                },
-              ]}
-            >
-              <Input data-cy="registerpage-input-email" />
-            </Form.Item>
-            <Form.Item label="Passphrase" required>
-              <Form.Item
-                noStyle
+              {state.errors.username && <Error>{state.errors.username}</Error>}
+            </FormGroup>
+            <FormGroup>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+                data-cy="registerpage-input-email"
+                value={state.values.email}
+                onChange={handleChange}
+                placeholder="What is your email address?"
+              />
+              {state.errors.email && <Error>{state.errors.email}</Error>}
+            </FormGroup>
+            <FormGroup>
+              <Label htmlFor="password">Passphrase</Label>
+              <Input
                 name="password"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input your passphrase.",
-                  },
-                ]}
-              >
-                <Input
-                  type="password"
-                  autoComplete="new-password"
-                  data-cy="registerpage-input-password"
-                  onFocus={setPasswordFocussed}
-                  onBlur={setPasswordNotFocussed}
-                />
-              </Form.Item>
+                id="password"
+                type="password"
+                required
+                value={state.values.password}
+                onChange={handleChange}
+                autoComplete="current-password"
+                data-cy="loginpage-input-password"
+                onFocus={setPasswordFocussed}
+                onBlur={setPasswordNotFocussed}
+                placeholder="Enter a secure passphrase."
+              />
+              {state.errors.password && <Error>{state.errors.password}</Error>}
               <PasswordStrength
                 passwordStrength={passwordStrength}
                 suggestions={passwordSuggestions}
                 isDirty={passwordIsDirty}
                 isFocussed={passwordIsFocussed}
               />
-            </Form.Item>
-            <Form.Item
-              label="Confirm passphrase"
-              name="confirm"
-              rules={[
-                {
-                  required: true,
-                  message: "Please confirm your passphrase.",
-                },
-                {
-                  validator: compareToFirstPassword,
-                },
-              ]}
-            >
+            </FormGroup>
+            <FormGroup>
+              <Label htmlFor="confirm">Confirm Passphrase</Label>
               <Input
+                name="confirm"
+                id="confirm"
                 type="password"
+                value={state.values.confirm}
+                onChange={handleChange}
                 autoComplete="new-password"
-                onBlur={handleConfirmBlur}
                 data-cy="registerpage-input-password2"
+                onBlur={handleConfirmBlur}
+                placeholder="Confirm your passphrase."
               />
-            </Form.Item>
+              {state.errors.confirm && <Error>{state.errors.confirm}</Error>}
+            </FormGroup>
             {error ? (
-              <Form.Item label="Error">
-                <Alert
-                  type="error"
-                  message={`Registration failed`}
-                  description={
-                    <span>
-                      {extractError(error).message}
-                      {code ? (
-                        <span>
-                          {" "}
-                          (Error code: <code>ERR_{code}</code>)
-                        </span>
-                      ) : null}
-                    </span>
-                  }
-                />
-              </Form.Item>
+              <FormGroup>
+                <Error>
+                  <p>Registration failed</p>
+                  <span>
+                    {extractError(error).message}
+                    {code ? (
+                      <span>
+                        {" "}
+                        (Error code: <code>ERR_{code}</code>)
+                      </span>
+                    ) : null}
+                  </span>
+                </Error>
+              </FormGroup>
             ) : null}
-            <Form.Item {...tailFormItemLayout}>
+            <FormGroup>
               <Button htmlType="submit" data-cy="registerpage-submit-button">
                 Register
               </Button>
-            </Form.Item>
+            </FormGroup>
           </Form>
         )
       }
     </SharedLayout>
   );
 };
-Register.getInitialProps = async ({ query }) => ({
-  next: typeof query.next === "string" ? query.next : null,
-});
 
 export default Register;

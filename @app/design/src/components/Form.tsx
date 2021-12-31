@@ -39,5 +39,9 @@ export const Error = styled.pre`
   color: var(--danger);
   margin: 0;
 `;
+export const Success = styled.pre`
+  color: var(--success);
+  margin: 0;
+`;
 
 const Wrapper = styled.form``;
