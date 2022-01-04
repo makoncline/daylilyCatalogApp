@@ -36,18 +36,17 @@ export const Nav = ({ logo, children }: NavProps) => {
   );
 };
 
-type TextLogoProps = {
-  href?: string;
-  children: string;
-};
-
-export const TextLogo = ({ href, children }: TextLogoProps) => {
-  return (
-    <a href={href}>
-      <Heading level={3}>{children}</Heading>
-    </a>
-  );
-};
+export const TextLogo = React.forwardRef<
+  HTMLAnchorElement,
+  {
+    children: React.ReactNode;
+  }
+>(({ children, ...props }, ref) => (
+  <a ref={ref} {...props}>
+    <Heading level={3}>{children}</Heading>
+  </a>
+));
+TextLogo.displayName = "TextLogo";
 
 const LogoWrapper = styled.div`
   margin-inline-end: auto;
