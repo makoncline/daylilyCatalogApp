@@ -5,7 +5,7 @@ import {
   Redirect,
   SharedLayout,
 } from "@app/components";
-import { Button, Error, Form, FormGroup, Input, Label } from "@app/design";
+import { Button, Form, FormError, FormGroup, Input, Label } from "@app/design";
 import { useRegisterMutation, useSharedQuery } from "@app/graphql";
 import {
   extractError,
@@ -246,7 +246,7 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
                 onChange={handleChange}
                 placeholder="What is your name?"
               />
-              {state.errors.name && <Error>{state.errors.name}</Error>}
+              {state.errors.name && <FormError>{state.errors.name}</FormError>}
             </FormGroup>
             <FormGroup>
               <Label htmlFor="username">Username</Label>
@@ -260,7 +260,9 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
                 onChange={handleChange}
                 placeholder="What would you like people to call you?"
               />
-              {state.errors.username && <Error>{state.errors.username}</Error>}
+              {state.errors.username && (
+                <FormError>{state.errors.username}</FormError>
+              )}
             </FormGroup>
             <FormGroup>
               <Label htmlFor="email">Email</Label>
@@ -275,7 +277,9 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
                 onChange={handleChange}
                 placeholder="What is your email address?"
               />
-              {state.errors.email && <Error>{state.errors.email}</Error>}
+              {state.errors.email && (
+                <FormError>{state.errors.email}</FormError>
+              )}
             </FormGroup>
             <FormGroup>
               <Label htmlFor="password">Passphrase</Label>
@@ -292,7 +296,9 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
                 onBlur={setPasswordNotFocussed}
                 placeholder="Enter a secure passphrase."
               />
-              {state.errors.password && <Error>{state.errors.password}</Error>}
+              {state.errors.password && (
+                <FormError>{state.errors.password}</FormError>
+              )}
               <PasswordStrength
                 passwordStrength={passwordStrength}
                 suggestions={passwordSuggestions}
@@ -313,11 +319,13 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
                 onBlur={handleConfirmBlur}
                 placeholder="Confirm your passphrase."
               />
-              {state.errors.confirm && <Error>{state.errors.confirm}</Error>}
+              {state.errors.confirm && (
+                <FormError>{state.errors.confirm}</FormError>
+              )}
             </FormGroup>
             {error ? (
               <FormGroup>
-                <Error>
+                <FormError>
                   <p>Registration failed</p>
                   <span>
                     {extractError(error).message}
@@ -328,7 +336,7 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
                       </span>
                     ) : null}
                   </span>
-                </Error>
+                </FormError>
               </FormGroup>
             ) : null}
             <FormGroup>

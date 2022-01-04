@@ -1,4 +1,4 @@
-import { Error, Success } from "@app/design";
+import { FormError, Success } from "@app/design";
 import React from "react";
 
 export interface PasswordStrengthProps {
@@ -21,7 +21,7 @@ export function PasswordStrength({
       {suggestions.map((suggestion, key) => {
         return (
           <li key={key}>
-            <Error>{suggestion}</Error>
+            <FormError>{suggestion}</FormError>
           </li>
         );
       })}
