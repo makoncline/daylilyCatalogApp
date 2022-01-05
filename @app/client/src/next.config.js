@@ -1,4 +1,5 @@
 require("@app/config");
+const compose = require("lodash/flowRight");
 const AntDDayjsWebpackPlugin = require("antd-dayjs-webpack-plugin");
 
 if (!process.env.ROOT_URL) {
@@ -14,6 +15,8 @@ if (!process.env.ROOT_URL) {
   // You *must not* use `process.env` in here, because we need to check we have
   // those variables. To enforce this, we've deliberately shadowed process.
   module.exports = () => {
+    const withCss = require("@zeit/next-css");
+    const withLess = require("@zeit/next-less");
     const withAntdLess = require("next-plugin-antd-less");
     const lessToJS = require("less-vars-to-js");
     const fs = require("fs");
@@ -31,7 +34,18 @@ if (!process.env.ROOT_URL) {
       require.extensions[".css"] = () => {};
     }
 
-    return withAntdLess({
+    return compose(
+      // withCss,
+      // withLess
+      withAntdLess
+    )({
+      poweredByHeader: false,
+      distDir: `../.next`,
+      trailingSlash: false,
+      lessLoaderOptions: {
+        javascriptEnabled: true,
+        modifyVars: themeVariables, // make your antd custom effective
+      },
       images: {
         domains: [
           "daylily-catalog-images-stage.s3.amazonaws.com",
@@ -40,15 +54,6 @@ if (!process.env.ROOT_URL) {
         ],
       },
       webpack5: false,
-      modifyVars: {
-        hack: 'true;@import "~antd/lib/style/themes/default.less";',
-        hack2: 'true;@import "~antd/dist/antd.less";',
-        ...themeVariables,
-      },
-      poweredByHeader: false,
-      distDir: `../.next`,
-      trailingSlash: false,
-
       webpack(config, { webpack, dev, isServer }) {
         if (dev) config.devtool = "cheap-module-source-map";
 
@@ -75,16 +80,6 @@ if (!process.env.ROOT_URL) {
 
         return {
           ...config,
-          module: {
-            rules: [
-              ...config.module.rules,
-              {
-                test: /\.tsx?$/,
-                use: "babel-loader",
-                exclude: /node_modules/,
-              },
-            ],
-          },
           plugins: [
             ...config.plugins,
             new webpack.DefinePlugin({

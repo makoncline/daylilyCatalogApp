@@ -1,9 +1,8 @@
 import "nprogress/nprogress.css";
 require("../styles.less");
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import "@app/client/src/styles.css";
+import "../styles.css";
 
-// import "@app/design/src/styles/index.css";
 import { ApolloClient, ApolloProvider } from "@apollo/client";
 import { withApollo } from "@app/lib";
 import { notification } from "antd";
