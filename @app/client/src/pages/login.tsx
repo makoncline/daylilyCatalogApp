@@ -6,6 +6,7 @@ import {
   SharedLayout,
   SharedLayoutChildProps,
 } from "@app/components";
+import type { FormContextProps } from "@app/design";
 import {
   Button,
   Field,
@@ -33,9 +34,6 @@ export function isSafe(nextUrl: string | null) {
   return (nextUrl && nextUrl[0] === "/") || false;
 }
 
-/**
- * Login page just renders the standard layout and embeds the login form
- */
 const Login: NextPage<LoginProps> = ({ next: rawNext }) => {
   const [error, setError] = useState<Error | ApolloError | null>(null);
   const [showLogin, setShowLogin] = useState<boolean>(false);
@@ -105,7 +103,7 @@ function LoginForm({
   const client = useApolloClient();
 
   const handleSubmit = useCallback(
-    async ({ values, errors, setErrors }) => {
+    async ({ values, errors, setErrors }: FormContextProps) => {
       setError(null);
       try {
         await login({

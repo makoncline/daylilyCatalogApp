@@ -16,15 +16,17 @@ export function PasswordStrength({
   ],
 }: PasswordStrengthProps) {
   const strongPassword = !(passwordStrength < 4);
+  let items = suggestions.map((suggestion, key) => {
+    return (
+      <li key={key}>
+        <FormError>{suggestion}</FormError>
+      </li>
+    );
+  });
+
   const content = (
     <ul>
-      {suggestions.map((suggestion, key) => {
-        return (
-          <li key={key}>
-            <FormError>{suggestion}</FormError>
-          </li>
-        );
-      })}
+      {items}
       {strongPassword ? (
         <li>
           <Success>This is a strong password!</Success>
@@ -33,5 +35,5 @@ export function PasswordStrength({
     </ul>
   );
 
-  return content;
+  return items.length > 0 || strongPassword ? content : null;
 }

@@ -3,17 +3,20 @@ import styled from "styled-components";
 
 import { Space } from "./Space";
 
-type FormContextType =
-  | {
-      values: { [key: string]: string };
-      errors: { [key: string]: string | null };
-      handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-      register: (fieldId: string) => void;
-      hasError: boolean;
-    }
-  | undefined;
+export type FormContextProps = {
+  values: { [key: string]: string };
+  errors: { [key: string]: string | null };
+  handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  register: (fieldId: string) => void;
+  hasError: boolean;
+  setErrors: (errors: { [key: string]: string | null }) => void;
+};
 
-const FormContext = React.createContext<FormContextType>(undefined);
+export type OnChangeCallbackProps = FormContextProps & { changedField: string };
+
+const FormContext = React.createContext<FormContextProps | undefined>(
+  undefined
+);
 
 const useForm = () => {
   const context = React.useContext(FormContext);
@@ -24,30 +27,38 @@ const useForm = () => {
 };
 
 const Form = ({
+  onChange,
   onSubmit,
   children,
   defaultValues = {},
   validation = {},
 }: {
-  onSubmit: (event: any) => Promise<void>;
+  onChange?: (context: OnChangeCallbackProps) => void;
+  onSubmit: (context: FormContextProps) => void;
   children: React.ReactNode;
   defaultValues?: { [key: string]: string };
-  validation?: { [key: string]: (value: string) => string | null };
+  validation?: { [key: string]: (...args: any) => string | null };
 }) => {
   const [values, setValues] =
-    React.useState<{ [key: string]: any }>(defaultValues);
+    React.useState<{ [key: string]: string }>(defaultValues);
   const [errors, setErrors] = React.useState<{
     [key: string]: string | null;
   }>({});
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setValues((prevValues) => ({ ...prevValues, [name]: event.target.value }));
-    setErrors((prevErrors) =>
-      validation[name]
-        ? { ...prevErrors, [name]: validation[name](value) }
-        : prevErrors
-    );
+    const { name, value: fieldValue } = event.target;
+    const newValues = { ...values, [name]: fieldValue };
+    const newErrors = validation[name]
+      ? { ...errors, [name]: validation[name](fieldValue) }
+      : errors;
+    setValues(newValues);
+    setErrors(newErrors);
+    onChange?.({
+      ...value,
+      values: newValues,
+      errors: newErrors,
+      changedField: name,
+    });
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -61,7 +72,7 @@ const Form = ({
 
   const hasError = Object.values(errors).some((error) => error !== null);
 
-  const value = {
+  const value: FormContextProps = {
     values,
     errors,
     handleChange,
@@ -164,11 +175,11 @@ function SubmitButton({
 const Label = styled.label``;
 const Input = styled.input``;
 
-const FormError = styled.pre`
+const FormError = styled.div`
   color: var(--danger);
   margin: 0;
 `;
-const Success = styled.pre`
+const Success = styled.div`
   color: var(--success);
   margin: 0;
 `;

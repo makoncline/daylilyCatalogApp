@@ -5,7 +5,18 @@ import {
   Redirect,
   SharedLayout,
 } from "@app/components";
-import { Button, Form, FormError, FormGroup, Input, Label } from "@app/design";
+import {
+  Button,
+  Field,
+  Form,
+  FormContextProps,
+  FormError,
+  FormGroup,
+  Input,
+  Label,
+  OnChangeCallbackProps,
+  SubmitButton,
+} from "@app/design";
 import { useRegisterMutation, useSharedQuery } from "@app/graphql";
 import {
   extractError,
@@ -143,83 +154,42 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
   const setPasswordFocussed = useCallback(() => {
     setPasswordIsFocussed(true);
   }, [setPasswordIsFocussed]);
+
   const setPasswordNotFocussed = useCallback(() => {
     setPasswordIsFocussed(false);
   }, [setPasswordIsFocussed]);
 
-  const validateConfirm = useCallback(
-    (confirm) => {
-      const password = state.values.password;
-      if (confirm && confirm !== password) {
-        return "Make sure your passphrase is the same in both passphrase boxes.";
-      } else {
-        return;
-      }
-    },
-    [state.values.password]
-  );
-
-  const validateUsername = useCallback((username: string) => {
-    if (username.length < 2) {
-      return "Username must be at least 2 characters long.";
-    } else if (username.length > 24) {
-      return "Username must be no more than 24 characters long.";
-    } else if (!/^([a-zA-Z]|$)/.test(username)) {
-      return "Username must start with a letter.";
-    } else if (!/^([^_]|_[^_]|_$)*$/.test(username)) {
-      return "Username must not contain two underscores next to each other.";
-    } else if (!/^[a-zA-Z0-9_]*$/.test(username)) {
-      return "Username must contain only alphanumeric characters and underscores.";
-    } else {
-      return;
-    }
-  }, []);
-
-  const validateEmail = useCallback((email: string) => {
-    if (
-      !/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-        email
-      )
-    ) {
-      return "Please enter a valid email address.";
-    } else {
-      return;
-    }
-  }, []);
-
   const handleChange = useCallback(
-    (event) => {
-      const { name, value } = event.target;
-      let errors = { ...state.errors };
+    ({
+      errors,
+      values,
+      setErrors,
+      changedField: name,
+    }: OnChangeCallbackProps) => {
+      const value = values[name];
+      const { password, confirm } = values;
+      console.log(values);
       setPasswordInfo(
         { setPasswordStrength, setPasswordSuggestions },
         { [name]: value }
       );
-      setPasswordIsDirty(state.values.password.length > 0);
       if (name === "password") {
-        if (state.values.confirm.length > 0) {
-          errors.confirm = validateConfirm(value);
+        setPasswordIsDirty(true);
+        if (confirm.length > 0) {
+          setErrors({
+            ...errors,
+            confirm: validateConfirm(confirm, password),
+          });
         }
       }
-      if (name === "email") {
-        errors.email = validateEmail(value);
-      }
       if (name === "confirm") {
-        errors.confirm = validateConfirm(value);
+        setErrors({
+          ...errors,
+          confirm: validateConfirm(confirm, password),
+        });
       }
-      if (name === "username") {
-        errors.username = validateUsername(value);
-      }
-      setState({
-        ...state,
-        values: {
-          ...state.values,
-          [name]: value,
-        },
-        errors,
-      });
     },
-    [state, validateConfirm, validateUsername, validateEmail]
+    []
   );
 
   const code = getCodeFromError(error);
@@ -233,72 +203,46 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
         currentUser ? (
           <Redirect href={next} />
         ) : (
-          <Form onSubmit={handleSubmit}>
+          <Form
+            onChange={handleChange}
+            onSubmit={handleSubmit}
+            validation={{
+              username: validateUsername,
+              email: validateEmail,
+              confirm: validateConfirm,
+            }}
+          >
+            <Field
+              placeholder="What is your name?"
+              autoComplete="name"
+              data-cy="registerpage-input-name"
+            >
+              Name
+            </Field>
+            <Field
+              placeholder="What would you like people to call you?"
+              autoComplete="username"
+              data-cy="registerpage-input-username"
+            >
+              Username
+            </Field>
+            <Field
+              placeholder="What is your email address?"
+              autoComplete="email"
+              data-cy="registerpage-input-email"
+            >
+              Email
+            </Field>
             <FormGroup>
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                name="name"
-                type="text"
-                autoComplete="name"
-                data-cy="registerpage-input-name"
-                value={state.values.name}
-                onChange={handleChange}
-                placeholder="What is your name?"
-              />
-              {state.errors.name && <FormError>{state.errors.name}</FormError>}
-            </FormGroup>
-            <FormGroup>
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                name="username"
-                type="text"
-                autoComplete="username"
-                data-cy="registerpage-input-username"
-                value={state.values.username}
-                onChange={handleChange}
-                placeholder="What would you like people to call you?"
-              />
-              {state.errors.username && (
-                <FormError>{state.errors.username}</FormError>
-              )}
-            </FormGroup>
-            <FormGroup>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                required
-                autoComplete="email"
-                data-cy="registerpage-input-email"
-                value={state.values.email}
-                onChange={handleChange}
-                placeholder="What is your email address?"
-              />
-              {state.errors.email && (
-                <FormError>{state.errors.email}</FormError>
-              )}
-            </FormGroup>
-            <FormGroup>
-              <Label htmlFor="password">Passphrase</Label>
-              <Input
+              <Field
                 name="password"
-                id="password"
-                type="password"
-                required
-                value={state.values.password}
-                onChange={handleChange}
-                autoComplete="current-password"
-                data-cy="loginpage-input-password"
-                onFocus={setPasswordFocussed}
-                onBlur={setPasswordNotFocussed}
                 placeholder="Enter a secure passphrase."
-              />
-              {state.errors.password && (
-                <FormError>{state.errors.password}</FormError>
-              )}
+                autoComplete="current-password"
+                type="password"
+                data-cy="loginpage-input-password"
+              >
+                Passphrase
+              </Field>
               <PasswordStrength
                 passwordStrength={passwordStrength}
                 suggestions={passwordSuggestions}
@@ -306,23 +250,15 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
                 isFocussed={passwordIsFocussed}
               />
             </FormGroup>
-            <FormGroup>
-              <Label htmlFor="confirm">Confirm Passphrase</Label>
-              <Input
-                name="confirm"
-                id="confirm"
-                type="password"
-                value={state.values.confirm}
-                onChange={handleChange}
-                autoComplete="new-password"
-                data-cy="registerpage-input-password2"
-                onBlur={handleConfirmBlur}
-                placeholder="Confirm your passphrase."
-              />
-              {state.errors.confirm && (
-                <FormError>{state.errors.confirm}</FormError>
-              )}
-            </FormGroup>
+            <Field
+              name="confirm"
+              placeholder="Confirm your passphrase."
+              autoComplete="new-password"
+              type="password"
+              data-cy="registerpage-input-password2"
+            >
+              Confirm Passphrase
+            </Field>
             {error ? (
               <FormGroup>
                 <FormError>
@@ -339,11 +275,9 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
                 </FormError>
               </FormGroup>
             ) : null}
-            <FormGroup>
-              <Button htmlType="submit" data-cy="registerpage-submit-button">
-                Register
-              </Button>
-            </FormGroup>
+            <SubmitButton>
+              <Button data-cy="registerpage-submit-button">Register</Button>
+            </SubmitButton>
           </Form>
         )
       }
@@ -352,3 +286,38 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
 };
 
 export default Register;
+
+const validateConfirm = (confirm: string, password: string) => {
+  if (confirm && confirm !== password) {
+    return "Make sure your passphrase is the same in both passphrase boxes.";
+  } else {
+    return null;
+  }
+};
+const validateUsername = (username: string) => {
+  if (username.length < 2) {
+    return "Username must be at least 2 characters long.";
+  } else if (username.length > 24) {
+    return "Username must be no more than 24 characters long.";
+  } else if (!/^([a-zA-Z]|$)/.test(username)) {
+    return "Username must start with a letter.";
+  } else if (!/^([^_]|_[^_]|_$)*$/.test(username)) {
+    return "Username must not contain two underscores next to each other.";
+  } else if (!/^[a-zA-Z0-9_]*$/.test(username)) {
+    return "Username must contain only alphanumeric characters and underscores.";
+  } else {
+    return null;
+  }
+};
+
+const validateEmail = (email: string) => {
+  if (
+    !/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+      email
+    )
+  ) {
+    return "Please enter a valid email address.";
+  } else {
+    return null;
+  }
+};
