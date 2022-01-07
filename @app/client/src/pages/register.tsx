@@ -12,8 +12,6 @@ import {
   FormContextProps,
   FormError,
   FormGroup,
-  Input,
-  Label,
   OnChangeCallbackProps,
   SubmitButton,
 } from "@app/design";
@@ -50,36 +48,8 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
   const client = useApolloClient();
   const [confirmDirty, setConfirmDirty] = useState(false);
 
-  const [state, setState] = React.useState<{
-    values: {
-      username: string;
-      email: string;
-      password: string;
-      confirm: string;
-      name: string;
-    };
-    errors: {
-      username?: string;
-      email?: string;
-      password?: string;
-      confirm?: string;
-      name?: string;
-    };
-  }>({
-    values: {
-      username: "",
-      email: "",
-      password: "",
-      confirm: "",
-      name: "",
-    },
-    errors: {},
-  });
-
   const handleSubmit = useCallback(
-    async (event) => {
-      event.preventDefault();
-      const { values, errors } = state;
+    async ({ values, errors, setErrors }: FormContextProps) => {
       try {
         await register({
           variables: {
@@ -98,47 +68,35 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
         const exception = getExceptionFromError(e);
         const fields: any = exception && exception["fields"];
         if (code === "WEAKP") {
-          setState({
-            ...state,
-            errors: {
-              ...errors,
-              password:
-                "The server believes this passphrase is too weak, please make it stronger",
-            },
+          setErrors({
+            ...errors,
+            password:
+              "The server believes this passphrase is too weak, please make it stronger",
           });
         } else if (code === "EMTKN") {
-          setState({
-            ...state,
-            errors: {
-              ...errors,
-              email:
-                "An account with this email address has already been registered, consider using the 'Forgot passphrase' function.",
-            },
+          setErrors({
+            ...errors,
+            email:
+              "An account with this email address has already been registered, consider using the 'Forgot passphrase' function.",
           });
         } else if (code === "NUNIQ" && fields && fields[0] === "username") {
-          setState({
-            ...state,
-            errors: {
-              ...errors,
-              username:
-                "An account with this username has already been registered, please try a different username.",
-            },
+          setErrors({
+            ...errors,
+            username:
+              "An account with this username has already been registered, please try a different username.",
           });
         } else if (code === "23514") {
-          setState({
-            ...state,
-            errors: {
-              ...errors,
-              username:
-                "This username is not allowed; usernames must be between 2 and 24 characters long (inclusive), must start with a letter, and must contain only alphanumeric characters and underscores.",
-            },
+          setErrors({
+            ...errors,
+            username:
+              "This username is not allowed; usernames must be between 2 and 24 characters long (inclusive), must start with a letter, and must contain only alphanumeric characters and underscores.",
           });
         } else {
           setError(e);
         }
       }
     },
-    [state, register, client, next]
+    [register, client, next]
   );
 
   const handleConfirmBlur = useCallback(
@@ -168,7 +126,6 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
     }: OnChangeCallbackProps) => {
       const value = values[name];
       const { password, confirm } = values;
-      console.log(values);
       setPasswordInfo(
         { setPasswordStrength, setPasswordSuggestions },
         { [name]: value }
@@ -240,6 +197,8 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
                 autoComplete="current-password"
                 type="password"
                 data-cy="loginpage-input-password"
+                onFocus={setPasswordFocussed}
+                onBlur={setPasswordNotFocussed}
               >
                 Passphrase
               </Field>
@@ -256,6 +215,7 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
               autoComplete="new-password"
               type="password"
               data-cy="registerpage-input-password2"
+              onBlur={handleConfirmBlur}
             >
               Confirm Passphrase
             </Field>

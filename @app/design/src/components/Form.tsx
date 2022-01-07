@@ -121,6 +121,8 @@ const Field = ({
   children: child,
   direction = "column",
   autoComplete,
+  onFocus,
+  onBlur,
 }: {
   name?: string;
   type?: "text" | "password" | "email" | "number";
@@ -130,6 +132,8 @@ const Field = ({
   children: string;
   direction?: "column" | "row";
   autoComplete?: string;
+  onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
 }) => {
   const { handleChange, values, errors, register } = useForm();
   const fieldId = name ? name : camelCase(child);
@@ -154,6 +158,8 @@ const Field = ({
         placeholder={placeholder}
         onChange={handleChange}
         autoComplete={autoComplete}
+        onFocus={onFocus}
+        onBlur={onBlur}
       />
       {error ? <FormError>{error}</FormError> : null}
     </FormGroup>
