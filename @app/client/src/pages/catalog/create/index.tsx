@@ -1,5 +1,10 @@
 import { ApolloError, useApolloClient } from "@apollo/client";
-import { ErrorAlert, Redirect, SharedLayout } from "@app/components";
+import {
+  DropdownCombobox,
+  ErrorAlert,
+  Redirect,
+  SharedLayout,
+} from "@app/components";
 import {
   Button,
   Field,
@@ -9,7 +14,11 @@ import {
   FormGroup,
   SubmitButton,
 } from "@app/design";
-import { useAddLilyMutation, useSharedQuery } from "@app/graphql";
+import {
+  useAddLilyMutation,
+  useSearchAhsLiliesLazyQuery,
+  useSharedQuery,
+} from "@app/graphql";
 import {
   extractError,
   getCodeFromError,
@@ -17,7 +26,7 @@ import {
 } from "@app/lib";
 import { NextPage } from "next";
 import Router from "next/router";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 const Create: NextPage = () => {
   const query = useSharedQuery();
@@ -91,6 +100,22 @@ function NewAddLilyForm({ error, setError }: NewAddLilyFormProps) {
     [addLily, client, setError]
   );
   const code = getCodeFromError(error);
+
+  const [searchAhsLilies, { data: searchData }] = useSearchAhsLiliesLazyQuery({
+    variables: {
+      search: "",
+    },
+  });
+
+  useEffect(() => {
+    searchAhsLilies({
+      variables: {
+        search: "cof",
+      },
+    });
+  }, [searchAhsLilies]);
+
+  const searchResults = searchData?.searchAhsLilies?.nodes ?? [];
   return (
     <Form
       onSubmit={handleSubmit}
@@ -100,6 +125,7 @@ function NewAddLilyForm({ error, setError }: NewAddLilyFormProps) {
         price: validatePrice,
       }}
     >
+      <DropdownCombobox items={searchResults} />
       <Field required={true}>Name</Field>
       <Field type="number" min="0" step="1">
         Price

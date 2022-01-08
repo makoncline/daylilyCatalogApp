@@ -3,6 +3,7 @@ export * from "./AvatarPhotoUpload";
 export * from "./BillingPortalButton";
 export * from "./ButtonLink";
 export * from "./CheckoutButton";
+export * from "./DropdownCombobox";
 export * from "./ErrorAlert";
 export * from "./ErrorOccurred";
 export * from "./FourOhFour";
