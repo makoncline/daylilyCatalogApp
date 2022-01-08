@@ -46,15 +46,15 @@ const Form = ({
   }>({});
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value: fieldValue } = event.target;
-    const newValues = { ...values, [name]: fieldValue };
-    const newErrors = validation[name]
-      ? { ...errors, [name]: validation[name](fieldValue) }
-      : errors;
+    const { name, value } = event.target;
+    const newValues = { ...values, [name]: value };
     setValues(newValues);
+    const newErrors = validation[name]
+      ? { ...errors, [name]: validation[name](value) }
+      : errors;
     setErrors(newErrors);
     onChange?.({
-      ...value,
+      ...contextValue,
       values: newValues,
       errors: newErrors,
       changedField: name,
@@ -63,7 +63,21 @@ const Form = ({
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onSubmit(value);
+    const allFieldsValid = validateFields();
+    if (allFieldsValid) {
+      onSubmit(contextValue);
+    }
+  };
+
+  const validateFields = () => {
+    let newErrors = {};
+    Object.entries(values).forEach(([name, value]) => {
+      if (validation[name]) {
+        newErrors[name] = validation[name](value);
+      }
+    });
+    setErrors(newErrors);
+    return Object.values(newErrors).every((error) => error === null);
   };
 
   const register = React.useCallback((fieldId: string) => {
@@ -72,7 +86,7 @@ const Form = ({
 
   const hasError = Object.values(errors).some((error) => error !== null);
 
-  const value: FormContextProps = {
+  const contextValue: FormContextProps = {
     values,
     errors,
     handleChange,
@@ -82,7 +96,7 @@ const Form = ({
   };
 
   return (
-    <FormContext.Provider value={value}>
+    <FormContext.Provider value={contextValue}>
       <Wrapper onSubmit={handleSubmit}>
         <Space direction="column" gap="large">
           {children}
@@ -121,8 +135,7 @@ const Field = ({
   children: child,
   direction = "column",
   autoComplete,
-  onFocus,
-  onBlur,
+  ...props
 }: {
   name?: string;
   type?: "text" | "password" | "email" | "number";
@@ -132,8 +145,6 @@ const Field = ({
   children: string;
   direction?: "column" | "row";
   autoComplete?: string;
-  onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
-  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
 }) => {
   const { handleChange, values, errors, register } = useForm();
   const fieldId = name ? name : camelCase(child);
@@ -158,8 +169,7 @@ const Field = ({
         placeholder={placeholder}
         onChange={handleChange}
         autoComplete={autoComplete}
-        onFocus={onFocus}
-        onBlur={onBlur}
+        {...props}
       />
       {error ? <FormError>{error}</FormError> : null}
     </FormGroup>
