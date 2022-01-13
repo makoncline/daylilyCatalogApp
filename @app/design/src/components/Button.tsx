@@ -16,12 +16,14 @@ export const Button = ({ children, href, ...props }: Props) => {
     <>
       {isLink ? (
         <form action={href} method="get">
-          <StyledButton style={{ width: "100%" }} {...props}>
+          <StyledButton style={{ width: "100%" }} type="button" {...props}>
             {children}
           </StyledButton>
         </form>
       ) : (
-        <StyledButton {...props}>{children}</StyledButton>
+        <StyledButton type="button" {...props}>
+          {children}
+        </StyledButton>
       )}
     </>
   );

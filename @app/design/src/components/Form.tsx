@@ -97,11 +97,11 @@ const Form = ({
 
   return (
     <FormContext.Provider value={contextValue}>
-      <Wrapper onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}>
         <Space direction="column" gap="large">
           {children}
         </Space>
-      </Wrapper>
+      </form>
     </FormContext.Provider>
   );
 };
@@ -188,9 +188,6 @@ function SubmitButton({
   });
 }
 
-const Label = styled.label``;
-const Input = styled.input``;
-
 const FormError = styled.div`
   color: var(--danger);
   margin: 0;
@@ -200,15 +197,4 @@ const Success = styled.div`
   margin: 0;
 `;
 
-const Wrapper = styled.form``;
-
-export {
-  Field,
-  Form,
-  FormError,
-  FormGroup,
-  Input,
-  Label,
-  SubmitButton,
-  Success,
-};
+export { Field, Form, FormError, FormGroup, SubmitButton, Success };

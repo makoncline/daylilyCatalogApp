@@ -1,6 +1,6 @@
 import { ApolloError, useApolloClient } from "@apollo/client";
 import {
-  DropdownCombobox,
+  AutocompleteInput,
   ErrorAlert,
   Redirect,
   SharedLayout,
@@ -15,6 +15,7 @@ import {
   SubmitButton,
 } from "@app/design";
 import {
+  AhsDatum,
   useAddLilyMutation,
   useSearchAhsLiliesLazyQuery,
   useSharedQuery,
@@ -24,7 +25,9 @@ import {
   getCodeFromError,
   resetWebsocketConnection,
 } from "@app/lib";
+import { UseComboboxStateChange } from "downshift";
 import { NextPage } from "next";
+import Image from "next/image";
 import Router from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
 
@@ -101,21 +104,15 @@ function NewAddLilyForm({ error, setError }: NewAddLilyFormProps) {
   );
   const code = getCodeFromError(error);
 
-  const [searchAhsLilies, { data: searchData }] = useSearchAhsLiliesLazyQuery({
-    variables: {
-      search: "",
-    },
-  });
+  const [linkedLily, setLinkedLily] = React.useState<RegisteredLily | null>(
+    null
+  );
+  const handleLinkedLilyChange = ({
+    selectedItem,
+  }: UseComboboxStateChange<RegisteredLily>): void => {
+    setLinkedLily(selectedItem || null);
+  };
 
-  useEffect(() => {
-    searchAhsLilies({
-      variables: {
-        search: "cof",
-      },
-    });
-  }, [searchAhsLilies]);
-
-  const searchResults = searchData?.searchAhsLilies?.nodes ?? [];
   return (
     <Form
       onSubmit={handleSubmit}
@@ -125,8 +122,25 @@ function NewAddLilyForm({ error, setError }: NewAddLilyFormProps) {
         price: validatePrice,
       }}
     >
-      <DropdownCombobox items={searchResults} />
-      <Field required={true}>Name</Field>
+      {linkedLily && (
+        <>
+          <p>{linkedLily.name}</p>
+          {linkedLily.image && (
+            <Image
+              src={linkedLily.image}
+              alt={linkedLily.name || "flower"}
+              layout="intrinsic"
+              width={300}
+              height={300}
+              objectFit="cover"
+            />
+          )}
+        </>
+      )}
+      <RegisteredLilyInput onSelectedItemChange={handleLinkedLilyChange} />
+      <Field required={true} name="listing-name">
+        Name
+      </Field>
       <Field type="number" min="0" step="1">
         Price
       </Field>
@@ -167,4 +181,49 @@ const validatePrice = (price: string) => {
   } else {
     return null;
   }
+};
+
+const getRandomLetter = () =>
+  String.fromCharCode(97 + Math.floor(Math.random() * 26));
+
+type RegisteredLily = Pick<AhsDatum, "name" | "ahsId" | "id" | "image">;
+
+type RegisteredLilyInputProps = {
+  onSelectedItemChange: ({
+    selectedItem,
+  }: UseComboboxStateChange<RegisteredLily>) => void;
+};
+
+const RegisteredLilyInput = ({
+  onSelectedItemChange,
+}: RegisteredLilyInputProps) => {
+  const [searchAhsLilies, { data: searchData }] = useSearchAhsLiliesLazyQuery();
+
+  React.useEffect(() => {
+    searchAhsLilies({
+      variables: {
+        search: "a",
+      },
+    });
+  }, [searchAhsLilies]);
+
+  const searchResults = searchData?.searchAhsLilies?.nodes ?? [];
+
+  const handleInputValueChange = ({
+    inputValue,
+  }: UseComboboxStateChange<RegisteredLily>) => {
+    searchAhsLilies({
+      variables: {
+        search: inputValue || getRandomLetter(),
+      },
+    });
+  };
+  return (
+    <AutocompleteInput<RegisteredLily>
+      items={searchResults}
+      itemToString={(item) => item?.name ?? ""}
+      onInputValueChange={handleInputValueChange}
+      onSelectedItemChange={onSelectedItemChange}
+    />
+  );
 };
