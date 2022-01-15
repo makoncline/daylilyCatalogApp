@@ -124,6 +124,10 @@ function NewAddLilyForm({ error, setError }: NewAddLilyFormProps) {
     setLinkedLily(null);
   };
 
+  const handleRemoveFromList = () => {
+    setList(null);
+  };
+
   let formValues: FormContextProps["values"];
   let setFormValues: FormContextProps["setValues"];
 
@@ -162,7 +166,24 @@ function NewAddLilyForm({ error, setError }: NewAddLilyFormProps) {
       </Field>
       <Field>Public note</Field>
       <Field>Private note</Field>
-      <ListInput onSelectedItemChange={handleListChange} />
+      {list ? (
+        <FormGroup>
+          <label htmlFor="list">List</label>
+          <FormGroup direction="row">
+            <input
+              id="list"
+              name="list"
+              type="text"
+              value={list.name}
+              disabled
+              style={{ flexGrow: 1 }}
+            />
+            <Button onClick={handleRemoveFromList}>Remove from list</Button>
+          </FormGroup>
+        </FormGroup>
+      ) : (
+        <ListInput onSelectedItemChange={handleListChange} />
+      )}
       {error ? (
         <FormGroup>
           <FormError>
