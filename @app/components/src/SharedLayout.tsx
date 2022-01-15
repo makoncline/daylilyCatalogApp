@@ -1,25 +1,18 @@
-import { DownOutlined } from "@ant-design/icons";
 import { ApolloError, QueryResult, useApolloClient } from "@apollo/client";
-import { companyName, projectName } from "@app/config";
 import {
   SharedLayout_QueryFragment,
   SharedLayout_UserFragment,
   useCurrentUserUpdatedSubscription,
   useLogoutMutation,
 } from "@app/graphql";
-import { Col, Dropdown, Layout, Menu, Row, Typography } from "antd";
-import Head from "next/head";
 import Link from "next/link";
 import Router, { useRouter } from "next/router";
 import * as React from "react";
 import { useCallback } from "react";
 
-import { ErrorAlert, H1, NextLayout, P, StandardWidth, Warn } from ".";
+import { ErrorAlert, NextLayout, StandardWidth } from ".";
 import { Redirect } from "./Redirect";
-import { UserAvatar } from "./UserAvatar";
 
-const { Header, Content, Footer } = Layout;
-const { Text } = Typography;
 /*
  * For some reason, possibly related to the interaction between
  * `babel-plugin-import` and https://github.com/babel/babel/pull/9766, we can't
@@ -28,9 +21,7 @@ const { Text } = Typography;
  *
  * TODO: change back to `export { Row, Col, Link }` when this issue is fixed.
  */
-const _babelHackRow = Row;
-const _babelHackCol = Col;
-export { _babelHackCol as Col, Link, _babelHackRow as Row };
+export { Link };
 
 export const contentMinHeight = "calc(100vh - 64px - 70px)";
 

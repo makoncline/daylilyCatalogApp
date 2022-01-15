@@ -1,0 +1,6 @@
+fragment AhsSearchData on AhsDatum {
+  id
+  ahsId
+  name
+  image
+}

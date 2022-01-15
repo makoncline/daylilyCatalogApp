@@ -10,24 +10,35 @@ type Props = {
   [other: string]: unknown;
 };
 
-export const Button = ({ children, href, ...props }: Props) => {
-  const isLink = typeof href === "string";
-  return (
-    <>
-      {isLink ? (
-        <form action={href} method="get">
-          <StyledButton style={{ width: "100%" }} type="button" {...props}>
+export const Button = React.forwardRef(
+  (
+    { children, href, ...props }: Props,
+    ref: React.ForwardedRef<HTMLButtonElement>
+  ) => {
+    const isLink = typeof href === "string";
+    return (
+      <>
+        {isLink ? (
+          <form action={href} method="get">
+            <StyledButton
+              style={{ width: "100%" }}
+              type="button"
+              ref={ref}
+              {...props}
+            >
+              {children}
+            </StyledButton>
+          </form>
+        ) : (
+          <StyledButton type="button" ref={ref} {...props}>
             {children}
           </StyledButton>
-        </form>
-      ) : (
-        <StyledButton type="button" {...props}>
-          {children}
-        </StyledButton>
-      )}
-    </>
-  );
-};
+        )}
+      </>
+    );
+  }
+);
+Button.displayName = "Button";
 
 const StyledButton = styled.button`
   display: inline-flex;

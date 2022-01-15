@@ -1,8 +1,10 @@
 import { ApolloError, useApolloClient } from "@apollo/client";
 import {
-  AutocompleteInput,
   ErrorAlert,
+  ListInput,
   Redirect,
+  RegisteredLilyDisplay,
+  RegisteredLilyInput,
   SharedLayout,
 } from "@app/components";
 import {
@@ -15,9 +17,9 @@ import {
   SubmitButton,
 } from "@app/design";
 import {
-  AhsDatum,
+  AhsSearchDataFragment,
+  ListDataFragment,
   useAddLilyMutation,
-  useSearchAhsLiliesLazyQuery,
   useSharedQuery,
 } from "@app/graphql";
 import {
@@ -27,9 +29,8 @@ import {
 } from "@app/lib";
 import { UseComboboxStateChange } from "downshift";
 import { NextPage } from "next";
-import Image from "next/image";
 import Router from "next/router";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 
 const Create: NextPage = () => {
   const query = useSharedQuery();
@@ -63,22 +64,15 @@ type NewAddLilyFormProps = {
 };
 
 function NewAddLilyForm({ error, setError }: NewAddLilyFormProps) {
+  const [linkedLily, setLinkedLily] =
+    React.useState<AhsSearchDataFragment | null>(null);
+  const [list, setList] = React.useState<ListDataFragment | null>(null);
   const client = useApolloClient();
   const [addLily] = useAddLilyMutation();
   const handleSubmit = useCallback(
     async ({ values }: FormContextProps) => {
-      console.log(values);
       setError(null);
       const { name, price, publicNote, privateNote } = values;
-      if (
-        typeof name !== "string" ||
-        typeof price !== "string" ||
-        typeof publicNote !== "string" ||
-        typeof privateNote !== "string"
-      ) {
-        setError(new Error("Invalid data"));
-        return;
-      }
       try {
         const { data } = await addLily({
           variables: {
@@ -86,12 +80,15 @@ function NewAddLilyForm({ error, setError }: NewAddLilyFormProps) {
             price: price ? parseInt(price) : null,
             publicNote: publicNote,
             privateNote: privateNote,
+            ahsId: linkedLily ? linkedLily.ahsId.toString() : undefined,
+            listId: list ? list.id : undefined,
           },
         });
         // Success: refetch
         resetWebsocketConnection();
         client.resetStore();
         const lily = data?.createLily?.lily;
+        console.log("Created lily:", lily);
         if (lily) {
           // Router.push(`/listings/${lily.id}`);
           Router.push(`/catalog`);
@@ -100,52 +97,72 @@ function NewAddLilyForm({ error, setError }: NewAddLilyFormProps) {
         setError(e);
       }
     },
-    [addLily, client, setError]
+    [addLily, client, linkedLily, list, setError]
   );
   const code = getCodeFromError(error);
 
-  const [linkedLily, setLinkedLily] = React.useState<RegisteredLily | null>(
-    null
-  );
   const handleLinkedLilyChange = ({
     selectedItem,
-  }: UseComboboxStateChange<RegisteredLily>): void => {
+  }: UseComboboxStateChange<AhsSearchDataFragment>): void => {
     setLinkedLily(selectedItem || null);
+    // if name is not set, set it to the name of the linked lily
+    if (!formValues?.name) {
+      setFormValues((prevValues) => ({
+        ...prevValues,
+        name: selectedItem?.name || "",
+      }));
+    }
+  };
+
+  const handleListChange = ({
+    selectedItem,
+  }: UseComboboxStateChange<ListDataFragment>): void => {
+    setList(selectedItem || null);
+  };
+
+  const handleUnlink = () => {
+    setLinkedLily(null);
+  };
+
+  let formValues: FormContextProps["values"];
+  let setFormValues: FormContextProps["setValues"];
+
+  const handleFormValuesChange: ({
+    values,
+    setValues,
+  }: Pick<FormContextProps, "values" | "setValues">) => void = ({
+    values,
+    setValues,
+  }) => {
+    setFormValues = setValues;
+    formValues = values;
   };
 
   return (
     <Form
       onSubmit={handleSubmit}
+      onValuesChange={handleFormValuesChange}
       validation={{
         name: (name: string) =>
           name.length === 0 ? "Please enter a name for this listing" : null,
         price: validatePrice,
       }}
     >
-      {linkedLily && (
+      {linkedLily ? (
         <>
-          <p>{linkedLily.name}</p>
-          {linkedLily.image && (
-            <Image
-              src={linkedLily.image}
-              alt={linkedLily.name || "flower"}
-              layout="intrinsic"
-              width={300}
-              height={300}
-              objectFit="cover"
-            />
-          )}
+          <RegisteredLilyDisplay ahsId={linkedLily.ahsId} />
+          <Button onClick={handleUnlink}>Unlink</Button>
         </>
+      ) : (
+        <RegisteredLilyInput onSelectedItemChange={handleLinkedLilyChange} />
       )}
-      <RegisteredLilyInput onSelectedItemChange={handleLinkedLilyChange} />
-      <Field required={true} name="listing-name">
-        Name
-      </Field>
+      <Field required={true}>Name</Field>
       <Field type="number" min="0" step="1">
         Price
       </Field>
       <Field>Public note</Field>
       <Field>Private note</Field>
+      <ListInput onSelectedItemChange={handleListChange} />
       {error ? (
         <FormGroup>
           <FormError>
@@ -181,49 +198,4 @@ const validatePrice = (price: string) => {
   } else {
     return null;
   }
-};
-
-const getRandomLetter = () =>
-  String.fromCharCode(97 + Math.floor(Math.random() * 26));
-
-type RegisteredLily = Pick<AhsDatum, "name" | "ahsId" | "id" | "image">;
-
-type RegisteredLilyInputProps = {
-  onSelectedItemChange: ({
-    selectedItem,
-  }: UseComboboxStateChange<RegisteredLily>) => void;
-};
-
-const RegisteredLilyInput = ({
-  onSelectedItemChange,
-}: RegisteredLilyInputProps) => {
-  const [searchAhsLilies, { data: searchData }] = useSearchAhsLiliesLazyQuery();
-
-  React.useEffect(() => {
-    searchAhsLilies({
-      variables: {
-        search: "a",
-      },
-    });
-  }, [searchAhsLilies]);
-
-  const searchResults = searchData?.searchAhsLilies?.nodes ?? [];
-
-  const handleInputValueChange = ({
-    inputValue,
-  }: UseComboboxStateChange<RegisteredLily>) => {
-    searchAhsLilies({
-      variables: {
-        search: inputValue || getRandomLetter(),
-      },
-    });
-  };
-  return (
-    <AutocompleteInput<RegisteredLily>
-      items={searchResults}
-      itemToString={(item) => item?.name ?? ""}
-      onInputValueChange={handleInputValueChange}
-      onSelectedItemChange={onSelectedItemChange}
-    />
-  );
 };

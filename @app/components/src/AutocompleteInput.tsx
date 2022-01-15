@@ -5,9 +5,10 @@ import styled from "styled-components";
 
 type Props<T> = {
   items: T[];
-  onInputValueChange: ({ inputValue }: UseComboboxStateChange<T>) => void;
+  onInputValueChange?: ({ inputValue }: UseComboboxStateChange<T>) => void;
   onSelectedItemChange: ({ selectedItem }: UseComboboxStateChange<T>) => void;
   itemToString: (item: T | null) => string;
+  children: string;
 };
 
 const AutocompleteInput = <T extends unknown>({
@@ -15,6 +16,7 @@ const AutocompleteInput = <T extends unknown>({
   onInputValueChange,
   onSelectedItemChange,
   itemToString,
+  children: child,
 }: Props<T>) => {
   const {
     isOpen,
@@ -27,13 +29,13 @@ const AutocompleteInput = <T extends unknown>({
     getItemProps,
   } = useCombobox({
     items,
-    onInputValueChange,
+    onInputValueChange: onInputValueChange || undefined,
     onSelectedItemChange,
     itemToString,
   });
   return (
     <Autocomplete>
-      <label {...getLabelProps()}>Link to</label>
+      <label {...getLabelProps()}>{child}</label>
       <FormGroup {...getComboboxProps()} direction="row">
         <Input
           {...getInputProps()}

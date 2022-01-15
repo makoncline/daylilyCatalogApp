@@ -5,6 +5,11 @@ import { Space } from "./Space";
 
 export type FormContextProps = {
   values: { [key: string]: string };
+  setValues: React.Dispatch<
+    React.SetStateAction<{
+      [key: string]: string;
+    }>
+  >;
   errors: { [key: string]: string | null };
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   register: (fieldId: string) => void;
@@ -29,12 +34,17 @@ const useForm = () => {
 const Form = ({
   onChange,
   onSubmit,
+  onValuesChange,
   children,
   defaultValues = {},
   validation = {},
 }: {
   onChange?: (context: OnChangeCallbackProps) => void;
   onSubmit: (context: FormContextProps) => void;
+  onValuesChange?: ({
+    values,
+    setValues,
+  }: Pick<FormContextProps, "values" | "setValues">) => void;
   children: React.ReactNode;
   defaultValues?: { [key: string]: string };
   validation?: { [key: string]: (...args: any) => string | null };
@@ -62,6 +72,7 @@ const Form = ({
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    console.log(values, errors);
     event.preventDefault();
     const allFieldsValid = validateFields();
     if (allFieldsValid) {
@@ -88,12 +99,22 @@ const Form = ({
 
   const contextValue: FormContextProps = {
     values,
+    setValues,
     errors,
     handleChange,
     setErrors,
     register,
     hasError,
   };
+
+  // used to pass state and set state back to parent
+  // probably a bad idea, and should just lift state up instead
+  // or put the state in a global form context
+  React.useEffect(() => {
+    if (typeof onValuesChange === "function") {
+      onValuesChange({ values, setValues });
+    }
+  }, [onValuesChange, values, setValues]);
 
   return (
     <FormContext.Provider value={contextValue}>
@@ -182,10 +203,11 @@ function SubmitButton({
   children: React.ReactElement<any, string | React.JSXElementConstructor<any>>;
 }) {
   const { hasError } = useForm();
-  return React.cloneElement(child, {
-    htmlType: "submit",
+  const el = React.cloneElement(child, {
+    type: "submit",
     disabled: hasError,
   });
+  return el;
 }
 
 const FormError = styled.div`

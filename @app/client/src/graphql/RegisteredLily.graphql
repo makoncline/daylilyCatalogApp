@@ -1,0 +1,26 @@
+query RegisteredLily($ahsId: Int!) {
+  ahsDatumByAhsId(ahsId: $ahsId) {
+    id
+    ahsId
+    bloomHabit
+    bloomSeason
+    bloomSize
+    branches
+    budcount
+    color
+    flower
+    foliage
+    foliageType
+    form
+    fragrance
+    hybridizer
+    image
+    name
+    parentage
+    ploidy
+    scapeHeight
+    sculpting
+    seedlingNum
+    year
+  }
+}
