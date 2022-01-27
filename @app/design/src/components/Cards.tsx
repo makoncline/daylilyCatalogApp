@@ -1,81 +1,23 @@
-import React from "react";
 import styled from "styled-components";
 
 import { below } from "../utilities";
 
-export const Card = ({
-  size,
-  gridTemplate,
-  sizeProp = "width",
-  children,
-  ...rest
-}: {
-  size?: string;
-  gridTemplate?: string;
-  sizeProp?: "width" | "height";
-  children: React.ReactNode;
-}) => {
-  const gridTemplateDefault =
-    sizeProp === "height"
-      ? `1fr / ${size || "auto"} 1fr`
-      : `${size || "auto"} 1fr / 1fr`;
-  return (
-    <>
-      <CardWrapper
-        style={
-          {
-            "--size": size,
-            "--width": sizeProp === "width" ? size : "",
-            "--height": sizeProp === "height" ? size : "",
-            "--grid-template": gridTemplate || gridTemplateDefault,
-          } as React.CSSProperties
-        }
-        {...rest}
-      >
-        {children}
-      </CardWrapper>
-    </>
-  );
-};
-
-const Body = ({ children, ...rest }: { children: React.ReactNode }) => {
-  return <BodyWrapper {...rest}>{children}</BodyWrapper>;
-};
-Card.Body = Body;
-
-const Image = ({ children, ...rest }: { children: React.ReactNode }) => {
-  return <ImageWrapper {...rest}>{children}</ImageWrapper>;
-};
-Card.Image = Image;
-
-const CardWrapper = styled.article`
-  width: var(--width, unset);
-  height: var(--height, 100%);
+const Card = styled.div`
   display: grid;
-  grid-template: var(--grid-template);
+  grid-template: auto / auto auto;
   border-radius: var(--radius-2);
   overflow: hidden;
-  cursor: pointer;
-  &:hover {
-    background: var(--surface-3);
-  }
   ${below.md`
-    grid-template: var(--size, 1fr) 1fr / 1fr;
-    height: unset;
+    grid-template: auto auto / auto;
   `}
 `;
-
-const ImageWrapper = styled.div`
-  aspect-ratio: var(--ratio-box);
-  width: 100%;
-  height: 100%;
+const CardImage = styled.div`
   position: relative;
-  img {
-    object-position: center;
-    object-fit: cover;
-  }
+  display: grid;
+  place-items: center;
 `;
-
-const BodyWrapper = styled.div`
+const CardBody = styled.div`
   margin: var(--size-4);
 `;
+
+export { Card, CardBody, CardImage };

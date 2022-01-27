@@ -31,6 +31,7 @@ import { UseComboboxStateChange } from "downshift";
 import { NextPage } from "next";
 import Router from "next/router";
 import React, { useCallback, useState } from "react";
+import styled from "styled-components";
 
 const Create: NextPage = () => {
   const query = useSharedQuery();
@@ -153,10 +154,15 @@ function NewAddLilyForm({ error, setError }: NewAddLilyFormProps) {
       }}
     >
       {linkedLily ? (
-        <>
+        <details>
+          <summary>
+            <SummaryItems>
+              Linked to {linkedLily?.name}
+              <Button onClick={handleUnlink}>Unlink</Button>
+            </SummaryItems>
+          </summary>
           <RegisteredLilyDisplay ahsId={linkedLily.ahsId} />
-          <Button onClick={handleUnlink}>Unlink</Button>
-        </>
+        </details>
       ) : (
         <RegisteredLilyInput onSelectedItemChange={handleLinkedLilyChange} />
       )}
@@ -208,6 +214,14 @@ function NewAddLilyForm({ error, setError }: NewAddLilyFormProps) {
     </Form>
   );
 }
+
+const SummaryItems = styled.div`
+  display: inline-grid;
+  width: calc(100% - 2rem);
+  grid-template: auto / auto auto;
+  justify-content: space-between;
+  align-items: center;
+`;
 
 const validatePrice = (price: string) => {
   if (parseInt(price) <= 0) {

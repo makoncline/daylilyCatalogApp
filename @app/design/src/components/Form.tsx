@@ -147,6 +147,17 @@ const camelCase = (str: string) => {
   });
 };
 
+type FieldProps = {
+  name?: string;
+  type?: "text" | "password" | "email" | "number";
+  required?: boolean;
+  label?: boolean;
+  placeholder?: string;
+  children: string;
+  direction?: "column" | "row";
+  autoComplete?: string;
+} & React.InputHTMLAttributes<HTMLInputElement>;
+
 const Field = ({
   name = "",
   type = "text",
@@ -157,16 +168,7 @@ const Field = ({
   direction = "column",
   autoComplete,
   ...props
-}: {
-  name?: string;
-  type?: "text" | "password" | "email" | "number";
-  required?: boolean;
-  label?: boolean;
-  placeholder?: string;
-  children: string;
-  direction?: "column" | "row";
-  autoComplete?: string;
-}) => {
+}: FieldProps) => {
   const { handleChange, values, errors, register } = useForm();
   const fieldId = name ? name : camelCase(child);
   const error = errors[fieldId];
