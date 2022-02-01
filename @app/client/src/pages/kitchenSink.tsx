@@ -1,16 +1,14 @@
-import { Button, Nav, NavLink, TextLogo } from "@app/design";
+import { Button } from "@app/design";
 import React from "react";
+
+import { ImageUpload } from "./ImageUpload";
 
 // page to display examples of various components
 export default function KitchenSink() {
   return (
     <>
-      <Nav logo={<TextLogo href="/">Logo</TextLogo>}>
-        <NavLink href="#">Home</NavLink>
-        <NavLink href="#">About</NavLink>
-        <NavLink href="#">Contact</NavLink>
-      </Nav>
       <main>
+        <ImageUpload />
         <h1>This is example text</h1>
         <h2>This is example text</h2>
         <h3>This is example text</h3>
