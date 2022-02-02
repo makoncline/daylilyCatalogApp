@@ -52,7 +52,7 @@ async function getCurrentUser(pool: PoolClient): Promise<User | null> {
     }
     const isFree = new Date() < new Date(row.free_until);
     return {
-      id: row.id,
+      id: row.user_id,
       isVerified: row.is_verified,
       isActive,
       isFree,
