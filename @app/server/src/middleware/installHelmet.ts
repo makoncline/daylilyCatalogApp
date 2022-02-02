@@ -29,6 +29,7 @@ const CSP_DIRECTIVES = {
   "img-src": [
     "'self'",
     "data:",
+    "blob:",
     "*.weserv.nl",
     "*.daylilies.org",
     "*.s3.amazonaws.com",

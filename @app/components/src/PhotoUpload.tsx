@@ -172,8 +172,16 @@ export function PhotoUpload({
         title={null}
         footer={null}
         onCancel={() => setPreviewVisible(false)}
+        style={{ display: "flex", justifyContent: "center" }}
       >
-        <Image alt="preview image" width="100%" src={previewImage} />
+        {console.log("previewImage: ", previewImage)}
+        <Image
+          alt="preview image"
+          width={300}
+          height={300}
+          objectFit="cover"
+          src={previewImage}
+        />
       </Modal>
     </div>
   );

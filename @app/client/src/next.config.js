@@ -38,6 +38,14 @@ if (!process.env.ROOT_URL) {
         hack2: 'true;@import "~antd/dist/antd.less";',
         ...themeVariables,
       },
+      images: {
+        domains: [
+          "daylily-catalog-images-stage.s3.amazonaws.com",
+          "daylily-catalog-images.s3.amazonaws.com",
+          "daylilies.org",
+          "www.daylilies.org",
+        ],
+      },
 
       poweredByHeader: false,
       distDir: `../.next`,
