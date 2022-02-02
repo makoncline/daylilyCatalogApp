@@ -8,7 +8,7 @@ export default function KitchenSink() {
   return (
     <>
       <main>
-        <ImageUpload />
+        <ImageUpload keyPrefix="lily" />
         <h1>This is example text</h1>
         <h2>This is example text</h2>
         <h3>This is example text</h3>

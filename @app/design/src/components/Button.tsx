@@ -22,7 +22,7 @@ export const Button = React.forwardRef(
           <form action={href} method="get">
             <StyledButton
               style={{ width: "100%" }}
-              type="button"
+              type="submit"
               ref={ref}
               {...props}
             >
