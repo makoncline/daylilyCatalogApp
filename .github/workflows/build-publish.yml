@@ -8,13 +8,17 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      SHA8: ${GITHUB_SHA::8}
 
     steps:
       - uses: actions/checkout@v2
       - name: "Run docker server build"
-        run: docker build -t makon/daylilycatalog:server --file production.Dockerfile --build-arg TARGET=\"server\" .
+        run:
+          docker build -t makon/daylilycatalog:server:$SHA8 --file production.Dockerfile --build-arg TARGET=\"server\" .
       - name: "Run docker worker build"
-        run: docker build -t makon/daylilycatalog:worker --file production.Dockerfile --build-arg TARGET=\"worker\" .
+        run:
+          docker build -t makon/daylilycatalog:worker:$SHA8 --file production.Dockerfile --build-arg TARGET=\"worker\" .
       - name: "Publish server"
         uses: elgohr/Publish-Docker-Github-Action@3.04
         with:
