@@ -9,17 +9,20 @@ on: [pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      SHA8: ${GITHUB_SHA}
 
     steps:
       - uses: actions/checkout@v2
+      - name: Get short SHA
+        id: env
+        run: echo "::set-output name=sha::$(echo ${GITHUB_SHA} | cut -c1-7)"
       - name: "Run docker server build"
         run:
-          docker build -t makon/daylilycatalog:server_$SHA8 --file production.Dockerfile --build-arg TARGET=\"server\" .
+          docker build -t makon/daylilycatalog:server:${{ steps.env.outputs.sha }} --file production.Dockerfile
+          --build-arg TARGET=\"server\" .
       - name: "Run docker worker build"
         run:
-          docker build -t makon/daylilycatalog:worker_$SHA8 --file production.Dockerfile --build-arg TARGET=\"worker\" .
+          docker build -t makon/daylilycatalog:${{ steps.env.outputs.sha }} --file production.Dockerfile --build-arg
+          TARGET=\"worker\" .
       - name: "Publish server"
         uses: elgohr/Publish-Docker-Github-Action@3.04
         with:
