@@ -10,16 +10,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      SHA8: ${GITHUB_SHA::8}
+      SHA8: ${GITHUB_SHA}
 
     steps:
       - uses: actions/checkout@v2
       - name: "Run docker server build"
         run:
-          docker build -t makon/daylilycatalog:server-$SHA8 --file production.Dockerfile --build-arg TARGET=\"server\" .
+          docker build -t makon/daylilycatalog:server_$SHA8 --file production.Dockerfile --build-arg TARGET=\"server\" .
       - name: "Run docker worker build"
         run:
-          docker build -t makon/daylilycatalog:worker-$SHA8 --file production.Dockerfile --build-arg TARGET=\"worker\" .
+          docker build -t makon/daylilycatalog:worker_$SHA8 --file production.Dockerfile --build-arg TARGET=\"worker\" .
       - name: "Publish server"
         uses: elgohr/Publish-Docker-Github-Action@3.04
         with:
