@@ -45,6 +45,9 @@ jobs:
     needs: [build-publish-server, build-publish-worker]
     runs-on: ubuntu-latest
     steps:
+      - name: Get short SHA
+        id: env
+        run: echo "::set-output name=sha::$(echo ${GITHUB_SHA} | cut -c1-7)"
       - name: Deploy containers to droplet
         uses: appleboy/ssh-action@master
         with:
