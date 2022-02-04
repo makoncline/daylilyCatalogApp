@@ -3,24 +3,19 @@ ARG PORT=5678
 ARG NODE_ENV="production"
 ARG ROOT_URL="https://app.daylilycatalog.com"
 ARG TARGET="server"
-ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_live_51JKXpdEojuAWz3AptNhyV6ayZDzP0YfBNgsxN7XzVhl7ayoBqyAgNA7BZRiXUMeFQvFUTwVBz7YS2EgMRk16kaUN00WYas7HYA"
-ARG NEXT_PUBLIC_STRIPE_PLAN="price_1JetCGEojuAWz3ApRn8aEB86"
-
 ################################################################################
 # Build stage 1 - `yarn build`
 
-FROM node:14 as builder
+FROM node:16 as builder
 # Import our shared args
 ARG NODE_ENV
 ARG ROOT_URL
-ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-ARG NEXT_PUBLIC_STRIPE_PLAN
 
 # Cache node_modules for as long as possible
 COPY lerna.json package.json yarn.lock /app/
 COPY @app/ /app/@app/
 WORKDIR /app/
-RUN yarn install --frozen-lockfile --production=false --no-progress
+RUN yarn install --frozen-lockfile --production=false --no-progress --network-timeout 100000
 
 COPY tsconfig.json /app/
 # Folders must be copied separately, files can be copied all at once
@@ -33,12 +28,10 @@ RUN yarn run build
 ################################################################################
 # Build stage 2 - COPY the relevant things (multiple steps)
 
-FROM node:14 as clean
+FROM node:16 as clean
 # Import our shared args
 ARG NODE_ENV
 ARG ROOT_URL
-ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-ARG NEXT_PUBLIC_STRIPE_PLAN
 
 # Copy over selectively just the tings we need, try and avoid the rest
 COPY --from=builder /app/lerna.json /app/package.json /app/yarn.lock /app/
@@ -58,7 +51,7 @@ COPY --from=builder /app/@app/server/dist/ /app/@app/server/dist/
 COPY --from=builder /app/@app/worker/package.json /app/@app/worker/
 COPY --from=builder /app/@app/worker/templates/ /app/@app/worker/templates/
 COPY --from=builder /app/@app/worker/dist/ /app/@app/worker/dist/
-COPY --from=builder /app/data/amazon-rds-ca-cert.pem /app/data/amazon-rds-ca-cert.pem
+COPY --from=builder /app/data/ /app/data
 
 # Shared args shouldn't be overridable at runtime (because they're baked into
 # the built JS).
@@ -72,7 +65,7 @@ RUN rm -Rf /app/node_modules /app/@app/*/node_modules
 ################################################################################
 # Build stage FINAL - COPY everything, once, and then do a clean `yarn install`
 
-FROM node:14
+FROM node:16
 
 EXPOSE $PORT
 WORKDIR /app/
@@ -80,15 +73,13 @@ WORKDIR /app/
 COPY --from=clean /app/ /app/
 
 # Install yarn ASAP because it's the slowest
-RUN yarn install --frozen-lockfile --production=true --no-progress
+RUN yarn install --frozen-lockfile --production=true --no-progress --network-timeout 100000
 
 # Import our shared args
 ARG PORT
 ARG NODE_ENV
 ARG ROOT_URL
 ARG TARGET
-ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-ARG NEXT_PUBLIC_STRIPE_PLAN
 
 LABEL description="My PostGraphile-powered $TARGET"
 
