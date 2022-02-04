@@ -7,16 +7,61 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy to droplet
+      - name: Pull new images
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
+          script_stop: true
           script: |
+            echo starting...
+            TAG=server
+            echo TAG set to: $TAG
+            docker system prune -f
+            echo docker pruned
             cd daylilyCatalog/
-            ls
             cd server/
-            ls
+            TAG=server
+            echo remove this tag set: TAG set to: $TAG
+            dc pull
+            echo server image pulled
             cd ../worker
-            ls
+            TAG=worker
+            echo remove this tag set: TAG set to: $TAG
+            dc pull
+            echo worker image pulled
+            cd ../server
+            TAG=server
+            echo remove this tag set: TAG set to: $TAG
+            dc down
+            echo server stopped
+            dc up -d
+            echo server started
+            echo "$(date +%F-%T) - $TAG" >> tags.txt
+            echo TAG saved to server tags.txt
+            cd ../worker
+            TAG=worker
+            echo remove this tag set: TAG set to: $TAG
+            dc down
+            echo worker stopped
+            dc up -d
+            echo worker started
+            echo "$(date +%F-%T) - $TAG" >> tags.txt
+            echo TAG saved to worker tags.txt
+            sleep 5
+            cd ../server
+            TAG=server
+            echo remove this tag set: TAG set to: $TAG
+            echo server logs:
+            dc logs
+            echo
+            cd ../worker
+            TAG=worker
+            echo remove this tag set: TAG set to: $TAG
+            echo worker logs:
+            dc logs
+            echo
+            unset TAG
+            echo TAG unset
+            echo done
