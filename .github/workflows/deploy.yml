@@ -24,28 +24,28 @@ jobs:
             cd server/
             TAG=server
             echo remove this tag set: TAG set to: $TAG
-            dc pull
+            docker-compose pull
             echo server image pulled
             cd ../worker
             TAG=worker
             echo remove this tag set: TAG set to: $TAG
-            dc pull
+            docker-compose pull
             echo worker image pulled
             cd ../server
             TAG=server
             echo remove this tag set: TAG set to: $TAG
-            dc down
+            docker-compose down
             echo server stopped
-            dc up -d
+            docker-compose up -d
             echo server started
             echo "$(date +%F-%T) - $TAG" >> tags.txt
             echo TAG saved to server tags.txt
             cd ../worker
             TAG=worker
             echo remove this tag set: TAG set to: $TAG
-            dc down
+            docker-compose down
             echo worker stopped
-            dc up -d
+            docker-compose up -d
             echo worker started
             echo "$(date +%F-%T) - $TAG" >> tags.txt
             echo TAG saved to worker tags.txt
@@ -54,13 +54,13 @@ jobs:
             TAG=server
             echo remove this tag set: TAG set to: $TAG
             echo server logs:
-            dc logs
+            docker-compose logs
             echo
             cd ../worker
             TAG=worker
             echo remove this tag set: TAG set to: $TAG
             echo worker logs:
-            dc logs
+            docker-compose logs
             echo
             unset TAG
             echo TAG unset
