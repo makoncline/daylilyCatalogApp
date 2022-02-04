@@ -42,7 +42,7 @@ jobs:
             echo worker stopped
             TAG=worker docker-compose up -d
             echo worker started
-            echo "$(date +%F-%T) - $TAG" >> tags.txt
+            echo "$(date +%F-%T) - worker" >> tags.txt
             echo TAG: $TAG saved to worker tags.txt
             sleep 5
             cd ../server
@@ -55,4 +55,5 @@ jobs:
             echo
             unset TAG
             echo TAG unset
+            sleep 5
             echo done
