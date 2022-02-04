@@ -29,7 +29,7 @@ jobs:
           tags: makon/daylilycatalog:server-${{ steps.env.outputs.sha }}
           file: production.Dockerfile
           build-args: |
-            TARGET="server"
+            TARGET=server
             ROOT_URL="http://localhost:5678"
   build-push-worker:
     runs-on: ubuntu-latest
