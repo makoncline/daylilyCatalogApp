@@ -7,37 +7,44 @@ name: Build and publish docker Image CI
 on: [pull_request]
 
 jobs:
-  build:
+  build-publish-server:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
       - name: Get short SHA
         id: env
         run: echo "::set-output name=sha::$(echo ${GITHUB_SHA} | cut -c1-7)"
-      - name: "Run docker server build"
+      - name: "Build server"
         run:
           docker build -t makon/daylilycatalog:server-${{ steps.env.outputs.sha }} --file production.Dockerfile
           --build-arg TARGET=\"server\" .
-      - name: "Run docker worker build"
-        run:
-          docker build -t makon/daylilycatalog:worker-${{ steps.env.outputs.sha }} --file production.Dockerfile
-          --build-arg TARGET=\"worker\" .
       - name: "Publish server"
         uses: elgohr/Publish-Docker-Github-Action@3.04
         with:
           name: makon/daylilycatalog:server-${{ steps.env.outputs.sha }}
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+  build-publish-worker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get short SHA
+        id: env
+        run: echo "::set-output name=sha::$(echo ${GITHUB_SHA} | cut -c1-7)"
+      - name: "Build worker"
+        run:
+          docker build -t makon/daylilycatalog:worker-${{ steps.env.outputs.sha }} --file production.Dockerfile
+          --build-arg TARGET=\"worker\" .
       - name: "Publish worker"
         uses: elgohr/Publish-Docker-Github-Action@3.04
         with:
           name: makon/daylilycatalog:worker-${{ steps.env.outputs.sha }}
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: Sleep for 30 seconds
-        run: sleep 30s
-        shell: bash
+  deploy:
+    needs: [build-publish-server, build-publish-worker]
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy containers to droplet
         uses: appleboy/ssh-action@master
         with:
@@ -47,7 +54,7 @@ jobs:
           script_stop: true
           script: |
             echo starting...
-            TAG=${{ steps.env.outputs.sha }}
+            TAG=-${{ steps.env.outputs.sha }}
             echo TAG set to $TAG
             docker system prune -f
             echo docker pruned
