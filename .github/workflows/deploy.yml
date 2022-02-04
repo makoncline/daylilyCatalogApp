@@ -7,6 +7,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set image TAG
+        id: env
+        run: echo "::set-output name=tag::server"
       - name: Pull new images
         uses: appleboy/ssh-action@master
         with:
@@ -16,51 +19,39 @@ jobs:
           script_stop: true
           script: |
             echo starting...
-            TAG=server
-            echo TAG set to: $TAG
+            TAG=${{ steps.env.outputs.tag }}
+            echo TAG set to $TAG
             docker system prune -f
             echo docker pruned
             cd daylilyCatalog/
             cd server/
-            TAG=server
-            echo remove this tag set: TAG set to: $TAG
-            docker-compose pull
+            TAG=$TAG docker-compose pull
             echo server image pulled
             cd ../worker
-            TAG=worker
-            echo remove this tag set: TAG set to: $TAG
-            docker-compose pull
+            TAG=worker docker-compose pull
             echo worker image pulled
             cd ../server
-            TAG=server
-            echo remove this tag set: TAG set to: $TAG
-            docker-compose down
+            TAG=$TAG docker-compose down
             echo server stopped
-            docker-compose up -d
+            TAG=$TAG docker-compose up -d
             echo server started
             echo "$(date +%F-%T) - $TAG" >> tags.txt
-            echo TAG saved to server tags.txt
+            echo TAG: $TAG saved to server tags.txt
             cd ../worker
-            TAG=worker
-            echo remove this tag set: TAG set to: $TAG
-            docker-compose down
+            TAG=worker docker-compose down
             echo worker stopped
-            docker-compose up -d
+            TAG=worker docker-compose up -d
             echo worker started
             echo "$(date +%F-%T) - $TAG" >> tags.txt
-            echo TAG saved to worker tags.txt
+            echo TAG: $TAG saved to worker tags.txt
             sleep 5
             cd ../server
-            TAG=server
-            echo remove this tag set: TAG set to: $TAG
             echo server logs:
-            docker-compose logs
+            TAG=$TAG docker-compose logs
             echo
             cd ../worker
-            TAG=worker
-            echo remove this tag set: TAG set to: $TAG
             echo worker logs:
-            docker-compose logs
+            TAG=worker docker-compose logs
             echo
             unset TAG
             echo TAG unset
