@@ -18,7 +18,9 @@ jobs:
         id: env
         run: echo "::set-output name=sha::$(echo ${GITHUB_SHA} | cut -c1-7)"
       - name: "Build server"
-        run: yarn build:prod:server
+        run:
+          docker build --file production.Dockerfile --build-arg TARGET="server" -t
+          makon/daylilycatalog:server-${{steps.env.outputs.sha }} .
       - name: "Publish server"
         uses: elgohr/Publish-Docker-Github-Action@3.04
         with:
@@ -29,14 +31,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "16"
       - name: Get short SHA
         id: env
         run: echo "::set-output name=sha::$(echo ${GITHUB_SHA} | cut -c1-7)"
       - name: "Build worker"
-        run: yarn build:prod:worker
+        run:
+          docker build --file production.Dockerfile --build-arg TARGET="worker" -t
+          makon/daylilycatalog:worker-${{steps.env.outputs.sha }} .
       - name: "Publish worker"
         uses: elgohr/Publish-Docker-Github-Action@3.04
         with:
