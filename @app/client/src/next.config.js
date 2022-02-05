@@ -10,7 +10,6 @@ if (!process.env.ROOT_URL) {
 }
 var sentryDisabled = false;
 if (!process.env.SENTRY_AUTH_TOKEN) {
-  // is this working?
   sentryDisabled = true;
 }
 
