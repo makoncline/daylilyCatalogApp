@@ -34,8 +34,10 @@
     "worker": "yarn workspace @app/worker",
     "docker": "yarn --cwd ./docker",
     "docker-compose": "yarn --cwd ./docker compose",
-    "build:prod:server": "docker build -t makon/daylilycatalog:server --file production.Dockerfile --build-arg TARGET=\"server\" .",
-    "build:prod:worker": "docker build -t makon/daylilycatalog:worker --file production.Dockerfile --build-arg TARGET=\"worker\" ."
+    "build:prod:server": "docker build --file production.Dockerfile --build-arg TARGET=\"server\" -t makon/daylilycatalog:server .",
+    "build:prod:worker": "docker build --file production.Dockerfile --build-arg TARGET=\"worker\" -t makon/daylilycatalog:worker .",
+    "build:prod-local:server": "docker build --file production.Dockerfile --build-arg TARGET=\"server\" --build-arg ROOT_URL=\"http://localhost:5678\" -t makon/daylilycatalog:server-local .",
+    "build:prod-local:worker": "docker build --file production.Dockerfile --build-arg TARGET=\"worker\" --build-arg ROOT_URL=\"http://localhost:5678\" -t makon/daylilycatalog:worker-local ."
   },
   "author": "Makon Cline<hello@makoncline.com>",
   "license": "SEE LICENSE IN LICENSE.md",
