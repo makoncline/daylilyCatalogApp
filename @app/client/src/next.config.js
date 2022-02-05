@@ -8,6 +8,10 @@ if (!process.env.ROOT_URL) {
     throw new Error("ROOT_URL is a required envvar");
   }
 }
+var sentryDisabled = false;
+if (!process.env.SENTRY_AUTH_TOKEN) {
+  sentryDisabled = true;
+}
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 (function (process = null) {
@@ -46,6 +50,10 @@ if (!process.env.ROOT_URL) {
 
     return withSentryConfig(
       withAntdLess({
+        sentry: {
+          disableServerWebpackPlugin: sentryDisabled,
+          disableClientWebpackPlugin: sentryDisabled,
+        },
         webpack5: false,
         modifyVars: {
           hack: 'true;@import "~antd/lib/style/themes/default.less";',
