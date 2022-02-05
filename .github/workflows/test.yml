@@ -6,6 +6,8 @@ jobs:
   build-publish-server:
     runs-on: ubuntu-latest
     steps:
+      - name: Get token
+        id: env
+        run: echo "::set-output name=token::${SENTRY_AUTH_TOKEN}"
       - name: test
-        run: |
-          echo token ${SENTRY_AUTH_TOKEN}
+        run: echo token - ${{ steps.env.outputs.token }}
