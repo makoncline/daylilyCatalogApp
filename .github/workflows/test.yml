@@ -2,10 +2,15 @@ name: test log var
 
 on: [pull_request]
 
+env:
+  SENTRY_AUTH_TOKEN: ${secrets.SENTRY_AUTH_TOKEN}
+
 jobs:
   build-publish-server:
     runs-on: ubuntu-latest
     steps:
+      - name: test
+        run: echo token - ${SENTRY_AUTH_TOKEN}
       - name: Get token
         id: env
         run: echo "::set-output name=token::${SENTRY_AUTH_TOKEN}"
