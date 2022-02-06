@@ -2,6 +2,9 @@ name: End-to-end tests
 
 on: [pull_request]
 
+env:
+  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
