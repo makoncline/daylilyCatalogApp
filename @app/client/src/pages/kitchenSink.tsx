@@ -5,10 +5,38 @@ import { ImageUpload } from "./ImageUpload";
 
 // page to display examples of various components
 export default function KitchenSink() {
+  const MAX_NUM_IMAGES = 3;
+  const [imageUrls, setImageUrls] = React.useState<string[]>([]);
+  function handleBeforeUpload(files: File[]) {
+    const newNumImages = imageUrls.length + files.length;
+    if (newNumImages > MAX_NUM_IMAGES) {
+      alert(
+        `Only ${MAX_NUM_IMAGES} images allowed per listing. Please remove ${
+          newNumImages - MAX_NUM_IMAGES
+        } images and try again.`
+      );
+      return false;
+    }
+    return true;
+  }
+  const handleImageUploaded = React.useCallback((url: string, _key: string) => {
+    setImageUrls((prev) => [...prev, url]);
+  }, []);
   return (
     <>
       <main>
-        <ImageUpload keyPrefix="lily" />
+        <ImageUpload
+          keyPrefix="lily"
+          handleImageUploaded={handleImageUploaded}
+          handleBeforeUpload={handleBeforeUpload}
+        />
+        {imageUrls.map((url, i) => (
+          <img
+            key={i}
+            src={url}
+            style={{ width: "100px", height: "100px", objectFit: "cover" }}
+          />
+        ))}
         <h1>This is example text</h1>
         <h2>This is example text</h2>
         <h3>This is example text</h3>
