@@ -7,6 +7,7 @@ import {
 } from "@app/components";
 import { useResetPasswordMutation, useSharedQuery } from "@app/graphql";
 import { formItemLayout, setPasswordInfo, tailFormItemLayout } from "@app/lib";
+import * as Sentry from "@sentry/nextjs";
 import { Alert, Button, Form, Input } from "antd";
 import { useForm } from "antd/lib/form/Form";
 import get from "lodash/get";
@@ -100,6 +101,7 @@ const ResetPage: NextPage<IProps> = ({
             setError(new Error("Please check the errors above and try again"));
             console.dir(e);
           }
+          Sentry.captureException(e);
           setState(State.PENDING);
         }
       })();

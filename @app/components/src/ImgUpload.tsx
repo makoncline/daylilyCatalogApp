@@ -1,4 +1,5 @@
 import { InboxOutlined } from "@ant-design/icons";
+import * as Sentry from "@sentry/nextjs";
 import { message, Modal, Upload } from "antd";
 import axios from "axios";
 import Image from "next/image";
@@ -91,11 +92,13 @@ export const ImgUpload = (props: any) => {
           })
           .catch((err) => {
             console.log(err);
+            Sentry.captureException(err);
             onError(err);
           });
       })
-      .catch((error) => {
-        console.log(error);
+      .catch((err) => {
+        console.log(err);
+        Sentry.captureException(err);
       });
   };
 

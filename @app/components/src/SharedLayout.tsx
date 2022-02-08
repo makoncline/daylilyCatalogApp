@@ -7,6 +7,7 @@ import {
   useCurrentUserUpdatedSubscription,
   useLogoutMutation,
 } from "@app/graphql";
+import * as Sentry from "@sentry/nextjs";
 import { Col, Dropdown, Layout, Menu, Row, Typography } from "antd";
 import Head from "next/head";
 import Link from "next/link";
@@ -112,6 +113,7 @@ export function SharedLayout({
         client.resetStore();
       } catch (e) {
         console.error(e);
+        Sentry.captureException(e);
         // Something went wrong; redirect to /logout to force logout.
         window.location.href = "/logout";
       }

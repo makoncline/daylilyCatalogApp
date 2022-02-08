@@ -1,4 +1,5 @@
 import { InboxOutlined } from "@ant-design/icons";
+import * as Sentry from "@sentry/nextjs";
 import { message, Modal, Upload } from "antd";
 import { UploadFile, UploadProps } from "antd/lib/upload/interface";
 import axios from "axios";
@@ -135,6 +136,7 @@ export const MultiImageUpload = ({
       }
     } catch (e) {
       console.error(e);
+      Sentry.captureException(e);
       onError(e);
     }
     // setIsUploading(false);
@@ -155,8 +157,9 @@ export const MultiImageUpload = ({
         .then(() => {
           // console.log("deleted");
         })
-        .catch((error) => {
-          console.log(JSON.stringify(error));
+        .catch((err) => {
+          console.error(err);
+          Sentry.captureException(err);
         });
     }
     return true;

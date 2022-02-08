@@ -37,7 +37,6 @@ export const AvatarPhotoUpload = ({
   };
 
   const onRemove = async (file: UploadFile) => {
-    console.log("file uid: ", file.uid);
     await deleteUpload({
       variables: {
         input: {
