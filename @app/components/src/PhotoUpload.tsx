@@ -174,7 +174,6 @@ export function PhotoUpload({
         onCancel={() => setPreviewVisible(false)}
         style={{ display: "flex", justifyContent: "center" }}
       >
-        {console.log("previewImage: ", previewImage)}
         <Image
           alt="preview image"
           width={300}

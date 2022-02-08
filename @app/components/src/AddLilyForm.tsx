@@ -11,6 +11,7 @@ import {
   useSearchAhsLiliesLazyQuery,
 } from "@app/graphql";
 import { extractError, formItemLayout, getCodeFromError } from "@app/lib";
+import * as Sentry from "@sentry/nextjs";
 import {
   Alert,
   Button,
@@ -229,6 +230,7 @@ export const AddLilyForm = ({
         });
       } catch (err) {
         console.log(`Error deleting file: `, file);
+        Sentry.captureException(err);
         return false;
       }
     }
@@ -245,6 +247,7 @@ export const AddLilyForm = ({
       }
     } catch (err) {
       console.log(`Error deleting daylily: `, id);
+      Sentry.captureException(err);
       setError(err);
     }
   };

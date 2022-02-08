@@ -49,7 +49,6 @@ export const ProfilePhotoUpload = ({
     const newUser = data?.updateUser?.user;
     if (newUser) {
       setLocalUser(newUser);
-      console.log("updated user photos: ", newUser);
     }
   };
 
@@ -75,7 +74,6 @@ export const ProfilePhotoUpload = ({
     const newUser = data?.updateUser?.user;
     if (newUser) {
       setLocalUser(newUser);
-      console.log("deleted user photos: ", newUser);
     }
   };
   return (

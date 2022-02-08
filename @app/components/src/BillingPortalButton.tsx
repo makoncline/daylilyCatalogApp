@@ -1,4 +1,5 @@
 import { useStripeCustomerQuery } from "@app/graphql";
+import * as Sentry from "@sentry/nextjs";
 import { Button } from "antd";
 import React from "react";
 import type { Stripe } from "stripe";
@@ -16,12 +17,12 @@ export const BillingPortalButton = () => {
         await fetchPostJsonCsrf("/api/billing_portal_session", {
           stripeCustomerId,
         });
-      console.log(billingPortalSession);
       if (typeof window !== "undefined") {
         window.location.href = billingPortalSession.url;
       }
     } catch (err) {
       console.error(err.message);
+      Sentry.captureException(err);
     }
   }
 
