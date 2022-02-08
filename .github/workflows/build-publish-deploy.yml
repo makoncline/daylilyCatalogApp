@@ -73,8 +73,6 @@ jobs:
             echo starting...
             SHA=${{ steps.env.outputs.sha }}
             echo SHA set to $SHA
-            docker system prune -a --volumes -f
-            echo docker pruned
             cd daylilyCatalog/
             cd server/
             TAG=-$SHA docker-compose pull
@@ -105,6 +103,8 @@ jobs:
             echo worker logs:
             TAG=-$SHA docker-compose logs
             echo
+            docker system prune -a --volumes -f
+            echo docker pruned
             unset SHA
             echo SHA unset
             echo done
