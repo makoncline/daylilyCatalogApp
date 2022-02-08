@@ -73,7 +73,7 @@ jobs:
             echo starting...
             SHA=${{ steps.env.outputs.sha }}
             echo SHA set to $SHA
-            docker system prune -f
+            docker system prune -a --volumes -f
             echo docker pruned
             cd daylilyCatalog/
             cd server/
