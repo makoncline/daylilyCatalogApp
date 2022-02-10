@@ -1,89 +1,106 @@
+import { Button, Heading, Space } from "@app/design";
 import {
-  CreateUploadUrlMutation,
+  CreateUploadUrlPayload,
   useCreateUploadUrlMutation,
 } from "@app/graphql";
-import { Button } from "antd";
 import axios from "axios";
-import { GraphQLError } from "graphql";
 import Image from "next/image";
 import React from "react";
+import styled from "styled-components";
+
+function useFileUpload(
+  file: File,
+  keyPrefix: string,
+  callback: (fileName: string, key: string, url: string) => void
+) {
+  const [createUploadUrl] = useCreateUploadUrlMutation();
+  const [uploadConfig, setUploadConfig] = React.useState<Pick<
+    CreateUploadUrlPayload,
+    "uploadUrl" | "key" | "url"
+  > | null>(null);
+  const [progress, setProgress] = React.useState<number | null>(null);
+  const [error, setError] = React.useState<Error | null>(null);
+  const getUploadCongif = React.useCallback(async () => {
+    const { data, errors } = await createUploadUrl({
+      variables: {
+        input: {
+          keyPrefix,
+          contentType: file.type,
+        },
+      },
+    });
+    if (data) {
+      setUploadConfig(data.createUploadUrl || null);
+    }
+    if (errors) {
+      setError(errors[0]);
+    }
+  }, [createUploadUrl, file, keyPrefix]);
+
+  React.useEffect(() => {
+    getUploadCongif();
+  }, [getUploadCongif]);
+
+  const runUpload = React.useCallback(() => {
+    const { uploadUrl, url, key } = uploadConfig || {};
+    if (uploadUrl && url && key) {
+      axios
+        .put(uploadUrl, file, {
+          onUploadProgress: (progressEvent: ProgressEvent) => {
+            const { loaded, total } = progressEvent;
+            const percent = Math.round((loaded / total) * 100);
+            setProgress(percent);
+          },
+        })
+        .then(
+          () => {
+            setProgress(100);
+            console.log("upload success: ", key);
+            callback(file.name, key, url);
+          },
+          (err) => {
+            setProgress(null);
+            setError(err);
+            console.log("upload error: ", key);
+          }
+        );
+    } else {
+      throw new Error(`upload config is not ready for ${file.name}`);
+    }
+  }, [callback, file, uploadConfig]);
+
+  return { runUpload: uploadConfig ? runUpload : null, progress, error };
+}
 
 function UploadFile({
   file,
   keyPrefix,
-  handleUploadComplete,
+  onUpload,
   register,
 }: {
   file: File;
   keyPrefix: string;
-  handleUploadComplete: (file: File, url: string, key: string) => void;
-  register: (uploadFunction: () => Promise<void>) => void;
+  onUpload: (fileName: string, key: string, url: string) => void;
+  register: (uploadFunction: () => void) => void;
 }) {
-  const [progress, setProgress] = React.useState<number | null>(null);
-  const [url, setUrl] = React.useState<string | null>(null);
-  const [key, setKey] = React.useState<string | null>(null);
-  const [error, setError] = React.useState<Error | null>(null);
-  const [createUploadUrl] = useCreateUploadUrlMutation();
-
-  const uploadFile = React.useCallback(async () => {
-    const contentType = file.type || "N/A";
-    let createUploadUrlData: CreateUploadUrlMutation | null = null;
-    let createUploadUrlErrors: GraphQLError[] | null = null;
-    try {
-      const { data, errors } = await createUploadUrl({
-        variables: {
-          input: {
-            keyPrefix,
-            contentType,
-          },
-        },
-      });
-      createUploadUrlData = data ?? null;
-      createUploadUrlErrors = errors ? errors.slice() ?? null : null;
-    } catch (e: any) {
-      setError(e);
-    }
-
-    if (createUploadUrlErrors) {
-      setError(createUploadUrlErrors[0]);
-      return;
-    }
-    if (!createUploadUrlData?.createUploadUrl) return;
-    const { uploadUrl, url, key } = createUploadUrlData.createUploadUrl;
-    setUrl(url);
-    setKey(key);
-    await axios
-      .put(uploadUrl, file, {
-        onUploadProgress: (progressEvent: ProgressEvent) => {
-          const { loaded, total } = progressEvent;
-          const percent = Math.round((loaded / total) * 100);
-          setProgress(percent);
-        },
-      })
-      .then(
-        () => {
-          setProgress(100);
-          console.log("upload success: ", key);
-          handleUploadComplete(file, url, key);
-        },
-        (err) => {
-          setError(err);
-          console.log("upload error: ", key);
-          setProgress(null);
-        }
-      );
-  }, [createUploadUrl, file, handleUploadComplete, keyPrefix]);
+  const { runUpload, progress, error } = useFileUpload(
+    file,
+    keyPrefix,
+    onUpload
+  );
+  const [registered, setRegistered] = React.useState(false);
 
   React.useEffect(() => {
-    register(uploadFile);
-  }, [register, uploadFile]);
+    if (runUpload && !registered) {
+      register(runUpload);
+      setRegistered(true);
+    }
+  }, [register, registered, runUpload]);
 
   return (
     <div>
       {getImagePreview(file)}
       {progress ? <p>{progress}%</p> : null}
-      {url ? <a href={url}>{url}</a> : null}
-      {key ? <p>{key}</p> : null}
       {error ? <p>{error.message}</p> : null}
     </div>
   );
@@ -95,12 +112,12 @@ export function ImageUpload({
   handleBeforeUpload,
 }: {
   keyPrefix: string;
-  handleImageUploaded: (url: string, key: string) => void;
+  handleImageUploaded: (key: string, url: string) => void;
   handleBeforeUpload: (files: File[]) => boolean;
 }) {
-  const [status, setStatus] = React.useState<
-    "idle" | "dragging" | "dropped" | "uploading"
-  >("idle");
+  const [status, setStatus] = React.useState<"idle" | "dragging" | "dropped">(
+    "idle"
+  );
   const [files, setFiles] = React.useState<File[]>([]);
   const dropRef = React.createRef<HTMLLabelElement>();
   const [uploadFunctions, setUploadFunctions] = React.useState<(() => void)[]>(
@@ -172,7 +189,7 @@ export function ImageUpload({
   }
   function handleUpload() {
     if (files.length === 0) {
-      alert("No files to upload");
+      alert("Please select files to upload");
       return;
     }
     if (!handleBeforeUpload(files)) return;
@@ -185,37 +202,48 @@ export function ImageUpload({
     []
   );
   const handleUploadComplete = React.useCallback(
-    (file: File, url: string, key: string) => {
-      setFiles((prev) => prev.filter((f) => f !== file));
-      handleImageUploaded(url, key);
+    (fileName: string, key: string, url: string) => {
+      setFiles((prev) => prev.filter((f) => f.name !== fileName));
+      handleImageUploaded(key, url);
     },
     [handleImageUploaded]
   );
   return (
     <div>
-      <input
-        type="file"
-        id="fileElem"
-        accept="image/*"
-        className="sr-only"
-        onChange={handleChange}
-        multiple
-      />
-      <p>{status}</p>
-      <label htmlFor="fileElem" ref={dropRef}>
-        Select some files
-      </label>
-      {files.map((file) => (
-        <UploadFile
-          file={file}
-          keyPrefix={keyPrefix}
-          handleUploadComplete={handleUploadComplete}
-          key={file.name}
-          register={registerUploadFunction}
-        />
-      ))}
-      <Button onClick={handleReset}>Reset</Button>
-      <Button onClick={handleUpload}>Upload</Button>
+      <Space direction="column">
+        <Heading level={3}>Upload Images</Heading>
+        {files.length === 0 ? (
+          <div>
+            <input
+              type="file"
+              id="fileElem"
+              accept="image/*"
+              className="sr-only"
+              onChange={handleChange}
+              multiple
+            />
+            <FileSelect htmlFor="fileElem" ref={dropRef}>
+              <p>Drag & drop images here or</p>
+              <a>browse files</a>
+            </FileSelect>
+          </div>
+        ) : null}
+        <Space direction="column">
+          {files.map((file) => (
+            <UploadFile
+              file={file}
+              keyPrefix={keyPrefix}
+              onUpload={handleUploadComplete}
+              register={registerUploadFunction}
+              key={file.name}
+            />
+          ))}
+        </Space>
+        <Space direction="row">
+          <Button onClick={handleReset}>Reset</Button>
+          <Button onClick={handleUpload}>Upload</Button>
+        </Space>
+      </Space>
     </div>
   );
 }
@@ -225,13 +253,31 @@ function getImagePreview(file: File): JSX.Element {
   const onLoad = function () {
     URL.revokeObjectURL(src);
   };
-  const img = (
-    <Image src={src} onLoad={onLoad} layout="fill" objectFit="cover" />
-  );
-  const detail = <span>{file.name + ": " + file.size + " bytes"}</span>;
   return (
-    <div>
-      {img} {detail}
-    </div>
+    <Space direction="row">
+      <PreviewImageContainer>
+        <Image src={src} onLoad={onLoad} layout="fill" objectFit="cover" />
+      </PreviewImageContainer>
+      <div>
+        <p>{file.name}</p>
+      </div>
+    </Space>
   );
 }
+
+const PreviewImageContainer = styled.div`
+  position: relative;
+  width: 75px;
+  height: 75px;
+`;
+
+const FileSelect = styled.label`
+  width: 300px;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: var(--border-size-1) dashed var(--text-1);
+  border-radius: var(--radius-1);
+`;

@@ -19,7 +19,7 @@ export default function KitchenSink() {
     }
     return true;
   }
-  const handleImageUploaded = React.useCallback((url: string, _key: string) => {
+  const handleImageUploaded = React.useCallback((_key: string, url: string) => {
     setImageUrls((prev) => [...prev, url]);
   }, []);
   return (
