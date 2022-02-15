@@ -1,6 +1,17 @@
+#import "./AhsSearchData.graphql"
+#import "./ListData.graphql"
+
 query LilyById($id: Int!) {
   lily(id: $id) {
     id
     ...LilyData
+    ahsDatumByAhsRef {
+      id
+      ...AhsSearchData
+    }
+    list {
+      id
+      ...ListData
+    }
   }
 }

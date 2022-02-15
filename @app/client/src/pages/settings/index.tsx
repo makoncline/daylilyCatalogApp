@@ -108,7 +108,7 @@ function ProfileSettingsForm({
         });
         setError(null);
         setSuccess(true);
-      } catch (e) {
+      } catch (e: any) {
         const errcode = getCodeFromError(e);
         if (errcode === "23505") {
           form.setFields([

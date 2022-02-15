@@ -2,11 +2,14 @@ import { ApolloError } from "@apollo/client";
 import { ErrorAlert, Redirect, SharedLayout } from "@app/components";
 import { useSharedQuery } from "@app/graphql";
 import { NextPage } from "next";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
 
-import { CreateListingForm } from "./CreateListingForm";
+import { EditListingForm } from "./EditListingForm";
 
 const Edit: NextPage = () => {
+  const router = useRouter();
+  const { id } = router.query;
   const query = useSharedQuery();
   const [error, setError] = useState<Error | ApolloError | null>(null);
   const {
@@ -15,10 +18,13 @@ const Edit: NextPage = () => {
     error: sharedQueryError,
   } = query;
 
+  const lilyId = (typeof id === "string" && parseInt(id)) || null;
+  if (!lilyId) return <p>invalid id: {id}</p>;
+
   return (
     <SharedLayout title="Create" query={query}>
       {sharedQueryData?.currentUser ? (
-        <CreateListingForm error={error} setError={setError} />
+        <EditListingForm error={error} setError={setError} id={lilyId} />
       ) : sharedQueryLoading ? (
         "Loading..."
       ) : sharedQueryError ? (
