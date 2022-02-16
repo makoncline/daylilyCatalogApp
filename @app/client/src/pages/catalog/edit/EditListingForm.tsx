@@ -56,18 +56,17 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
           variables: {
             id: id,
             name: name,
-            price: price ? parseInt(price) : null,
+            price: parseInt(price) || null,
             publicNote: publicNote,
             privateNote: privateNote,
-            ahsId: linkedLily ? linkedLily.ahsId.toString() : undefined,
-            listId: list ? list.id : undefined,
+            ahsId: linkedLily?.ahsId.toString(),
+            listId: list?.id,
           },
         });
         // Success: refetch
         resetWebsocketConnection();
         client.resetStore();
         const lily = data?.updateLily?.lily;
-        console.log("Saved listing:", lily);
         if (lily) {
           Router.push(`/catalog`);
         }
@@ -124,10 +123,11 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
     if (data?.lily) {
       const { name, price, publicNote, privateNote, ahsDatumByAhsRef, list } =
         data.lily;
-      console.log("setting form values");
+      const priceInt = parseInt(price);
+      const priceString = priceInt ? priceInt.toString() : "";
       setFormValues({
         name,
-        price: Math.trunc(price).toString() || "",
+        price: priceString,
         publicNote: publicNote || "",
         privateNote: privateNote || "",
       });
