@@ -29,6 +29,9 @@ import Router from "next/router";
 import React, { useCallback } from "react";
 import styled from "styled-components";
 
+import { ImageDisplay } from "../../ImageDisplay";
+import { ImageUpload } from "../../ImageUpload";
+
 type EditListingFormProps = {
   error: Error | ApolloError | null;
   setError: (error: Error | ApolloError | null) => void;
@@ -39,6 +42,7 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
   const [linkedLily, setLinkedLily] =
     React.useState<AhsSearchDataFragment | null>(null);
   const [list, setList] = React.useState<ListDataFragment | null>(null);
+  const [ready, setReady] = React.useState(false);
   const {
     data,
     loading,
@@ -46,7 +50,6 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
   } = useLilyByIdQuery({ variables: { id } });
   const client = useApolloClient();
   const [editLily] = useEditLilyMutation();
-  // TODO: get the lily data from the id and set as form values
   const handleSubmit = useCallback(
     async ({ values }: FormContextProps) => {
       setError(null);
@@ -120,9 +123,16 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
   };
 
   React.useEffect(() => {
-    if (data?.lily) {
-      const { name, price, publicNote, privateNote, ahsDatumByAhsRef, list } =
-        data.lily;
+    if (!ready && data?.lily) {
+      const {
+        name,
+        price,
+        publicNote,
+        privateNote,
+        ahsDatumByAhsRef,
+        list,
+        imgUrl,
+      } = data.lily;
       const priceInt = parseInt(price);
       const priceString = priceInt ? priceInt.toString() : "";
       setFormValues({
@@ -137,10 +147,57 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
       if (list) {
         setList(list);
       }
+      if (imgUrl) {
+        setImageUrls(imgUrl.filter(Boolean) as string[]);
+      }
+      setReady(true);
     }
-  }, [data, setFormValues]);
+  }, [data, loading, ready, setFormValues]);
 
-  if (loading) return <p>Loading...</p>;
+  const MAX_NUM_IMAGES = 3;
+  const [imageUrls, setImageUrls] = React.useState<string[]>([]);
+  function handleBeforeUpload(files: File[]) {
+    const newNumImages = imageUrls.length + files.length;
+    if (newNumImages > MAX_NUM_IMAGES) {
+      alert(
+        `Only ${MAX_NUM_IMAGES} images allowed per listing. Please remove ${
+          newNumImages - MAX_NUM_IMAGES
+        } images and try again.`
+      );
+      return false;
+    }
+    return true;
+  }
+  const handleImageUploaded = React.useCallback((_key: string, url: string) => {
+    setImageUrls((prev) => [...prev, url]);
+  }, []);
+
+  const saveImages = React.useCallback(async () => {
+    try {
+      await editLily({
+        variables: {
+          id: id,
+          imgUrl: imageUrls,
+        },
+      });
+    } catch (e: any) {
+      setError(e);
+    }
+  }, [editLily, id, imageUrls, setError]);
+
+  React.useEffect(() => {
+    if (
+      ready &&
+      JSON.stringify(imageUrls) != JSON.stringify(data?.lily?.imgUrl)
+    ) {
+      console.log("Saving images");
+      console.log(imageUrls);
+      console.log(data?.lily?.imgUrl);
+      saveImages();
+    }
+  }, [data?.lily?.imgUrl, imageUrls, loading, ready, saveImages]);
+
+  if (!ready) return <p>Loading...</p>;
   if (queryError) return <p>Error: {queryError.message}</p>;
   return (
     <Form
@@ -189,6 +246,14 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
       ) : (
         <ListInput onSelectedItemChange={handleListChange} />
       )}
+      <div>
+        <ImageUpload
+          keyPrefix="lily"
+          handleImageUploaded={handleImageUploaded}
+          handleBeforeUpload={handleBeforeUpload}
+        />
+        <ImageDisplay imageUrls={imageUrls} setImageUrls={setImageUrls} />
+      </div>
       {error ? (
         <FormGroup>
           <FormError>
