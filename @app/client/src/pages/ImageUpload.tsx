@@ -81,7 +81,7 @@ function UploadFile({
   file: File;
   keyPrefix: string;
   onUpload: (fileName: string, key: string, url: string) => void;
-  register: (uploadFunction: () => void) => void;
+  register: (name: string, run: () => void) => void;
 }) {
   const { runUpload, progress, error } = useFileUpload(
     file,
@@ -92,10 +92,10 @@ function UploadFile({
 
   React.useEffect(() => {
     if (runUpload && !registered) {
-      register(runUpload);
+      register(file.name, runUpload);
       setRegistered(true);
     }
-  }, [register, registered, runUpload]);
+  }, [file.name, register, registered, runUpload]);
 
   return (
     <div>
@@ -120,9 +120,9 @@ export function ImageUpload({
   );
   const [files, setFiles] = React.useState<File[]>([]);
   const dropRef = React.createRef<HTMLLabelElement>();
-  const [uploadFunctions, setUploadFunctions] = React.useState<(() => void)[]>(
-    []
-  );
+  const [uploadFunctions, setUploadFunctions] = React.useState<
+    { name: string; run: () => void }[]
+  >([]);
 
   function handleDragEnter(e: DragEvent) {
     e.stopPropagation();
@@ -143,6 +143,7 @@ export function ImageUpload({
   function handleReset() {
     setStatus("idle");
     setFiles([]);
+    setUploadFunctions([]);
   }
 
   const handleDrop = React.useCallback(
@@ -193,17 +194,18 @@ export function ImageUpload({
       return;
     }
     if (!handleBeforeUpload(files)) return;
-    uploadFunctions.forEach((runUpload) => runUpload());
+    uploadFunctions.forEach((uploadFn) => uploadFn.run());
   }
   const registerUploadFunction = React.useCallback(
-    (uploadFunction: () => void) => {
-      setUploadFunctions((prev) => [...prev, uploadFunction]);
+    (name: string, run: () => void) => {
+      setUploadFunctions((prev) => [...prev, { name, run }]);
     },
     []
   );
   const handleUploadComplete = React.useCallback(
     (fileName: string, key: string, url: string) => {
       setFiles((prev) => prev.filter((f) => f.name !== fileName));
+      setUploadFunctions((prev) => prev.filter((f) => f.name !== fileName));
       handleImageUploaded(key, url);
     },
     [handleImageUploaded]
