@@ -1,4 +1,6 @@
 import { Button } from "@app/design";
+import { useDeleteUploadMutation } from "@app/graphql";
+import AmazonS3URI from "amazon-s3-uri";
 import Image from "next/image";
 import React from "react";
 import styled from "styled-components";
@@ -8,6 +10,7 @@ type ImageDisplayProps = {
   setImageUrls: (imageUrls: string[]) => void;
 };
 function ImageDisplay({ imageUrls, setImageUrls }: ImageDisplayProps) {
+  const [deleteUpload] = useDeleteUploadMutation();
   function handleMove(direction: "<" | ">", index: number) {
     const newImageUrls = [...imageUrls];
     const [moved] = newImageUrls.splice(index, 1);
@@ -17,6 +20,25 @@ function ImageDisplay({ imageUrls, setImageUrls }: ImageDisplayProps) {
       newImageUrls.splice(index + 1, 0, moved);
     }
     setImageUrls(newImageUrls);
+  }
+  async function handleDelete(index: number) {
+    const url = imageUrls[index];
+    const { key } = AmazonS3URI(url);
+    try {
+      // check if image is on S3
+      await deleteUpload({
+        variables: {
+          input: {
+            key: key!!,
+          },
+        },
+      });
+      // check if image is on S3 again
+      setImageUrls(imageUrls.filter((_, i) => i !== index));
+    } catch (err) {
+      console.log(`Error deleting file: `, key, " at url: ", url);
+      throw err;
+    }
   }
 
   return (
@@ -28,6 +50,7 @@ function ImageDisplay({ imageUrls, setImageUrls }: ImageDisplayProps) {
           </ImageWrapper>
           <ControlsWrapper>
             <Button onClick={() => handleMove("<", i)}>{"<"}</Button>
+            <Button onClick={() => handleDelete(i)}>x</Button>
             <Button onClick={() => handleMove(">", i)}>{">"}</Button>
           </ControlsWrapper>
         </ImageDisplayItem>

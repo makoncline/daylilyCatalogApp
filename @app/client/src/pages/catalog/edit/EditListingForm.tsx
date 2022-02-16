@@ -156,6 +156,7 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
 
   const MAX_NUM_IMAGES = 3;
   const [imageUrls, setImageUrls] = React.useState<string[]>([]);
+  const showImageUpload = imageUrls.length < MAX_NUM_IMAGES;
   function handleBeforeUpload(files: File[]) {
     const newNumImages = imageUrls.length + files.length;
     if (newNumImages > MAX_NUM_IMAGES) {
@@ -247,11 +248,13 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
         <ListInput onSelectedItemChange={handleListChange} />
       )}
       <div>
-        <ImageUpload
-          keyPrefix="lily"
-          handleImageUploaded={handleImageUploaded}
-          handleBeforeUpload={handleBeforeUpload}
-        />
+        {showImageUpload ? (
+          <ImageUpload
+            keyPrefix="lily"
+            handleImageUploaded={handleImageUploaded}
+            handleBeforeUpload={handleBeforeUpload}
+          />
+        ) : null}
         <ImageDisplay imageUrls={imageUrls} setImageUrls={setImageUrls} />
       </div>
       {error ? (
