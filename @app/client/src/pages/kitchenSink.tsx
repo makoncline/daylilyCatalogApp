@@ -1,6 +1,7 @@
 import { Button } from "@app/design";
 import React from "react";
 
+import { ImageDisplay } from "./ImageDisplay";
 import { ImageUpload } from "./ImageUpload";
 
 // page to display examples of various components
@@ -30,13 +31,7 @@ export default function KitchenSink() {
           handleImageUploaded={handleImageUploaded}
           handleBeforeUpload={handleBeforeUpload}
         />
-        {imageUrls.map((url, i) => (
-          <img
-            key={i}
-            src={url}
-            style={{ width: "100px", height: "100px", objectFit: "cover" }}
-          />
-        ))}
+        <ImageDisplay imageUrls={imageUrls} setImageUrls={setImageUrls} />
         <h1>This is example text</h1>
         <h2>This is example text</h2>
         <h3>This is example text</h3>
