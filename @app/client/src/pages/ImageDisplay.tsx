@@ -25,7 +25,6 @@ function ImageDisplay({ imageUrls, setImageUrls }: ImageDisplayProps) {
     const url = imageUrls[index];
     const { key } = AmazonS3URI(url);
     try {
-      // check if image is on S3
       await deleteUpload({
         variables: {
           input: {
@@ -33,7 +32,6 @@ function ImageDisplay({ imageUrls, setImageUrls }: ImageDisplayProps) {
           },
         },
       });
-      // check if image is on S3 again
       setImageUrls(imageUrls.filter((_, i) => i !== index));
     } catch (err) {
       console.log(`Error deleting file: `, key, " at url: ", url);
@@ -50,7 +48,7 @@ function ImageDisplay({ imageUrls, setImageUrls }: ImageDisplayProps) {
           </ImageWrapper>
           <ControlsWrapper>
             <Button onClick={() => handleMove("<", i)}>{"<"}</Button>
-            <Button onClick={() => handleDelete(i)}>x</Button>
+            <Button onClick={() => handleDelete(i)}>&times;</Button>
             <Button onClick={() => handleMove(">", i)}>{">"}</Button>
           </ControlsWrapper>
         </ImageDisplayItem>
@@ -73,7 +71,11 @@ const ImageWrapper = styled.div`
 `;
 const ControlsWrapper = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: var(--size-1);
+  button {
+    padding-left: 0;
+    padding-right: 0;
+  }
 `;
 const ImageDisplayItem = styled.div``;
