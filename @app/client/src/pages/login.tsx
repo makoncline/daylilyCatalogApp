@@ -6,7 +6,7 @@ import {
   SharedLayout,
   SharedLayoutChildProps,
 } from "@app/components";
-import type { FormContextProps } from "@app/design";
+import type { FormStateContextProps } from "@app/design";
 import {
   Button,
   Field,
@@ -103,7 +103,7 @@ function LoginForm({
   const client = useApolloClient();
 
   const handleSubmit = useCallback(
-    async ({ values, errors, setErrors }: FormContextProps) => {
+    async ({ values, errors, setErrors }: FormStateContextProps) => {
       setError(null);
       try {
         await login({
@@ -135,6 +135,7 @@ function LoginForm({
 
   return (
     <Form
+      formId="login"
       onSubmit={handleSubmit}
       validation={{
         username: (username) =>

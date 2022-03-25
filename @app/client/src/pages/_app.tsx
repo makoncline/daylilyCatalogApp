@@ -3,6 +3,7 @@ import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "../styles.css";
 
 import { ApolloClient, ApolloProvider } from "@apollo/client";
+import { FormValuesProvider } from "@app/design";
 import { withApollo } from "@app/lib";
 import { notification } from "antd";
 import App from "next/app";
@@ -75,7 +76,9 @@ class MyApp extends App<{ apollo: ApolloClient<any> }> {
 
     return (
       <ApolloProvider client={apollo}>
-        <Component {...pageProps} />
+        <FormValuesProvider>
+          <Component {...pageProps} />
+        </FormValuesProvider>
       </ApolloProvider>
     );
   }

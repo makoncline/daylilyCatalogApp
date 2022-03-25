@@ -9,9 +9,9 @@ import {
   Button,
   Field,
   Form,
-  FormContextProps,
   FormError,
   FormGroup,
+  FormStateContextProps,
   OnChangeCallbackProps,
   SubmitButton,
 } from "@app/design";
@@ -49,7 +49,7 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
   const [confirmDirty, setConfirmDirty] = useState(false);
 
   const handleSubmit = useCallback(
-    async ({ values, errors, setErrors }: FormContextProps) => {
+    async ({ values, errors, setErrors }: FormStateContextProps) => {
       try {
         await register({
           variables: {
@@ -161,6 +161,7 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
           <Redirect href={next} />
         ) : (
           <Form
+            formId="register"
             onChange={handleChange}
             onSubmit={handleSubmit}
             validation={{

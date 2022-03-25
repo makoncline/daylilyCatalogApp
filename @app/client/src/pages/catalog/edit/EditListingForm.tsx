@@ -8,10 +8,11 @@ import {
   Button,
   Field,
   Form,
-  FormContextProps,
   FormError,
   FormGroup,
+  FormStateContextProps,
   SubmitButton,
+  useForm,
 } from "@app/design";
 import {
   AhsSearchDataFragment,
@@ -42,7 +43,6 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
   const [linkedLily, setLinkedLily] =
     React.useState<AhsSearchDataFragment | null>(null);
   const [list, setList] = React.useState<ListDataFragment | null>(null);
-  const [ready, setReady] = React.useState(false);
   const {
     data,
     loading,
@@ -50,8 +50,9 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
   } = useLilyByIdQuery({ variables: { id } });
   const client = useApolloClient();
   const [editLily] = useEditLilyMutation();
+  const { values, setValues, isReady } = useForm("edit-listing-form");
   const handleSubmit = useCallback(
-    async ({ values }: FormContextProps) => {
+    async ({ values }: FormStateContextProps) => {
       setError(null);
       const { name, price, publicNote, privateNote } = values;
       try {
@@ -86,11 +87,10 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
   }: UseComboboxStateChange<AhsSearchDataFragment>): void => {
     setLinkedLily(selectedItem || null);
     // if name is not set, set it to the name of the linked lily
-    if (!formValues?.name) {
-      setFormValues((prevValues) => ({
-        ...prevValues,
-        name: selectedItem?.name || "",
-      }));
+    if (!values?.name && selectedItem?.name) {
+      setValues({
+        name: selectedItem.name,
+      });
     }
   };
 
@@ -108,22 +108,8 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
     setList(null);
   };
 
-  let formValues: FormContextProps["values"];
-  let setFormValues: FormContextProps["setValues"] = useCallback(() => {}, []);
-
-  const handleFormValuesChange: ({
-    values,
-    setValues,
-  }: Pick<FormContextProps, "values" | "setValues">) => void = ({
-    values,
-    setValues,
-  }) => {
-    setFormValues = setValues;
-    formValues = values;
-  };
-
   React.useEffect(() => {
-    if (!ready && data?.lily) {
+    if (!isReady && data?.lily) {
       const {
         name,
         price,
@@ -135,8 +121,8 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
       } = data.lily;
       const priceInt = parseInt(price);
       const priceString = priceInt ? priceInt.toString() : "";
-      setFormValues({
-        name,
+      setValues({
+        name: name,
         price: priceString,
         publicNote: publicNote || "",
         privateNote: privateNote || "",
@@ -150,9 +136,8 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
       if (imgUrl) {
         setImageUrls(imgUrl.filter(Boolean) as string[]);
       }
-      setReady(true);
     }
-  }, [data, loading, ready, setFormValues]);
+  }, [data, isReady, setValues]);
 
   const MAX_NUM_IMAGES = 3;
   const [imageUrls, setImageUrls] = React.useState<string[]>([]);
@@ -188,22 +173,22 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
 
   React.useEffect(() => {
     if (
-      ready &&
+      isReady &&
       JSON.stringify(imageUrls) != JSON.stringify(data?.lily?.imgUrl)
     ) {
       console.log("Saving images");
       console.log(imageUrls);
       console.log(data?.lily?.imgUrl);
-      saveImages();
+      // saveImages();
     }
-  }, [data?.lily?.imgUrl, imageUrls, loading, ready, saveImages]);
+  }, [data?.lily?.imgUrl, imageUrls, loading, isReady, saveImages]);
 
-  if (!ready) return <p>Loading...</p>;
+  if (loading) return <p>Loading...</p>;
   if (queryError) return <p>Error: {queryError.message}</p>;
   return (
     <Form
+      formId="edit-listing-form"
       onSubmit={handleSubmit}
-      onValuesChange={handleFormValuesChange}
       validation={{
         name: (name: string) =>
           name.length === 0 ? "Please enter a name for this listing" : null,

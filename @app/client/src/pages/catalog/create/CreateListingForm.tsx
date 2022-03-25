@@ -4,9 +4,9 @@ import {
   Button,
   Field,
   Form,
-  FormContextProps,
   FormError,
   FormGroup,
+  FormStateContextProps,
   SubmitButton,
 } from "@app/design";
 import { AhsSearchDataFragment, useAddLilyMutation } from "@app/graphql";
@@ -31,7 +31,7 @@ function CreateListingForm({ error, setError }: EditListingFormProps) {
   const client = useApolloClient();
   const [addLily] = useAddLilyMutation();
   const handleSubmit = useCallback(
-    async ({ values }: FormContextProps) => {
+    async ({ values }: FormStateContextProps) => {
       setError(null);
       const { name } = values;
       try {
@@ -74,13 +74,13 @@ function CreateListingForm({ error, setError }: EditListingFormProps) {
     setLinkedLily(null);
   };
 
-  let formValues: FormContextProps["values"];
-  let setFormValues: FormContextProps["setValues"];
+  let formValues: FormStateContextProps["values"];
+  let setFormValues: FormStateContextProps["setValues"];
 
   const handleFormValuesChange: ({
     values,
     setValues,
-  }: Pick<FormContextProps, "values" | "setValues">) => void = ({
+  }: Pick<FormStateContextProps, "values" | "setValues">) => void = ({
     values,
     setValues,
   }) => {
