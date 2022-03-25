@@ -7,11 +7,15 @@ type FormValues = { [key: string]: string };
 type FormIsReady = { [key: string]: boolean };
 type GlobalFormContextProps = {
   register: (formId: string, formData: FormValues) => void;
+  unregister: (formId: string) => void;
   isReady: FormIsReady;
   getForm: (formId: string) => {
+    isReady: boolean;
     values: FormValues;
     setValues: (values: FormValues) => void;
-    isReady: boolean;
+    setField: (field: string, value: string) => void;
+    registerField: (fieldId: string, defaultValue?: string) => void;
+    fieldIsReady: (fieldId: string) => boolean;
   };
 };
 
@@ -54,22 +58,31 @@ const FormValuesProvider = ({ children }: { children: React.ReactNode }) => {
     },
     [data, isReady]
   );
+  const unregister = React.useCallback(
+    (formId: string) => {
+      setIsReady({ ...isReady, [formId]: false });
+    },
+    [isReady]
+  );
 
-  const setField = React.useCallback(
-    (fieldId: string, value: string, formId: string) => {
+  const getForm = (formId: string) => ({
+    isReady: isReady[formId],
+    values: data[formId],
+    setValues: (values: { [key: string]: string }) =>
+      setData((prevData) => ({ ...prevData, [formId]: values })),
+    setField: (fieldId: string, value: string) =>
       setData((prevData) => ({
         ...prevData,
         [formId]: { ...prevData[formId], [fieldId]: value },
-      }));
-    },
-    []
-  );
-  const getForm = (formId: string) => ({
-    values: data[formId],
-    setValues: (values: { [key: string]: string }) => setData((prevData) => ({ ...prevData, [formId]: values }));,
-    isReady: isReady[formId],
+      })),
+    registerField: (fieldId: string, defaultValue: string = "") =>
+      setData((prevData) => ({
+        ...prevData,
+        [formId]: { ...prevData[formId], [fieldId]: defaultValue },
+      })),
+    fieldIsReady: (fieldId: string) => data[formId][fieldId] !== undefined,
   });
-  const value = { register, isReady, setField, getForm };
+  const value = { register, unregister, isReady, getForm };
   return (
     <GlobalFormContext.Provider value={value}>
       {children}
@@ -82,10 +95,10 @@ export type FormStateContextProps = {
   setValues: (values: { [key: string]: string }) => void;
   errors: { [key: string]: string | null };
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  register: (fieldId: string) => void;
+  registerField: (fieldId: string) => void;
+  fieldIsReady: (fieldId: string) => boolean;
   hasError: boolean;
   setErrors: (errors: { [key: string]: string | null }) => void;
-  isFieldReady: { [key: string]: boolean };
 };
 
 export type OnChangeCallbackProps = FormStateContextProps & {
@@ -122,30 +135,17 @@ const Form = ({
   validation?: { [key: string]: (...args: any) => string | null };
 }) => {
   const { register } = useGlobalForm();
-  const { values, setValues, isReady } = useForm(formId);
+  const { values, setValues, isReady, registerField, fieldIsReady } =
+    useForm(formId);
   const [errors, setErrors] = React.useState<{
     [key: string]: string | null;
   }>({});
-  const [isFieldReady, setIsFieldReady] = React.useState<{
-    [key: string]: boolean;
-  }>({});
+
   React.useEffect(() => {
     if (!isReady) {
       register(formId, values);
     }
   }, [formId, isReady, register, values]);
-
-  const registerField = React.useCallback(
-    (fieldId: string) => {
-      console.log("registering field: ", fieldId);
-      setValues({ ...values, [fieldId]: "" });
-      setIsFieldReady((prevIsFieldReady) => ({
-        ...prevIsFieldReady,
-        [fieldId]: true,
-      }));
-    },
-    [setValues, values]
-  );
 
   if (!values || !errors) {
     return null;
@@ -195,9 +195,9 @@ const Form = ({
     errors,
     handleChange,
     setErrors,
-    register: registerField,
+    registerField,
+    fieldIsReady,
     hasError,
-    isFieldReady,
   };
 
   return (
@@ -253,17 +253,17 @@ const Field = ({
   autoComplete,
   ...props
 }: FieldProps) => {
-  const { handleChange, values, errors, register, isFieldReady } =
+  const { handleChange, values, errors, registerField, fieldIsReady } =
     useFormState();
   const fieldId = name ? name : camelCase(child);
   const error = errors[fieldId];
   const value = values[fieldId];
 
   React.useEffect(() => {
-    if (!isFieldReady[fieldId]) {
-      register(fieldId);
+    if (!fieldIsReady(fieldId)) {
+      registerField(fieldId);
     }
-  }, [fieldId, isFieldReady, register]);
+  }, [fieldId, fieldIsReady, registerField]);
 
   return (
     <FormGroup direction={direction}>
