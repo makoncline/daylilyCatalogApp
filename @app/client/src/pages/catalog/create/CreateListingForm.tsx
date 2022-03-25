@@ -8,6 +8,7 @@ import {
   FormGroup,
   FormStateContextProps,
   SubmitButton,
+  useForm,
 } from "@app/design";
 import { AhsSearchDataFragment, useAddLilyMutation } from "@app/graphql";
 import {
@@ -26,6 +27,7 @@ type EditListingFormProps = {
 };
 
 function CreateListingForm({ error, setError }: EditListingFormProps) {
+  const { values, setValues } = useForm("create-listing-form");
   const [linkedLily, setLinkedLily] =
     React.useState<AhsSearchDataFragment | null>(null);
   const client = useApolloClient();
@@ -62,11 +64,10 @@ function CreateListingForm({ error, setError }: EditListingFormProps) {
   }: UseComboboxStateChange<AhsSearchDataFragment>): void => {
     setLinkedLily(selectedItem || null);
     // if name is not set, set it to the name of the linked lily
-    if (!formValues?.name) {
-      setFormValues((prevValues) => ({
-        ...prevValues,
-        name: selectedItem?.name || "",
-      }));
+    if (!values?.name && selectedItem?.name) {
+      setValues({
+        name: selectedItem.name,
+      });
     }
   };
 
@@ -74,24 +75,10 @@ function CreateListingForm({ error, setError }: EditListingFormProps) {
     setLinkedLily(null);
   };
 
-  let formValues: FormStateContextProps["values"];
-  let setFormValues: FormStateContextProps["setValues"];
-
-  const handleFormValuesChange: ({
-    values,
-    setValues,
-  }: Pick<FormStateContextProps, "values" | "setValues">) => void = ({
-    values,
-    setValues,
-  }) => {
-    setFormValues = setValues;
-    formValues = values;
-  };
-
   return (
     <Form
+      formId="create-listing-form"
       onSubmit={handleSubmit}
-      onValuesChange={handleFormValuesChange}
       validation={{
         name: (name: string) =>
           name.length === 0 ? "Please enter a name for this listing" : null,

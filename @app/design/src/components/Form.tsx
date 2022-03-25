@@ -6,7 +6,7 @@ import { Space } from "./Space";
 type FormValues = { [key: string]: string };
 type FormIsReady = { [key: string]: boolean };
 type GlobalFormContextProps = {
-  register: (formId: string, formData: FormValues) => void;
+  register: (formId: string) => void;
   unregister: (formId: string) => void;
   isReady: FormIsReady;
   getForm: (formId: string) => {
@@ -50,23 +50,18 @@ const FormValuesProvider = ({ children }: { children: React.ReactNode }) => {
     console.log("data: ", data);
   }, [data]);
 
-  const register = React.useCallback(
-    (formId: string, formData: FormValues) => {
-      console.log("registering form: ", formId);
-      setData({ ...data, [formId]: formData });
-      setIsReady({ ...isReady, [formId]: true });
-    },
-    [data, isReady]
-  );
-  const unregister = React.useCallback(
-    (formId: string) => {
-      setIsReady({ ...isReady, [formId]: false });
-    },
-    [isReady]
-  );
+  const register = React.useCallback((formId: string) => {
+    console.log("registering form: ", formId);
+    setData((prevData) => ({ ...prevData, [formId]: {} }));
+    setIsReady((prevIsReady) => ({ ...prevIsReady, [formId]: true }));
+  }, []);
+  const unregister = React.useCallback((formId: string) => {
+    console.log("unregistering form: ", formId);
+    setIsReady((prevIsReady) => ({ ...prevIsReady, [formId]: false }));
+  }, []);
 
   const getForm = (formId: string) => ({
-    isReady: isReady[formId],
+    isReady: isReady[formId] !== undefined,
     values: data[formId],
     setValues: (values: { [key: string]: string }) =>
       setData((prevData) => ({ ...prevData, [formId]: values })),
@@ -75,11 +70,13 @@ const FormValuesProvider = ({ children }: { children: React.ReactNode }) => {
         ...prevData,
         [formId]: { ...prevData[formId], [fieldId]: value },
       })),
-    registerField: (fieldId: string, defaultValue: string = "") =>
+    registerField: (fieldId: string, defaultValue: string = "") => {
+      console.log("registering field: ", fieldId);
       setData((prevData) => ({
         ...prevData,
         [formId]: { ...prevData[formId], [fieldId]: defaultValue },
-      })),
+      }));
+    },
     fieldIsReady: (fieldId: string) => data[formId][fieldId] !== undefined,
   });
   const value = { register, unregister, isReady, getForm };
@@ -134,7 +131,7 @@ const Form = ({
   children: React.ReactNode;
   validation?: { [key: string]: (...args: any) => string | null };
 }) => {
-  const { register } = useGlobalForm();
+  const { register, unregister } = useGlobalForm();
   const { values, setValues, isReady, registerField, fieldIsReady } =
     useForm(formId);
   const [errors, setErrors] = React.useState<{
@@ -143,9 +140,14 @@ const Form = ({
 
   React.useEffect(() => {
     if (!isReady) {
-      register(formId, values);
+      register(formId);
     }
-  }, [formId, isReady, register, values]);
+    return () => {
+      if (isReady) {
+        unregister(formId);
+      }
+    };
+  }, [formId, isReady, register, unregister]);
 
   if (!values || !errors) {
     return null;
@@ -256,14 +258,15 @@ const Field = ({
   const { handleChange, values, errors, registerField, fieldIsReady } =
     useFormState();
   const fieldId = name ? name : camelCase(child);
-  const error = errors[fieldId];
-  const value = values[fieldId];
 
   React.useEffect(() => {
     if (!fieldIsReady(fieldId)) {
       registerField(fieldId);
     }
   }, [fieldId, fieldIsReady, registerField]);
+
+  const error = errors[fieldId];
+  const value = values[fieldId];
 
   return (
     <FormGroup direction={direction}>

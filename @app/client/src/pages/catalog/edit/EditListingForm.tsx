@@ -17,6 +17,7 @@ import {
 import {
   AhsSearchDataFragment,
   ListDataFragment,
+  useDeleteLilyMutation,
   useEditLilyMutation,
   useLilyByIdQuery,
 } from "@app/graphql";
@@ -50,6 +51,7 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
   } = useLilyByIdQuery({ variables: { id } });
   const client = useApolloClient();
   const [editLily] = useEditLilyMutation();
+  const [deleteLily] = useDeleteLilyMutation();
   const { values, setValues, isReady } = useForm("edit-listing-form");
   const handleSubmit = useCallback(
     async ({ values }: FormStateContextProps) => {
@@ -80,6 +82,18 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
     },
     [client, editLily, id, linkedLily, list, setError]
   );
+  const handleDelete = async () => {
+    if (confirm("Are you sure you want to delete this listing?")) {
+      try {
+        await deleteLily({ variables: { id } });
+        resetWebsocketConnection();
+        client.resetStore();
+        Router.push("/catalog");
+      } catch (e: any) {
+        setError(e);
+      }
+    }
+  };
   const code = getCodeFromError(error);
 
   const handleLinkedLilyChange = ({
@@ -166,6 +180,7 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
           imgUrl: imageUrls,
         },
       });
+      console.log("saved img urls to db: ", imageUrls);
     } catch (e: any) {
       setError(e);
     }
@@ -174,17 +189,17 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
   React.useEffect(() => {
     if (
       isReady &&
+      !loading &&
       JSON.stringify(imageUrls) != JSON.stringify(data?.lily?.imgUrl)
     ) {
-      console.log("Saving images");
-      console.log(imageUrls);
-      console.log(data?.lily?.imgUrl);
-      // saveImages();
+      console.log("Saving images to s3: ", imageUrls, data?.lily?.imgUrl);
+      saveImages();
     }
-  }, [data?.lily?.imgUrl, imageUrls, loading, isReady, saveImages]);
+  }, [data?.lily?.imgUrl, imageUrls, isReady, loading, saveImages]);
 
   if (loading) return <p>Loading...</p>;
   if (queryError) return <p>Error: {queryError.message}</p>;
+  if (!data?.lily) return <p>No listing found with id {id}</p>;
   return (
     <Form
       formId="edit-listing-form"
@@ -262,6 +277,7 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
         <SubmitButton>
           <Button>Save listing</Button>
         </SubmitButton>
+        <Button onClick={handleDelete}>Delete</Button>
       </FormGroup>
     </Form>
   );

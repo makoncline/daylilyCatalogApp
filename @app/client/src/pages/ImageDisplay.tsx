@@ -22,20 +22,22 @@ function ImageDisplay({ imageUrls, setImageUrls }: ImageDisplayProps) {
     setImageUrls(newImageUrls);
   }
   async function handleDelete(index: number) {
-    const url = imageUrls[index];
-    const { key } = AmazonS3URI(url);
-    try {
-      await deleteUpload({
-        variables: {
-          input: {
-            key: key!!,
+    if (confirm("Are you sure you want to delete this image?")) {
+      const url = imageUrls[index];
+      const { key } = AmazonS3URI(url);
+      try {
+        await deleteUpload({
+          variables: {
+            input: {
+              key: key!!,
+            },
           },
-        },
-      });
-      setImageUrls(imageUrls.filter((_, i) => i !== index));
-    } catch (err) {
-      console.log(`Error deleting file: `, key, " at url: ", url);
-      throw err;
+        });
+        setImageUrls(imageUrls.filter((_, i) => i !== index));
+      } catch (err) {
+        console.log(`Error deleting file: `, key, " at url: ", url);
+        throw err;
+      }
     }
   }
 
