@@ -179,7 +179,7 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
   }, [data, isReady, setValues]);
 
   const MAX_NUM_IMAGES = 3;
-  const [imageUrls, setImageUrls] = React.useState<string[]>([]);
+  const [imageUrls, setImageUrls] = React.useState<string[] | null>([]);
   const showImageUpload = imageUrls.length < MAX_NUM_IMAGES;
   function handleBeforeUpload(files: File[]) {
     const newNumImages = imageUrls.length + files.length;
@@ -194,29 +194,28 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
     return true;
   }
 
-  const saveImages = React.useCallback(async () => {
-    try {
-      await editLily({
-        variables: {
-          id: id,
-          imgUrl: imageUrls,
-        },
-      });
-      console.log("saved img urls to db: ", imageUrls);
-    } catch (e: any) {
-      setError(e);
-    }
-  }, [editLily, id, imageUrls, setError]);
-
-  const handleImageUploaded = React.useCallback(
-    (_key: string, url: string) => {
-      setImageUrls((prev) => [...prev, url]);
-      if (JSON.stringify(imageUrls) != JSON.stringify(data?.lily?.imgUrl)) {
-        saveImages();
+  const handleImageUploaded = React.useCallback((_key: string, url: string) => {
+    setImageUrls((prev) => [...(prev ?? []), url]);
+  }, []);
+  React.useEffect(() => {
+    if (
+      isReady &&
+      imageUrls &&
+      JSON.stringify(imageUrls) != JSON.stringify(data?.lily?.imgUrl)
+    ) {
+      try {
+        editLily({
+          variables: {
+            id: id,
+            imgUrl: imageUrls,
+          },
+        });
+        console.log("saved img urls to db: ", imageUrls);
+      } catch (e: any) {
+        setError(e);
       }
-    },
-    [data?.lily?.imgUrl, imageUrls, saveImages]
-  );
+    }
+  }, [data?.lily?.imgUrl, editLily, id, imageUrls, isReady, setError]);
 
   if (loading) return <p>Loading...</p>;
   if (queryError) return <p>Error: {queryError.message}</p>;
