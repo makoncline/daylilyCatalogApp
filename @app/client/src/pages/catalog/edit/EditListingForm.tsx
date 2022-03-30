@@ -11,13 +11,15 @@ import {
   FormError,
   FormGroup,
   FormStateContextProps,
+  FormValues,
   SubmitButton,
-  useForm,
+  useGlobalForm,
 } from "@app/design";
 import {
   AhsSearchDataFragment,
   ListDataFragment,
   useDeleteLilyMutation,
+  useDeleteUploadMutation,
   useEditLilyMutation,
   useLilyByIdQuery,
 } from "@app/graphql";
@@ -26,6 +28,7 @@ import {
   getCodeFromError,
   resetWebsocketConnection,
 } from "@app/lib";
+import AmazonS3URI from "amazon-s3-uri";
 import { UseComboboxStateChange } from "downshift";
 import Router from "next/router";
 import React, { useCallback } from "react";
@@ -41,6 +44,7 @@ type EditListingFormProps = {
 };
 
 function EditListingForm({ error, setError, id }: EditListingFormProps) {
+  const [formState, setFormState] = React.useState<"idle" | "deleting">("idle");
   const [linkedLily, setLinkedLily] =
     React.useState<AhsSearchDataFragment | null>(null);
   const [list, setList] = React.useState<ListDataFragment | null>(null);
@@ -52,7 +56,14 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
   const client = useApolloClient();
   const [editLily] = useEditLilyMutation();
   const [deleteLily] = useDeleteLilyMutation();
-  const { values, setValues, isReady } = useForm("edit-listing-form");
+  const formId = "edit-listing-form";
+  const { getFormValues, setFormValues, getFormIsReady } = useGlobalForm();
+  const isReady = getFormIsReady(formId);
+  const values = getFormValues(formId);
+  const setValues = React.useCallback(
+    (values: FormValues) => setFormValues(formId, values),
+    [setFormValues]
+  );
   const handleSubmit = useCallback(
     async ({ values }: FormStateContextProps) => {
       setError(null);
@@ -82,10 +93,31 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
     },
     [client, editLily, id, linkedLily, list, setError]
   );
+  const [deleteUpload] = useDeleteUploadMutation();
+  async function handleDeleteImage(imageUrl: string) {
+    const { key } = AmazonS3URI(imageUrl);
+    try {
+      await deleteUpload({
+        variables: {
+          input: {
+            key: key!!,
+          },
+        },
+      });
+    } catch (err) {
+      console.log(`Error deleting file: `, key, " at url: ", imageUrl);
+      throw err;
+    }
+  }
   const handleDelete = async () => {
     if (confirm("Are you sure you want to delete this listing?")) {
+      setFormState("deleting");
       try {
+        for (const imgUrl of imageUrls) {
+          await handleDeleteImage(imgUrl);
+        }
         await deleteLily({ variables: { id } });
+        setFormState("idle");
         resetWebsocketConnection();
         client.resetStore();
         Router.push("/catalog");
@@ -168,9 +200,6 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
     }
     return true;
   }
-  const handleImageUploaded = React.useCallback((_key: string, url: string) => {
-    setImageUrls((prev) => [...prev, url]);
-  }, []);
 
   const saveImages = React.useCallback(async () => {
     try {
@@ -186,23 +215,24 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
     }
   }, [editLily, id, imageUrls, setError]);
 
-  React.useEffect(() => {
-    if (
-      isReady &&
-      !loading &&
-      JSON.stringify(imageUrls) != JSON.stringify(data?.lily?.imgUrl)
-    ) {
-      console.log("Saving images to s3: ", imageUrls, data?.lily?.imgUrl);
-      saveImages();
-    }
-  }, [data?.lily?.imgUrl, imageUrls, isReady, loading, saveImages]);
+  const handleImageUploaded = React.useCallback(
+    (_key: string, url: string) => {
+      setImageUrls((prev) => [...prev, url]);
+      if (JSON.stringify(imageUrls) != JSON.stringify(data?.lily?.imgUrl)) {
+        saveImages();
+      }
+    },
+    [data?.lily?.imgUrl, imageUrls, saveImages]
+  );
 
   if (loading) return <p>Loading...</p>;
   if (queryError) return <p>Error: {queryError.message}</p>;
+  if (!data?.lily && formState === "deleting")
+    return <p>Daylily with id {id} has been deleted</p>;
   if (!data?.lily) return <p>No listing found with id {id}</p>;
   return (
     <Form
-      formId="edit-listing-form"
+      formId={formId}
       onSubmit={handleSubmit}
       validation={{
         name: (name: string) =>
@@ -241,7 +271,12 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
               disabled
               style={{ flexGrow: 1 }}
             />
-            <Button onClick={handleRemoveFromList}>Remove from list</Button>
+            <Button
+              onClick={handleRemoveFromList}
+              disabled={formState === "deleting"}
+            >
+              Remove from list
+            </Button>
           </FormGroup>
         </FormGroup>
       ) : (
@@ -275,9 +310,11 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
       ) : null}
       <FormGroup direction="row">
         <SubmitButton>
-          <Button>Save listing</Button>
+          <Button disabled={formState === "deleting"}>Save listing</Button>
         </SubmitButton>
-        <Button onClick={handleDelete}>Delete</Button>
+        <Button onClick={handleDelete} disabled={formState === "deleting"}>
+          Delete
+        </Button>
       </FormGroup>
     </Form>
   );

@@ -17,6 +17,16 @@ type GlobalFormContextProps = {
     registerField: (fieldId: string, defaultValue?: string) => void;
     fieldIsReady: (fieldId: string) => boolean;
   };
+  getFormIsReady: (formId: string) => boolean;
+  getFormValues: (formId: string) => FormValues;
+  setFormValues: (formId: string, values: FormValues) => void;
+  setFormField: (formId: string, field: string, value: string) => void;
+  registerFormField: (
+    formId: string,
+    fieldId: string,
+    defaultValue?: string
+  ) => void;
+  formFieldIsReady: (formId: string, fieldId: string) => boolean;
 };
 
 const GlobalFormContext = React.createContext<
@@ -33,15 +43,6 @@ const useGlobalForm = () => {
   return context;
 };
 
-const useForm = (formId: string) => {
-  const { getForm } = useGlobalForm();
-  const form = getForm(formId);
-  if (!form) {
-    throw new Error(`Could not get form state for ${formId}`);
-  }
-  return form;
-};
-
 const FormValuesProvider = ({ children }: { children: React.ReactNode }) => {
   const [data, setData] = React.useState<{ [key: string]: FormValues }>({});
   const [isReady, setIsReady] = React.useState<FormIsReady>({});
@@ -49,6 +50,9 @@ const FormValuesProvider = ({ children }: { children: React.ReactNode }) => {
   React.useEffect(() => {
     console.log("data: ", data);
   }, [data]);
+  React.useEffect(() => {
+    console.log("isReady: ", isReady);
+  }, [isReady]);
 
   const register = React.useCallback((formId: string) => {
     console.log("registering form: ", formId);
@@ -79,7 +83,44 @@ const FormValuesProvider = ({ children }: { children: React.ReactNode }) => {
     },
     fieldIsReady: (fieldId: string) => data[formId][fieldId] !== undefined,
   });
-  const value = { register, unregister, isReady, getForm };
+
+  const getFormIsReady = (formId: string) => isReady[formId] === true;
+
+  const getFormValues = (formId: string) => data[formId];
+  const setFormValues = React.useCallback(
+    (formId: string, values: { [key: string]: string }) =>
+      setData((prevData) => ({ ...prevData, [formId]: values })),
+    []
+  );
+  const setFormField = (formId: string, fieldId: string, value: string) =>
+    setData((prevData) => ({
+      ...prevData,
+      [formId]: { ...prevData[formId], [fieldId]: value },
+    }));
+  const registerFormField = (
+    formId: string,
+    fieldId: string,
+    defaultValue: string = ""
+  ) =>
+    setData((prevData) => ({
+      ...prevData,
+      [formId]: { ...prevData[formId], [fieldId]: defaultValue },
+    }));
+
+  const formFieldIsReady = (formId: string, fieldId: string) =>
+    data[formId][fieldId] !== undefined;
+  const value = {
+    register,
+    unregister,
+    isReady,
+    getForm,
+    getFormIsReady,
+    getFormValues,
+    setFormValues,
+    setFormField,
+    registerFormField,
+    formFieldIsReady,
+  };
   return (
     <GlobalFormContext.Provider value={value}>
       {children}
@@ -131,9 +172,20 @@ const Form = ({
   children: React.ReactNode;
   validation?: { [key: string]: (...args: any) => string | null };
 }) => {
-  const { register, unregister } = useGlobalForm();
-  const { values, setValues, isReady, registerField, fieldIsReady } =
-    useForm(formId);
+  const {
+    register,
+    unregister,
+    getFormIsReady,
+    getFormValues,
+    setFormValues,
+    registerFormField,
+    formFieldIsReady,
+  } = useGlobalForm();
+  const values = getFormValues(formId);
+  const isReady = getFormIsReady(formId);
+  const setValues = (values: FormValues) => setFormValues(formId, values);
+  const registerField = (fieldId: string) => registerFormField(formId, fieldId);
+  const fieldIsReady = (fieldId: string) => formFieldIsReady(formId, fieldId);
   const [errors, setErrors] = React.useState<{
     [key: string]: string | null;
   }>({});
@@ -156,7 +208,7 @@ const Form = ({
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     const newValues = { ...values, [name]: value };
-    setValues(newValues);
+    setFormValues(formId, newValues);
     const newErrors = validation[name]
       ? { ...errors, [name]: validation[name](value) }
       : errors;
@@ -316,8 +368,9 @@ export {
   Form,
   FormError,
   FormGroup,
+  FormValues,
   FormValuesProvider,
   SubmitButton,
   Success,
-  useForm,
+  useGlobalForm,
 };
