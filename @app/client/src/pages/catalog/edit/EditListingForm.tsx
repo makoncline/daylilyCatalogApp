@@ -11,9 +11,8 @@ import {
   FormError,
   FormGroup,
   FormStateContextProps,
-  FormValues,
   SubmitButton,
-  useGlobalForm,
+  useForm,
 } from "@app/design";
 import {
   AhsSearchDataFragment,
@@ -57,13 +56,7 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
   const [editLily] = useEditLilyMutation();
   const [deleteLily] = useDeleteLilyMutation();
   const formId = "edit-listing-form";
-  const { getFormValues, setFormValues, getFormIsReady } = useGlobalForm();
-  const isReady = getFormIsReady(formId);
-  const values = getFormValues(formId);
-  const setValues = React.useCallback(
-    (values: FormValues) => setFormValues(formId, values),
-    [setFormValues]
-  );
+  const { values, isReady, setValues } = useForm(formId);
   const handleSubmit = useCallback(
     async ({ values }: FormStateContextProps) => {
       setError(null);

@@ -64,28 +64,7 @@ const FormValuesProvider = ({ children }: { children: React.ReactNode }) => {
     setIsReady((prevIsReady) => ({ ...prevIsReady, [formId]: false }));
   }, []);
 
-  const getForm = (formId: string) => ({
-    isReady: isReady[formId] !== undefined,
-    values: data[formId],
-    setValues: (values: { [key: string]: string }) =>
-      setData((prevData) => ({ ...prevData, [formId]: values })),
-    setField: (fieldId: string, value: string) =>
-      setData((prevData) => ({
-        ...prevData,
-        [formId]: { ...prevData[formId], [fieldId]: value },
-      })),
-    registerField: (fieldId: string, defaultValue: string = "") => {
-      console.log("registering field: ", fieldId);
-      setData((prevData) => ({
-        ...prevData,
-        [formId]: { ...prevData[formId], [fieldId]: defaultValue },
-      }));
-    },
-    fieldIsReady: (fieldId: string) => data[formId][fieldId] !== undefined,
-  });
-
   const getFormIsReady = (formId: string) => isReady[formId] === true;
-
   const getFormValues = (formId: string) => data[formId];
   const setFormValues = React.useCallback(
     (formId: string, values: { [key: string]: string }) =>
@@ -106,9 +85,18 @@ const FormValuesProvider = ({ children }: { children: React.ReactNode }) => {
       ...prevData,
       [formId]: { ...prevData[formId], [fieldId]: defaultValue },
     }));
-
   const formFieldIsReady = (formId: string, fieldId: string) =>
     data[formId][fieldId] !== undefined;
+
+  const getForm = (formId: string) => ({
+    isReady: getFormIsReady(formId),
+    values: getFormValues(formId),
+    setValues: (values: FormValues) => setFormValues(formId, values),
+    setField: (fieldId: string, value: string) =>
+      setFormField(formId, fieldId, value),
+    registerField: (fieldId: string) => registerFormField(formId, fieldId),
+    fieldIsReady: (fieldId: string) => formFieldIsReady(formId, fieldId),
+  });
   const value = {
     register,
     unregister,
@@ -150,9 +138,22 @@ const FormStateContext = React.createContext<FormStateContextProps | undefined>(
 const useFormState = () => {
   const context = React.useContext(FormStateContext);
   if (context === undefined) {
-    throw new Error("useForm must be used within a FormContext provider");
+    throw new Error(
+      "useFormState must be used within a FormStateContext provider"
+    );
   }
   return context;
+};
+
+const useForm = (formId: string) => {
+  const { getForm } = useGlobalForm();
+  const formContext = getForm(formId);
+  if (!formContext) {
+    throw new Error(
+      `could not find form with formId ${formId}. Make sure the form has a formId set.`
+    );
+  }
+  return formContext;
 };
 
 const Form = ({
@@ -172,20 +173,9 @@ const Form = ({
   children: React.ReactNode;
   validation?: { [key: string]: (...args: any) => string | null };
 }) => {
-  const {
-    register,
-    unregister,
-    getFormIsReady,
-    getFormValues,
-    setFormValues,
-    registerFormField,
-    formFieldIsReady,
-  } = useGlobalForm();
-  const values = getFormValues(formId);
-  const isReady = getFormIsReady(formId);
-  const setValues = (values: FormValues) => setFormValues(formId, values);
-  const registerField = (fieldId: string) => registerFormField(formId, fieldId);
-  const fieldIsReady = (fieldId: string) => formFieldIsReady(formId, fieldId);
+  const { register, unregister } = useGlobalForm();
+  const { values, isReady, setValues, fieldIsReady, registerField } =
+    useForm(formId);
   const [errors, setErrors] = React.useState<{
     [key: string]: string | null;
   }>({});
@@ -208,7 +198,7 @@ const Form = ({
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     const newValues = { ...values, [name]: value };
-    setFormValues(formId, newValues);
+    setValues(newValues);
     const newErrors = validation[name]
       ? { ...errors, [name]: validation[name](value) }
       : errors;
@@ -372,5 +362,6 @@ export {
   FormValuesProvider,
   SubmitButton,
   Success,
+  useForm,
   useGlobalForm,
 };
