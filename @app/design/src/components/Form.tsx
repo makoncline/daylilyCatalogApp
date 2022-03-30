@@ -17,16 +17,6 @@ type GlobalFormContextProps = {
     registerField: (fieldId: string, defaultValue?: string) => void;
     fieldIsReady: (fieldId: string) => boolean;
   };
-  getFormIsReady: (formId: string) => boolean;
-  getFormValues: (formId: string) => FormValues;
-  setFormValues: (formId: string, values: FormValues) => void;
-  setFormField: (formId: string, field: string, value: string) => void;
-  registerFormField: (
-    formId: string,
-    fieldId: string,
-    defaultValue?: string
-  ) => void;
-  formFieldIsReady: (formId: string, fieldId: string) => boolean;
 };
 
 const GlobalFormContext = React.createContext<
@@ -102,12 +92,6 @@ const FormValuesProvider = ({ children }: { children: React.ReactNode }) => {
     unregister,
     isReady,
     getForm,
-    getFormIsReady,
-    getFormValues,
-    setFormValues,
-    setFormField,
-    registerFormField,
-    formFieldIsReady,
   };
   return (
     <GlobalFormContext.Provider value={value}>
