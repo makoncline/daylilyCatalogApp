@@ -69,7 +69,7 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
             price: parseInt(price) || null,
             publicNote: publicNote,
             privateNote: privateNote,
-            ahsId: linkedLily?.ahsId.toString(),
+            ahsId: linkedLily?.ahsId.toString() || null,
             listId: list?.id,
           },
         });
@@ -106,8 +106,10 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
     if (confirm("Are you sure you want to delete this listing?")) {
       setFormState("deleting");
       try {
-        for (const imgUrl of imageUrls) {
-          await handleDeleteImage(imgUrl);
+        if (imageUrls) {
+          for (const imgUrl of imageUrls) {
+            await handleDeleteImage(imgUrl);
+          }
         }
         await deleteLily({ variables: { id } });
         setFormState("idle");
@@ -180,9 +182,10 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
 
   const MAX_NUM_IMAGES = 3;
   const [imageUrls, setImageUrls] = React.useState<string[] | null>([]);
-  const showImageUpload = imageUrls.length < MAX_NUM_IMAGES;
+  const numImages = imageUrls?.length ?? 0;
+  const showImageUpload = numImages < MAX_NUM_IMAGES;
   function handleBeforeUpload(files: File[]) {
-    const newNumImages = imageUrls.length + files.length;
+    const newNumImages = numImages ?? 0 + files.length;
     if (newNumImages > MAX_NUM_IMAGES) {
       alert(
         `Only ${MAX_NUM_IMAGES} images allowed per listing. Please remove ${
@@ -282,7 +285,9 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
             handleBeforeUpload={handleBeforeUpload}
           />
         ) : null}
-        <ImageDisplay imageUrls={imageUrls} setImageUrls={setImageUrls} />
+        {imageUrls ? (
+          <ImageDisplay imageUrls={imageUrls} setImageUrls={setImageUrls} />
+        ) : null}
       </div>
       {error ? (
         <FormGroup>
