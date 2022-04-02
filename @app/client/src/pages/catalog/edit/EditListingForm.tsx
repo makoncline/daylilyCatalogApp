@@ -78,7 +78,7 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
         client.resetStore();
         const lily = data?.updateLily?.lily;
         if (lily) {
-          Router.push(`/catalog`);
+          Router.push(`/catalog/view/${lily.id}`);
         }
       } catch (e: any) {
         setError(e);

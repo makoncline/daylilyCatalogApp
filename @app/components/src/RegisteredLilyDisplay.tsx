@@ -60,7 +60,7 @@ const Title = styled(Heading)`
   margin: 0;
 `;
 
-function getDescription(lily: AhsDataFragment) {
+export function getDescription(lily: AhsDataFragment) {
   const descriptionKeys = [
     "scapeHeight",
     "bloomSize",

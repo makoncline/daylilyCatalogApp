@@ -1,8 +1,6 @@
 import { Button, Heading, Space } from "@app/design";
-import {
-  CreateUploadUrlPayload,
-  useCreateUploadUrlMutation,
-} from "@app/graphql";
+import type { CreateUploadUrlPayload } from "@app/graphql";
+import { useCreateUploadUrlMutation } from "@app/graphql";
 import axios from "axios";
 import Image from "next/image";
 import React from "react";
