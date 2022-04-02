@@ -41,26 +41,22 @@ function ImageDisplay({ imageUrls, setImageUrls }: ImageDisplayProps) {
     }
   }
   return (
-    <>
-      <Wrapper>
-        {imageUrls.map((url, i) => (
-          <ImageDisplayItem key={i}>
-            <ImageWrapper>
-              <Image src={url} layout="fill" objectFit="cover" />
-            </ImageWrapper>
-            <ControlsWrapper>
-              <Button onClick={() => handleMove("<", i)}>{"<"}</Button>
-              <Button onClick={() => handleDelete(i)}>&times;</Button>
-              <Button onClick={() => handleMove(">", i)}>{">"}</Button>
-            </ControlsWrapper>
-          </ImageDisplayItem>
-        ))}
-      </Wrapper>
-    </>
+    <Wrapper>
+      {imageUrls.map((url, i) => (
+        <ImageDisplayItem key={i}>
+          <ImageWrapper>
+            <Image src={url} layout="fill" objectFit="cover" />
+          </ImageWrapper>
+          <ControlsWrapper>
+            <Button onClick={() => handleMove("<", i)}>{"<"}</Button>
+            <Button onClick={() => handleDelete(i)}>&times;</Button>
+            <Button onClick={() => handleMove(">", i)}>{">"}</Button>
+          </ControlsWrapper>
+        </ImageDisplayItem>
+      ))}
+    </Wrapper>
   );
 }
-
-export { ImageDisplay };
 
 const Wrapper = styled.div`
   width: 300px;
