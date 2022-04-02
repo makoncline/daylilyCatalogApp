@@ -58,6 +58,8 @@ function ImageDisplay({ imageUrls, setImageUrls }: ImageDisplayProps) {
   );
 }
 
+export { ImageDisplay };
+
 const Wrapper = styled.div`
   width: 300px;
   display: grid;
