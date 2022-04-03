@@ -4,6 +4,13 @@
 :where(html) {
   color: var(--text-2);
   background-color: var(--surface-1);
+
+  --success-light: var(--green-1);
+  --success: var(--green-5);
+  --success-dark: var(--green-9);
+
+  --danger: var(--red-5);
+  --danger-dark: var(--red-9);
 }
 
 :where(h1, h2, h3, h4, h5, h6, dt) {

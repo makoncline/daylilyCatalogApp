@@ -7,14 +7,13 @@
     --primary-2: var(--blue-5);
     --secondary: var(--violet-5);
     --secondary--glint: var(--violet-4);
-    --danger: var(--red-5);
-    --success: var(--green-5);
 
     --link: var(--indigo-3);
     --link-visited: var(--grape-3);
 
     --text-1: var(--gray-1);
     --text-2: var(--gray-3);
+    --text-3: var(--gray-5);
     --text-1--reversed: var(--gray-9);
     --text-2--reversed: var(--gray-8);
 

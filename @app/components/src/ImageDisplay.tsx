@@ -35,8 +35,8 @@ export { ImageDisplay };
 
 const Wrapper = styled.div`
   display: grid;
-  grid-template-rows: 400px 100px;
-  grid-template-columns: repeat(4, 100px);
+  grid-template-rows: var(--size-image) var(--size-image-thumbnail);
+  grid-template-columns: repeat(4, var(--size-image-thumbnail));
   gap: var(--size-1);
 `;
 const DisplayImage = styled.div`
