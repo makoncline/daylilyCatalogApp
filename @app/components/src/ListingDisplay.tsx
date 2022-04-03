@@ -85,18 +85,19 @@ function ListingDisplay({
             </PropertyListItem>
           )}
         </PropertyList>
-        <div>
-          <Heading level={3}>Details</Heading>
-          <hr />
-          <PropertyList column padding="var(--size-1)">
-            {ahsDatumByAhsRef &&
-              getTraits(ahsDatumByAhsRef).map(([key, value]) => (
+        {ahsDatumByAhsRef && (
+          <div>
+            <Heading level={3}>Details</Heading>
+            <hr />
+            <PropertyList column padding="var(--size-1)">
+              {getTraits(ahsDatumByAhsRef).map(([key, value]) => (
                 <PropertyListItem inline label={key} key={key}>
                   {value}
                 </PropertyListItem>
               ))}
-          </PropertyList>
-        </div>
+            </PropertyList>
+          </div>
+        )}
       </Details>
     </Wrapper>
   );
