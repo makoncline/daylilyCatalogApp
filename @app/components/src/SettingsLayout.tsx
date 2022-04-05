@@ -1,15 +1,12 @@
-import { Layout, Menu, Typography } from "antd";
-import { TextProps } from "antd/lib/typography/Text";
+import { Space } from "@app/design";
 import Link from "next/link";
 import { NextRouter, useRouter } from "next/router";
 import * as qs from "querystring";
 import React from "react";
-import styled from "styled-components";
 
 import { Redirect } from "./Redirect";
 import {
   AuthRestrict,
-  contentMinHeight,
   SharedLayout,
   SharedLayoutChildProps,
   SharedLayoutProps,
@@ -17,14 +14,10 @@ import {
 import { StandardWidth } from "./StandardWidth";
 import { Warn } from "./Warn";
 
-const { Text } = Typography;
-const { Sider, Content } = Layout;
-
 interface PageSpec {
   title: string;
   cy: string;
   warnIfUnverified?: boolean;
-  titleProps?: TextProps;
 }
 
 // TypeScript shenanigans (so we can still use `keyof typeof pages` later)
@@ -52,9 +45,6 @@ const pages = {
   }),
   "/settings/delete": page({
     title: "Delete Account",
-    titleProps: {
-      type: "danger",
-    },
     cy: "settingslayout-link-delete",
   }),
 };
@@ -87,55 +77,30 @@ export function SettingsLayout({
         !currentUser && !error && !loading ? (
           <Redirect href={`/login?next=${encodeURIComponent(fullHref)}`} />
         ) : (
-          <Layout style={{ minHeight: contentMinHeight }} hasSider>
-            <Sider
-              breakpoint="md"
-              collapsedWidth="0"
-              zeroWidthTriggerStyle={{
-                color: "#757575",
-                boxShadow: "0 2px 2px #f0f1f2",
-              }}
-              style={{
-                position: "absolute",
-                zIndex: 1,
-                borderBottom: "var(--hairline)",
-              }}
-            >
-              <Menu selectedKeys={[href]}>
-                {Object.keys(pages).map((pageHref) => (
-                  <Menu.Item key={pageHref}>
-                    <Link href={pageHref}>
-                      <a data-cy={pages[pageHref].cy}>
-                        <Warn
-                          okay={
-                            !currentUser ||
-                            currentUser.isVerified ||
-                            !pages[pageHref].warnIfUnverified
-                          }
-                        >
-                          <Text {...pages[pageHref].titleProps}>
-                            {pages[pageHref].title}
-                          </Text>
-                        </Warn>
-                      </a>
-                    </Link>
-                  </Menu.Item>
-                ))}
-              </Menu>
-            </Sider>
-            <StyledContent>
+          <Space direction="row" gap="large">
+            {Object.keys(pages).map((pageHref, i) => (
+              <Link href={pageHref} key={i}>
+                <a data-cy={pages[pageHref].cy}>
+                  <Warn
+                    okay={
+                      !currentUser ||
+                      currentUser.isVerified ||
+                      !pages[pageHref].warnIfUnverified
+                    }
+                  >
+                    <p {...pages[pageHref].titleProps}>
+                      {pages[pageHref].title}
+                    </p>
+                  </Warn>
+                </a>
+              </Link>
+            ))}
+            <div>
               <StandardWidth>{children}</StandardWidth>
-            </StyledContent>
-          </Layout>
+            </div>
+          </Space>
         )
       }
     </SharedLayout>
   );
 }
-
-const StyledContent = styled(Content)`
-  padding-left: 36px;
-  @media (min-width: 768px) {
-    padding-left: 200px;
-  }
-`;

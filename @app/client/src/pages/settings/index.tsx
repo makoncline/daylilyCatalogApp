@@ -8,34 +8,24 @@ import {
   Wysiwyg,
 } from "@app/components";
 import {
+  Button,
+  Field,
+  Form,
+  Heading,
+  Space,
+  SubmitButton,
+  useForm,
+} from "@app/design";
+import {
   ProfileSettingsForm_UserFragment,
   useSettingsProfileQuery,
   useUpdateUserMutation,
 } from "@app/graphql";
-import {
-  extractError,
-  formItemLayout,
-  getCodeFromError,
-  tailFormItemLayout,
-} from "@app/lib";
-import {
-  Alert,
-  Button,
-  Col,
-  Form,
-  Input,
-  PageHeader,
-  Row,
-  Space,
-  Typography,
-} from "antd";
-import { useForm } from "antd/lib/form/Form";
+import { extractError, getCodeFromError } from "@app/lib";
 import { NextPage } from "next";
 import { Store } from "rc-field-form/lib/interface";
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
-
-const { Text } = Typography;
 
 const Settings_Profile: NextPage = () => {
   const [formError, setFormError] = useState<Error | ApolloError | null>(null);
@@ -85,9 +75,11 @@ function ProfileSettingsForm({
   error,
   setError,
 }: ProfileSettingsFormProps) {
-  const [form] = useForm();
+  const profileFormName = "edit-profile";
+  const { setField } = useForm(profileFormName);
   const [updateUser] = useUpdateUserMutation();
   const [success, setSuccess] = useState(false);
+  const [formError, setFormError] = React.useState<string | null>(null);
 
   const handleSubmit = useCallback(
     async (values: Store) => {
@@ -111,28 +103,22 @@ function ProfileSettingsForm({
       } catch (e: any) {
         const errcode = getCodeFromError(e);
         if (errcode === "23505") {
-          form.setFields([
-            {
-              name: "username",
-              value: form.getFieldValue("username"),
-              errors: [
-                "This username is already in use, please pick a different name",
-              ],
-            },
-          ]);
+          setFormError(
+            "This username is already in use, please pick a different name"
+          );
         } else {
           setError(e);
         }
       }
     },
-    [setError, updateUser, user.id, form]
+    [setError, updateUser, user.id]
   );
 
   const code = getCodeFromError(error);
 
   const handleSetBio: (text: string | null | undefined) => void = (text) => {
     if (text) {
-      form.setFieldsValue({ bio: text });
+      setField("bio", text);
     }
   };
 
@@ -141,168 +127,100 @@ function ProfileSettingsForm({
   const isFree = user.freeUntil ? new Date() < new Date(user.freeUntil) : false;
   const isPhotoUploadActive = user.isVerified && (isFree || isActive);
   return (
-    <Style>
-      <PageHeader title="Edit profile" />
-      <Form
-        {...formItemLayout}
-        form={form}
-        onFinish={handleSubmit}
-        initialValues={{
-          name: user.name,
-          username: user.username,
-          intro: user.intro,
-          bio: user.bio,
-          userLocation: user.userLocation,
-        }}
-      >
-        <Form.Item label="Avatar" className="avatar-container">
-          <Space>
-            <Row>
-              <Col>
-                <fieldset disabled={!isPhotoUploadActive}>
-                  <AvatarPhotoUpload user={user} />
-                </fieldset>
-              </Col>
+    <>
+      <Heading level={3}>Edit Profile</Heading>
+      <Form formId={profileFormName} onSubmit={handleSubmit}>
+        <Space>
+          <Space direction="row">
+            <fieldset disabled={!isPhotoUploadActive}>
+              <AvatarPhotoUpload user={user} />
+            </fieldset>
 
-              {!user.isVerified && (
-                <Col>
-                  <div className="over-limit">
-                    <Space direction="vertical">
-                      <Text>
-                        You must verify your email address to upload photos. A
-                        verification link has been sent to your email address.
-                        Please click the link in that email to verify.
-                      </Text>
-                      <Button
-                        type="primary"
-                        href={`${process.env.ROOT_URL}/settings/emails`}
-                      >
-                        View email settings
-                      </Button>
-                    </Space>
-                  </div>
-                </Col>
-              )}
-              {user.isVerified && !isPhotoUploadActive && (
-                <Col>
-                  <div className="over-limit">
-                    <Space direction="vertical">
-                      <Text>
-                        You must have an active membership to upload photos.
-                      </Text>
-                      <Button
-                        type="primary"
-                        href={`${process.env.ROOT_URL}/membership`}
-                      >
-                        Become a Daylily Catalog Member
-                      </Button>
-                    </Space>
-                  </div>
-                </Col>
-              )}
-            </Row>
+            {!user.isVerified && (
+              <Space direction="column">
+                <div className="over-limit">
+                  <Space direction="row">
+                    <p>
+                      You must verify your email address to upload photos. A
+                      verification link has been sent to your email address.
+                      Please click the link in that email to verify.
+                    </p>
+                    <Button
+                      type="primary"
+                      href={`${process.env.ROOT_URL}/settings/emails`}
+                    >
+                      View email settings
+                    </Button>
+                  </Space>
+                </div>
+              </Space>
+            )}
+            {user.isVerified && !isPhotoUploadActive && (
+              <Space direction="column">
+                <div className="over-limit">
+                  <Space direction="row">
+                    <p>You must have an active membership to upload photos.</p>
+                    <Button
+                      type="primary"
+                      href={`${process.env.ROOT_URL}/membership`}
+                    >
+                      Become a Daylily Catalog Member
+                    </Button>
+                  </Space>
+                </div>
+              </Space>
+            )}
           </Space>
-        </Form.Item>
-        <Form.Item
-          label="Name"
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: "Please enter your name",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Username"
-          name="username"
-          rules={[
-            {
-              required: true,
-              message: "Please choose a username",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Location"
-          name="userLocation"
-          rules={[
-            {
-              max: 140,
-              message: "Location must be less than 140 characters long.",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Intro"
-          name="intro"
-          rules={[
-            {
-              max: 280,
-              message:
-                "Intro must be less than 280 characters long. Please use the Bio section for long form text.",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item label="Bio" name="bio" style={{ display: "none" }}>
-          <Input />
-        </Form.Item>
+        </Space>
+        <Field name="name" required>
+          Name
+        </Field>
+        <Field name="username" required>
+          Username
+        </Field>
+        <Field name="location">Location</Field>
+        <Field name="intro">Intro</Field>
         {error ? (
-          <Form.Item>
-            <Alert
-              type="error"
-              message={`Updating username`}
-              description={
+          <div>
+            <p>Updating username</p>
+            <span>
+              {extractError(error).message}
+              {code ? (
                 <span>
-                  {extractError(error).message}
-                  {code ? (
-                    <span>
-                      {" "}
-                      (Error code: <code>ERR_{code}</code>)
-                    </span>
-                  ) : null}
+                  {" "}
+                  (Error code: <code>ERR_{code}</code>)
                 </span>
-              }
-            />
-          </Form.Item>
+              ) : null}
+            </span>
+          </div>
         ) : success ? (
-          <Form.Item>
-            <Alert type="success" message={`Profile updated`} />
-          </Form.Item>
+          <p>Profile updated</p>
         ) : null}
-        <Form.Item {...tailFormItemLayout}>
-          <Button htmlType="submit">Update Profile</Button>
-        </Form.Item>
+        <SubmitButton>
+          <Button>Update Profile</Button>
+        </SubmitButton>
       </Form>
 
-      <PageHeader title="Edit Bio" />
+      <Heading level={3}>Edit Bio</Heading>
       <Wysiwyg handleSetBio={handleSetBio} value={user.bio} />
       <br />
-      <Button htmlType="submit" onClick={form.submit}>
-        Update Profile
-      </Button>
+      <Button htmlType="submit">Update Profile</Button>
 
-      <PageHeader title="Edit Profile Photos" />
+      <Heading level={3}>Edit Profile Photos</Heading>
       <>
-        <fieldset disabled={!isPhotoUploadActive}>
+        {isPhotoUploadActive ? (
           <ProfilePhotoUpload user={user} />
-        </fieldset>
+        ) : (
+          "disabled photo upload"
+        )}
         {!user.isVerified && (
           <div className="over-limit">
-            <Space direction="vertical">
-              <Text>
+            <Space direction="column">
+              <p>
                 You must verify your email address to upload photos. A
                 verification link has been sent to your email address. Please
                 click the link in that email to verify.
-              </Text>
+              </p>
               <Button
                 type="primary"
                 href={`${process.env.ROOT_URL}/settings/emails`}
@@ -314,33 +232,15 @@ function ProfileSettingsForm({
         )}
         {user.isVerified && !isPhotoUploadActive && (
           <div className="over-limit">
-            <Space direction="vertical">
-              <Text>You must have an active membership to upload photos.</Text>
-              <Button
-                type="primary"
-                href={`${process.env.ROOT_URL}/membership`}
-              >
+            <Space direction="column">
+              <p>You must have an active membership to upload photos.</p>
+              <Button href={`${process.env.ROOT_URL}/membership`}>
                 Become a Daylily Catalog Member
               </Button>
             </Space>
           </div>
         )}
       </>
-    </Style>
+    </>
   );
 }
-
-const Style = styled.div`
-  .over-limit {
-    margin: var(--spacing-sm) auto var(--spacing-lg);
-    max-width: 400px;
-    border: var(--hairline);
-    padding: var(--spacing-sm);
-    .ant-btn {
-      height: var(--spacing-lg);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-  }
-`;
