@@ -4,10 +4,12 @@ type Props = {
   direction?: "column" | "row";
   gap?: "small" | "medium" | "large";
   children: React.ReactNode;
+  center?: boolean;
 };
 const Space = ({
   direction = "row",
   gap = "small",
+  center = false,
   children,
   ...props
 }: Props) => {
@@ -26,6 +28,7 @@ const Space = ({
           "--gap": gapSize,
         } as React.CSSProperties
       }
+      center={center}
     >
       {children}
     </Wrapper>
@@ -34,8 +37,10 @@ const Space = ({
 
 export { Space };
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ center: boolean }>`
   display: flex;
   flex-direction: var(--direction);
   gap: var(--gap);
+  justify-content: ${({ center }) => (center ? "center" : "flex-start")};
+  align-items: ${({ center }) => (center ? "center" : "flex-start")};
 `;

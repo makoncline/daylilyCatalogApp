@@ -36,6 +36,7 @@ const FancyHeadingComponent = ({
 
 const StyledHeading = styled.h1`
   color: var(--text-1);
+  max-inline-size: unset;
   ${NavWrapper} & {
     margin: 0;
   }
@@ -47,7 +48,6 @@ export const FancyHeading = styled(FancyHeadingComponent)`
   grid-template: auto / auto;
   width: 100%;
   text-align: center;
-  max-inline-size: unset;
   span {
     grid-area: 1 / 1;
     background: inherit;
