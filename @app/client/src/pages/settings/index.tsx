@@ -25,7 +25,6 @@ import { extractError, getCodeFromError } from "@app/lib";
 import { NextPage } from "next";
 import { Store } from "rc-field-form/lib/interface";
 import React, { useCallback, useState } from "react";
-import styled from "styled-components";
 
 const Settings_Profile: NextPage = () => {
   const [formError, setFormError] = useState<Error | ApolloError | null>(null);
@@ -79,7 +78,7 @@ function ProfileSettingsForm({
   const { setField } = useForm(profileFormName);
   const [updateUser] = useUpdateUserMutation();
   const [success, setSuccess] = useState(false);
-  const [formError, setFormError] = React.useState<string | null>(null);
+  const [_, setFormError] = React.useState<string | null>(null);
 
   const handleSubmit = useCallback(
     async (values: Store) => {

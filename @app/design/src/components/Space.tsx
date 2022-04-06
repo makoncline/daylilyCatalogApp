@@ -41,6 +41,6 @@ const Wrapper = styled.div<{ center: boolean }>`
   display: flex;
   flex-direction: var(--direction);
   gap: var(--gap);
-  justify-content: ${({ center }) => (center ? "center" : "flex-start")};
-  align-items: ${({ center }) => (center ? "center" : "flex-start")};
+  justify-content: ${({ center }) => (center ? "center" : "unset")};
+  align-items: ${({ center }) => (center ? "center" : "unset")};
 `;

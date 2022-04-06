@@ -77,24 +77,26 @@ export function SettingsLayout({
         !currentUser && !error && !loading ? (
           <Redirect href={`/login?next=${encodeURIComponent(fullHref)}`} />
         ) : (
-          <Space direction="row" gap="large">
-            {Object.keys(pages).map((pageHref, i) => (
-              <Link href={pageHref} key={i}>
-                <a data-cy={pages[pageHref].cy}>
-                  <Warn
-                    okay={
-                      !currentUser ||
-                      currentUser.isVerified ||
-                      !pages[pageHref].warnIfUnverified
-                    }
-                  >
-                    <p {...pages[pageHref].titleProps}>
-                      {pages[pageHref].title}
-                    </p>
-                  </Warn>
-                </a>
-              </Link>
-            ))}
+          <Space direction="column">
+            <Space direction="row" gap="large">
+              {Object.keys(pages).map((pageHref, i) => (
+                <Link href={pageHref} key={i}>
+                  <a data-cy={pages[pageHref].cy}>
+                    <Warn
+                      okay={
+                        !currentUser ||
+                        currentUser.isVerified ||
+                        !pages[pageHref].warnIfUnverified
+                      }
+                    >
+                      <p {...pages[pageHref].titleProps}>
+                        {pages[pageHref].title}
+                      </p>
+                    </Warn>
+                  </a>
+                </Link>
+              ))}
+            </Space>
             <div>
               <StandardWidth>{children}</StandardWidth>
             </div>

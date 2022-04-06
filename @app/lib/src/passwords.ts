@@ -26,3 +26,17 @@ export const setPasswordInfo = (
   }
   props.setPasswordSuggestions(messages);
 };
+
+export const getPasswordStrength = (value: string): number => {
+  const { score } = zxcvbn(value);
+  return score;
+};
+
+export const getPasswordSuggestions = (value: string): string[] => {
+  const { feedback } = zxcvbn(value);
+  const messages = [...feedback.suggestions];
+  if (feedback.warning !== "") {
+    messages.push(feedback.warning);
+  }
+  return messages;
+};

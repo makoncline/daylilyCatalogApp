@@ -107,16 +107,6 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
     [setConfirmDirty, confirmDirty]
   );
 
-  const [passwordIsFocussed, setPasswordIsFocussed] = useState(false);
-  const [passwordIsDirty, setPasswordIsDirty] = useState(false);
-  const setPasswordFocussed = useCallback(() => {
-    setPasswordIsFocussed(true);
-  }, [setPasswordIsFocussed]);
-
-  const setPasswordNotFocussed = useCallback(() => {
-    setPasswordIsFocussed(false);
-  }, [setPasswordIsFocussed]);
-
   const handleChange = useCallback(
     ({
       errors,
@@ -131,7 +121,6 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
         { [name]: value }
       );
       if (name === "password") {
-        setPasswordIsDirty(true);
         if (confirm.length > 0) {
           setErrors({
             ...errors,
@@ -198,16 +187,12 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
                 autoComplete="current-password"
                 type="password"
                 data-cy="loginpage-input-password"
-                onFocus={setPasswordFocussed}
-                onBlur={setPasswordNotFocussed}
               >
                 Passphrase
               </Field>
               <PasswordStrength
                 passwordStrength={passwordStrength}
                 suggestions={passwordSuggestions}
-                isDirty={passwordIsDirty}
-                isFocussed={passwordIsFocussed}
               />
             </FormGroup>
             <Field

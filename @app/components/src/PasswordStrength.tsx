@@ -4,8 +4,6 @@ import React from "react";
 export interface PasswordStrengthProps {
   passwordStrength: number;
   suggestions: string[];
-  isDirty: boolean;
-  isFocussed: boolean;
 }
 
 export function PasswordStrength({
