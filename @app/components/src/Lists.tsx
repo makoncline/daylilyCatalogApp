@@ -1,5 +1,5 @@
+import { Button } from "@app/design";
 import { List, useListsQuery } from "@app/graphql";
-import { Button } from "antd";
 import React, { useState } from "react";
 
 import { ListTable } from "./";
@@ -34,7 +34,6 @@ export const Lists = () => {
           setShowAddListForm(true);
         }}
         data-cy="settingslilies-button-addlily"
-        block
         style={{
           marginLeft: "auto",
           marginBottom: "1rem",
