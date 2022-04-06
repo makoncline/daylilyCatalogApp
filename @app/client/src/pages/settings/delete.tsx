@@ -1,17 +1,15 @@
 import { ApolloError } from "@apollo/client";
 import { ErrorAlert, P, SettingsLayout } from "@app/components";
+import { Button, Heading } from "@app/design";
 import {
   useConfirmAccountDeletionMutation,
   useRequestAccountDeletionMutation,
   useSharedQuery,
 } from "@app/graphql";
 import { getCodeFromError } from "@app/lib";
-import { Alert, Button, Modal, PageHeader, Typography } from "antd";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useCallback, useState } from "react";
-
-const { Text } = Typography;
 
 const Settings_Accounts: NextPage = () => {
   const router = useRouter();
@@ -45,7 +43,7 @@ const Settings_Accounts: NextPage = () => {
           throw new Error("Requesting deletion failed");
         }
         setItIsDone(true);
-      } catch (e) {
+      } catch (e: any) {
         setError(e);
       }
       setDoingIt(false);
@@ -66,7 +64,7 @@ const Settings_Accounts: NextPage = () => {
         await confirmAccountDeletion({ variables: { token } });
         // Display confirmation
         setDeleted(true);
-      } catch (e) {
+      } catch (e: any) {
         setError(e);
       }
       setDeleting(false);
@@ -75,7 +73,7 @@ const Settings_Accounts: NextPage = () => {
   const query = useSharedQuery();
   return (
     <SettingsLayout href="/settings/delete" query={query}>
-      <PageHeader title="Delete account" />
+      <Heading level={2}>Delete account</Heading>
       <P>
         Deleting your user account will delete all data (except that which we
         must retain for legal, compliance and accounting reasons) and cannot be
@@ -88,118 +86,97 @@ const Settings_Accounts: NextPage = () => {
         asked to confirm your account deletion again.
       </P>
       {token ? (
-        <Alert
-          type="error"
-          message="Confirm account deletion"
-          description={
-            <>
-              <P>
-                This is it.{" "}
-                <Text mark>
-                  Press this button and your account will be deleted.
-                </Text>{" "}
-                We're sorry to see you go, please don't hesitate to reach out
-                and let us know why you no longer want your account.
-              </P>
-              <Button onClick={confirmDeletion} danger disabled={deleting}>
-                PERMANENTLY DELETE MY ACCOUNT
-              </Button>
-            </>
-          }
-        />
+        <div>
+          <Heading level={3}>Confirm account deletion</Heading>
+          <>
+            <p>
+              This is it.{" "}
+              <span>Press this button and your account will be deleted.</span>{" "}
+              We're sorry to see you go, please don't hesitate to reach out and
+              let us know why you no longer want your account.
+            </p>
+            <Button onClick={confirmDeletion} disabled={deleting}>
+              PERMANENTLY DELETE MY ACCOUNT
+            </Button>
+          </>
+        </div>
       ) : itIsDone ? (
-        <Alert
-          type="warning"
-          message="Confirm deletion via email link"
-          description={
-            <P>
-              You've been sent an email with a confirmation link in it, you must
-              click it to confirm that you are the account holder so that you
-              may continue deleting your account.
-            </P>
-          }
-        />
+        <div>
+          <Heading level={3}>Confirm deletion via email link</Heading>
+          <p>
+            You've been sent an email with a confirmation link in it, you must
+            click it to confirm that you are the account holder so that you may
+            continue deleting your account.
+          </p>
+        </div>
       ) : (
-        <Alert
-          type="error"
-          message="Delete user account?"
-          description={
-            <>
-              <P>
-                Deleting your account cannot be undone, you will lose all your
-                data.
-              </P>
-              <Button onClick={openModal} danger>
-                I want to delete my account
-              </Button>
-            </>
-          }
-        />
+        <div>
+          <Heading level={3}>Delete user account?</Heading>
+          <p>
+            Deleting your account cannot be undone, you will lose all your data.
+          </p>
+          <Button onClick={openModal} danger>
+            I want to delete my account
+          </Button>
+        </div>
       )}
       {error ? (
         getCodeFromError(error) === "OWNER" ? (
-          <Alert
-            type="error"
-            showIcon
-            message="Cannot delete account"
-            description={
-              <>
-                <P>
-                  You cannot delete your account whilst you are the owner of an
-                  organization.
-                </P>
-                <P>
-                  For each organization you are the owner of, please either
-                  assign your ownership to another user or delete the
-                  organization to continue.
-                </P>
-              </>
-            }
-          />
+          <div>
+            <Heading level={3}>Cannot delete account</Heading>
+            <p>
+              You cannot delete your account whilst you are the owner of an
+              organization.
+            </p>
+            <p>
+              For each organization you are the owner of, please either assign
+              your ownership to another user or delete the organization to
+              continue.
+            </p>
+          </div>
         ) : (
           <ErrorAlert error={error} />
         )
       ) : null}
 
-      <Modal
-        visible={confirmOpen}
-        onCancel={closeModal}
-        onOk={doIt}
-        okText="Send delete account email"
-        okType="primary"
-        okButtonProps={{ danger: true }}
-        title="Send delete account confirmation email?"
-        confirmLoading={doingIt}
-      >
-        <P>
-          Before we can delete your account, we need to confirm it's definitely
-          you. We'll send you an email with a link in it, which when clicked
-          will give you the option to delete your account.
-        </P>
-        <P>
-          You should not trigger this unless you're sure you want to delete your
-          account.
-        </P>
-      </Modal>
-      <Modal
-        visible={deleted}
-        closable={false}
-        title="Account deleted"
-        footer={
-          <div>
-            <Button
-              type="primary"
-              onClick={() => {
-                window.location.href = "/";
-              }}
-            >
+      <dialog open={confirmOpen}>
+        {doingIt ? (
+          <p>...loading</p>
+        ) : (
+          <>
+            <Heading level={3}>Send delete account confirmation email?</Heading>
+            <p>
+              Before we can delete your account, we need to confirm it's
+              definitely you. We'll send you an email with a link in it, which
+              when clicked will give you the option to delete your account.
+            </p>
+            <p>
+              You should not trigger this unless you're sure you want to delete
+              your account.
+            </p>
+            <Button type="primary" onClick={closeModal}>
+              Cancel
+            </Button>
+            <Button type="primary" onClick={doIt}>
               Return to homepage
             </Button>
-          </div>
-        }
-      >
-        Your account has been successfully deleted. We wish you all the best.
-      </Modal>
+          </>
+        )}
+      </dialog>
+      <dialog open={deleted} title="Account deleted">
+        <Heading level={3}>Account deleted</Heading>
+        <p>
+          Your account has been successfully deleted. We wish you all the best.
+        </p>
+        <Button
+          type="primary"
+          onClick={() => {
+            window.location.href = "/";
+          }}
+        >
+          Return to homepage
+        </Button>
+      </dialog>
     </SettingsLayout>
   );
 };
