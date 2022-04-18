@@ -23,7 +23,6 @@ import {
 } from "@app/graphql";
 import { extractError, getCodeFromError } from "@app/lib";
 import { NextPage } from "next";
-import { Store } from "rc-field-form/lib/interface";
 import React, { useCallback, useState } from "react";
 
 const Settings_Profile: NextPage = () => {
@@ -51,18 +50,6 @@ const Settings_Profile: NextPage = () => {
 
 export default Settings_Profile;
 
-/**
- * These are the values in our form
- */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-interface FormValues {
-  username: string;
-  name: string;
-  intro: string;
-  bio: string;
-  userLocation: string;
-}
-
 interface ProfileSettingsFormProps {
   user: ProfileSettingsForm_UserFragment;
   error: Error | ApolloError | null;
@@ -75,43 +62,51 @@ function ProfileSettingsForm({
   setError,
 }: ProfileSettingsFormProps) {
   const profileFormName = "edit-profile";
-  const { setField } = useForm(profileFormName);
+  const { values, isReady, setValues, setField } = useForm(profileFormName);
   const [updateUser] = useUpdateUserMutation();
   const [success, setSuccess] = useState(false);
   const [_, setFormError] = React.useState<string | null>(null);
 
-  const handleSubmit = useCallback(
-    async (values: Store) => {
-      setSuccess(false);
-      setError(null);
-      try {
-        await updateUser({
-          variables: {
-            id: user.id,
-            patch: {
-              username: values.username,
-              name: values.name,
-              intro: values.intro,
-              bio: values.bio,
-              userLocation: values.userLocation,
-            },
+  React.useEffect(() => {
+    console.log("setting form values");
+    setValues({
+      username: user.username,
+      name: user.name!,
+      intro: user.intro || "",
+      bio: user.bio || "",
+      userLocation: user.userLocation || "",
+    });
+  }, [user]);
+
+  const handleSubmit = useCallback(async () => {
+    setSuccess(false);
+    setError(null);
+    try {
+      await updateUser({
+        variables: {
+          id: user.id,
+          patch: {
+            username: values.username,
+            name: values.name,
+            intro: values.intro,
+            bio: values.bio,
+            userLocation: values.location,
           },
-        });
-        setError(null);
-        setSuccess(true);
-      } catch (e: any) {
-        const errcode = getCodeFromError(e);
-        if (errcode === "23505") {
-          setFormError(
-            "This username is already in use, please pick a different name"
-          );
-        } else {
-          setError(e);
-        }
+        },
+      });
+      setError(null);
+      setSuccess(true);
+    } catch (e: any) {
+      const errcode = getCodeFromError(e);
+      if (errcode === "23505") {
+        setFormError(
+          "This username is already in use, please pick a different name"
+        );
+      } else {
+        setError(e);
       }
-    },
-    [setError, updateUser, user.id]
-  );
+    }
+  }, [setError, updateUser, user.id, values]);
 
   const code = getCodeFromError(error);
 
@@ -125,6 +120,39 @@ function ProfileSettingsForm({
     user.stripeSubscription?.subscriptionInfo?.status == "active";
   const isFree = user.freeUntil ? new Date() < new Date(user.freeUntil) : false;
   const isPhotoUploadActive = user.isVerified && (isFree || isActive);
+  // const MAX_NUM_IMAGES = 3;
+  // const [imageUrls, setImageUrls] = React.useState<string[] | null>([]);
+  // const numImages = imageUrls?.length ?? 0;
+  // const showProfileImageUpload = numImages < MAX_NUM_IMAGES;
+  // function handleBeforeUpload(files: File[]) {
+  //   const newNumImages = numImages ?? 0 + files.length;
+  //   if (newNumImages > MAX_NUM_IMAGES) {
+  //     alert(
+  //       `Only ${MAX_NUM_IMAGES} profile images allowed. Please remove ${
+  //         newNumImages - MAX_NUM_IMAGES
+  //       } images and try again.`
+  //     );
+  //     return false;
+  //   }
+  //   return true;
+  // }
+
+  // const handleImageUploaded = React.useCallback((_key: string, url: string) => {
+  //   setImageUrls((prev) => [...(prev ?? []), url]);
+  // }, []);
+  // React.useEffect(() => {
+  //   if (
+  //     isReady &&
+  //     imageUrls &&
+  //     JSON.stringify(imageUrls) != JSON.stringify(data?.lily?.imgUrl)
+  //   ) {
+  //     try {
+  //       console.log("saved img urls to db: ", imageUrls);
+  //     } catch (e: any) {
+  //       setError(e);
+  //     }
+  //   }
+  // }, []);
   return (
     <>
       <Heading level={3}>Edit Profile</Heading>
@@ -134,6 +162,12 @@ function ProfileSettingsForm({
             <fieldset disabled={!isPhotoUploadActive}>
               <AvatarPhotoUpload user={user} />
             </fieldset>
+            {/* <ImageUpload
+              keyPrefix="avatar"
+              handleImageUploaded={handleImageUploaded}
+              handleBeforeUpload={handleBeforeUpload}
+            />
+            <ImageDisplay imageUrls={imageUrls} setImageUrls={setImageUrls} /> */}
 
             {!user.isVerified && (
               <Space direction="column">
@@ -179,6 +213,9 @@ function ProfileSettingsForm({
         </Field>
         <Field name="location">Location</Field>
         <Field name="intro">Intro</Field>
+        <Field name="bio" hidden>
+          bio
+        </Field>
         {error ? (
           <div>
             <p>Updating username</p>

@@ -268,6 +268,7 @@ type FieldProps = {
   children: string;
   direction?: "column" | "row";
   autoComplete?: string;
+  hidden?: boolean;
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
 const Field = ({
@@ -279,6 +280,7 @@ const Field = ({
   children: child,
   direction = "column",
   autoComplete,
+  hidden,
   ...props
 }: FieldProps) => {
   const { handleChange, values, errors, registerField, fieldIsReady } =
@@ -295,7 +297,7 @@ const Field = ({
   const value = values[fieldId];
 
   return (
-    <FormGroup direction={direction}>
+    <FormGroup direction={direction} style={hidden ? { display: "none" } : {}}>
       <label htmlFor={fieldId} hidden={!label}>
         {required ? "*" : null}
         {child}
