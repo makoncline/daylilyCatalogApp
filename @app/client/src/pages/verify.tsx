@@ -1,6 +1,6 @@
-import { Col, Row, SharedLayout } from "@app/components";
+import { SharedLayout } from "@app/components";
+import { Alert, Space } from "@app/design";
 import { useSharedQuery, useVerifyEmailMutation } from "@app/graphql";
-import { Alert } from "antd";
 import get from "lodash/get";
 import { NextPage } from "next";
 import React, { useEffect } from "react";
@@ -60,24 +60,25 @@ const VerifyPage: NextPage<IProps> = (props) => {
   const query = useSharedQuery();
   return (
     <SharedLayout title="Verify Email Address" query={query}>
-      <Row>
-        <Col flex={1}>
+      <Space>
+        <Space direction="column">
           {state === "PENDING" ? (
             form()
           ) : state === "SUBMITTING" ? (
             "Submitting..."
           ) : state === "SUCCESS" ? (
-            <Alert
-              type="success"
-              showIcon
-              message="Email Verified"
-              description="Thank you for verifying your email address. You may now close this window."
-            />
+            <Alert type="success">
+              <Alert.Heading>Email Verified</Alert.Heading>
+              <Alert.Body>
+                Thank you for verifying your email address. You may now close
+                this window.
+              </Alert.Body>
+            </Alert>
           ) : (
             "Unknown state"
           )}
-        </Col>
-      </Row>
+        </Space>
+      </Space>
     </SharedLayout>
   );
 };

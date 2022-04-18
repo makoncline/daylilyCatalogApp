@@ -6,6 +6,7 @@
     "build": "tsc -b"
   },
   "dependencies": {
+    "@reach/dialog": "^0.16.2",
     "react": "^17.0.2"
   },
   "devDependencies": {

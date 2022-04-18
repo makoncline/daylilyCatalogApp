@@ -5,12 +5,13 @@
   color: var(--text-2);
   background-color: var(--surface-1);
 
-  --success-light: var(--green-1);
-  --success: var(--green-5);
-  --success-dark: var(--green-9);
+  --hsl-success: var(--hsl-green-5);
+  --success: hsl(var(--hsl-success));
+  --success--glint: hsla(var(--hsl-success), 0.1);
 
-  --danger: var(--red-5);
-  --danger-dark: var(--red-9);
+  --hsl-danger: var(--hsl-red-5);
+  --danger: hsl(var(--hsl-danger));
+  --danger--glint: hsla(var(--hsl-danger), 0.1);
 }
 
 :where(h1, h2, h3, h4, h5, h6, dt) {
