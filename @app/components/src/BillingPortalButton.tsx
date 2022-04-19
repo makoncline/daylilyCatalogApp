@@ -1,5 +1,5 @@
+import { Button } from "@app/design";
 import { useStripeCustomerQuery } from "@app/graphql";
-import { Button } from "antd";
 import React from "react";
 import type { Stripe } from "stripe";
 
