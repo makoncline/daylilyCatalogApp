@@ -40,6 +40,7 @@ function ImageDisplay({ imageUrls, setImageUrls }: ImageDisplayProps) {
       }
     }
   }
+  const hasMultipleImages = imageUrls.length > 1;
   return (
     <Wrapper>
       {imageUrls.map((url, i) => (
@@ -48,9 +49,13 @@ function ImageDisplay({ imageUrls, setImageUrls }: ImageDisplayProps) {
             <Image src={url} layout="fill" objectFit="cover" />
           </ImageWrapper>
           <ControlsWrapper>
-            <Button onClick={() => handleMove("<", i)}>{"<"}</Button>
+            {hasMultipleImages && (
+              <Button onClick={() => handleMove("<", i)}>{"<"}</Button>
+            )}
             <Button onClick={() => handleDelete(i)}>&times;</Button>
-            <Button onClick={() => handleMove(">", i)}>{">"}</Button>
+            {hasMultipleImages && (
+              <Button onClick={() => handleMove(">", i)}>{">"}</Button>
+            )}
           </ControlsWrapper>
         </ImageDisplayItem>
       ))}
@@ -73,7 +78,8 @@ const ImageWrapper = styled.div`
 `;
 const ControlsWrapper = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  /* grid-template-columns: 1fr 1fr 1fr; */
+  grid-auto-flow: column;
   gap: var(--size-1);
   button {
     padding-left: 0;

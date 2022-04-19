@@ -60,10 +60,13 @@ export const Wysiwyg = ({
     <>
       <style>{`
         .editor {
-          padding: 6px 5px 0;
-          border-radius: 2px;
-          border: 1px solid #f1f1f1;
-          background: #fff;
+          padding: var(--size-2);
+          border: var(--hairline);
+          background: var(--surface-1);
+        }
+        .rdw-editor-toolbar {
+          border: var(--hairline);
+          background: var(--surface-1);
         }
       `}</style>
       <Editor

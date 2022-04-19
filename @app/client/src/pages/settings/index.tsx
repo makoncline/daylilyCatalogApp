@@ -1,13 +1,7 @@
 import { ApolloError } from "@apollo/client";
+import { ErrorAlert, Redirect, SettingsLayout, Wysiwyg } from "@app/components";
 import {
-  AvatarPhotoUpload,
-  ErrorAlert,
-  ProfilePhotoUpload,
-  Redirect,
-  SettingsLayout,
-  Wysiwyg,
-} from "@app/components";
-import {
+  Alert,
   Button,
   Field,
   Form,
@@ -24,6 +18,9 @@ import {
 import { extractError, getCodeFromError } from "@app/lib";
 import { NextPage } from "next";
 import React, { useCallback, useState } from "react";
+
+import { ImageDisplay } from "../ImageDisplay";
+import { ImageUpload } from "../ImageUpload";
 
 const Settings_Profile: NextPage = () => {
   const [formError, setFormError] = useState<Error | ApolloError | null>(null);
@@ -66,9 +63,20 @@ function ProfileSettingsForm({
   const [updateUser] = useUpdateUserMutation();
   const [success, setSuccess] = useState(false);
   const [_, setFormError] = React.useState<string | null>(null);
+  const [avatarPhotoUrl, setAvatarPhotoUrl] = useState<string | null>(
+    user.avatarUrl
+  );
+  const [avatarUploadError, setAvatarUploadError] = React.useState<
+    string | null
+  >(null);
+  const [profilePhotoUrls, setProfilePhotoUrls] = useState<string[]>(
+    (user.imgUrls?.filter(Boolean) as string[]) || []
+  );
+  const [profilePhotoUploadError, setProfilePhotoUploadError] = React.useState<
+    string | null
+  >(null);
 
   React.useEffect(() => {
-    console.log("setting form values");
     setValues({
       username: user.username,
       name: user.name!,
@@ -120,89 +128,111 @@ function ProfileSettingsForm({
     user.stripeSubscription?.subscriptionInfo?.status == "active";
   const isFree = user.freeUntil ? new Date() < new Date(user.freeUntil) : false;
   const isPhotoUploadActive = user.isVerified && (isFree || isActive);
-  // const MAX_NUM_IMAGES = 3;
-  // const [imageUrls, setImageUrls] = React.useState<string[] | null>([]);
-  // const numImages = imageUrls?.length ?? 0;
-  // const showProfileImageUpload = numImages < MAX_NUM_IMAGES;
-  // function handleBeforeUpload(files: File[]) {
-  //   const newNumImages = numImages ?? 0 + files.length;
-  //   if (newNumImages > MAX_NUM_IMAGES) {
-  //     alert(
-  //       `Only ${MAX_NUM_IMAGES} profile images allowed. Please remove ${
-  //         newNumImages - MAX_NUM_IMAGES
-  //       } images and try again.`
-  //     );
-  //     return false;
-  //   }
-  //   return true;
-  // }
 
-  // const handleImageUploaded = React.useCallback((_key: string, url: string) => {
-  //   setImageUrls((prev) => [...(prev ?? []), url]);
-  // }, []);
-  // React.useEffect(() => {
-  //   if (
-  //     isReady &&
-  //     imageUrls &&
-  //     JSON.stringify(imageUrls) != JSON.stringify(data?.lily?.imgUrl)
-  //   ) {
-  //     try {
-  //       console.log("saved img urls to db: ", imageUrls);
-  //     } catch (e: any) {
-  //       setError(e);
-  //     }
-  //   }
-  // }, []);
+  const handleSaveAvatarPhoto = React.useCallback(
+    async (avatarUrl: string) => {
+      setAvatarUploadError(null);
+      try {
+        await updateUser({
+          variables: {
+            id: user.id,
+            patch: {
+              avatarUrl,
+            },
+          },
+        });
+      } catch (e: any) {
+        setAvatarPhotoUrl(null);
+        setAvatarUploadError(`${e.message}`);
+      }
+    },
+    [updateUser, user.id]
+  );
+
+  const handleAvatarImageUploaded = React.useCallback(
+    (_key: string, url: string) => {
+      setAvatarPhotoUrl(url);
+      handleSaveAvatarPhoto(url);
+    },
+    [handleSaveAvatarPhoto]
+  );
+
+  const MAX_NUM_PROFILE_IMAGES = 4;
+  const numImages = profilePhotoUrls.length ?? 0;
+  const showProfileImageUpload = numImages < MAX_NUM_PROFILE_IMAGES;
+  function handleBeforeProfileImageUpload(files: File[]) {
+    const newNumImages = numImages ?? 0 + files.length;
+    if (newNumImages > MAX_NUM_PROFILE_IMAGES) {
+      alert(
+        `Only ${MAX_NUM_PROFILE_IMAGES} profile images allowed. Please remove ${
+          newNumImages - MAX_NUM_PROFILE_IMAGES
+        } images and try again.`
+      );
+      return false;
+    }
+    return true;
+  }
+  const handleProfileImageUploaded = React.useCallback(
+    (_key: string, url: string) => {
+      setProfilePhotoUrls((prev) => [...(prev ?? []), url]);
+    },
+    []
+  );
+  React.useEffect(() => {
+    if (
+      isReady &&
+      JSON.stringify(profilePhotoUrls) != JSON.stringify(user.imgUrls)
+    ) {
+      setProfilePhotoUploadError(null);
+      try {
+        updateUser({
+          variables: {
+            id: user.id,
+            patch: {
+              imgUrls: profilePhotoUrls,
+            },
+          },
+        });
+        console.log("saved img urls to db: ", profilePhotoUrls);
+      } catch (e: any) {
+        setProfilePhotoUploadError(e.message);
+      }
+    }
+  }, [isReady, profilePhotoUrls, setError, updateUser, user.id, user.imgUrls]);
   return (
     <>
       <Heading level={3}>Edit Profile</Heading>
       <Form formId={profileFormName} onSubmit={handleSubmit}>
         <Space>
           <Space direction="row">
-            <fieldset disabled={!isPhotoUploadActive}>
-              <AvatarPhotoUpload user={user} />
-            </fieldset>
-            {/* <ImageUpload
-              keyPrefix="avatar"
-              handleImageUploaded={handleImageUploaded}
-              handleBeforeUpload={handleBeforeUpload}
-            />
-            <ImageDisplay imageUrls={imageUrls} setImageUrls={setImageUrls} /> */}
-
-            {!user.isVerified && (
-              <Space direction="column">
-                <div className="over-limit">
-                  <Space direction="row">
-                    <p>
-                      You must verify your email address to upload photos. A
-                      verification link has been sent to your email address.
-                      Please click the link in that email to verify.
-                    </p>
-                    <Button
-                      type="primary"
-                      href={`${process.env.ROOT_URL}/settings/emails`}
-                    >
-                      View email settings
-                    </Button>
-                  </Space>
-                </div>
-              </Space>
-            )}
-            {user.isVerified && !isPhotoUploadActive && (
-              <Space direction="column">
-                <div className="over-limit">
-                  <Space direction="row">
-                    <p>You must have an active membership to upload photos.</p>
-                    <Button
-                      type="primary"
-                      href={`${process.env.ROOT_URL}/membership`}
-                    >
-                      Become a Daylily Catalog Member
-                    </Button>
-                  </Space>
-                </div>
-              </Space>
-            )}
+            <Space direction="column">
+              {!avatarPhotoUrl && (
+                <ImageUpload
+                  keyPrefix="avatar"
+                  handleImageUploaded={handleAvatarImageUploaded}
+                  title="Upload avatar image"
+                  single
+                />
+              )}
+              {avatarUploadError && (
+                <Alert type="danger">
+                  <Alert.Heading>Error uploading avatar photo</Alert.Heading>
+                  <Alert.Body>{avatarUploadError}</Alert.Body>
+                </Alert>
+              )}
+              {avatarPhotoUrl && (
+                <ImageDisplay
+                  imageUrls={avatarPhotoUrl ? [avatarPhotoUrl] : []}
+                  setImageUrls={(imageUrls: string[]) =>
+                    setAvatarPhotoUrl(imageUrls.at(0) || null)
+                  }
+                />
+              )}
+              {!user.isVerified && <UploadDisabledNotVerified />}
+              {user.isVerified && !isPhotoUploadActive && (
+                <UploadDisabledNoMembership />
+              )}
+            </Space>
           </Space>
         </Space>
         <Field name="name" required>
@@ -242,41 +272,64 @@ function ProfileSettingsForm({
       <br />
       <Button htmlType="submit">Update Profile</Button>
 
-      <Heading level={3}>Edit Profile Photos</Heading>
       <>
-        {isPhotoUploadActive ? (
-          <ProfilePhotoUpload user={user} />
-        ) : (
-          "disabled photo upload"
-        )}
-        {!user.isVerified && (
-          <div className="over-limit">
-            <Space direction="column">
-              <p>
-                You must verify your email address to upload photos. A
-                verification link has been sent to your email address. Please
-                click the link in that email to verify.
-              </p>
-              <Button
-                type="primary"
-                href={`${process.env.ROOT_URL}/settings/emails`}
-              >
-                View email settings
-              </Button>
-            </Space>
-          </div>
-        )}
-        {user.isVerified && !isPhotoUploadActive && (
-          <div className="over-limit">
-            <Space direction="column">
-              <p>You must have an active membership to upload photos.</p>
-              <Button href={`${process.env.ROOT_URL}/membership`}>
-                Become a Daylily Catalog Member
-              </Button>
-            </Space>
-          </div>
-        )}
+        <Space direction="column">
+          {showProfileImageUpload && (
+            <ImageUpload
+              keyPrefix="profile"
+              handleImageUploaded={handleProfileImageUploaded}
+              handleBeforeUpload={handleBeforeProfileImageUpload}
+              title="Upload profile images"
+            />
+          )}
+          {profilePhotoUploadError && (
+            <Alert type="danger">
+              <Alert.Heading>Error uploading profile photo</Alert.Heading>
+              <Alert.Body>{profilePhotoUploadError}</Alert.Body>
+            </Alert>
+          )}
+          {profilePhotoUrls.length ? (
+            <ImageDisplay
+              imageUrls={profilePhotoUrls}
+              setImageUrls={setProfilePhotoUrls}
+            />
+          ) : null}
+          {!user.isVerified && <UploadDisabledNotVerified />}
+          {user.isVerified && !isPhotoUploadActive && (
+            <UploadDisabledNoMembership />
+          )}
+        </Space>
       </>
     </>
   );
 }
+
+const UploadDisabledNotVerified = () => (
+  <Alert type="danger">
+    <Alert.Heading>Image upload disabled</Alert.Heading>
+    <Alert.Body>
+      You must verify your email address to upload photos. A verification link
+      has been sent to your email address. Please click the link in that email
+      to verify.
+    </Alert.Body>
+    <Alert.Actions>
+      <Button type="primary" href={`${process.env.ROOT_URL}/settings/emails`}>
+        View email settings
+      </Button>
+    </Alert.Actions>
+  </Alert>
+);
+
+const UploadDisabledNoMembership = () => (
+  <Alert type="danger">
+    <Alert.Heading>Image upload disabled</Alert.Heading>
+    <Alert.Body>
+      <p>You must have an active membership to upload photos.</p>
+    </Alert.Body>
+    <Alert.Actions>
+      <Button href={`${process.env.ROOT_URL}/membership`}>
+        Become a Daylily Catalog Member
+      </Button>
+    </Alert.Actions>
+  </Alert>
+);

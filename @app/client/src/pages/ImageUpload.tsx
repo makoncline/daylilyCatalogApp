@@ -107,13 +107,17 @@ function UploadFile({
 export function ImageUpload({
   keyPrefix,
   handleImageUploaded,
-  handleBeforeUpload,
+  handleBeforeUpload = (_: File[]) => true,
+  single = false,
+  title = "Upload Image",
 }: {
   keyPrefix: string;
   handleImageUploaded: (key: string, url: string) => void;
-  handleBeforeUpload: (files: File[]) => boolean;
+  handleBeforeUpload?: (files: File[]) => boolean;
+  single?: boolean;
+  title?: string;
 }) {
-  const [status, setStatus] = React.useState<"idle" | "dragging" | "dropped">(
+  const [_, setStatus] = React.useState<"idle" | "dragging" | "dropped">(
     "idle"
   );
   const [files, setFiles] = React.useState<File[]>([]);
@@ -211,7 +215,7 @@ export function ImageUpload({
   return (
     <div>
       <Space direction="column">
-        <Heading level={3}>Upload Images</Heading>
+        <Heading level={3}>{title}</Heading>
         {files.length === 0 ? (
           <div>
             <input
@@ -220,10 +224,10 @@ export function ImageUpload({
               accept="image/*"
               className="sr-only"
               onChange={handleChange}
-              multiple
+              multiple={!single}
             />
             <FileSelect htmlFor="fileElem" ref={dropRef}>
-              <p>Drag & drop images here or</p>
+              <p>Drag & drop {single ? `image` : `images`} here or</p>
               <a>browse files</a>
             </FileSelect>
           </div>
