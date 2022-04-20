@@ -6,7 +6,7 @@ import styled from "styled-components";
 
 const { Text } = Typography;
 
-import { AddLilyForm, LiliesTable } from "./";
+import { LiliesTable } from "./";
 
 export const Lilies = () => {
   const [showAddLilyForm, setShowAddLilyForm] = useState(false);
@@ -83,16 +83,6 @@ export const Lilies = () => {
         dataSource={nameFilter ? filteredUserLilies : userLilies}
         handleEdit={handleEdit}
         searchText={nameFilter}
-      />
-      <AddLilyForm
-        onComplete={() => setShowAddLilyForm(false)}
-        error={formError}
-        setError={setFormError}
-        show={showAddLilyForm}
-        setShow={setShowAddLilyForm}
-        updateLily={updateLily}
-        setUpdateLily={setUpdateLily}
-        user={user}
       />
     </Style>
   );

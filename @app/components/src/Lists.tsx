@@ -1,49 +1,38 @@
 import { Button } from "@app/design";
-import { List, useListsQuery } from "@app/graphql";
-import React, { useState } from "react";
-
-import { ListTable } from "./";
-import { AddListForm } from "./AddListForm";
+import { useListsQuery } from "@app/graphql";
+import Link from "next/link";
+import Router from "next/router";
+import React from "react";
 
 export const Lists = () => {
-  const [showAddListForm, setShowAddListForm] = useState<boolean>(false);
-  const [updateList, setUpdateList] = useState<List | null>(null);
-
   const { data } = useListsQuery();
   const user = data && data.currentUser;
-
   if (!user) return <p>Loading...</p>;
 
-  const addListProps = {
-    show: showAddListForm,
-    setShow: setShowAddListForm,
-    updateList: updateList,
-    setUpdateList: setUpdateList,
-  };
-  function handleEdit(list: List) {
-    setUpdateList(null);
-    setUpdateList(list);
-    setShowAddListForm(true);
-  }
   return (
     <div>
-      <Button
-        type="primary"
-        onClick={() => {
-          setUpdateList(null);
-          setShowAddListForm(true);
-        }}
-        data-cy="settingslilies-button-addlily"
-        style={{
-          marginLeft: "auto",
-          marginBottom: "1rem",
-          display: "block",
-        }}
-      >
-        Add list
-      </Button>
-      <ListTable userLists={user.lists.nodes} handleEdit={handleEdit} />
-      <AddListForm {...addListProps} />
+      <Link href="/lists/create" passHref>
+        <Button>Create List</Button>
+      </Link>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data?.currentUser?.lists.nodes.map((list) => (
+            <tr
+              key={list.id}
+              onClick={() => Router.push(`lists/edit/${list.id}`)}
+            >
+              <td>{list.name}</td>
+              <td>{list.intro}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };

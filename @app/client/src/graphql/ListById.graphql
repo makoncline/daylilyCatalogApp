@@ -1,0 +1,7 @@
+#import "./ListData.graphql"
+query ListById($id: Int!) {
+  list(id: $id) {
+    id
+    ...ListData
+  }
+}

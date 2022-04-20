@@ -1,11 +1,11 @@
 import { useApolloClient } from "@apollo/client";
+import { Heading } from "@app/design";
 import { Skeleton } from "antd";
 import Router from "next/router";
 import React, { useEffect } from "react";
 
 import { SharedLayout } from "./SharedLayout";
 import { StandardWidth } from "./StandardWidth";
-import { H3 } from "./Text";
 
 export interface RedirectProps {
   href: string;
@@ -39,7 +39,7 @@ export function Redirect({ href, as, layout }: RedirectProps) {
   } else {
     return (
       <StandardWidth>
-        <H3>Redirecting...</H3>
+        <Heading level={3}>Redirecting...</Heading>
         <Skeleton />
       </StandardWidth>
     );
