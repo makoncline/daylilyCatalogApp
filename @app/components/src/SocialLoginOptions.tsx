@@ -1,5 +1,5 @@
 import { GithubOutlined } from "@ant-design/icons";
-import { Button } from "antd";
+import { Button } from "@app/design";
 import React from "react";
 
 export interface SocialLoginOptionsProps {

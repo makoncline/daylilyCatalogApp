@@ -1,4 +1,4 @@
-import { Col, Row } from "antd";
+import { Space } from "@app/design";
 import React, { FC } from "react";
 
 export interface StandardWidthProps {
@@ -6,7 +6,7 @@ export interface StandardWidthProps {
 }
 
 export const StandardWidth: FC<StandardWidthProps> = ({ children }) => (
-  <Row style={{ padding: "1rem", maxWidth: "80rem", margin: "0 auto" }}>
-    <Col flex={1}>{children}</Col>
-  </Row>
+  <Space style={{ padding: "1rem", maxWidth: "80rem", margin: "0 auto" }}>
+    <Space direction="column">{children}</Space>
+  </Space>
 );
