@@ -7,7 +7,6 @@ export * from "./FourOhFour";
 export * from "./ImageDisplay";
 export * from "./Lilies";
 export * from "./LiliesTable";
-export * from "./LilyRow";
 export * from "./ListingDisplay";
 export * from "./ListInput";
 export * from "./Lists";

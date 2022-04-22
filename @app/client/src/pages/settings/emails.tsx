@@ -18,7 +18,7 @@ import {
   useResendEmailVerificationMutation,
   useSettingsEmailsQuery,
 } from "@app/graphql";
-import { extractError, getCodeFromError } from "@app/lib";
+import { emailsUrl, extractError, getCodeFromError } from "@app/lib";
 import { NextPage } from "next";
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
@@ -178,7 +178,7 @@ const Settings_Emails: NextPage = () => {
     }
   })();
   return (
-    <SettingsLayout href="/settings/emails" query={query}>
+    <SettingsLayout href={emailsUrl} query={query}>
       {pageContent}
     </SettingsLayout>
   );

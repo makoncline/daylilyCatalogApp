@@ -1,4 +1,11 @@
 import { Space } from "@app/design";
+import {
+  deleteUrl,
+  emailsUrl,
+  loginUrl,
+  securityUrl,
+  settingsUrl,
+} from "@app/lib";
 import Link from "next/link";
 import { NextRouter, useRouter } from "next/router";
 import * as qs from "querystring";
@@ -25,24 +32,20 @@ function page(spec: PageSpec): PageSpec {
 }
 
 const pages = {
-  "/settings": page({
+  [settingsUrl]: page({
     title: "Profile",
     cy: "settingslayout-link-profile",
   }),
-  "/settings/security": page({
+  [securityUrl]: page({
     title: "Passphrase",
     cy: "settingslayout-link-password",
   }),
-  // "/settings/accounts": page({
-  //   title: "Linked Accounts",
-  //   cy: "settingslayout-link-accounts",
-  // }),
-  "/settings/emails": page({
+  [emailsUrl]: page({
     title: "Emails",
     warnIfUnverified: true,
     cy: "settingslayout-link-emails",
   }),
-  "/settings/delete": page({
+  [deleteUrl]: page({
     title: "Delete Account",
     cy: "settingslayout-link-delete",
   }),
@@ -74,16 +77,14 @@ export function SettingsLayout({
     >
       {({ currentUser, error, loading }: SharedLayoutChildProps) =>
         !currentUser && !error && !loading ? (
-          <Redirect href={`/login?next=${encodeURIComponent(fullHref)}`} />
+          <Redirect href={`${loginUrl}?next=${encodeURIComponent(fullHref)}`} />
         ) : (
           <Space direction="column">
             <Space direction="row" gap="large">
               {Object.keys(pages).map((pageHref, i) => (
                 <Link href={pageHref} key={i}>
                   <a data-cy={pages[pageHref].cy}>
-                    <p {...pages[pageHref].titleProps}>
-                      {pages[pageHref].title}
-                    </p>
+                    <p>{pages[pageHref].title}</p>
                   </a>
                 </Link>
               ))}

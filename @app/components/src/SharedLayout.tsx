@@ -5,6 +5,7 @@ import {
   useCurrentUserUpdatedSubscription,
   useLogoutMutation,
 } from "@app/graphql";
+import { loginUrl } from "@app/lib";
 import Link from "next/link";
 import Router, { useRouter } from "next/router";
 import * as React from "react";
@@ -144,7 +145,9 @@ export function SharedLayout({
       forbidsLoggedOut
     ) {
       return (
-        <Redirect href={`/login?next=${encodeURIComponent(router.asPath)}`} />
+        <Redirect
+          href={`${loginUrl}?next=${encodeURIComponent(router.asPath)}`}
+        />
       );
     }
 

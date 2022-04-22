@@ -16,7 +16,12 @@ import {
   useSettingsProfileQuery,
   useUpdateUserMutation,
 } from "@app/graphql";
-import { extractError, getCodeFromError } from "@app/lib";
+import {
+  extractError,
+  getCodeFromError,
+  loginUrl,
+  settingsUrl,
+} from "@app/lib";
 import { NextPage } from "next";
 import React, { useCallback, useState } from "react";
 
@@ -28,7 +33,7 @@ const Settings_Profile: NextPage = () => {
   const query = useSettingsProfileQuery();
   const { data, loading, error } = query;
   return (
-    <SettingsLayout href="/settings" query={query}>
+    <SettingsLayout href={settingsUrl} query={query}>
       {data && data.currentUser ? (
         <ProfileSettingsForm
           error={formError}
@@ -40,7 +45,9 @@ const Settings_Profile: NextPage = () => {
       ) : error ? (
         <ErrorAlert error={error} />
       ) : (
-        <Redirect href={`/login?next=${encodeURIComponent("/settings")}`} />
+        <Redirect
+          href={`${loginUrl}?next=${encodeURIComponent(settingsUrl)}`}
+        />
       )}
     </SettingsLayout>
   );

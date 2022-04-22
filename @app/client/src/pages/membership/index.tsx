@@ -7,6 +7,7 @@ import {
 } from "@app/components";
 import { Button, Card, CardBody, Heading, Space } from "@app/design";
 import { useMembershipQuery } from "@app/graphql";
+import { emailsUrl } from "@app/lib";
 import { NextPage } from "next";
 import React from "react";
 import styled from "styled-components";
@@ -26,7 +27,9 @@ const Membership: NextPage = () => {
       ) : error ? (
         <ErrorAlert error={error} />
       ) : (
-        <Redirect href={`/login?next=${encodeURIComponent("/membership")}`} />
+        <Redirect
+          href={`${loginUrl}?next=${encodeURIComponent("/membership")}`}
+        />
       )}
     </SharedLayout>
   );
@@ -85,10 +88,7 @@ const Plans = ({
                         email address. Please click the link in that email to
                         continue.
                       </p>
-                      <Button
-                        href={`${process.env.ROOT_URL}/settings/emails`}
-                        data-cy="view-email-settings"
-                      >
+                      <Button href={emailsUrl} data-cy="view-email-settings">
                         View email settings
                       </Button>
                     </Space>

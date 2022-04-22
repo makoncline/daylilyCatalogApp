@@ -10,7 +10,7 @@ import {
   useForm,
 } from "@app/design";
 import { useForgotPasswordMutation, useSharedQuery } from "@app/graphql";
-import { extractError, getCodeFromError } from "@app/lib";
+import { extractError, getCodeFromError, loginUrl } from "@app/lib";
 import { NextPage } from "next";
 import Link from "next/link";
 import React, { useCallback, useState } from "react";
@@ -94,7 +94,7 @@ const ForgotPassword: NextPage = () => {
             </Button>
           </SubmitButton>
           <p>
-            <Link href="/login">
+            <Link href={loginUrl}>
               <a>Remembered your password? Log in.</a>
             </Link>
           </p>

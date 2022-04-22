@@ -16,7 +16,7 @@ function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
         />
       </DisplayImage>
       {imageUrls.map((url, i) => (
-        <Thumbnail key={i}>
+        <Thumbnail key={i} selected={i === imageIndex}>
           <Image
             key={i}
             src={url}
@@ -43,6 +43,7 @@ const DisplayImage = styled.div`
   position: relative;
   grid-column: span 4;
 `;
-const Thumbnail = styled.div`
+const Thumbnail = styled.div<{ selected: boolean }>`
   position: relative;
+  ${({ selected }) => (selected ? `border: var(--hairline);` : "")}
 `;

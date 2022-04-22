@@ -24,9 +24,11 @@ import {
   useLilyByIdQuery,
 } from "@app/graphql";
 import {
+  catalogUrl,
   extractError,
   getCodeFromError,
   resetWebsocketConnection,
+  toViewListingUrl,
 } from "@app/lib";
 import AmazonS3URI from "amazon-s3-uri";
 import { UseComboboxStateChange } from "downshift";
@@ -79,7 +81,7 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
         client.resetStore();
         const lily = data?.updateLily?.lily;
         if (lily) {
-          Router.push(`/catalog/view/${lily.id}`);
+          Router.push(toViewListingUrl(lily.id));
         }
       } catch (e: any) {
         setError(e);
@@ -116,7 +118,7 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
         setFormState("idle");
         resetWebsocketConnection();
         client.resetStore();
-        Router.push("/catalog");
+        Router.push(catalogUrl);
       } catch (e: any) {
         setError(e);
       }

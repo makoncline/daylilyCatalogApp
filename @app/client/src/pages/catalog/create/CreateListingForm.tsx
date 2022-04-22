@@ -16,6 +16,7 @@ import {
   extractError,
   getCodeFromError,
   resetWebsocketConnection,
+  toEditListingUrl,
 } from "@app/lib";
 import { UseComboboxStateChange } from "downshift";
 import Router from "next/router";
@@ -50,7 +51,7 @@ function CreateListingForm({ error, setError }: EditListingFormProps) {
         const lily = data?.createLily?.lily;
         console.log("Created lily:", lily);
         if (lily) {
-          Router.push(`/catalog/edit/${lily.id}`);
+          Router.push(toEditListingUrl(lily.id));
         }
       } catch (e: any) {
         setError(e);

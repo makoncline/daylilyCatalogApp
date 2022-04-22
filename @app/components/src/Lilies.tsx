@@ -1,5 +1,6 @@
 import { Button, Field, Form, Space, useForm } from "@app/design";
 import { useLiliesQuery } from "@app/graphql";
+import { toCreateListingUrl } from "@app/lib";
 import React from "react";
 import styled from "styled-components";
 
@@ -42,7 +43,10 @@ export const Lilies = () => {
           </Space>
         </div>
       )}
-      <Button type="primary" href={`${process.env.ROOT_URL}/catalog/create`}>
+      <Button
+        type="primary"
+        href={`${process.env.ROOT_URL}${toCreateListingUrl()}`}
+      >
         Add daylily
       </Button>
       <Form formId="list-filter" onSubmit={() => void 0}>
@@ -51,8 +55,7 @@ export const Lilies = () => {
         </Field>
       </Form>
       <LiliesTable
-        dataSource={nameFilter ? filteredUserLilies : userLilies}
-        searchText={nameFilter}
+        dataSource={(nameFilter ? filteredUserLilies : userLilies) || []}
       />
     </Style>
   );

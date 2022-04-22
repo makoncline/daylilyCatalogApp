@@ -1,6 +1,7 @@
 import { ApolloError } from "@apollo/client";
 import { ErrorAlert, Redirect, SharedLayout } from "@app/components";
 import { useSharedQuery } from "@app/graphql";
+import { loginUrl } from "@app/lib";
 import { NextPage } from "next";
 import React, { useState } from "react";
 
@@ -26,7 +27,7 @@ const Edit: NextPage = () => {
       ) : sharedQueryError ? (
         <ErrorAlert error={sharedQueryError} />
       ) : (
-        <Redirect href={`/login?next=${encodeURIComponent("/")}`} />
+        <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />
       )}
     </SharedLayout>
   );

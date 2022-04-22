@@ -1,5 +1,6 @@
 import { ErrorAlert, Redirect, SharedLayout } from "@app/components";
 import { useSharedQuery } from "@app/graphql";
+import { loginUrl } from "@app/lib";
 import { NextPage } from "next";
 import React from "react";
 
@@ -22,7 +23,7 @@ const Create: NextPage = () => {
       ) : sharedQueryError ? (
         <ErrorAlert error={sharedQueryError} />
       ) : (
-        <Redirect href={`/login?next=${encodeURIComponent("/")}`} />
+        <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />
       )}
     </SharedLayout>
   );

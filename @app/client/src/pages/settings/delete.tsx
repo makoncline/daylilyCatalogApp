@@ -1,12 +1,12 @@
 import { ApolloError } from "@apollo/client";
-import { ErrorAlert, P, SettingsLayout } from "@app/components";
+import { ErrorAlert, SettingsLayout } from "@app/components";
 import { Alert, Button, Dialog, Heading, Space } from "@app/design";
 import {
   useConfirmAccountDeletionMutation,
   useRequestAccountDeletionMutation,
   useSharedQuery,
 } from "@app/graphql";
-import { getCodeFromError } from "@app/lib";
+import { deleteUrl, getCodeFromError } from "@app/lib";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useCallback, useState } from "react";
@@ -72,20 +72,20 @@ const Settings_Accounts: NextPage = () => {
   }, [confirmAccountDeletion, deleting, token]);
   const query = useSharedQuery();
   return (
-    <SettingsLayout href="/settings/delete" query={query}>
+    <SettingsLayout href={deleteUrl} query={query}>
       <Space direction="column" gap="large">
         <Heading level={2}>Delete account</Heading>
-        <P>
+        <p>
           Deleting your user account will delete all data (except that which we
           must retain for legal, compliance and accounting reasons) and cannot
           be undone. Make sure you want to do this.
-        </P>
-        <P>
+        </p>
+        <p>
           To protect your account, we require you to confirm you wish to delete
           your account here, then you will be sent an email with a confirmation
           code (to check your identity) and when you click that link you will be
           asked to confirm your account deletion again.
-        </P>
+        </p>
         {token ? (
           <Alert type="danger">
             <Alert.Heading>Confirm account deletion</Alert.Heading>

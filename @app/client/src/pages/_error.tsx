@@ -1,6 +1,7 @@
 import { ErrorOccurred, FourOhFour, SharedLayout } from "@app/components";
 import { Alert, Heading, Space } from "@app/design";
 import { useSharedQuery } from "@app/graphql";
+import { loginUrl } from "@app/lib";
 import { NextPage } from "next";
 import Link from "next/link";
 import * as React from "react";
@@ -19,7 +20,7 @@ function SocialAuthError({ provider }: SocialAuthErrorProps) {
       </Heading>
       <p>
         Please try and{" "}
-        <Link href="/login">
+        <Link href={loginUrl}>
           <a>login with another method</a>
         </Link>
         .

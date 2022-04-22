@@ -20,7 +20,9 @@ import {
 import { useLoginMutation, useSharedQuery } from "@app/graphql";
 import {
   extractError,
+  forgotUrl,
   getCodeFromError,
+  registerUrl,
   resetWebsocketConnection,
 } from "@app/lib";
 import { NextPage } from "next";
@@ -67,7 +69,7 @@ const Login: NextPage<LoginProps> = ({ next: rawNext }) => {
                   Sign in with E-mail or Username
                 </Button>
                 <Button
-                  href={`/register?next=${encodeURIComponent(next)}`}
+                  href={`${registerUrl}?next=${encodeURIComponent(next)}`}
                   block
                 >
                   Create an account
@@ -161,7 +163,7 @@ function LoginForm({
         Passphrase
       </Field>
       <FormGroup>
-        <Link href="/forgot">
+        <Link href={forgotUrl}>
           <a>Forgotten passphrase?</a>
         </Link>
       </FormGroup>

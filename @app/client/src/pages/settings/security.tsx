@@ -16,10 +16,12 @@ import {
   useSharedQuery,
 } from "@app/graphql";
 import {
+  emailsUrl,
   extractError,
   getCodeFromError,
   getPasswordStrength,
   getPasswordSuggestions,
+  securityUrl,
 } from "@app/lib";
 import { NextPage } from "next";
 import Link from "next/link";
@@ -126,7 +128,7 @@ const Settings_Security: NextPage = () => {
             currently have a passphrase. If you would like a passphrase, press
             the button below to request a passphrase reset email to '{email}'
             (you can choose a different email by making it primary in{" "}
-            <Link href="/settings/emails">email settings</Link>).
+            <Link href={emailsUrl}>email settings</Link>).
           </p>
           <Button onClick={handleResetPassword} disabled={resetInProgress}>
             Reset passphrase
@@ -177,7 +179,7 @@ const Settings_Security: NextPage = () => {
     );
   };
   return (
-    <SettingsLayout href="/settings/security" query={query}>
+    <SettingsLayout href={securityUrl} query={query}>
       {inner()}
     </SettingsLayout>
   );

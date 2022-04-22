@@ -5,6 +5,7 @@ type Props = {
   gap?: "small" | "medium" | "large";
   children: React.ReactNode;
   center?: boolean;
+  [key: string]: any;
 };
 const Space = ({
   direction = "row",
@@ -24,6 +25,7 @@ const Space = ({
       {...props}
       style={
         {
+          ...props.style,
           "--direction": direction,
           "--gap": gapSize,
         } as React.CSSProperties

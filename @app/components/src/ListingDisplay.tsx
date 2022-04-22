@@ -7,6 +7,7 @@ import {
   PropertyListItem,
 } from "@app/design";
 import { AhsDataFragment, useLilyByIdQuery } from "@app/graphql";
+import { toEditListingUrl } from "@app/lib";
 import Link from "next/link";
 import React from "react";
 import styled from "styled-components";
@@ -33,7 +34,7 @@ function ListingDisplay({
   const ahsImageUrls = [listing.ahsDatumByAhsRef?.image || null].filter(
     Boolean
   ) as string[];
-  const imageUrls = [...listingImageUrls, ...ahsImageUrls];
+  const imageUrls = Array.from(new Set([...listingImageUrls, ...ahsImageUrls]));
   const {
     name,
     publicNote,
@@ -52,7 +53,7 @@ function ListingDisplay({
       <Details>
         <StyledHeading level={2}>{name}</StyledHeading>
         {isOwner && (
-          <Link passHref href={`/catalog/edit/${listingId}`}>
+          <Link passHref href={toEditListingUrl(listingId)}>
             <Button>Edit listing</Button>
           </Link>
         )}

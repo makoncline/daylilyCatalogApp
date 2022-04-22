@@ -1,4 +1,12 @@
 import { Button, Link, Nav, TextLogo } from "@app/design";
+import {
+  catalogUrl,
+  listsUrl,
+  loginUrl,
+  membershipUrl,
+  settingsUrl,
+  usersUrl,
+} from "@app/lib";
 import NextLink from "next/link";
 import React from "react";
 
@@ -16,16 +24,16 @@ export const NextNavigation = ({
   <Nav logo={<NextTextLogo href="/">Daylily Catalog</NextTextLogo>}>
     {isLoggedIn ? (
       <>
-        <NextNavLink href="/users">Users</NextNavLink>
-        <NextNavLink href="/catalog">Catalog</NextNavLink>
-        <NextNavLink href="/lists">Lists</NextNavLink>
-        <NextNavLink href="/settings">Settings</NextNavLink>{" "}
+        <NextNavLink href={usersUrl}>Users</NextNavLink>
+        <NextNavLink href={catalogUrl}>Catalog</NextNavLink>
+        <NextNavLink href={listsUrl}>Lists</NextNavLink>
+        <NextNavLink href={settingsUrl}>Settings</NextNavLink>{" "}
         {/* put a warning here if not verified*/}
-        <NextNavLink href="/membership">Membership</NextNavLink>
+        <NextNavLink href={membershipUrl}>Membership</NextNavLink>
         <Button onClick={handleLogout}>Logout</Button>
       </>
     ) : (
-      <NextNavLink href={`/login?next=${encodeURIComponent(currentUrl)}`}>
+      <NextNavLink href={`${loginUrl}?next=${encodeURIComponent(currentUrl)}`}>
         Sign in
       </NextNavLink>
     )}

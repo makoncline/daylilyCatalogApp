@@ -1,6 +1,7 @@
 import { SharedLayout } from "@app/components";
 import { below, Button, Heading, Hr, Space } from "@app/design";
 import { useSharedQuery } from "@app/graphql";
+import { catalogUrl, pricingUrl } from "@app/lib";
 import { NextPage } from "next";
 import * as React from "react";
 import styled from "styled-components";
@@ -21,16 +22,10 @@ const Home: NextPage = () => {
           </p>
           <div className="cta-button-container">
             <Space gap="large">
-              <Button
-                href={`${process.env.ROOT_URL}/catalog`}
-                data-cy="get-started-for-free"
-              >
+              <Button href={catalogUrl} data-cy="get-started-for-free">
                 Get started for free
               </Button>
-              <Button
-                href={`${process.env.ROOT_URL}/pricing`}
-                data-cy="pricing"
-              >
+              <Button href={pricingUrl} data-cy="pricing">
                 Pricing
               </Button>
             </Space>
