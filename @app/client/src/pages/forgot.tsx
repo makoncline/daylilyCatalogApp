@@ -1,61 +1,57 @@
-import { UserOutlined } from "@ant-design/icons";
 import { ApolloError } from "@apollo/client";
 import { AuthRestrict, SharedLayout } from "@app/components";
-import { FormWrapper } from "@app/design";
+import {
+  Alert,
+  Button,
+  Field,
+  Form,
+  FormWrapper,
+  SubmitButton,
+  useForm,
+} from "@app/design";
 import { useForgotPasswordMutation, useSharedQuery } from "@app/graphql";
 import { extractError, getCodeFromError } from "@app/lib";
-import { Alert, Button, Form, Input } from "antd";
-import { useForm } from "antd/lib/form/Form";
 import { NextPage } from "next";
 import Link from "next/link";
-import { Store } from "rc-field-form/lib/interface";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 
 const ForgotPassword: NextPage = () => {
   const [error, setError] = useState<Error | ApolloError | null>(null);
   const query = useSharedQuery();
-
-  const [form] = useForm();
+  const forgotPasswordFormName = "forgot-password";
+  const { values } = useForm(forgotPasswordFormName);
   const [forgotPassword] = useForgotPasswordMutation();
   const [successfulEmail, setSuccessfulEmail] = useState<string | null>(null);
 
-  const handleSubmit = useCallback(
-    (values: Store): void => {
-      setError(null);
-      (async () => {
-        try {
-          const email = values.email;
-          await forgotPassword({
-            variables: {
-              email,
-            },
-          });
-          // Success: refetch
-          setSuccessfulEmail(email);
-        } catch (e) {
-          setError(e);
-        }
-      })();
-    },
-    [forgotPassword, setError]
-  );
-
-  const focusElement = useRef<Input>(null);
-  useEffect(
-    () => void (focusElement.current && focusElement.current!.focus()),
-    [focusElement]
-  );
+  const handleSubmit = useCallback((): void => {
+    setError(null);
+    (async () => {
+      try {
+        const email = values.email;
+        await forgotPassword({
+          variables: {
+            email,
+          },
+        });
+        // Success: refetch
+        setSuccessfulEmail(email);
+      } catch (e) {
+        setError(e);
+      }
+    })();
+  }, [forgotPassword, values]);
 
   const code = getCodeFromError(error);
 
   if (successfulEmail != null) {
     return (
       <SharedLayout title="Forgot Password" query={query}>
-        <Alert
-          type="success"
-          message="You've got mail"
-          description={`We've sent an email reset link to '${successfulEmail}'; click the link and follow the instructions. If you don't receive the link, please ensure you entered the email address correctly, and check in your spam folder just in case.`}
-        />
+        <Alert type="success">
+          <Alert.Heading>You've got mail</Alert.Heading>
+          <Alert.Body>
+            {`We've sent an email reset link to '${successfulEmail}'; click the link and follow the instructions. If you don't receive the link, please ensure you entered the email address correctly, and check in your spam folder just in case.`}
+          </Alert.Body>
+        </Alert>
       </SharedLayout>
     );
   }
@@ -67,55 +63,39 @@ const ForgotPassword: NextPage = () => {
       forbidWhen={AuthRestrict.LOGGED_IN}
     >
       <FormWrapper>
-        <Form form={form} layout="vertical" onFinish={handleSubmit}>
-          <Form.Item
-            name="email"
-            rules={[
-              {
-                type: "email",
-                message: "The input is not valid E-mail",
-              },
-              { required: true, message: "Please input your email" },
-            ]}
-          >
-            <Input
-              prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-              placeholder="Email"
-              ref={focusElement}
-            />
-          </Form.Item>
-
+        <Form
+          formId={forgotPasswordFormName}
+          onSubmit={handleSubmit}
+          validation={{ email: validateEmail }}
+        >
+          <Field>Email</Field>
           {error ? (
-            <Form.Item>
-              <Alert
-                type="error"
-                message={`Something went wrong`}
-                description={
-                  <span>
-                    {extractError(error).message}
-                    {code ? (
-                      <span>
-                        {" "}
-                        (Error code: <code>ERR_{code}</code>)
-                      </span>
-                    ) : null}
-                  </span>
-                }
-              />
-            </Form.Item>
+            <Alert type="danger">
+              <Alert.Heading>Something went wrong</Alert.Heading>
+              <Alert.Body>
+                {" "}
+                <span>
+                  {extractError(error).message}
+                  {code ? (
+                    <span>
+                      {" "}
+                      (Error code: <code>ERR_{code}</code>)
+                    </span>
+                  ) : null}
+                </span>
+              </Alert.Body>
+            </Alert>
           ) : null}
-          <Form.Item>
+          <SubmitButton>
             <Button type="primary" htmlType="submit">
               Reset password
             </Button>
-          </Form.Item>
-          <Form.Item>
-            <p>
-              <Link href="/login">
-                <a>Remembered your password? Log in.</a>
-              </Link>
-            </p>
-          </Form.Item>
+          </SubmitButton>
+          <p>
+            <Link href="/login">
+              <a>Remembered your password? Log in.</a>
+            </Link>
+          </p>
         </Form>
       </FormWrapper>
     </SharedLayout>
@@ -123,3 +103,15 @@ const ForgotPassword: NextPage = () => {
 };
 
 export default ForgotPassword;
+
+function validateEmail(email: any) {
+  const isEmail = String(email)
+    .toLowerCase()
+    .match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+  if (!isEmail) {
+    return "Please enter a valid email address";
+  }
+  return null;
+}
