@@ -1,4 +1,4 @@
-import { Button } from "@app/design";
+import { Button, Thumbnail, thumbnailProps } from "@app/design";
 import { useDeleteUploadMutation } from "@app/graphql";
 import AmazonS3URI from "amazon-s3-uri";
 import Image from "next/image";
@@ -45,9 +45,9 @@ function ImageDisplay({ imageUrls, setImageUrls }: ImageDisplayProps) {
     <Wrapper>
       {imageUrls.map((url, i) => (
         <ImageDisplayItem key={i}>
-          <ImageWrapper>
-            <Image src={url} layout="fill" objectFit="cover" />
-          </ImageWrapper>
+          <Thumbnail>
+            <Image src={url} {...thumbnailProps} />
+          </Thumbnail>
           <ControlsWrapper>
             {hasMultipleImages && (
               <Button onClick={() => handleMove("<", i)}>{"<"}</Button>
@@ -71,11 +71,7 @@ const Wrapper = styled.div`
   grid-template-columns: repeat(3, 100px);
   gap: var(--size-1);
 `;
-const ImageWrapper = styled.div`
-  position: relative;
-  width: 100px;
-  aspect-ratio: 1;
-`;
+
 const ControlsWrapper = styled.div`
   display: grid;
   /* grid-template-columns: 1fr 1fr 1fr; */

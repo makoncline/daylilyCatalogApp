@@ -1,7 +1,7 @@
-import Spin, { SpinProps } from "antd/lib/spin";
-import React, { FC } from "react";
+import { Spinner } from "@app/design";
+import React from "react";
 
-export const SpinPadded: FC<SpinProps> = (props) => (
+export const SpinPadded = () => (
   <div
     style={{
       padding: "2rem",
@@ -10,6 +10,6 @@ export const SpinPadded: FC<SpinProps> = (props) => (
       alignItems: "center",
     }}
   >
-    <Spin {...props} />
+    <Spinner />
   </div>
 );

@@ -29,4 +29,6 @@
 
   --size-image: 400px;
   --size-image-thumbnail: 100px;
+
+  --size-icon: var(--size-6);
 }

@@ -1,6 +1,7 @@
 // @ts-nocheck
-import { InfoOutlined } from "@ant-design/icons";
-import { Avatar, Button, Table } from "antd";
+import { Button, Thumbnail, thumbnailProps } from "@app/design";
+import { Table } from "antd";
+import Image from "next/image";
 import React from "react";
 import Highlighter from "react-highlight-words";
 // import useWindowSize from "../hooks/useWindowSize";
@@ -25,8 +26,6 @@ const DataButton = (ahsId: any) => (
             "_blank"
           );
         }}
-        shape="circle"
-        icon={<InfoOutlined />}
         type="primary"
       />
     )}
@@ -129,12 +128,13 @@ export function LiliesTable(props: any) {
             }}
           >
             {avatar && avatar.length ? (
-              <Avatar
-                size={64}
-                src={`https://images.weserv.nl/?url=${avatar[0]}&w=100&h=100&fit=cover`}
-              />
+              <Thumbnail>
+                <Image src={avatar[0]} {...thumbnailProps} />
+              </Thumbnail>
             ) : (
-              <Avatar size={64} src={"/flowerPlaceholder.png"} />
+              <Thumbnail>
+                <Image src={"/flowerPlaceholder.png"} {...thumbnailProps} />
+              </Thumbnail>
             )}
           </div>
         )}

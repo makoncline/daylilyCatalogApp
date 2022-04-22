@@ -1,4 +1,5 @@
-import { Avatar } from "antd";
+import { Thumbnail, thumbnailProps } from "@app/design";
+import Image from "next/image";
 import React, { FC } from "react";
 
 export const UserAvatar: FC<{
@@ -9,8 +10,12 @@ export const UserAvatar: FC<{
 }> = (props) => {
   const { name, avatarUrl } = props.user;
   if (avatarUrl) {
-    return <Avatar src={avatarUrl} />;
+    return (
+      <Thumbnail>
+        <Image src={avatarUrl} {...thumbnailProps} />
+      </Thumbnail>
+    );
   } else {
-    return <Avatar>{(name && name[0]) || "?"}</Avatar>;
+    return <Thumbnail>{(name && name[0]) || "?"}</Thumbnail>;
   }
 };

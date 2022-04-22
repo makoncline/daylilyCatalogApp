@@ -1,21 +1,14 @@
-import { ApolloError } from "@apollo/client";
-import { LilyDataFragment, useLiliesQuery } from "@app/graphql";
-import { Button, Input, Space, Typography } from "antd";
-import React, { useState } from "react";
+import { Button, Field, Form, Space, useForm } from "@app/design";
+import { useLiliesQuery } from "@app/graphql";
+import React from "react";
 import styled from "styled-components";
-
-const { Text } = Typography;
 
 import { LiliesTable } from "./";
 
 export const Lilies = () => {
-  const [showAddLilyForm, setShowAddLilyForm] = useState(false);
-  const [updateLily, setUpdateLily] = useState<LilyDataFragment | null>(null);
-  const [formError, setFormError] = useState<Error | ApolloError | null>(null);
-  const [nameFilter, setNameFilter]: [
-    string,
-    React.Dispatch<React.SetStateAction<string>>
-  ] = useState("");
+  const filterFormName = "list-filter";
+  const { values } = useForm(filterFormName);
+  const nameFilter = values && values.filter;
 
   const { data } = useLiliesQuery();
   const user = data && data.currentUser;
@@ -29,11 +22,6 @@ export const Lilies = () => {
 
   if (!user || !userLilies) return <p>Loading...</p>;
 
-  function handleEdit(lily: any) {
-    setUpdateLily(null);
-    setUpdateLily(lily);
-    setShowAddLilyForm(true);
-  }
   const isActive =
     user.stripeSubscription?.subscriptionInfo?.status == "active";
   const isOverFreeLimit = userLilies.length >= 99;
@@ -43,45 +31,27 @@ export const Lilies = () => {
     <Style>
       {!isAddActive && (
         <div className="over-limit">
-          <Space direction="vertical">
-            <Text>
+          <Space direction="column">
+            <p>
               You have reached the free plan limit. You must have an active
               membership to add more daylilies.
-            </Text>
+            </p>
             <Button type="primary" href={`${process.env.ROOT_URL}/membership`}>
               Become a Daylily Catalog Member
             </Button>
           </Space>
         </div>
       )}
-      <Button
-        type="primary"
-        onClick={() => {
-          setUpdateLily(null);
-          setShowAddLilyForm(true);
-        }}
-        data-cy="settingslilies-button-addlily"
-        block
-        style={{
-          marginLeft: "auto",
-          marginBottom: "1rem",
-          display: "block",
-        }}
-        disabled={!isAddActive}
-      >
+      <Button type="primary" href={`${process.env.ROOT_URL}/catalog/create`}>
         Add daylily
       </Button>
-      <p></p>
-      <Input
-        placeholder="Filter catalog by name..."
-        value={nameFilter}
-        onChange={(e) => setNameFilter(e.target.value)}
-        style={{ marginBottom: "1rem" }}
-        allowClear
-      />
+      <Form formId="list-filter" onSubmit={() => void 0}>
+        <Field label={false} placeholder="Filter catalog by name...">
+          Filter
+        </Field>
+      </Form>
       <LiliesTable
         dataSource={nameFilter ? filteredUserLilies : userLilies}
-        handleEdit={handleEdit}
         searchText={nameFilter}
       />
     </Style>

@@ -1,12 +1,6 @@
-import {
-  ErrorOccurred,
-  FourOhFour,
-  H2,
-  P,
-  SharedLayout,
-} from "@app/components";
+import { ErrorOccurred, FourOhFour, SharedLayout } from "@app/components";
+import { Alert, Heading, Space } from "@app/design";
 import { useSharedQuery } from "@app/graphql";
-import { Alert, Col, Row } from "antd";
 import { NextPage } from "next";
 import Link from "next/link";
 import * as React from "react";
@@ -20,19 +14,20 @@ interface SocialAuthErrorProps {
 function SocialAuthError({ provider }: SocialAuthErrorProps) {
   return (
     <div>
-      <H2>This application is not configured for that auth provider</H2>
-      <P>
+      <Heading level={2}>
+        This application is not configured for that auth provider
+      </Heading>
+      <p>
         Please try and{" "}
         <Link href="/login">
           <a>login with another method</a>
         </Link>
         .
-      </P>
+      </p>
       {isDev && (
-        <Alert
-          type="info"
-          message="Development Only Error"
-          description={
+        <Alert type="info">
+          <Alert.Heading>Development Only Error</Alert.Heading>
+          <Alert.Body>
             <div>
               You seem to be trying to log in with the '<code>{provider}</code>'
               OAuth provider. You should check that{" "}
@@ -42,8 +37,8 @@ function SocialAuthError({ provider }: SocialAuthErrorProps) {
               configured in{" "}
               <code>@app/server/src/middleware/installPassport.ts</code>
             </div>
-          }
-        />
+          </Alert.Body>
+        </Alert>
       )}
     </div>
   );
@@ -93,11 +88,11 @@ const ErrorPage: NextPage<ErrorPageProps> = (props) => {
   const query = useSharedQuery();
   return (
     <SharedLayout title={title} query={query}>
-      <Row>
-        <Col flex={1}>
+      <Space>
+        <Space direction="column">
           <Component {...componentProps} />
-        </Col>
-      </Row>
+        </Space>
+      </Space>
     </SharedLayout>
   );
 };

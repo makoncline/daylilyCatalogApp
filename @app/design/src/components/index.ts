@@ -10,3 +10,5 @@ export * from "./Link";
 export * from "./Nav";
 export * from "./PropertyList";
 export * from "./Space";
+export * from "./Spinner";
+export * from "./Thumbnail";
