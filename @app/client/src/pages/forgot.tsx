@@ -15,6 +15,8 @@ import { NextPage } from "next";
 import Link from "next/link";
 import React, { useCallback, useState } from "react";
 
+import { validateEmail } from "../util";
+
 const ForgotPassword: NextPage = () => {
   const [error, setError] = useState<Error | ApolloError | null>(null);
   const query = useSharedQuery();
@@ -35,7 +37,7 @@ const ForgotPassword: NextPage = () => {
         });
         // Success: refetch
         setSuccessfulEmail(email);
-      } catch (e) {
+      } catch (e: any) {
         setError(e);
       }
     })();
@@ -103,15 +105,3 @@ const ForgotPassword: NextPage = () => {
 };
 
 export default ForgotPassword;
-
-function validateEmail(email: any) {
-  const isEmail = String(email)
-    .toLowerCase()
-    .match(
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    );
-  if (!isEmail) {
-    return "Please enter a valid email address";
-  }
-  return null;
-}

@@ -12,6 +12,7 @@ import {
   FormError,
   FormGroup,
   FormStateContextProps,
+  FormWrapper,
   OnChangeCallbackProps,
   SubmitButton,
 } from "@app/design";
@@ -27,6 +28,7 @@ import { NextPage } from "next";
 import Router from "next/router";
 import React, { FocusEvent, useCallback, useState } from "react";
 
+import { validateConfirm, validateEmail, validateUsername } from "../util";
 import { isSafe } from "./login";
 
 interface RegisterProps {
@@ -149,82 +151,84 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
         currentUser ? (
           <Redirect href={next} />
         ) : (
-          <Form
-            formId="register"
-            onChange={handleChange}
-            onSubmit={handleSubmit}
-            validation={{
-              username: validateUsername,
-              email: validateEmail,
-              confirm: validateConfirm,
-            }}
-          >
-            <Field
-              placeholder="What is your name?"
-              autoComplete="name"
-              data-cy="registerpage-input-name"
+          <FormWrapper>
+            <Form
+              formId="register"
+              onChange={handleChange}
+              onSubmit={handleSubmit}
+              validation={{
+                username: validateUsername,
+                email: validateEmail,
+                confirm: validateConfirm,
+              }}
             >
-              Name
-            </Field>
-            <Field
-              placeholder="What would you like people to call you?"
-              autoComplete="username"
-              data-cy="registerpage-input-username"
-            >
-              Username
-            </Field>
-            <Field
-              placeholder="What is your email address?"
-              autoComplete="email"
-              data-cy="registerpage-input-email"
-            >
-              Email
-            </Field>
-            <FormGroup>
               <Field
-                name="password"
-                placeholder="Enter a secure passphrase."
-                autoComplete="current-password"
-                type="password"
-                data-cy="loginpage-input-password"
+                placeholder="What is your name?"
+                autoComplete="name"
+                data-cy="registerpage-input-name"
               >
-                Passphrase
+                Name
               </Field>
-              <PasswordStrength
-                passwordStrength={passwordStrength}
-                suggestions={passwordSuggestions}
-              />
-            </FormGroup>
-            <Field
-              name="confirm"
-              placeholder="Confirm your passphrase."
-              autoComplete="new-password"
-              type="password"
-              data-cy="registerpage-input-password2"
-              onBlur={handleConfirmBlur}
-            >
-              Confirm Passphrase
-            </Field>
-            {error ? (
+              <Field
+                placeholder="What would you like people to call you?"
+                autoComplete="username"
+                data-cy="registerpage-input-username"
+              >
+                Username
+              </Field>
+              <Field
+                placeholder="What is your email address?"
+                autoComplete="email"
+                data-cy="registerpage-input-email"
+              >
+                Email
+              </Field>
               <FormGroup>
-                <FormError>
-                  <p>Registration failed</p>
-                  <span>
-                    {extractError(error).message}
-                    {code ? (
-                      <span>
-                        {" "}
-                        (Error code: <code>ERR_{code}</code>)
-                      </span>
-                    ) : null}
-                  </span>
-                </FormError>
+                <Field
+                  name="password"
+                  placeholder="Enter a secure passphrase."
+                  autoComplete="current-password"
+                  type="password"
+                  data-cy="loginpage-input-password"
+                >
+                  Passphrase
+                </Field>
+                <PasswordStrength
+                  passwordStrength={passwordStrength}
+                  suggestions={passwordSuggestions}
+                />
               </FormGroup>
-            ) : null}
-            <SubmitButton>
-              <Button data-cy="registerpage-submit-button">Register</Button>
-            </SubmitButton>
-          </Form>
+              <Field
+                name="confirm"
+                placeholder="Confirm your passphrase."
+                autoComplete="new-password"
+                type="password"
+                data-cy="registerpage-input-password2"
+                onBlur={handleConfirmBlur}
+              >
+                Confirm Passphrase
+              </Field>
+              {error ? (
+                <FormGroup>
+                  <FormError>
+                    <p>Registration failed</p>
+                    <span>
+                      {extractError(error).message}
+                      {code ? (
+                        <span>
+                          {" "}
+                          (Error code: <code>ERR_{code}</code>)
+                        </span>
+                      ) : null}
+                    </span>
+                  </FormError>
+                </FormGroup>
+              ) : null}
+              <SubmitButton>
+                <Button data-cy="registerpage-submit-button">Register</Button>
+              </SubmitButton>
+            </Form>
+          </FormWrapper>
         )
       }
     </SharedLayout>
@@ -232,38 +236,3 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
 };
 
 export default Register;
-
-const validateConfirm = (confirm: string, password: string) => {
-  if (confirm && confirm !== password) {
-    return "Make sure your passphrase is the same in both passphrase boxes.";
-  } else {
-    return null;
-  }
-};
-const validateUsername = (username: string) => {
-  if (username.length < 2) {
-    return "Username must be at least 2 characters long.";
-  } else if (username.length > 24) {
-    return "Username must be no more than 24 characters long.";
-  } else if (!/^([a-zA-Z]|$)/.test(username)) {
-    return "Username must start with a letter.";
-  } else if (!/^([^_]|_[^_]|_$)*$/.test(username)) {
-    return "Username must not contain two underscores next to each other.";
-  } else if (!/^[a-zA-Z0-9_]*$/.test(username)) {
-    return "Username must contain only alphanumeric characters and underscores.";
-  } else {
-    return null;
-  }
-};
-
-const validateEmail = (email: string) => {
-  if (
-    !/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-      email
-    )
-  ) {
-    return "Please enter a valid email address.";
-  } else {
-    return null;
-  }
-};

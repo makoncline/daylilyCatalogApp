@@ -6,13 +6,14 @@ import {
   SharedLayout,
   SharedLayoutChildProps,
 } from "@app/components";
-import type { FormStateContextProps } from "@app/design";
 import {
   Button,
   Field,
   Form,
   FormError,
   FormGroup,
+  FormStateContextProps,
+  FormWrapper,
   Space,
   SubmitButton,
 } from "@app/design";
@@ -49,7 +50,7 @@ const Login: NextPage<LoginProps> = ({ next: rawNext }) => {
         currentUser ? (
           <Redirect href={next} />
         ) : (
-          <>
+          <FormWrapper>
             {showLogin ? (
               <LoginForm
                 onSuccessRedirectTo={next}
@@ -73,7 +74,7 @@ const Login: NextPage<LoginProps> = ({ next: rawNext }) => {
                 </Button>
               </Space>
             )}
-          </>
+          </FormWrapper>
         )
       }
     </SharedLayout>
