@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import { Heading } from "./Headings";
 
-type AlertType = "success" | "danger";
+type AlertType = "success" | "danger" | "info";
 
 type AlertProps = {
   type: AlertType;
@@ -14,10 +14,12 @@ function Alert({ type, children, ...props }: AlertProps) {
   const backgroundColors = {
     success: "--success--glint",
     danger: "--danger--glint",
+    info: "--info--glint",
   };
   const borderColors = {
     success: "--success",
     danger: "--danger",
+    info: "--info",
   };
   const style = {
     "--border-color": `var(${borderColors[type]})`,

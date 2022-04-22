@@ -104,7 +104,7 @@ export type FormStateContextProps = {
   values: { [key: string]: string };
   setValues: (values: { [key: string]: string }) => void;
   errors: { [key: string]: string | null };
-  handleChange?: (event: any) => void;
+  handleChange: (event: any) => void;
   registerField: (fieldId: string) => void;
   fieldIsReady: (fieldId: string) => boolean;
   hasError: boolean;
@@ -268,7 +268,7 @@ type FieldProps = {
   name?: string;
   type?: "text" | "password" | "email" | "number";
   required?: boolean;
-  label?: boolean;
+  showLabel?: boolean;
   placeholder?: string;
   children: string;
   direction?: "column" | "row";
@@ -276,6 +276,7 @@ type FieldProps = {
   hidden?: boolean;
   textarea?: boolean;
   rows?: number;
+  onChange?: (e: any) => void;
   [key: string]: any;
 };
 
@@ -283,7 +284,7 @@ const Field = ({
   name = "",
   type = "text",
   required = false,
-  label = true,
+  showLabel = true,
   placeholder = "",
   children: child,
   direction = "column",
@@ -291,6 +292,7 @@ const Field = ({
   hidden,
   textarea = false,
   rows = 6,
+  onChange = () => void 0,
   ...props
 }: FieldProps) => {
   const { handleChange, values, errors, registerField, fieldIsReady } =
@@ -305,9 +307,14 @@ const Field = ({
 
   const error = errors[fieldId];
   const value = values[fieldId];
+
+  const handleFieldChange = (event: any) => {
+    handleChange(event);
+    onChange(event);
+  };
   return (
     <FormGroup direction={direction} style={hidden ? { display: "none" } : {}}>
-      <label htmlFor={fieldId} hidden={!label}>
+      <label htmlFor={fieldId} hidden={!showLabel}>
         {required ? "*" : null}
         {child}
       </label>
@@ -318,7 +325,7 @@ const Field = ({
           type={type}
           value={value ?? ""}
           placeholder={placeholder}
-          onChange={handleChange}
+          onChange={handleFieldChange}
           autoComplete={autoComplete}
           {...props}
         />
@@ -328,7 +335,7 @@ const Field = ({
           name={fieldId}
           value={value ?? ""}
           placeholder={placeholder}
-          onChange={handleChange as any}
+          onChange={handleFieldChange}
           rows={rows}
           {...props}
         />
