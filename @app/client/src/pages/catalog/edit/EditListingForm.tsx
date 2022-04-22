@@ -11,6 +11,7 @@ import {
   FormError,
   FormGroup,
   FormStateContextProps,
+  FormWrapper,
   SubmitButton,
   useForm,
 } from "@app/design";
@@ -226,94 +227,96 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
     return <p>Daylily with id {id} has been deleted</p>;
   if (!data?.lily) return <p>No listing found with id {id}</p>;
   return (
-    <Form
-      formId={formId}
-      onSubmit={handleSubmit}
-      validation={{
-        name: (name: string) =>
-          name.length === 0 ? "Please enter a name for this listing" : null,
-        price: validatePrice,
-      }}
-    >
-      {linkedLily ? (
-        <details>
-          <summary>
-            <SummaryItems>
-              Linked to {linkedLily?.name}
-              <Button onClick={handleUnlink}>Unlink</Button>
-            </SummaryItems>
-          </summary>
-          <RegisteredLilyDisplay ahsId={linkedLily.ahsId} />
-        </details>
-      ) : (
-        <RegisteredLilyInput onSelectedItemChange={handleLinkedLilyChange} />
-      )}
-      <Field required={true}>Name</Field>
-      <Field type="number" min="0" step="1">
-        Price
-      </Field>
-      <Field>Public note</Field>
-      <Field>Private note</Field>
-      {list ? (
-        <FormGroup>
-          <label htmlFor="list">List</label>
-          <FormGroup direction="row">
-            <input
-              id="list"
-              name="list"
-              type="text"
-              value={list.name}
-              disabled
-              style={{ flexGrow: 1 }}
-            />
-            <Button
-              onClick={handleRemoveFromList}
-              disabled={formState === "deleting"}
-            >
-              Remove from list
-            </Button>
+    <FormWrapper>
+      <Form
+        formId={formId}
+        onSubmit={handleSubmit}
+        validation={{
+          name: (name: string) =>
+            name.length === 0 ? "Please enter a name for this listing" : null,
+          price: validatePrice,
+        }}
+      >
+        {linkedLily ? (
+          <details>
+            <summary>
+              <SummaryItems>
+                Linked to {linkedLily?.name}
+                <Button onClick={handleUnlink}>Unlink</Button>
+              </SummaryItems>
+            </summary>
+            <RegisteredLilyDisplay ahsId={linkedLily.ahsId} />
+          </details>
+        ) : (
+          <RegisteredLilyInput onSelectedItemChange={handleLinkedLilyChange} />
+        )}
+        <Field required={true}>Name</Field>
+        <Field type="number" min="0" step="1">
+          Price
+        </Field>
+        <Field textarea>Public note</Field>
+        <Field textarea>Private note</Field>
+        {list ? (
+          <FormGroup>
+            <label htmlFor="list">List</label>
+            <FormGroup direction="row">
+              <input
+                id="list"
+                name="list"
+                type="text"
+                value={list.name}
+                disabled
+                style={{ flexGrow: 1 }}
+              />
+              <Button
+                onClick={handleRemoveFromList}
+                disabled={formState === "deleting"}
+              >
+                Remove from list
+              </Button>
+            </FormGroup>
           </FormGroup>
-        </FormGroup>
-      ) : (
-        <ListInput onSelectedItemChange={handleListChange} />
-      )}
-      <div>
-        {showImageUpload ? (
-          <ImageUpload
-            keyPrefix="lily"
-            handleImageUploaded={handleImageUploaded}
-            handleBeforeUpload={handleBeforeUpload}
-          />
+        ) : (
+          <ListInput onSelectedItemChange={handleListChange} />
+        )}
+        <div>
+          {showImageUpload ? (
+            <ImageUpload
+              keyPrefix="lily"
+              handleImageUploaded={handleImageUploaded}
+              handleBeforeUpload={handleBeforeUpload}
+            />
+          ) : null}
+          {imageUrls ? (
+            <ImageDisplay imageUrls={imageUrls} setImageUrls={setImageUrls} />
+          ) : null}
+        </div>
+        {error ? (
+          <FormGroup>
+            <FormError>
+              <p>Create listing failed</p>
+              <span>
+                {extractError(error).message}
+                {code ? (
+                  <span>
+                    {" "}
+                    (Error code: <code>ERR_{code}</code>)
+                  </span>
+                ) : null}
+              </span>
+            </FormError>
+          </FormGroup>
         ) : null}
-        {imageUrls ? (
-          <ImageDisplay imageUrls={imageUrls} setImageUrls={setImageUrls} />
-        ) : null}
-      </div>
-      {error ? (
-        <FormGroup>
-          <FormError>
-            <p>Create listing failed</p>
-            <span>
-              {extractError(error).message}
-              {code ? (
-                <span>
-                  {" "}
-                  (Error code: <code>ERR_{code}</code>)
-                </span>
-              ) : null}
-            </span>
-          </FormError>
+        <FormGroup direction="row">
+          <SubmitButton>
+            <Button disabled={formState === "deleting"}>Save listing</Button>
+          </SubmitButton>
+          <Button onClick={handleDelete} disabled={formState === "deleting"}>
+            Delete
+          </Button>
         </FormGroup>
-      ) : null}
-      <FormGroup direction="row">
-        <SubmitButton>
-          <Button disabled={formState === "deleting"}>Save listing</Button>
-        </SubmitButton>
-        <Button onClick={handleDelete} disabled={formState === "deleting"}>
-          Delete
-        </Button>
-      </FormGroup>
-    </Form>
+      </Form>
+    </FormWrapper>
   );
 }
 

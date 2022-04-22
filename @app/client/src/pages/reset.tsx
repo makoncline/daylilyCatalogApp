@@ -5,6 +5,7 @@ import {
   Row,
   SharedLayout,
 } from "@app/components";
+import { FormWrapper } from "@app/design";
 import { useResetPasswordMutation, useSharedQuery } from "@app/graphql";
 import { formItemLayout, setPasswordInfo, tailFormItemLayout } from "@app/lib";
 import { Alert, Button, Form, Input } from "antd";
@@ -136,104 +137,106 @@ const ResetPage: NextPage<IProps> = ({
         AuthRestrict.NEVER
       }
     >
-      <Row>
-        <Col flex={1}>
-          <div>
-            {state === "SUBMITTING" ? (
-              <Alert
-                type="info"
-                message="Submitting..."
-                description="This might take a few moments..."
-              />
-            ) : state === "SUCCESS" ? (
-              <Alert
-                type="success"
-                message="Password Reset"
-                description="Your password was reset; you can go and log in now"
-              />
-            ) : null}
-
-            <Form
-              {...formItemLayout}
-              form={form}
-              onFinish={handleSubmit}
-              onValuesChange={handleValuesChange}
-              style={{ display: state === State.PENDING ? "" : "none" }}
-            >
-              <Form.Item label="Enter your reset token:">
-                <Input
-                  type="text"
-                  value={token}
-                  onChange={(e) => setIdAndToken([userId, e.target.value])}
+      <FormWrapper>
+        <Row>
+          <Col flex={1}>
+            <div>
+              {state === "SUBMITTING" ? (
+                <Alert
+                  type="info"
+                  message="Submitting..."
+                  description="This might take a few moments..."
                 />
-              </Form.Item>
-              <Form.Item label="Choose a new passphrase:" required>
+              ) : state === "SUCCESS" ? (
+                <Alert
+                  type="success"
+                  message="Password Reset"
+                  description="Your password was reset; you can go and log in now"
+                />
+              ) : null}
+
+              <Form
+                {...formItemLayout}
+                form={form}
+                onFinish={handleSubmit}
+                onValuesChange={handleValuesChange}
+                style={{ display: state === State.PENDING ? "" : "none" }}
+              >
+                <Form.Item label="Enter your reset token:">
+                  <Input
+                    type="text"
+                    value={token}
+                    onChange={(e) => setIdAndToken([userId, e.target.value])}
+                  />
+                </Form.Item>
+                <Form.Item label="Choose a new passphrase:" required>
+                  <Form.Item
+                    noStyle
+                    name="password"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please input your passphrase.",
+                      },
+                    ]}
+                  >
+                    <Input
+                      type="password"
+                      autoComplete="new-password"
+                      data-cy="registerpage-input-password"
+                      onFocus={setPasswordFocussed}
+                      onBlur={setPasswordNotFocussed}
+                    />
+                  </Form.Item>
+                  <PasswordStrength
+                    passwordStrength={passwordStrength}
+                    suggestions={passwordSuggestions}
+                    isDirty={passwordIsDirty}
+                    isFocussed={passwordIsFocussed}
+                  />
+                </Form.Item>
                 <Form.Item
-                  noStyle
-                  name="password"
+                  label="Confirm passphrase"
+                  name="confirm"
                   rules={[
                     {
                       required: true,
-                      message: "Please input your passphrase.",
+                      message: "Please confirm your passphrase.",
+                    },
+                    {
+                      validator: compareToFirstPassword,
                     },
                   ]}
                 >
                   <Input
                     type="password"
                     autoComplete="new-password"
-                    data-cy="registerpage-input-password"
-                    onFocus={setPasswordFocussed}
-                    onBlur={setPasswordNotFocussed}
+                    onBlur={handleConfirmBlur}
+                    data-cy="registerpage-input-password2"
                   />
                 </Form.Item>
-                <PasswordStrength
-                  passwordStrength={passwordStrength}
-                  suggestions={passwordSuggestions}
-                  isDirty={passwordIsDirty}
-                  isFocussed={passwordIsFocussed}
-                />
-              </Form.Item>
-              <Form.Item
-                label="Confirm passphrase"
-                name="confirm"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please confirm your passphrase.",
-                  },
-                  {
-                    validator: compareToFirstPassword,
-                  },
-                ]}
-              >
-                <Input
-                  type="password"
-                  autoComplete="new-password"
-                  onBlur={handleConfirmBlur}
-                  data-cy="registerpage-input-password2"
-                />
-              </Form.Item>
-              {error ? (
-                <Form.Item>
-                  <Alert
-                    type="error"
-                    closable
-                    onClose={clearError}
-                    message={
-                      error.message ? String(error.message) : String(error)
-                    }
-                  />
+                {error ? (
+                  <Form.Item>
+                    <Alert
+                      type="error"
+                      closable
+                      onClose={clearError}
+                      message={
+                        error.message ? String(error.message) : String(error)
+                      }
+                    />
+                  </Form.Item>
+                ) : null}
+                <Form.Item {...tailFormItemLayout}>
+                  <Button htmlType="submit" data-cy="resetpage-submit-button">
+                    Reset passphrase
+                  </Button>
                 </Form.Item>
-              ) : null}
-              <Form.Item {...tailFormItemLayout}>
-                <Button htmlType="submit" data-cy="resetpage-submit-button">
-                  Reset passphrase
-                </Button>
-              </Form.Item>
-            </Form>
-          </div>
-        </Col>
-      </Row>
+              </Form>
+            </div>
+          </Col>
+        </Row>
+      </FormWrapper>
     </SharedLayout>
   );
 };

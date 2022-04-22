@@ -3,6 +3,7 @@ import {
   Button,
   Field,
   Form,
+  FormWrapper,
   Heading,
   SubmitButton,
   useForm,
@@ -14,7 +15,6 @@ import {
 } from "@app/graphql";
 import Router from "next/router";
 import React from "react";
-import styled from "styled-components";
 
 function EditListForm({ list }: { list: ListDataFragment }) {
   const editListFormName = "edit-list";
@@ -62,11 +62,11 @@ function EditListForm({ list }: { list: ListDataFragment }) {
   }
 
   return (
-    <Wrapper>
+    <FormWrapper>
       <Heading level={2}>Edit List</Heading>
       <Form formId={editListFormName} onSubmit={handleSubmit}>
         <Field>Name</Field>
-        <Field>Description</Field>
+        <Field textarea>Description</Field>
         <SubmitButton>
           <Button>Update list</Button>
         </SubmitButton>
@@ -78,10 +78,8 @@ function EditListForm({ list }: { list: ListDataFragment }) {
           <Alert.Body>{error.message}</Alert.Body>
         </Alert>
       )}
-    </Wrapper>
+    </FormWrapper>
   );
 }
 
 export { EditListForm };
-
-const Wrapper = styled.div``;

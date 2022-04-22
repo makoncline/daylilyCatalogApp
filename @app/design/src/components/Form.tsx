@@ -104,7 +104,7 @@ export type FormStateContextProps = {
   values: { [key: string]: string };
   setValues: (values: { [key: string]: string }) => void;
   errors: { [key: string]: string | null };
-  handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleChange?: (event: any) => void;
   registerField: (fieldId: string) => void;
   fieldIsReady: (fieldId: string) => boolean;
   hasError: boolean;
@@ -146,6 +146,7 @@ const Form = ({
   onSubmit,
   children,
   validation = {},
+  ...props
 }: {
   formId: string;
   onChange?: (context: OnChangeCallbackProps) => void;
@@ -156,6 +157,7 @@ const Form = ({
   }: Pick<FormStateContextProps, "values" | "setValues">) => void;
   children: React.ReactNode;
   validation?: { [key: string]: (...args: any) => string | null };
+  [key: string]: any;
 }) => {
   const { register, unregister } = useGlobalForm();
   const { values, isReady, setValues, fieldIsReady, registerField } =
@@ -179,7 +181,7 @@ const Form = ({
     return null;
   }
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (event: any) => {
     const { name, value } = event.target;
     const newValues = { ...values, [name]: value };
     setValues(newValues);
@@ -230,19 +232,22 @@ const Form = ({
 
   return (
     <FormStateContext.Provider value={contextValue}>
-      <form onSubmit={handleSubmit}>
+      <StyledForm onSubmit={handleSubmit} {...props}>
         <Space direction="column" gap="large">
           {children}
         </Space>
-      </form>
+      </StyledForm>
     </FormStateContext.Provider>
   );
 };
 
+const StyledForm = styled.form`
+  max-width: 40rem;
+`;
+
 type FormGroupProps = {
   direction?: "row" | "column";
 };
-
 const FormGroup = styled.div`
   display: flex;
   flex-direction: ${(props: FormGroupProps) =>
@@ -269,7 +274,10 @@ type FieldProps = {
   direction?: "column" | "row";
   autoComplete?: string;
   hidden?: boolean;
-} & React.InputHTMLAttributes<HTMLInputElement>;
+  textarea?: boolean;
+  rows?: number;
+  [key: string]: any;
+};
 
 const Field = ({
   name = "",
@@ -281,6 +289,8 @@ const Field = ({
   direction = "column",
   autoComplete,
   hidden,
+  textarea = false,
+  rows = 6,
   ...props
 }: FieldProps) => {
   const { handleChange, values, errors, registerField, fieldIsReady } =
@@ -295,23 +305,34 @@ const Field = ({
 
   const error = errors[fieldId];
   const value = values[fieldId];
-
   return (
     <FormGroup direction={direction} style={hidden ? { display: "none" } : {}}>
       <label htmlFor={fieldId} hidden={!label}>
         {required ? "*" : null}
         {child}
       </label>
-      <input
-        id={fieldId}
-        name={fieldId}
-        type={type}
-        value={value ?? ""}
-        placeholder={placeholder}
-        onChange={handleChange}
-        autoComplete={autoComplete}
-        {...props}
-      />
+      {!textarea ? (
+        <input
+          id={fieldId}
+          name={fieldId}
+          type={type}
+          value={value ?? ""}
+          placeholder={placeholder}
+          onChange={handleChange}
+          autoComplete={autoComplete}
+          {...props}
+        />
+      ) : (
+        <textarea
+          id={fieldId}
+          name={fieldId}
+          value={value ?? ""}
+          placeholder={placeholder}
+          onChange={handleChange as any}
+          rows={rows}
+          {...props}
+        />
+      )}
       {error ? <FormError>{error}</FormError> : null}
     </FormGroup>
   );
@@ -339,6 +360,11 @@ const Success = styled.div`
   margin: 0;
 `;
 
+const FormWrapper = styled.div`
+  width: 100%;
+  max-width: var(--max-width-form);
+`;
+
 export {
   Field,
   Form,
@@ -346,6 +372,7 @@ export {
   FormGroup,
   FormValues,
   FormValuesProvider,
+  FormWrapper,
   SubmitButton,
   Success,
   useForm,

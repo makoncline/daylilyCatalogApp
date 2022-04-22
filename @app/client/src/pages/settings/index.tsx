@@ -5,6 +5,7 @@ import {
   Button,
   Field,
   Form,
+  FormWrapper,
   Heading,
   Space,
   SubmitButton,
@@ -200,7 +201,7 @@ function ProfileSettingsForm({
     }
   }, [isReady, profilePhotoUrls, setError, updateUser, user.id, user.imgUrls]);
   return (
-    <>
+    <FormWrapper>
       <Heading level={3}>Edit Profile</Heading>
       <Form formId={profileFormName} onSubmit={handleSubmit}>
         <Space>
@@ -300,7 +301,7 @@ function ProfileSettingsForm({
           )}
         </Space>
       </>
-    </>
+    </FormWrapper>
   );
 }
 

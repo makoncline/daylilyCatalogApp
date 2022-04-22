@@ -1,14 +1,10 @@
 import { ApolloError } from "@apollo/client";
-import {
-  ErrorAlert,
-  P,
-  PasswordStrength,
-  SettingsLayout,
-} from "@app/components";
+import { ErrorAlert, PasswordStrength, SettingsLayout } from "@app/components";
 import {
   Button,
   Field,
   Form,
+  FormWrapper,
   Heading,
   OnChangeCallbackProps,
   SubmitButton,
@@ -125,13 +121,13 @@ const Settings_Security: NextPage = () => {
       return (
         <div>
           <Heading level={2}>Change passphrase</Heading>
-          <P>
+          <p>
             You registered your account through social login, so you do not
             currently have a passphrase. If you would like a passphrase, press
             the button below to request a passphrase reset email to '{email}'
             (you can choose a different email by making it primary in{" "}
             <Link href="/settings/emails">email settings</Link>).
-          </P>
+          </p>
           <Button onClick={handleResetPassword} disabled={resetInProgress}>
             Reset passphrase
           </Button>
@@ -142,7 +138,7 @@ const Settings_Security: NextPage = () => {
     const code = getCodeFromError(error);
     const securityFormName = "security";
     return (
-      <div>
+      <FormWrapper>
         <Heading level={2}>Change passphrase</Heading>
         <Form
           formId={securityFormName}
@@ -177,7 +173,7 @@ const Settings_Security: NextPage = () => {
             <Button>Change Passphrase</Button>
           </SubmitButton>
         </Form>
-      </div>
+      </FormWrapper>
     );
   };
   return (

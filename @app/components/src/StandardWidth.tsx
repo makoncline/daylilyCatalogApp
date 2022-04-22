@@ -1,12 +1,12 @@
 import { Space } from "@app/design";
-import React, { FC } from "react";
+import React from "react";
+import styled from "styled-components";
 
-export interface StandardWidthProps {
-  children: React.ReactNode;
-}
-
-export const StandardWidth: FC<StandardWidthProps> = ({ children }) => (
-  <Space style={{ padding: "1rem", maxWidth: "80rem", margin: "0 auto" }}>
-    <Space direction="column">{children}</Space>
-  </Space>
+export const StandardWidth = ({ children }: { children: React.ReactNode }) => (
+  <StyledSpace direction="column">{children}</StyledSpace>
 );
+
+const StyledSpace = styled(Space)`
+  max-width: var(--max-width);
+  align-items: center;
+`;

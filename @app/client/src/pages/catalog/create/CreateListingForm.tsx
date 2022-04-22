@@ -7,6 +7,7 @@ import {
   FormError,
   FormGroup,
   FormStateContextProps,
+  FormWrapper,
   SubmitButton,
   useForm,
 } from "@app/design";
@@ -76,52 +77,54 @@ function CreateListingForm({ error, setError }: EditListingFormProps) {
   };
 
   return (
-    <Form
-      formId="create-listing-form"
-      onSubmit={handleSubmit}
-      validation={{
-        name: (name: string) =>
-          name.length === 0 ? "Please enter a name for this listing" : null,
-      }}
-    >
-      {linkedLily ? (
-        <details open>
-          <summary>
-            <SummaryItems>
-              Linked to {linkedLily?.name}
-              <Button onClick={handleUnlink}>Unlink</Button>
-            </SummaryItems>
-          </summary>
-          <RegisteredLilyDisplay ahsId={linkedLily.ahsId} />
-        </details>
-      ) : (
-        <RegisteredLilyInput onSelectedItemChange={handleLinkedLilyChange} />
-      )}
-      <Field required={true} name="name">
-        Listing Name
-      </Field>
-      {error ? (
-        <FormGroup>
-          <FormError>
-            <p>Create listing failed</p>
-            <span>
-              {extractError(error).message}
-              {code ? (
-                <span>
-                  {" "}
-                  (Error code: <code>ERR_{code}</code>)
-                </span>
-              ) : null}
-            </span>
-          </FormError>
+    <FormWrapper>
+      <Form
+        formId="create-listing-form"
+        onSubmit={handleSubmit}
+        validation={{
+          name: (name: string) =>
+            name.length === 0 ? "Please enter a name for this listing" : null,
+        }}
+      >
+        {linkedLily ? (
+          <details open>
+            <summary>
+              <SummaryItems>
+                Linked to {linkedLily?.name}
+                <Button onClick={handleUnlink}>Unlink</Button>
+              </SummaryItems>
+            </summary>
+            <RegisteredLilyDisplay ahsId={linkedLily.ahsId} />
+          </details>
+        ) : (
+          <RegisteredLilyInput onSelectedItemChange={handleLinkedLilyChange} />
+        )}
+        <Field required={true} name="name">
+          Listing Name
+        </Field>
+        {error ? (
+          <FormGroup>
+            <FormError>
+              <p>Create listing failed</p>
+              <span>
+                {extractError(error).message}
+                {code ? (
+                  <span>
+                    {" "}
+                    (Error code: <code>ERR_{code}</code>)
+                  </span>
+                ) : null}
+              </span>
+            </FormError>
+          </FormGroup>
+        ) : null}
+        <FormGroup direction="row">
+          <SubmitButton>
+            <Button>Create listing</Button>
+          </SubmitButton>
         </FormGroup>
-      ) : null}
-      <FormGroup direction="row">
-        <SubmitButton>
-          <Button>Create listing</Button>
-        </SubmitButton>
-      </FormGroup>
-    </Form>
+      </Form>
+    </FormWrapper>
   );
 }
 

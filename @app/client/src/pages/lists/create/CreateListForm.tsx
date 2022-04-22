@@ -3,6 +3,7 @@ import {
   Button,
   Field,
   Form,
+  FormWrapper,
   Heading,
   SubmitButton,
   useForm,
@@ -10,7 +11,6 @@ import {
 import { useAddListMutation } from "@app/graphql";
 import Router from "next/router";
 import React from "react";
-import styled from "styled-components";
 
 function CreateListForm() {
   const createListFormName = "create-list";
@@ -32,11 +32,11 @@ function CreateListForm() {
     }
   }
   return (
-    <Wrapper>
+    <FormWrapper>
       <Heading level={2}>Create List</Heading>
       <Form formId={createListFormName} onSubmit={handleSubmit}>
         <Field>Name</Field>
-        <Field>Description</Field>
+        <Field textarea>Description</Field>
         <SubmitButton>
           <Button>Create list</Button>
         </SubmitButton>
@@ -47,10 +47,8 @@ function CreateListForm() {
           <Alert.Body>{error.message}</Alert.Body>
         </Alert>
       )}
-    </Wrapper>
+    </FormWrapper>
   );
 }
 
 export { CreateListForm };
-
-const Wrapper = styled.div``;

@@ -18,7 +18,9 @@ const Edit: NextPage = () => {
   return (
     <SharedLayout title="Create" query={query}>
       {sharedQueryData?.currentUser ? (
-        <CreateListingForm error={error} setError={setError} />
+        <>
+          <CreateListingForm error={error} setError={setError} />
+        </>
       ) : sharedQueryLoading ? (
         "Loading..."
       ) : sharedQueryError ? (

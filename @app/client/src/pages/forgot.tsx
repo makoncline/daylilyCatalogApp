@@ -1,6 +1,7 @@
 import { UserOutlined } from "@ant-design/icons";
 import { ApolloError } from "@apollo/client";
 import { AuthRestrict, SharedLayout } from "@app/components";
+import { FormWrapper } from "@app/design";
 import { useForgotPasswordMutation, useSharedQuery } from "@app/graphql";
 import { extractError, getCodeFromError } from "@app/lib";
 import { Alert, Button, Form, Input } from "antd";
@@ -65,56 +66,58 @@ const ForgotPassword: NextPage = () => {
       query={query}
       forbidWhen={AuthRestrict.LOGGED_IN}
     >
-      <Form form={form} layout="vertical" onFinish={handleSubmit}>
-        <Form.Item
-          name="email"
-          rules={[
-            {
-              type: "email",
-              message: "The input is not valid E-mail",
-            },
-            { required: true, message: "Please input your email" },
-          ]}
-        >
-          <Input
-            prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-            placeholder="Email"
-            ref={focusElement}
-          />
-        </Form.Item>
-
-        {error ? (
-          <Form.Item>
-            <Alert
-              type="error"
-              message={`Something went wrong`}
-              description={
-                <span>
-                  {extractError(error).message}
-                  {code ? (
-                    <span>
-                      {" "}
-                      (Error code: <code>ERR_{code}</code>)
-                    </span>
-                  ) : null}
-                </span>
-              }
+      <FormWrapper>
+        <Form form={form} layout="vertical" onFinish={handleSubmit}>
+          <Form.Item
+            name="email"
+            rules={[
+              {
+                type: "email",
+                message: "The input is not valid E-mail",
+              },
+              { required: true, message: "Please input your email" },
+            ]}
+          >
+            <Input
+              prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+              placeholder="Email"
+              ref={focusElement}
             />
           </Form.Item>
-        ) : null}
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Reset password
-          </Button>
-        </Form.Item>
-        <Form.Item>
-          <p>
-            <Link href="/login">
-              <a>Remembered your password? Log in.</a>
-            </Link>
-          </p>
-        </Form.Item>
-      </Form>
+
+          {error ? (
+            <Form.Item>
+              <Alert
+                type="error"
+                message={`Something went wrong`}
+                description={
+                  <span>
+                    {extractError(error).message}
+                    {code ? (
+                      <span>
+                        {" "}
+                        (Error code: <code>ERR_{code}</code>)
+                      </span>
+                    ) : null}
+                  </span>
+                }
+              />
+            </Form.Item>
+          ) : null}
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Reset password
+            </Button>
+          </Form.Item>
+          <Form.Item>
+            <p>
+              <Link href="/login">
+                <a>Remembered your password? Log in.</a>
+              </Link>
+            </p>
+          </Form.Item>
+        </Form>
+      </FormWrapper>
     </SharedLayout>
   );
 };

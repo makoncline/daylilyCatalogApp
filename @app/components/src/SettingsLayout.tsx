@@ -12,7 +12,6 @@ import {
   SharedLayoutProps,
 } from "./SharedLayout";
 import { StandardWidth } from "./StandardWidth";
-import { Warn } from "./Warn";
 
 interface PageSpec {
   title: string;
@@ -82,17 +81,9 @@ export function SettingsLayout({
               {Object.keys(pages).map((pageHref, i) => (
                 <Link href={pageHref} key={i}>
                   <a data-cy={pages[pageHref].cy}>
-                    <Warn
-                      okay={
-                        !currentUser ||
-                        currentUser.isVerified ||
-                        !pages[pageHref].warnIfUnverified
-                      }
-                    >
-                      <p {...pages[pageHref].titleProps}>
-                        {pages[pageHref].title}
-                      </p>
-                    </Warn>
+                    <p {...pages[pageHref].titleProps}>
+                      {pages[pageHref].title}
+                    </p>
                   </a>
                 </Link>
               ))}
