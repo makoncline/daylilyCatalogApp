@@ -1,16 +1,20 @@
-import React from "react";
+import React, { Children } from "react";
 import styled from "styled-components";
+
+import { below } from "../utilities";
 type Props = {
   direction?: "column" | "row";
   gap?: "small" | "medium" | "large";
   children: React.ReactNode;
   center?: boolean;
+  responsive?: boolean;
   [key: string]: any;
 };
 const Space = ({
   direction = "row",
   gap = "small",
   center = false,
+  responsive = false,
   children,
   ...props
 }: Props) => {
@@ -22,7 +26,6 @@ const Space = ({
       : "var(--size-6)";
   return (
     <Wrapper
-      {...props}
       style={
         {
           ...props.style,
@@ -31,6 +34,9 @@ const Space = ({
         } as React.CSSProperties
       }
       center={center}
+      responsive={responsive}
+      items={Children.count(children)}
+      {...props}
     >
       {children}
     </Wrapper>
@@ -39,10 +45,24 @@ const Space = ({
 
 export { Space };
 
-const Wrapper = styled.div<{ center: boolean }>`
+const Wrapper = styled.div<{
+  center: boolean;
+  responsive: boolean;
+  items: number;
+}>`
   display: flex;
   flex-direction: var(--direction);
   gap: var(--gap);
   justify-content: ${({ center }) => (center ? "center" : "unset")};
   align-items: ${({ center }) => (center ? "center" : "unset")};
+  ${({ responsive, items }) =>
+    responsive &&
+    `
+      margin: auto;
+      display: grid;
+      grid-template-columns: repeat(${items},1fr);
+      ${below.md`
+        grid-template-columns: 1fr;
+    `}
+  `};
 `;

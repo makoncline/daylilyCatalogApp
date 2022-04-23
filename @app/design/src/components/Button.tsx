@@ -7,31 +7,30 @@ import { Mobile as MoblieNav } from "./";
 type Props = {
   children: string;
   href?: string;
+  block?: boolean;
   [other: string]: unknown;
 };
 
 export const Button = React.forwardRef(
   (
-    { children, href, ...props }: Props,
+    { children, href, block = false, ...props }: Props,
     ref: React.ForwardedRef<HTMLButtonElement>
   ) => {
     const isLink = typeof href === "string";
-    console.log(href);
     return (
       <>
         {isLink ? (
-          <form action={href} method="get">
-            <StyledButton
-              style={{ width: "100%" }}
-              type="submit"
-              ref={ref}
-              {...props}
-            >
+          <form
+            action={href}
+            method="get"
+            style={block ? { width: "100%" } : {}}
+          >
+            <StyledButton type="submit" block={block} ref={ref} {...props}>
               {children}
             </StyledButton>
           </form>
         ) : (
-          <StyledButton type="button" ref={ref} {...props}>
+          <StyledButton type="button" block={block} ref={ref} {...props}>
             {children}
           </StyledButton>
         )}
@@ -41,7 +40,8 @@ export const Button = React.forwardRef(
 );
 Button.displayName = "Button";
 
-const StyledButton = styled.button`
+const StyledButton = styled.button<{ block: boolean }>`
+  ${({ block }) => block && `width: 100%;`}
   display: inline-flex;
   justify-content: center;
   white-space: nowrap;

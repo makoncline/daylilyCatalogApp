@@ -119,11 +119,9 @@ function CreateListingForm({ error, setError }: EditListingFormProps) {
             </FormError>
           </FormGroup>
         ) : null}
-        <FormGroup direction="row">
-          <SubmitButton>
-            <Button>Create listing</Button>
-          </SubmitButton>
-        </FormGroup>
+        <SubmitButton>
+          <Button>Create listing</Button>
+        </SubmitButton>
       </Form>
     </FormWrapper>
   );

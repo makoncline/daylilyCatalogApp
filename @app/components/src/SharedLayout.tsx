@@ -1,6 +1,6 @@
 import { ApolloError, QueryResult, useApolloClient } from "@apollo/client";
 import { projectName } from "@app/config/dist";
-import { Heading } from "@app/design";
+import { FancyHeading, Heading } from "@app/design";
 import {
   SharedLayout_QueryFragment,
   SharedLayout_UserFragment,
@@ -58,9 +58,7 @@ export interface SharedLayoutProps {
     "data" | "loading" | "error" | "networkStatus" | "client" | "refetch"
   >;
 
-  title: string;
-  titleHref?: string;
-  titleHrefAs?: string;
+  title?: string;
   children:
     | React.ReactNode
     | ((props: SharedLayoutChildProps) => React.ReactNode);
@@ -87,8 +85,6 @@ function CurrentUserUpdatedSubscription() {
 
 export function SharedLayout({
   title,
-  titleHref,
-  titleHrefAs,
   noPad = false,
   noHandleErrors = false,
   query,
@@ -168,15 +164,11 @@ export function SharedLayout({
       <Head>
         <title>{title ? `${title} — ${projectName}` : projectName}</title>
       </Head>
-      <Heading level={1} data-cy="layout-header-title">
-        {titleHref ? (
-          <Link href={titleHref} as={titleHrefAs}>
-            <a data-cy="layout-header-titlelink">{title}</a>
-          </Link>
-        ) : (
-          title
-        )}
-      </Heading>
+      {title ? (
+        <FancyHeading level={1} data-cy="layout-header-title">
+          {title}
+        </FancyHeading>
+      ) : null}
       {renderChildren({
         error,
         loading,
