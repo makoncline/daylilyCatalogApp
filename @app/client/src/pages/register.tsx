@@ -189,7 +189,7 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
                   placeholder="Enter a secure passphrase."
                   autoComplete="current-password"
                   type="password"
-                  data-cy="loginpage-input-password"
+                  data-cy="registerpage-input-password"
                 >
                   Passphrase
                 </Field>

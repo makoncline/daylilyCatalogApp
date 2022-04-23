@@ -15,7 +15,7 @@ const Create: NextPage = () => {
   } = query;
 
   return (
-    <SharedLayout title="Create" query={query}>
+    <SharedLayout title="Create List" query={query}>
       {sharedQueryData?.currentUser ? (
         <CreateListForm />
       ) : sharedQueryLoading ? (

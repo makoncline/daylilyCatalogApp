@@ -210,7 +210,11 @@ const Form = ({
     let newErrors = {};
     Object.entries(values).forEach(([name, value]) => {
       if (validation[name]) {
-        newErrors[name] = validation[name](value);
+        if (name === "confirm") {
+          newErrors[name] = validation[name](value, values.password);
+        } else {
+          newErrors[name] = validation[name](value);
+        }
       }
     });
     setErrors(newErrors);

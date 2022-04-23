@@ -9,7 +9,7 @@ import styled from "styled-components";
 const Home: NextPage = () => {
   const query = useSharedQuery();
   return (
-    <SharedLayout title="Daylily Catalog" query={query}>
+    <SharedLayout query={query}>
       <div>
         <Space direction="column" gap="large">
           <Heading level={1} data-cy="homepage-header">

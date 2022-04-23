@@ -4,6 +4,7 @@ import {
   listsUrl,
   loginUrl,
   membershipUrl,
+  registerUrl,
   settingsUrl,
   usersUrl,
 } from "@app/lib";
@@ -27,13 +28,20 @@ export const NextNavigation = ({
         <NextNavLink href={usersUrl}>Users</NextNavLink>
         <NextNavLink href={catalogUrl}>Catalog</NextNavLink>
         <NextNavLink href={listsUrl}>Lists</NextNavLink>
-        <NextNavLink href={settingsUrl}>Settings</NextNavLink>{" "}
+        <NextNavLink href={settingsUrl} data-cy="link-settings">
+          Settings
+        </NextNavLink>{" "}
         {/* put a warning here if not verified*/}
         <NextNavLink href={membershipUrl}>Membership</NextNavLink>
-        <Button onClick={handleLogout}>Logout</Button>
+        <Button onClick={handleLogout} data-cy="header-logout-button">
+          Logout
+        </Button>
       </>
-    ) : (
-      <NextNavLink href={`${loginUrl}?next=${encodeURIComponent(currentUrl)}`}>
+    ) : [loginUrl, registerUrl].includes(currentUrl.split(/[?#]/)[0]) ? null : (
+      <NextNavLink
+        href={`${loginUrl}?next=${encodeURIComponent(currentUrl)}`}
+        data-cy="header-login-button"
+      >
         Sign in
       </NextNavLink>
     )}
@@ -43,23 +51,25 @@ export const NextNavigation = ({
 const NextNavLink = ({
   href,
   children,
+  ...props
 }: {
   href: string;
   children: string;
 }) => (
   <NextLink href={href} passHref>
-    <Link>{children}</Link>
+    <Link {...props}>{children}</Link>
   </NextLink>
 );
 
 const NextTextLogo = ({
   href,
   children,
+  ...props
 }: {
   href: string;
   children: string;
 }) => (
-  <NextLink href={href} passHref>
+  <NextLink href={href} passHref {...props}>
     <TextLogo>{children}</TextLogo>
   </NextLink>
 );

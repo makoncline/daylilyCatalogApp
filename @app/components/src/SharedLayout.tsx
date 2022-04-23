@@ -1,4 +1,6 @@
 import { ApolloError, QueryResult, useApolloClient } from "@apollo/client";
+import { projectName } from "@app/config/dist";
+import { Heading } from "@app/design";
 import {
   SharedLayout_QueryFragment,
   SharedLayout_UserFragment,
@@ -6,6 +8,7 @@ import {
   useLogoutMutation,
 } from "@app/graphql";
 import { loginUrl } from "@app/lib";
+import Head from "next/head";
 import Link from "next/link";
 import Router, { useRouter } from "next/router";
 import * as React from "react";
@@ -156,19 +159,29 @@ export function SharedLayout({
   const { data, loading, error } = query;
 
   return (
-    <>
+    <NextLayout
+      handleLogout={handleLogout}
+      isLoggedIn={!!data?.currentUser}
+      currentUrl={currentUrl}
+    >
       {data && data.currentUser ? <CurrentUserUpdatedSubscription /> : null}
-      <NextLayout
-        handleLogout={handleLogout}
-        isLoggedIn={!!data?.currentUser}
-        currentUrl={currentUrl}
-      >
-        {renderChildren({
-          error,
-          loading,
-          currentUser: data && data.currentUser,
-        })}
-      </NextLayout>
-    </>
+      <Head>
+        <title>{title ? `${title} — ${projectName}` : projectName}</title>
+      </Head>
+      <Heading level={1} data-cy="layout-header-title">
+        {titleHref ? (
+          <Link href={titleHref} as={titleHrefAs}>
+            <a data-cy="layout-header-titlelink">{title}</a>
+          </Link>
+        ) : (
+          title
+        )}
+      </Heading>
+      {renderChildren({
+        error,
+        loading,
+        currentUser: data && data.currentUser,
+      })}
+    </NextLayout>
   );
 }

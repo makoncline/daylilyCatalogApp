@@ -11,6 +11,7 @@ export const validateEmail = (email: string) => {
 };
 
 export const validateConfirm = (confirm: string, password: string) => {
+  console.log("validateConfirm", confirm, password);
   if (confirm && confirm !== password) {
     return "Make sure your passphrase is the same in both passphrase boxes.";
   } else {

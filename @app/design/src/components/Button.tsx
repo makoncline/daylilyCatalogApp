@@ -16,6 +16,7 @@ export const Button = React.forwardRef(
     ref: React.ForwardedRef<HTMLButtonElement>
   ) => {
     const isLink = typeof href === "string";
+    console.log(href);
     return (
       <>
         {isLink ? (

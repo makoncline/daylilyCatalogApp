@@ -68,12 +68,14 @@ const Login: NextPage<LoginProps> = ({ next: rawNext }) => {
                 >
                   Sign in with E-mail or Username
                 </Button>
-                <Button
+                <Link
                   href={`${registerUrl}?next=${encodeURIComponent(next)}`}
-                  block
+                  passHref
                 >
-                  Create an account
-                </Button>
+                  <Button block data-cy="loginpage-button-register">
+                    Create an account
+                  </Button>
+                </Link>
               </Space>
             )}
           </FormWrapper>

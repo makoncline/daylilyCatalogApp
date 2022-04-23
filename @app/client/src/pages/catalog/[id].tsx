@@ -23,7 +23,7 @@ const View: NextPage = () => {
   const lilyId = (typeof id === "string" && parseInt(id)) || null;
   if (!lilyId) return <p>invalid id: {id}</p>;
   return (
-    <SharedLayout title="Create" query={query}>
+    <SharedLayout title="Listing" query={query}>
       {sharedQueryData?.currentUser ? (
         <ListingDisplay
           listingId={lilyId}

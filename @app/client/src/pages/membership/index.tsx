@@ -7,7 +7,7 @@ import {
 } from "@app/components";
 import { Button, Card, CardBody, Heading, Space } from "@app/design";
 import { useMembershipQuery } from "@app/graphql";
-import { emailsUrl } from "@app/lib";
+import { emailsUrl, loginUrl } from "@app/lib";
 import { NextPage } from "next";
 import React from "react";
 import styled from "styled-components";
@@ -112,5 +112,3 @@ const Wrapper = styled.div`
   grid-template-columns: 1fr;
   justify-content: center;
 `;
-const PlansWrapper = styled.div``;
-const PlanWrapper = styled.div``;

@@ -23,7 +23,7 @@ const Edit: NextPage = () => {
   } = useListByIdQuery({ variables: { id: parseInt(id as string) } });
 
   return (
-    <SharedLayout title="Create" query={query}>
+    <SharedLayout title="Edit List" query={query}>
       {sharedQueryData?.currentUser && listQueryData?.list ? (
         <EditListForm list={listQueryData.list} />
       ) : sharedQueryLoading || listQueryLoading ? (
