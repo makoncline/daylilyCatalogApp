@@ -4,7 +4,7 @@ import {
   Redirect,
   SharedLayout,
 } from "@app/components";
-import { useSharedQuery } from "@app/graphql";
+import { useLilyByIdQuery, useSharedQuery } from "@app/graphql";
 import { loginUrl } from "@app/lib";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -20,13 +20,19 @@ const View: NextPage = () => {
     error: sharedQueryError,
   } = query;
 
-  const lilyId = (typeof id === "string" && parseInt(id)) || null;
-  if (!lilyId) return <p>invalid id: {id}</p>;
+  const listingId = (typeof id === "string" && parseInt(id)) || null;
+  const { data, loading, error } = useLilyByIdQuery({
+    variables: { id: listingId || 0 },
+  });
+  if (!listingId) return <p>invalid id: {id}</p>;
   return (
-    <SharedLayout title="Listing" query={query}>
+    <SharedLayout title={data?.lily?.name} query={query}>
       {sharedQueryData?.currentUser ? (
         <ListingDisplay
-          listingId={lilyId}
+          listingId={listingId}
+          data={data}
+          loading={loading}
+          error={error}
           userId={sharedQueryData.currentUser.id}
         />
       ) : sharedQueryLoading ? (

@@ -1,3 +1,4 @@
+import { ApolloError } from "@apollo/client";
 import {
   above,
   Badge,
@@ -5,8 +6,9 @@ import {
   Heading,
   PropertyList,
   PropertyListItem,
+  Space,
 } from "@app/design";
-import { AhsDataFragment, useLilyByIdQuery } from "@app/graphql";
+import { AhsDataFragment, LilyByIdQuery, useLilyByIdQuery } from "@app/graphql";
 import { toEditListingUrl } from "@app/lib";
 import Link from "next/link";
 import React from "react";
@@ -17,14 +19,17 @@ import { getDescription } from "./RegisteredLilyDisplay";
 
 function ListingDisplay({
   listingId,
+  data,
+  loading,
+  error,
   userId,
 }: {
   listingId: number;
+  data: LilyByIdQuery | undefined;
+  loading: boolean;
+  error: ApolloError | undefined;
   userId: number;
 }) {
-  const { data, loading, error } = useLilyByIdQuery({
-    variables: { id: listingId },
-  });
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
   const listing = data?.lily;
@@ -48,15 +53,9 @@ function ListingDisplay({
   const listName = list?.name;
   const isOwner = userId === listing.user?.id;
   return (
-    <Wrapper>
+    <Space center responsive gap="medium">
       <ImageDisplay imageUrls={imageUrls} />
-      <Details>
-        <StyledHeading level={2}>{name}</StyledHeading>
-        {isOwner && (
-          <Link passHref href={toEditListingUrl(listingId)}>
-            <Button>Edit listing</Button>
-          </Link>
-        )}
+      <Space direction="column">
         <PropertyList divider>
           {price && <PropertyListItem label="Price">${price}</PropertyListItem>}
           {updatedAt && (
@@ -71,6 +70,13 @@ function ListingDisplay({
           {listName && (
             <PropertyListItem label="List">
               <Badge>{listName}</Badge>
+            </PropertyListItem>
+          )}
+          {isOwner && (
+            <PropertyListItem label="Edit">
+              <Link passHref href={toEditListingUrl(listingId)}>
+                <Button>Edit listing</Button>
+              </Link>
             </PropertyListItem>
           )}
         </PropertyList>
@@ -99,8 +105,8 @@ function ListingDisplay({
             </PropertyList>
           </div>
         )}
-      </Details>
-    </Wrapper>
+      </Space>
+    </Space>
   );
 }
 
@@ -133,21 +139,3 @@ function getTraits(ahsData: AhsDataFragment): [string, string][] {
     )
     .filter(Boolean) as [string, string][];
 }
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: var(--size-4);
-  ${above.sm`
-    flex-direction: row;
-  `}
-`;
-const Details = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--size-4);
-`;
-const StyledHeading = styled(Heading)`
-  margin: 0;
-`;

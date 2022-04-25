@@ -243,7 +243,7 @@ export function ImageUpload({
             />
           ))}
         </Space>
-        <Space direction="row">
+        <Space>
           <Button onClick={handleReset}>Reset</Button>
           <Button onClick={handleUpload}>Upload</Button>
         </Space>

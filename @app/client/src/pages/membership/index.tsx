@@ -5,7 +5,7 @@ import {
   Redirect,
   SharedLayout,
 } from "@app/components";
-import { Button, Heading, Space } from "@app/design";
+import { Button, Heading, Hr, Space } from "@app/design";
 import { useMembershipQuery } from "@app/graphql";
 import { emailsUrl, loginUrl } from "@app/lib";
 import { NextPage } from "next";
@@ -46,20 +46,20 @@ const Plans = ({
   isVerified: boolean;
 }) => {
   return (
-    <Space direction="column">
+    <Space direction="column" center gap="large">
       {active && (
-        <Space direction="column">
+        <>
           <Heading level={2}>You are a pro Daylily Catalog member </Heading>
           <BillingPortalButton />
-        </Space>
+        </>
       )}
       {!active && (
-        <Space direction="column" center>
+        <>
           <Heading level={2}>Pick a plan to start your Daylily Catalog</Heading>
           <Space responsive>
             <FreePlan
               action={
-                <Button disabled>
+                <Button block disabled>
                   {active
                     ? "Included in your current plan"
                     : "This is your current plan"}
@@ -78,13 +78,19 @@ const Plans = ({
                           email address. Please click the link in that email to
                           continue.
                         </p>
-                        <Button href={emailsUrl} data-cy="view-email-settings">
+                        <Button
+                          block
+                          href={emailsUrl}
+                          data-cy="view-email-settings"
+                        >
                           View email settings
                         </Button>
                       </Space>
                     </div>
                   ) : active ? (
-                    <Button disabled>This is your current plan</Button>
+                    <Button block disabled>
+                      This is your current plan
+                    </Button>
                   ) : (
                     <CheckoutButton />
                   )}
@@ -92,8 +98,9 @@ const Plans = ({
               }
             />
           </Space>
-        </Space>
+        </>
       )}
+      <Hr />
       <Features />
     </Space>
   );

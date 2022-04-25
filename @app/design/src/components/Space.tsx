@@ -20,10 +20,10 @@ const Space = ({
 }: Props) => {
   const gapSize =
     gap === "small"
-      ? "var(--size-2)"
-      : gap === "medium"
       ? "var(--size-4)"
-      : "var(--size-6)";
+      : gap === "medium"
+      ? "var(--size-8)"
+      : "var(--size-12)";
   return (
     <Wrapper
       style={
@@ -55,13 +55,15 @@ const Wrapper = styled.div<{
   gap: var(--gap);
   justify-content: ${({ center }) => (center ? "center" : "unset")};
   align-items: ${({ center }) => (center ? "center" : "unset")};
-  ${({ responsive, items }) =>
+  ${({ responsive, items, center }) =>
     responsive &&
     `
       margin: auto;
       display: grid;
-      grid-template-columns: repeat(${items},1fr);
+      grid-template-columns: repeat(${items},auto);
+      align-items: start;
       ${below.md`
+        justify-items: ${center ? "center" : "unset"};
         grid-template-columns: 1fr;
     `}
   `};

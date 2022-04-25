@@ -74,7 +74,7 @@ const Wrapper = styled.div`
 
 const ControlsWrapper = styled.div`
   display: grid;
-  /* grid-template-columns: 1fr 1fr 1fr; */
+  grid-template-columns: repeat(3, 1fr);
   grid-auto-flow: column;
   gap: var(--size-1);
   button {

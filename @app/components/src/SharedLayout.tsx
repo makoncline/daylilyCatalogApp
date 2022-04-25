@@ -1,6 +1,6 @@
 import { ApolloError, QueryResult, useApolloClient } from "@apollo/client";
 import { projectName } from "@app/config/dist";
-import { FancyHeading, Heading } from "@app/design";
+import { FancyHeading, Space } from "@app/design";
 import {
   SharedLayout_QueryFragment,
   SharedLayout_UserFragment,
@@ -164,16 +164,18 @@ export function SharedLayout({
       <Head>
         <title>{title ? `${title} — ${projectName}` : projectName}</title>
       </Head>
-      {title ? (
-        <FancyHeading level={1} data-cy="layout-header-title">
-          {title}
-        </FancyHeading>
-      ) : null}
-      {renderChildren({
-        error,
-        loading,
-        currentUser: data && data.currentUser,
-      })}
+      <Space gap="large" direction="column">
+        {title ? (
+          <FancyHeading level={1} data-cy="layout-header-title">
+            {title}
+          </FancyHeading>
+        ) : null}
+        {renderChildren({
+          error,
+          loading,
+          currentUser: data && data.currentUser,
+        })}
+      </Space>
     </NextLayout>
   );
 }

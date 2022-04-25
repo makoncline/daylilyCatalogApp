@@ -5,10 +5,12 @@ import styled from "styled-components";
 export function Features() {
   return (
     <Space direction="column" gap="large">
-      <Space direction="column" gap="large">
-        <Heading level={2}>Standard Features</Heading>
+      <Space direction="column" gap="medium">
+        <Heading level={2} id="features">
+          Standard Features
+        </Heading>
         <Space responsive>
-          <Space direction="column">
+          <Space direction="column" gap="medium">
             <Feature
               title="Daylily Listings"
               icon="🌼"
@@ -23,7 +25,7 @@ export function Features() {
                   available."
             />
           </Space>
-          <Space direction="column">
+          <Space direction="column" gap="medium">
             <Feature
               title="Catalog lists"
               icon="📗"
@@ -43,10 +45,10 @@ export function Features() {
         </Space>
       </Space>
 
-      <Space direction="column">
+      <Space direction="column" gap="medium">
         <Heading level={2}>Pro Features</Heading>
         <Space responsive>
-          <Space direction="column">
+          <Space direction="column" gap="medium">
             <Feature
               title="Unlimited daylily listings"
               icon="✨"
@@ -64,7 +66,7 @@ export function Features() {
                     click and drag to upload from your computer."
             />
           </Space>
-          <Space direction="column">
+          <Space direction="column" gap="medium">
             <Feature
               title="Public website for your catalog"
               icon="👋"
@@ -95,21 +97,16 @@ const Feature = ({
   icon: string;
 }) => {
   return (
-    <FeatureWrapper>
+    <Space>
       <FeatureIcon>{icon}</FeatureIcon>
-      <div>
+      <Space direction="column">
         <Heading level={3}>{title}</Heading>
         <p>{description}</p>
-      </div>
-    </FeatureWrapper>
+      </Space>
+    </Space>
   );
 };
 
-const FeatureWrapper = styled.div`
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-`;
 const FeatureIcon = styled.span`
   width: var(--size-24);
   font-size: 2rem;

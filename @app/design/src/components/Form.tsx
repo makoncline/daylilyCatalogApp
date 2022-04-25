@@ -237,9 +237,7 @@ const Form = ({
   return (
     <FormStateContext.Provider value={contextValue}>
       <StyledForm onSubmit={handleSubmit} {...props}>
-        <Space direction="column" gap="large">
-          {children}
-        </Space>
+        <Space direction="column">{children}</Space>
       </StyledForm>
     </FormStateContext.Provider>
   );

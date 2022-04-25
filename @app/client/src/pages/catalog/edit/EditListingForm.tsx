@@ -12,6 +12,8 @@ import {
   FormGroup,
   FormStateContextProps,
   FormWrapper,
+  Heading,
+  Space,
   SubmitButton,
   useForm,
 } from "@app/design";
@@ -281,18 +283,22 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
         ) : (
           <ListInput onSelectedItemChange={handleListChange} />
         )}
-        <div>
+        <Space direction="column" responsive>
           {showImageUpload ? (
             <ImageUpload
               keyPrefix="lily"
+              title="Upload images"
               handleImageUploaded={handleImageUploaded}
               handleBeforeUpload={handleBeforeUpload}
             />
           ) : null}
           {imageUrls ? (
-            <ImageDisplay imageUrls={imageUrls} setImageUrls={setImageUrls} />
+            <Space direction="column">
+              <Heading level={3}>Listing images</Heading>
+              <ImageDisplay imageUrls={imageUrls} setImageUrls={setImageUrls} />
+            </Space>
           ) : null}
-        </div>
+        </Space>
         {error ? (
           <FormGroup>
             <FormError>

@@ -9,13 +9,14 @@ const Pricing = () => {
   const query = useSharedQuery();
   return (
     <SharedLayout title="Pricing" query={query}>
-      <Space direction="column" gap="large">
+      <Space direction="column" gap="large" center>
         <Heading level={2}>Pick a plan to start your Daylily Catalog</Heading>
         <Space responsive>
           <FreePlan
             action={
               <Button
                 type="primary"
+                block
                 href={`${process.env.ROOT_URL}/catalog`}
                 data-cy="free"
               >
@@ -27,6 +28,7 @@ const Pricing = () => {
             action={
               <Button
                 type="primary"
+                block
                 href={`${process.env.ROOT_URL}/membership`}
                 data-cy="get-membership"
               >
