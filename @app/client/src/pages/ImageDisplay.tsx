@@ -11,6 +11,7 @@ type ImageDisplayProps = {
 };
 function ImageDisplay({ imageUrls, setImageUrls }: ImageDisplayProps) {
   const [deleteUpload] = useDeleteUploadMutation();
+  const [showControls, setShowControls] = React.useState(false);
   function handleMove(direction: "<" | ">", index: number) {
     const newImageUrls = [...imageUrls];
     const [moved] = newImageUrls.splice(index, 1);
@@ -41,25 +42,43 @@ function ImageDisplay({ imageUrls, setImageUrls }: ImageDisplayProps) {
     }
   }
   const hasMultipleImages = imageUrls.length > 1;
+  function handleShowControls() {
+    setShowControls((prev) => !prev);
+  }
   return (
-    <Wrapper>
-      {imageUrls.map((url, i) => (
-        <ImageDisplayItem key={i}>
-          <Thumbnail>
-            <Image src={url} {...thumbnailProps} />
-          </Thumbnail>
-          <ControlsWrapper>
-            {hasMultipleImages && (
-              <Button onClick={() => handleMove("<", i)}>{"<"}</Button>
+    <>
+      {imageUrls.length > 0 && (
+        <>
+          <Wrapper>
+            {imageUrls.map((url, i) => (
+              <ImageDisplayItem key={i}>
+                <Thumbnail>
+                  <Image src={url} {...thumbnailProps} />
+                </Thumbnail>
+                {showControls && (
+                  <ControlsWrapper>
+                    {hasMultipleImages && (
+                      <Button onClick={() => handleMove("<", i)}>{"<"}</Button>
+                    )}
+                    <Button onClick={() => handleDelete(i)}>&times;</Button>
+                    {hasMultipleImages && (
+                      <Button onClick={() => handleMove(">", i)}>{">"}</Button>
+                    )}
+                  </ControlsWrapper>
+                )}
+              </ImageDisplayItem>
+            ))}
+          </Wrapper>
+          <div>
+            {!showControls ? (
+              <Button onClick={handleShowControls}>Edit images</Button>
+            ) : (
+              <Button onClick={handleShowControls}>Done editing images</Button>
             )}
-            <Button onClick={() => handleDelete(i)}>&times;</Button>
-            {hasMultipleImages && (
-              <Button onClick={() => handleMove(">", i)}>{">"}</Button>
-            )}
-          </ControlsWrapper>
-        </ImageDisplayItem>
-      ))}
-    </Wrapper>
+          </div>
+        </>
+      )}
+    </>
   );
 }
 

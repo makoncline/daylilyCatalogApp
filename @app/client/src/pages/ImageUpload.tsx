@@ -148,16 +148,27 @@ export function ImageUpload({
     setUploadFunctions([]);
   }
 
+  const handleFiles = React.useCallback(
+    (files: FileList | null | undefined) => {
+      if (files && handleBeforeUpload(Array.from(files))) {
+        setFiles(Array.from(files));
+      } else {
+        setFiles([]);
+      }
+    },
+    [handleBeforeUpload]
+  );
+
   const handleDrop = React.useCallback(
     (e: DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      handleReset();
       setStatus("dropped");
+      handleReset();
       const files = e.dataTransfer?.files;
       handleFiles(files);
     },
-    [setStatus]
+    [handleFiles]
   );
 
   React.useEffect(() => {
@@ -183,13 +194,6 @@ export function ImageUpload({
     handleFiles(e.target.files);
   }
 
-  function handleFiles(files: FileList | null | undefined) {
-    if (files) {
-      setFiles(Array.from(files));
-    } else {
-      setFiles([]);
-    }
-  }
   function handleUpload() {
     if (files.length === 0) {
       alert("Please select files to upload");
@@ -232,21 +236,25 @@ export function ImageUpload({
             </FileSelect>
           </div>
         ) : null}
-        <Space direction="column">
-          {files.map((file) => (
-            <UploadFile
-              file={file}
-              keyPrefix={keyPrefix}
-              onUpload={handleUploadComplete}
-              register={registerUploadFunction}
-              key={file.name}
-            />
-          ))}
-        </Space>
-        <Space>
-          <Button onClick={handleReset}>Reset</Button>
-          <Button onClick={handleUpload}>Upload</Button>
-        </Space>
+        {files.length > 0 && (
+          <>
+            <Space direction="column">
+              {files.map((file) => (
+                <UploadFile
+                  file={file}
+                  keyPrefix={keyPrefix}
+                  onUpload={handleUploadComplete}
+                  register={registerUploadFunction}
+                  key={file.name}
+                />
+              ))}
+            </Space>
+            <Space>
+              <Button onClick={handleReset}>Reset</Button>
+              <Button onClick={handleUpload}>Upload</Button>
+            </Space>
+          </>
+        )}
       </Space>
     </div>
   );

@@ -53,7 +53,7 @@ const StyledButton = styled.button<{ block: boolean }>`
   padding-block: var(--size-1);
 
   color: var(--text-1);
-  border: var(--border-size-2) solid var(--text-1);
+  border: var(--border-size-1) solid var(--text-1);
   background-color: transparent;
   border-radius: var(--radius-2);
   :hover {

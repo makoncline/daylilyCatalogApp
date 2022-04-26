@@ -189,18 +189,22 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
   const [imageUrls, setImageUrls] = React.useState<string[] | null>([]);
   const numImages = imageUrls?.length ?? 0;
   const showImageUpload = numImages < MAX_NUM_IMAGES;
-  function handleBeforeUpload(files: File[]) {
-    const newNumImages = numImages ?? 0 + files.length;
-    if (newNumImages > MAX_NUM_IMAGES) {
-      alert(
-        `Only ${MAX_NUM_IMAGES} images allowed per listing. Please remove ${
-          newNumImages - MAX_NUM_IMAGES
-        } images and try again.`
-      );
-      return false;
-    }
-    return true;
-  }
+  const handleBeforeUpload = React.useCallback(
+    (files: File[]) => {
+      const newNumImages = numImages + files.length;
+      console.log("i", numImages, newNumImages);
+      if (newNumImages > MAX_NUM_IMAGES) {
+        alert(
+          `Only ${MAX_NUM_IMAGES} images allowed per listing. Please remove ${
+            newNumImages - MAX_NUM_IMAGES
+          } images and try again.`
+        );
+        return false;
+      }
+      return true;
+    },
+    [numImages]
+  );
 
   const handleImageUploaded = React.useCallback((_key: string, url: string) => {
     setImageUrls((prev) => [...(prev ?? []), url]);
