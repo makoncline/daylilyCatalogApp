@@ -85,9 +85,10 @@ function ImageDisplay({ imageUrls, setImageUrls }: ImageDisplayProps) {
 export { ImageDisplay };
 
 const Wrapper = styled.div`
-  width: 300px;
+  width: 100%;
   display: grid;
-  grid-template-columns: repeat(3, 100px);
+  grid-auto-columns: 100px;
+  grid-auto-flow: column;
   gap: var(--size-1);
 `;
 

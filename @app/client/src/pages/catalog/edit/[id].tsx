@@ -23,7 +23,7 @@ const Edit: NextPage = () => {
   if (!lilyId) return <p>invalid id: {id}</p>;
 
   return (
-    <SharedLayout title="Edit Listing" query={query}>
+    <SharedLayout title="Edit Listing" query={query} noPad>
       {sharedQueryData?.currentUser ? (
         <EditListingForm error={error} setError={setError} id={lilyId} />
       ) : sharedQueryLoading ? (

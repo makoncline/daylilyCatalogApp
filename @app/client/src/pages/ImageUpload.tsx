@@ -232,7 +232,7 @@ export function ImageUpload({
             />
             <FileSelect htmlFor="fileElem" ref={dropRef}>
               <p>Drag & drop {single ? `image` : `images`} here or</p>
-              <a>browse files</a>
+              <a href="">browse files</a>
             </FileSelect>
           </div>
         ) : null}
@@ -284,7 +284,7 @@ const PreviewImageContainer = styled.div`
 `;
 
 const FileSelect = styled.label`
-  width: 300px;
+  width: 100%;
   height: 100px;
   display: flex;
   flex-direction: column;

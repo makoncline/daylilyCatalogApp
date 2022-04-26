@@ -87,19 +87,23 @@ function CreateListingForm({ error, setError }: EditListingFormProps) {
             name.length === 0 ? "Please enter a name for this listing" : null,
         }}
       >
-        {linkedLily ? (
-          <details open>
-            <summary>
-              <SummaryItems>
-                Linked to {linkedLily?.name}
-                <Button onClick={handleUnlink}>Unlink</Button>
-              </SummaryItems>
-            </summary>
-            <RegisteredLilyDisplay ahsId={linkedLily.ahsId} />
-          </details>
-        ) : (
-          <RegisteredLilyInput onSelectedItemChange={handleLinkedLilyChange} />
-        )}
+        <FormGroup>
+          {linkedLily ? (
+            <details open>
+              <summary>
+                <SummaryItems>
+                  Linked to {linkedLily?.name}
+                  <Button onClick={handleUnlink}>Unlink</Button>
+                </SummaryItems>
+              </summary>
+              <RegisteredLilyDisplay ahsId={linkedLily.ahsId} />
+            </details>
+          ) : (
+            <RegisteredLilyInput
+              onSelectedItemChange={handleLinkedLilyChange}
+            />
+          )}
+        </FormGroup>
         <Field required={true} name="name">
           Listing Name
         </Field>
@@ -120,7 +124,7 @@ function CreateListingForm({ error, setError }: EditListingFormProps) {
           </FormGroup>
         ) : null}
         <SubmitButton>
-          <Button>Create listing</Button>
+          <Button block>Create listing</Button>
         </SubmitButton>
       </Form>
     </FormWrapper>

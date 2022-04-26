@@ -1,18 +1,17 @@
 import { ApolloError } from "@apollo/client";
 import {
-  above,
   Badge,
   Button,
   Heading,
+  Hr,
   PropertyList,
   PropertyListItem,
   Space,
 } from "@app/design";
-import { AhsDataFragment, LilyByIdQuery, useLilyByIdQuery } from "@app/graphql";
+import { AhsDataFragment, LilyByIdQuery } from "@app/graphql";
 import { toEditListingUrl } from "@app/lib";
 import Link from "next/link";
 import React from "react";
-import styled from "styled-components";
 
 import { ImageDisplay } from "./ImageDisplay";
 import { getDescription } from "./RegisteredLilyDisplay";
@@ -95,7 +94,7 @@ function ListingDisplay({
         {ahsDatumByAhsRef && (
           <div>
             <Heading level={3}>Details</Heading>
-            <hr />
+            <Hr />
             <PropertyList column padding="var(--size-1)">
               {getTraits(ahsDatumByAhsRef).map(([key, value]) => (
                 <PropertyListItem inline label={key} key={key}>

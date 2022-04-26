@@ -58,7 +58,6 @@ const Wrapper = styled.div<{
   ${({ responsive, items, center }) =>
     responsive &&
     `
-      margin: auto;
       display: grid;
       grid-template-columns: repeat(${items},auto);
       align-items: start;

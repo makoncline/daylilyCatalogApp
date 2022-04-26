@@ -237,7 +237,9 @@ const Form = ({
   return (
     <FormStateContext.Provider value={contextValue}>
       <StyledForm onSubmit={handleSubmit} {...props}>
-        <Space direction="column">{children}</Space>
+        <Space direction="column" center>
+          {children}
+        </Space>
       </StyledForm>
     </FormStateContext.Provider>
   );
@@ -257,6 +259,7 @@ const FormGroup = styled.div`
   align-items: ${(props: FormGroupProps) =>
     props.direction === "row" ? "center" : "stretch"};
   gap: var(--size-2);
+  width: 100%;
 `;
 
 const camelCase = (str: string) => {
