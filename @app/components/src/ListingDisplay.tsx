@@ -12,6 +12,7 @@ import { AhsDataFragment, LilyByIdQuery } from "@app/graphql";
 import { toEditListingUrl } from "@app/lib";
 import Link from "next/link";
 import React from "react";
+import styled from "styled-components";
 
 import { ImageDisplay } from "./ImageDisplay";
 import { getDescription } from "./RegisteredLilyDisplay";
@@ -53,8 +54,8 @@ function ListingDisplay({
   const isOwner = userId === listing.user?.id;
   return (
     <Space center responsive gap="medium">
-      <ImageDisplay imageUrls={imageUrls} />
-      <Space direction="column">
+      {imageUrls.length > 0 && <ImageDisplay imageUrls={imageUrls} />}
+      <StyledSpace direction="column">
         <PropertyList divider>
           {price && <PropertyListItem label="Price">${price}</PropertyListItem>}
           {updatedAt && (
@@ -104,7 +105,7 @@ function ListingDisplay({
             </PropertyList>
           </div>
         )}
-      </Space>
+      </StyledSpace>
     </Space>
   );
 }
@@ -138,3 +139,7 @@ function getTraits(ahsData: AhsDataFragment): [string, string][] {
     )
     .filter(Boolean) as [string, string][];
 }
+
+const StyledSpace = styled(Space)`
+  min-width: var(--image-size);
+`;

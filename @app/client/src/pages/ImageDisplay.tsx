@@ -71,9 +71,13 @@ function ImageDisplay({ imageUrls, setImageUrls }: ImageDisplayProps) {
           </Wrapper>
           <div>
             {!showControls ? (
-              <Button onClick={handleShowControls}>Edit images</Button>
+              <Button onClick={handleShowControls}>
+                Edit image{imageUrls.length > 1 && "s"}
+              </Button>
             ) : (
-              <Button onClick={handleShowControls}>Done editing images</Button>
+              <Button onClick={handleShowControls}>
+                Done editing image{imageUrls.length > 1 && "s"}
+              </Button>
             )}
           </div>
         </>

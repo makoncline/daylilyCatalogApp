@@ -55,12 +55,14 @@ export interface SettingsLayoutProps {
   query: SharedLayoutProps["query"];
   href: keyof typeof pages;
   children: React.ReactNode;
+  noPad?: boolean;
 }
 
 export function SettingsLayout({
   query,
   href: inHref,
   children,
+  noPad = false,
 }: SettingsLayoutProps) {
   const href = pages[inHref] ? inHref : Object.keys(pages)[0];
   const page = pages[href];
@@ -89,9 +91,7 @@ export function SettingsLayout({
                 </Link>
               ))}
             </Space>
-            <div>
-              <StandardWidth>{children}</StandardWidth>
-            </div>
+            {noPad ? children : <StandardWidth>{children}</StandardWidth>}
           </Space>
         )
       }

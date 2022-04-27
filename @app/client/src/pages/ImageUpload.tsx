@@ -110,12 +110,14 @@ export function ImageUpload({
   handleBeforeUpload = (_: File[]) => true,
   single = false,
   title = "Upload Image",
+  showTitle = true,
 }: {
   keyPrefix: string;
   handleImageUploaded: (key: string, url: string) => void;
   handleBeforeUpload?: (files: File[]) => boolean;
   single?: boolean;
   title?: string;
+  showTitle?: boolean;
 }) {
   const [_, setStatus] = React.useState<"idle" | "dragging" | "dropped">(
     "idle"
@@ -219,7 +221,7 @@ export function ImageUpload({
   return (
     <div>
       <Space direction="column">
-        <Heading level={3}>{title}</Heading>
+        {showTitle && <Heading level={3}>{title}</Heading>}
         {files.length === 0 ? (
           <div>
             <input

@@ -8,25 +8,28 @@ function ImageDisplay({ imageUrls }: { imageUrls: string[] }) {
   return (
     <Wrapper>
       <DisplayImage>
-        <Image
-          src={imageUrl}
-          alt={`listing photo`}
-          layout="fill"
-          objectFit="cover"
-        />
-      </DisplayImage>
-      {imageUrls.map((url, i) => (
-        <Thumbnail key={i} selected={i === imageIndex}>
+        {imageUrl && (
           <Image
-            key={i}
-            src={url}
-            alt={`listing photo ${i}`}
+            src={imageUrl}
+            alt={`listing photo`}
             layout="fill"
             objectFit="cover"
-            onClick={() => setImageIndex(i)}
           />
-        </Thumbnail>
-      ))}
+        )}
+      </DisplayImage>
+      {imageUrls.length > 0 &&
+        imageUrls.map((url, i) => (
+          <Thumbnail key={i} selected={i === imageIndex}>
+            <Image
+              key={i}
+              src={url}
+              alt={`listing photo ${i}`}
+              layout="fill"
+              objectFit="cover"
+              onClick={() => setImageIndex(i)}
+            />
+          </Thumbnail>
+        ))}
     </Wrapper>
   );
 }

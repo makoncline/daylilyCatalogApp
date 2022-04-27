@@ -2,6 +2,7 @@ import { ApolloError } from "@apollo/client";
 import { ErrorAlert, Redirect, SettingsLayout, Wysiwyg } from "@app/components";
 import {
   Alert,
+  below,
   Button,
   Field,
   Form,
@@ -24,6 +25,7 @@ import {
 } from "@app/lib";
 import { NextPage } from "next";
 import React, { useCallback, useState } from "react";
+import styled from "styled-components";
 
 import { ImageDisplay } from "../ImageDisplay";
 import { ImageUpload } from "../ImageUpload";
@@ -33,7 +35,7 @@ const Settings_Profile: NextPage = () => {
   const query = useSettingsProfileQuery();
   const { data, loading, error } = query;
   return (
-    <SettingsLayout href={settingsUrl} query={query}>
+    <SettingsLayout href={settingsUrl} query={query} noPad>
       {data && data.currentUser ? (
         <ProfileSettingsForm
           error={formError}
@@ -208,109 +210,125 @@ function ProfileSettingsForm({
     }
   }, [isReady, profilePhotoUrls, setError, updateUser, user.id, user.imgUrls]);
   return (
-    <FormWrapper>
-      <Heading level={3}>Edit Profile</Heading>
-      <Form formId={profileFormName} onSubmit={handleSubmit}>
-        <Space>
-          <Space direction="row">
-            <Space direction="column">
-              {!avatarPhotoUrl && (
-                <ImageUpload
-                  keyPrefix="avatar"
-                  handleImageUploaded={handleAvatarImageUploaded}
-                  title="Upload avatar image"
-                  single
-                />
-              )}
-              {avatarUploadError && (
-                <Alert type="danger">
-                  <Alert.Heading>Error uploading avatar photo</Alert.Heading>
-                  <Alert.Body>{avatarUploadError}</Alert.Body>
-                </Alert>
-              )}
-              {avatarPhotoUrl && (
-                <ImageDisplay
-                  imageUrls={avatarPhotoUrl ? [avatarPhotoUrl] : []}
-                  setImageUrls={(imageUrls: string[]) =>
-                    setAvatarPhotoUrl(imageUrls.at(0) || null)
-                  }
-                />
-              )}
-              {!user.isVerified && <UploadDisabledNotVerified />}
-              {user.isVerified && !isPhotoUploadActive && (
-                <UploadDisabledNoMembership />
-              )}
-            </Space>
+    <StyledSpace responsive>
+      <FormWrapper>
+        <Form formId={profileFormName} onSubmit={handleSubmit}>
+          <Space direction="column" block>
+            <Heading level={3}>Edit profile</Heading>
+            <Field name="name" required>
+              Name
+            </Field>
+            <Field name="username" required>
+              Username
+            </Field>
+            <Field name="location">Location</Field>
+            <Field name="intro" textarea>
+              Intro
+            </Field>
+            {error ? (
+              <div>
+                <p>Updating username</p>
+                <span>
+                  {extractError(error).message}
+                  {code ? (
+                    <span>
+                      {" "}
+                      (Error code: <code>ERR_{code}</code>)
+                    </span>
+                  ) : null}
+                </span>
+              </div>
+            ) : success ? (
+              <p>Profile updated</p>
+            ) : null}
+            <SubmitButton>
+              <Button>Update Profile</Button>
+            </SubmitButton>
+          </Space>
+          <Space direction="column">
+            <Heading level={3}>Edit bio</Heading>
+            <Wysiwyg handleSetBio={handleSetBio} value={user.bio} />
+            <Field name="bio" hidden>
+              bio
+            </Field>
+            <SubmitButton>
+              <Button>Update Profile</Button>
+            </SubmitButton>
+          </Space>
+        </Form>
+      </FormWrapper>
+      <FormWrapper>
+        <Space direction="column">
+          <Space direction="column">
+            <Heading level={3}>Avatar image</Heading>
+            {!avatarPhotoUrl && (
+              <ImageUpload
+                keyPrefix="avatar"
+                handleImageUploaded={handleAvatarImageUploaded}
+                single
+                showTitle={false}
+              />
+            )}
+            {avatarUploadError && (
+              <Alert type="danger">
+                <Alert.Heading>Error uploading avatar photo</Alert.Heading>
+                <Alert.Body>{avatarUploadError}</Alert.Body>
+              </Alert>
+            )}
+            {avatarPhotoUrl && (
+              <ImageDisplay
+                imageUrls={avatarPhotoUrl ? [avatarPhotoUrl] : []}
+                setImageUrls={(imageUrls: string[]) =>
+                  setAvatarPhotoUrl(imageUrls.at(0) || null)
+                }
+              />
+            )}
+            {!user.isVerified && <UploadDisabledNotVerified />}
+            {user.isVerified && !isPhotoUploadActive && (
+              <UploadDisabledNoMembership />
+            )}
+          </Space>
+
+          <Space direction="column">
+            <Heading level={3}>Profile images</Heading>
+            {showProfileImageUpload && (
+              <ImageUpload
+                keyPrefix="profile"
+                handleImageUploaded={handleProfileImageUploaded}
+                handleBeforeUpload={handleBeforeProfileImageUpload}
+                showTitle={false}
+              />
+            )}
+            {profilePhotoUploadError && (
+              <Alert type="danger">
+                <Alert.Heading>Error uploading profile photo</Alert.Heading>
+                <Alert.Body>{profilePhotoUploadError}</Alert.Body>
+              </Alert>
+            )}
+            {profilePhotoUrls.length ? (
+              <ImageDisplay
+                imageUrls={profilePhotoUrls}
+                setImageUrls={setProfilePhotoUrls}
+              />
+            ) : null}
+            {!user.isVerified && <UploadDisabledNotVerified />}
+            {user.isVerified && !isPhotoUploadActive && (
+              <UploadDisabledNoMembership />
+            )}
           </Space>
         </Space>
-        <Field name="name" required>
-          Name
-        </Field>
-        <Field name="username" required>
-          Username
-        </Field>
-        <Field name="location">Location</Field>
-        <Field name="intro">Intro</Field>
-        <Field name="bio" hidden>
-          bio
-        </Field>
-        {error ? (
-          <div>
-            <p>Updating username</p>
-            <span>
-              {extractError(error).message}
-              {code ? (
-                <span>
-                  {" "}
-                  (Error code: <code>ERR_{code}</code>)
-                </span>
-              ) : null}
-            </span>
-          </div>
-        ) : success ? (
-          <p>Profile updated</p>
-        ) : null}
-        <SubmitButton>
-          <Button>Update Profile</Button>
-        </SubmitButton>
-      </Form>
-
-      <Heading level={3}>Edit Bio</Heading>
-      <Wysiwyg handleSetBio={handleSetBio} value={user.bio} />
-      <br />
-      <Button htmlType="submit">Update Profile</Button>
-
-      <>
-        <Space direction="column">
-          {showProfileImageUpload && (
-            <ImageUpload
-              keyPrefix="profile"
-              handleImageUploaded={handleProfileImageUploaded}
-              handleBeforeUpload={handleBeforeProfileImageUpload}
-              title="Upload profile images"
-            />
-          )}
-          {profilePhotoUploadError && (
-            <Alert type="danger">
-              <Alert.Heading>Error uploading profile photo</Alert.Heading>
-              <Alert.Body>{profilePhotoUploadError}</Alert.Body>
-            </Alert>
-          )}
-          {profilePhotoUrls.length ? (
-            <ImageDisplay
-              imageUrls={profilePhotoUrls}
-              setImageUrls={setProfilePhotoUrls}
-            />
-          ) : null}
-          {!user.isVerified && <UploadDisabledNotVerified />}
-          {user.isVerified && !isPhotoUploadActive && (
-            <UploadDisabledNoMembership />
-          )}
-        </Space>
-      </>
-    </FormWrapper>
+      </FormWrapper>
+    </StyledSpace>
   );
 }
+
+const StyledSpace = styled(Space)`
+  grid-template-columns: auto 1fr;
+  ${below.lg`
+    grid-template-columns: 1fr;
+    justify-items: center
+  `}
+`;
 
 const UploadDisabledNotVerified = () => (
   <Alert type="danger">

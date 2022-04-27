@@ -8,6 +8,7 @@ type Props = {
   children: React.ReactNode;
   center?: boolean;
   responsive?: boolean;
+  block?: boolean;
   [key: string]: any;
 };
 const Space = ({
@@ -15,6 +16,7 @@ const Space = ({
   gap = "small",
   center = false,
   responsive = false,
+  block = false,
   children,
   ...props
 }: Props) => {
@@ -35,6 +37,7 @@ const Space = ({
       }
       center={center}
       responsive={responsive}
+      block={block}
       items={Children.count(children)}
       {...props}
     >
@@ -49,12 +52,14 @@ const Wrapper = styled.div<{
   center: boolean;
   responsive: boolean;
   items: number;
+  block: boolean;
 }>`
   display: flex;
   flex-direction: var(--direction);
   gap: var(--gap);
   justify-content: ${({ center }) => (center ? "center" : "unset")};
   align-items: ${({ center }) => (center ? "center" : "unset")};
+  ${({ block }) => block && "width: 100%;"}
   ${({ responsive, items, center }) =>
     responsive &&
     `
@@ -64,6 +69,6 @@ const Wrapper = styled.div<{
       ${below.md`
         justify-items: ${center ? "center" : "unset"};
         grid-template-columns: 1fr;
-    `}
+      `}
   `};
 `;

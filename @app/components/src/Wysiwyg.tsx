@@ -67,6 +67,7 @@ export const Wysiwyg = ({
         .rdw-editor-toolbar {
           border: var(--hairline);
           background: var(--surface-1);
+          color: var(--text-1--reversed);
         }
       `}</style>
       <Editor
