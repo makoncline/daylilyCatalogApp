@@ -8,6 +8,7 @@ import {
   Form,
   FormWrapper,
   Heading,
+  Link,
   Space,
   SubmitButton,
   useForm,
@@ -24,6 +25,7 @@ import {
   settingsUrl,
 } from "@app/lib";
 import { NextPage } from "next";
+import NextLink from "next/link";
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 
@@ -36,6 +38,21 @@ const Settings_Profile: NextPage = () => {
   const { data, loading, error } = query;
   return (
     <SettingsLayout href={settingsUrl} query={query} noPad>
+      <Space gap="medium">
+        <p>Jump to edit:</p>
+        <NextLink href="#profile" passHref>
+          Profile
+        </NextLink>
+        <NextLink href="#bio" passHref>
+          Bio
+        </NextLink>
+        <NextLink href="#avatar" passHref>
+          Avatar
+        </NextLink>
+        <NextLink href="#images" passHref>
+          Images
+        </NextLink>
+      </Space>
       {data && data.currentUser ? (
         <ProfileSettingsForm
           error={formError}
@@ -210,11 +227,13 @@ function ProfileSettingsForm({
     }
   }, [isReady, profilePhotoUrls, setError, updateUser, user.id, user.imgUrls]);
   return (
-    <StyledSpace responsive>
+    <Space responsive>
       <FormWrapper>
         <Form formId={profileFormName} onSubmit={handleSubmit}>
           <Space direction="column" block>
-            <Heading level={3}>Edit profile</Heading>
+            <Heading level={3} id="profile">
+              Profile
+            </Heading>
             <Field name="name" required>
               Name
             </Field>
@@ -245,8 +264,10 @@ function ProfileSettingsForm({
               <Button>Update Profile</Button>
             </SubmitButton>
           </Space>
-          <Space direction="column">
-            <Heading level={3}>Edit bio</Heading>
+          <Space direction="column" block>
+            <Heading level={3} id="bio">
+              Bio
+            </Heading>
             <Wysiwyg handleSetBio={handleSetBio} value={user.bio} />
             <Field name="bio" hidden>
               bio
@@ -260,7 +281,9 @@ function ProfileSettingsForm({
       <FormWrapper>
         <Space direction="column">
           <Space direction="column">
-            <Heading level={3}>Avatar image</Heading>
+            <Heading level={3} id="avatar">
+              Avatar
+            </Heading>
             {!avatarPhotoUrl && (
               <ImageUpload
                 keyPrefix="avatar"
@@ -290,7 +313,9 @@ function ProfileSettingsForm({
           </Space>
 
           <Space direction="column">
-            <Heading level={3}>Profile images</Heading>
+            <Heading level={3} id="images">
+              Images
+            </Heading>
             {showProfileImageUpload && (
               <ImageUpload
                 keyPrefix="profile"
@@ -318,12 +343,12 @@ function ProfileSettingsForm({
           </Space>
         </Space>
       </FormWrapper>
-    </StyledSpace>
+    </Space>
   );
 }
 
 const StyledSpace = styled(Space)`
-  grid-template-columns: auto 1fr;
+  grid-template-columns: var(--max-width-form) 1fr;
   ${below.lg`
     grid-template-columns: 1fr;
     justify-items: center

@@ -81,13 +81,11 @@ export function SettingsLayout({
         !currentUser && !error && !loading ? (
           <Redirect href={`${loginUrl}?next=${encodeURIComponent(fullHref)}`} />
         ) : (
-          <Space direction="column">
+          <Space direction="column" gap="large">
             <Space direction="row" gap="large">
               {Object.keys(pages).map((pageHref, i) => (
-                <Link href={pageHref} key={i}>
-                  <a data-cy={pages[pageHref].cy}>
-                    <p>{pages[pageHref].title}</p>
-                  </a>
+                <Link href={pageHref} key={i} data-cy={pages[pageHref].cy}>
+                  {pages[pageHref].title}
                 </Link>
               ))}
             </Space>

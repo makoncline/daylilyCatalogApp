@@ -3,6 +3,7 @@ import { draftjsToMd, mdToDraftjs } from "draftjs-md-converter";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState } from "react";
 import { EditorProps } from "react-draft-wysiwyg";
+import styled from "styled-components";
 
 const Editor = dynamic<EditorProps>(
   () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
@@ -57,26 +58,25 @@ export const Wysiwyg = ({
     },
   };
   return (
-    <>
-      <style>{`
-        .editor {
-          padding: var(--size-2);
-          border: var(--hairline);
-          background: var(--surface-1);
-        }
-        .rdw-editor-toolbar {
-          border: var(--hairline);
-          background: var(--surface-1);
-          color: var(--text-1--reversed);
-        }
-      `}</style>
+    <StyledEditor>
       <Editor
         toolbar={toolbarOptions}
         editorState={editorState}
-        wrapperClassName="demo-wrapper"
-        editorClassName="editor"
         onEditorStateChange={onEditorStateChange}
       />
-    </>
+    </StyledEditor>
   );
 };
+
+const StyledEditor = styled.div`
+  max-width: 100%;
+  padding: var(--size-2);
+  border: var(--hairline);
+  background: var(--surface-1);
+  .rdw-editor-toolbar {
+    background: var(--surface-1);
+  }
+  .rdw-block-dropdown {
+    color: black;
+  }
+`;
