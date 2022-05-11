@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-key */
-import { Thumbnail } from "@app/design";
+import { Hr, Thumbnail } from "@app/design";
 import { LilyDataFragment, Maybe } from "@app/graphql";
 import { toViewListingUrl } from "@app/lib";
 import Image from "next/image";
@@ -7,6 +7,7 @@ import router from "next/router";
 import React from "react";
 import type { Column } from "react-table";
 import { useFilters, useGlobalFilter, useTable } from "react-table";
+import styled from "styled-components";
 
 type ListingRow = {
   id: number;
@@ -36,54 +37,35 @@ const useReactTable = ({ rawData }: { rawData: LilyDataFragment[] }) => {
     () => [
       {
         Header: "Name",
-        columns: [
-          {
-            accessor: "name",
-          },
-        ],
+        accessor: "name",
       },
       {
         Header: "Image",
-        columns: [
-          {
-            accessor: "imgUrl",
-            // eslint-disable-next-line react/display-name
-            Cell: ({ value }) => (
-              <Thumbnail>
-                <Image
-                  src={value.length > 0 ? value[0] : "/flowerPlaceholder.png"}
-                />
-              </Thumbnail>
-            ),
-          },
-        ],
+        accessor: "imgUrl",
+        // eslint-disable-next-line react/display-name
+        Cell: ({ value }) => (
+          <Thumbnail>
+            <Image
+              src={value.length > 0 ? value[0] : "/flowerPlaceholder.png"}
+            />
+          </Thumbnail>
+        ),
       },
       {
         Header: "Price",
-        columns: [
-          {
-            accessor: "price",
-            Cell: ({ value }) => value > 0 && currency(value),
-          },
-        ],
+
+        accessor: "price",
+        Cell: ({ value }) => (value > 0 ? currency(value) : "-"),
       },
       {
         Header: "Public note",
-        columns: [
-          {
-            accessor: "publicNote",
-            Cell: ({ value }) => truncate(value || ""),
-          },
-        ],
+        accessor: "publicNote",
+        Cell: ({ value }) => truncate(value || ""),
       },
       {
         Header: "Private note",
-        columns: [
-          {
-            accessor: "privateNote",
-            Cell: ({ value }) => truncate(value || ""),
-          },
-        ],
+        accessor: "privateNote",
+        Cell: ({ value }) => truncate(value || ""),
       },
     ],
     []
@@ -117,7 +99,7 @@ export function LiliesTable({
     router.push(`${url}`);
   }
   return (
-    <table {...getTableProps()}>
+    <StyledTable {...getTableProps()}>
       <thead>
         {headerGroups.map((headerGroup) => (
           <tr {...headerGroup.getHeaderGroupProps()}>
@@ -142,7 +124,7 @@ export function LiliesTable({
           );
         })}
       </tbody>
-    </table>
+    </StyledTable>
   );
 }
 
@@ -158,3 +140,34 @@ const currency = (input: number) =>
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(input);
+
+const StyledTable = styled.table`
+  border-collapse: collapse;
+  thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--surface-1);
+  }
+  thead::after {
+    content: "";
+    position: absolute;
+    top: -1px;
+    width: 100%;
+    height: 100%;
+    border-bottom: var(--hairline);
+  }
+  th {
+    padding: var(--size-2);
+    text-align: left;
+  }
+  td {
+    padding: 0 var(--size-2);
+  }
+  tbody tr {
+    cursor: pointer;
+  }
+  tbody tr:hover {
+    background: var(--surface-2);
+  }
+`;

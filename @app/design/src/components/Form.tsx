@@ -55,7 +55,7 @@ const FormValuesProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const getFormIsReady = (formId: string) => isReady[formId] === true;
-  const getFormValues = (formId: string) => data[formId];
+  const getFormValues = (formId: string) => data[formId] || {};
   const setFormValues = React.useCallback(
     (formId: string, values: { [key: string]: string }) =>
       setData((prevData) => ({ ...prevData, [formId]: values })),
@@ -76,7 +76,7 @@ const FormValuesProvider = ({ children }: { children: React.ReactNode }) => {
       [formId]: { ...prevData[formId], [fieldId]: defaultValue },
     }));
   const formFieldIsReady = (formId: string, fieldId: string) =>
-    data[formId][fieldId] !== undefined;
+    (data[formId] || {})[fieldId] !== undefined;
 
   const getForm = (formId: string) => ({
     isReady: getFormIsReady(formId),
@@ -177,9 +177,9 @@ const Form = ({
     };
   }, [formId, isReady, register, unregister]);
 
-  if (!values || !errors) {
-    return null;
-  }
+  // if (!values || !errors) {
+  //   return null;
+  // }
 
   const handleChange = (event: any) => {
     const { name, value } = event.target;

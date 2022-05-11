@@ -64,7 +64,7 @@ const Wrapper = styled.div<{
     responsive &&
     `
       display: grid;
-      grid-template-columns: repeat(${items},auto);
+      grid-template-columns: repeat(${items},minmax(min-content,max-content));
       align-items: start;
       ${below.md`
         justify-items: ${center ? "center" : "unset"};

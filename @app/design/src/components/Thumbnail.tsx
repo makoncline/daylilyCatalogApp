@@ -20,6 +20,7 @@ const StyledThumbnail = styled.div`
 `;
 
 export const thumbnailProps: {
-  layout: "fixed" | "fill" | "intrinsic" | "responsive" | undefined;
-  objectFit: "cover" | "contain" | "fill" | "none" | undefined;
+  layout?: "fixed" | "fill" | "intrinsic" | "responsive";
+  objectFit?: "cover" | "contain" | "fill" | "none";
+  placeholder?: "blur";
 } = { layout: "fill", objectFit: "cover" };
