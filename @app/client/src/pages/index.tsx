@@ -21,8 +21,12 @@ const Home: NextPage = () => {
             feature-packed app will help you feel comfortable organizing,
             sharing, and selling your daylilies online.
           </p>
-          <Space gap="large">
-            <Button href={catalogUrl} data-cy="get-started-for-free">
+          <Space>
+            <Button
+              href={catalogUrl}
+              data-cy="get-started-for-free"
+              styleType="primary"
+            >
               Get started for free
             </Button>
             <Button href={pricingUrl} data-cy="pricing">

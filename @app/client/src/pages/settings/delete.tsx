@@ -98,7 +98,12 @@ const Settings_Accounts: NextPage = () => {
               </p>
             </Alert.Body>
             <Alert.Actions>
-              <Button onClick={confirmDeletion} disabled={deleting}>
+              <Button
+                onClick={confirmDeletion}
+                disabled={deleting}
+                danger
+                styleType="primary"
+              >
                 PERMANENTLY DELETE MY ACCOUNT
               </Button>
             </Alert.Actions>
@@ -171,10 +176,8 @@ const Settings_Accounts: NextPage = () => {
               </p>
             </Alert.Body>
             <Alert.Actions>
-              <Button styleType="primary" onClick={closeModal}>
-                Cancel
-              </Button>
-              <Button styleType="primary" onClick={doIt}>
+              <Button onClick={closeModal}>Cancel</Button>
+              <Button onClick={doIt} danger>
                 Send delete account email
               </Button>
             </Alert.Actions>

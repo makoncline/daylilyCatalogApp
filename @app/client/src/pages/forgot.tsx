@@ -89,9 +89,7 @@ const ForgotPassword: NextPage = () => {
             </Alert>
           ) : null}
           <SubmitButton>
-            <Button styleType="primary" htmlType="submit">
-              Reset password
-            </Button>
+            <Button styleType="primary">Reset password</Button>
           </SubmitButton>
           <p>
             <Link href={loginUrl}>

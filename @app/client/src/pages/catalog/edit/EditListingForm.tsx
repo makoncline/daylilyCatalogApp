@@ -247,79 +247,89 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
           <RegisteredLilyDisplay ahsId={linkedLily.ahsId} />
         </details>
       )}
-      <Space direction="column" gap="large" responsive>
-        <Form
-          formId={formId}
-          onSubmit={handleSubmit}
-          validation={{
-            name: (name: string) =>
-              name.length === 0 ? "Please enter a name for this listing" : null,
-            price: validatePrice,
-          }}
-        >
-          {!linkedLily && (
-            <FormGroup>
-              <RegisteredLilyInput
-                onSelectedItemChange={handleLinkedLilyChange}
-              />
-            </FormGroup>
-          )}
-          <Field required={true}>Name</Field>
-          <Field type="number" min="0" step="1">
-            Price
-          </Field>
-          <Field textarea>Public note</Field>
-          <Field textarea>Private note</Field>
-          {list ? (
-            <FormGroup>
-              <label htmlFor="list">List</label>
-              <FormGroup direction="row">
-                <input
-                  id="list"
-                  name="list"
-                  type="text"
-                  value={list.name}
-                  disabled
-                  style={{ flexGrow: 1 }}
+      <Space responsive>
+        <FormWrapper>
+          <Form
+            formId={formId}
+            onSubmit={handleSubmit}
+            validation={{
+              name: (name: string) =>
+                name.length === 0
+                  ? "Please enter a name for this listing"
+                  : null,
+              price: validatePrice,
+            }}
+          >
+            {!linkedLily && (
+              <FormGroup>
+                <RegisteredLilyInput
+                  onSelectedItemChange={handleLinkedLilyChange}
                 />
-                <Button
-                  onClick={handleRemoveFromList}
-                  disabled={formState === "deleting"}
-                >
-                  Remove from list
-                </Button>
               </FormGroup>
+            )}
+            <Field required={true}>Name</Field>
+            <Field type="number" min="0" step="1">
+              Price
+            </Field>
+            <Field textarea>Public note</Field>
+            <Field textarea>Private note</Field>
+            {list ? (
+              <FormGroup>
+                <label htmlFor="list">List</label>
+                <FormGroup direction="row">
+                  <input
+                    id="list"
+                    name="list"
+                    type="text"
+                    value={list.name}
+                    disabled
+                    style={{ flexGrow: 1 }}
+                  />
+                  <Button
+                    onClick={handleRemoveFromList}
+                    disabled={formState === "deleting"}
+                  >
+                    Remove from list
+                  </Button>
+                </FormGroup>
+              </FormGroup>
+            ) : (
+              <FormGroup>
+                <ListInput onSelectedItemChange={handleListChange} />
+              </FormGroup>
+            )}
+            <FormGroup direction="row">
+              <SubmitButton>
+                <Button disabled={formState === "deleting"}>
+                  Save listing
+                </Button>
+              </SubmitButton>
+
+              <Button
+                onClick={handleDelete}
+                disabled={formState === "deleting"}
+              >
+                Delete
+              </Button>
             </FormGroup>
-          ) : (
-            <FormGroup>
-              <ListInput onSelectedItemChange={handleListChange} />
-            </FormGroup>
-          )}
-          <FormGroup direction="row">
-            <SubmitButton>
-              <Button disabled={formState === "deleting"}>Save listing</Button>
-            </SubmitButton>
-            <Button onClick={handleDelete} disabled={formState === "deleting"}>
-              Delete
-            </Button>
-          </FormGroup>
-          {error ? (
-            <FormGroup>
-              <FormError>
-                <p>Create listing failed</p>
-                <span>
-                  {extractError(error).message}
-                  {code ? (
-                    <span>
-                      {" "}
-                      (Error code: <code>ERR_{code}</code>)
-                    </span>
-                  ) : null}
-                </span>
-              </FormError>
-            </FormGroup>
-          ) : null}
-        </Form>
+            {error ? (
+              <FormGroup>
+                <FormError>
+                  <p>Create listing failed</p>
+                  <span>
+                    {extractError(error).message}
+                    {code ? (
+                      <span>
+                        {" "}
+                        (Error code: <code>ERR_{code}</code>)
+                      </span>
+                    ) : null}
+                  </span>
+                </FormError>
+              </FormGroup>
+            ) : null}
+          </Form>
+        </FormWrapper>
         <Space direction="column">
           {showImageUpload ? (
             <ImageUpload

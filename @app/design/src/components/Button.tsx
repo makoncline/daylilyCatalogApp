@@ -12,6 +12,7 @@ type Props = {
   block?: boolean;
   styleType?: ButtonType;
   danger?: boolean;
+  disabled?: boolean;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export const Button = React.forwardRef(
@@ -22,6 +23,7 @@ export const Button = React.forwardRef(
       block = false,
       styleType = "default",
       danger = false,
+      disabled = false,
       ...props
     }: Props,
     ref: React.ForwardedRef<HTMLButtonElement>
@@ -55,6 +57,8 @@ export const Button = React.forwardRef(
     if (block) {
       width = "100%";
     }
+    if (disabled) {
+    }
 
     const style = {
       "--border": border,
@@ -73,12 +77,24 @@ export const Button = React.forwardRef(
             method="get"
             style={block ? { width: "100%" } : {}}
           >
-            <StyledButton type="submit" style={style} ref={ref} {...props}>
+            <StyledButton
+              type="submit"
+              style={style}
+              ref={ref}
+              disabled={disabled}
+              {...props}
+            >
               {child}
             </StyledButton>
           </form>
         ) : (
-          <StyledButton type="button" style={style} ref={ref} {...props}>
+          <StyledButton
+            type="button"
+            style={style}
+            ref={ref}
+            disabled={disabled}
+            {...props}
+          >
             {child}
           </StyledButton>
         )}
@@ -118,6 +134,15 @@ const StyledButton = styled.button`
   &:active {
     position: relative;
     inset-block-start: 1px;
+  }
+  :disabled {
+    cursor: not-allowed;
+    border-color: var(--border);
+    background-color: var(--background);
+    color: var(--color);
+    :active {
+      inset-block-start: 0;
+    }
   }
 `;
 

@@ -45,6 +45,7 @@ const StyledAlert = styled.div`
   display: flex;
   flex-direction: column;
   gap: var(--size-4);
+  max-width: var(--max-width-form);
 `;
 
 Alert.Body = styled.div``;

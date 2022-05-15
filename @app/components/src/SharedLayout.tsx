@@ -164,7 +164,7 @@ export function SharedLayout({
       <Head>
         <title>{title ? `${title} — ${projectName}` : projectName}</title>
       </Head>
-      <Space gap="large" direction="column">
+      <Space gap="large" direction="column" center>
         {title ? (
           <FancyHeading level={1} data-cy="layout-header-title">
             {title}

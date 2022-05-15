@@ -16,7 +16,6 @@ export const BillingPortalButton = () => {
         await fetchPostJsonCsrf("/api/billing_portal_session", {
           stripeCustomerId,
         });
-      console.log(billingPortalSession);
       if (typeof window !== "undefined") {
         window.location.href = billingPortalSession.url;
       }
@@ -26,7 +25,7 @@ export const BillingPortalButton = () => {
   }
 
   return (
-    <Button styleType="primary" block onClick={redirectToBillingPortal}>
+    <Button styleType="primary" onClick={redirectToBillingPortal}>
       Manage Membership
     </Button>
   );

@@ -233,8 +233,12 @@ export function ImageUpload({
               multiple={!single}
             />
             <FileSelect htmlFor="fileElem" ref={dropRef}>
-              <p>Drag & drop {single ? `image` : `images`} here or</p>
-              <a href="">browse files</a>
+              <p>
+                Drag & drop {single ? `image` : `images`} here or{" "}
+                <a href="" style={{ pointerEvents: "none" }}>
+                  browse files
+                </a>
+              </p>
             </FileSelect>
           </div>
         ) : null}
@@ -294,4 +298,6 @@ const FileSelect = styled.label`
   justify-content: center;
   border: var(--border-size-1) dashed var(--text-1);
   border-radius: var(--radius-1);
+  padding: var(--size-4);
+  text-align: center;
 `;

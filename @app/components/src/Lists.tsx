@@ -6,17 +6,15 @@ import Router from "next/router";
 import React from "react";
 import styled from "styled-components";
 
-import { truncate } from "./util";
-
 export const Lists = () => {
   const { data } = useListsQuery();
   const user = data && data.currentUser;
   if (!user) return <p>Loading...</p>;
 
   return (
-    <div>
+    <>
       <Link href={createListUrl} passHref>
-        <Button>Create List</Button>
+        <Button block>Create List</Button>
       </Link>
       <StyledTable>
         <thead>
@@ -37,7 +35,7 @@ export const Lists = () => {
           ))}
         </tbody>
       </StyledTable>
-    </div>
+    </>
   );
 };
 

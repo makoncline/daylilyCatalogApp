@@ -27,7 +27,8 @@
   --info--transparent: hsla(var(--hsl-info), 0.1);
 
   --max-width: 80rem;
-  --max-width-form: 40rem;
+  --max-width-form: 30rem;
+  --full-width: calc(100vw - (2 * var(--size-8)));
 }
 
 :where(h1, h2, h3, h4, h5, h6, dt) {

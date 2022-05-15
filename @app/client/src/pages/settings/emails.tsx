@@ -138,7 +138,7 @@ const Settings_Emails: NextPage = () => {
             <Heading level={2}>Email addresses</Heading>
             <p>
               <strong>
-                Account notices will be sent your primary email address.
+                Account notices will be sent your primary email address.{" "}
               </strong>
               Additional email addresses may be added to help with account
               recovery (or to change your primary email), but they cannot be
@@ -159,9 +159,9 @@ const Settings_Emails: NextPage = () => {
           {!showAddEmailForm ? (
             <div>
               <Button
-                styleType="primary"
                 onClick={() => setShowAddEmailForm(true)}
                 data-cy="settingsemails-button-addemail"
+                block
               >
                 Add email
               </Button>
@@ -235,7 +235,9 @@ function AddEmailForm({ error, setError, onComplete }: AddEmailFormProps) {
         </Alert>
       ) : null}
       <SubmitButton>
-        <Button data-cy="settingsemails-button-submit">Add email</Button>
+        <Button data-cy="settingsemails-button-submit" block>
+          Add email
+        </Button>
       </SubmitButton>
     </Form>
   );

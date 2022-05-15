@@ -1,6 +1,7 @@
 import { ApolloError } from "@apollo/client";
 import { ErrorAlert, PasswordStrength, SettingsLayout } from "@app/components";
 import {
+  Alert,
   Button,
   Field,
   Form,
@@ -54,23 +55,13 @@ const Settings_Security: NextPage = () => {
       } catch (e: any) {
         const errcode = getCodeFromError(e);
         if (errcode === "WEAKP") {
-          // form.setFields([
-          //   {
-          //     name: "newPassword",
-          //     value: form.getFieldValue("newPassword"),
-          //     errors: [
-          //       "The server believes this passphrase is too weak, please make it stronger",
-          //     ],
-          //   },
-          // ]);
+          setError(
+            new Error(
+              "The server believes this passphrase is too weak, please make it stronger"
+            )
+          );
         } else if (errcode === "CREDS") {
-          // form.setFields([
-          //   {
-          //     name: "oldPassword",
-          //     value: form.getFieldValue("oldPassword"),
-          //     errors: ["Incorrect old passphrase"],
-          //   },
-          // ]);
+          setError(new Error("Incorrect old passphrase"));
         } else {
           setError(e);
         }
@@ -121,19 +112,27 @@ const Settings_Security: NextPage = () => {
       return <ErrorAlert error={graphqlQueryError} />;
     } else if (data && data.currentUser && !data.currentUser.hasPassword) {
       return (
-        <div>
-          <Heading level={2}>Change passphrase</Heading>
-          <p>
-            You registered your account through social login, so you do not
-            currently have a passphrase. If you would like a passphrase, press
-            the button below to request a passphrase reset email to '{email}'
-            (you can choose a different email by making it primary in{" "}
-            <Link href={emailsUrl}>email settings</Link>).
-          </p>
-          <Button onClick={handleResetPassword} disabled={resetInProgress}>
-            Reset passphrase
-          </Button>
-        </div>
+        <Alert type="info">
+          <Alert.Heading>Change passphrase</Alert.Heading>
+          <Alert.Body>
+            <p>
+              You registered your account through social login, so you do not
+              currently have a passphrase. If you would like a passphrase, press
+              the button below to request a passphrase reset email to '{email}'
+              (you can choose a different email by making it primary in{" "}
+              <Link href={emailsUrl}>email settings</Link>).
+            </p>
+          </Alert.Body>
+          <Alert.Actions>
+            <Button
+              onClick={handleResetPassword}
+              disabled={resetInProgress}
+              block
+            >
+              Reset passphrase
+            </Button>
+          </Alert.Actions>
+        </Alert>
       );
     }
 
@@ -172,7 +171,7 @@ const Settings_Security: NextPage = () => {
             <p>Password changed!</p>
           ) : null}
           <SubmitButton>
-            <Button>Change Passphrase</Button>
+            <Button block>Change Passphrase</Button>
           </SubmitButton>
         </Form>
       </FormWrapper>

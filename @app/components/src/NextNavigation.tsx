@@ -6,7 +6,6 @@ import {
   membershipUrl,
   registerUrl,
   settingsUrl,
-  usersUrl,
 } from "@app/lib";
 import NextLink from "next/link";
 import React from "react";
@@ -25,7 +24,6 @@ export const NextNavigation = ({
   <Nav logo={<NextTextLogo href="/">Daylily Catalog</NextTextLogo>}>
     {isLoggedIn ? (
       <>
-        <NextNavLink href={usersUrl}>Users</NextNavLink>
         <NextNavLink href={catalogUrl}>Catalog</NextNavLink>
         <NextNavLink href={listsUrl}>Lists</NextNavLink>
         <NextNavLink href={settingsUrl} data-cy="link-settings">

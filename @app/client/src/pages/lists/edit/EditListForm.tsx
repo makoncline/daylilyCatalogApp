@@ -68,9 +68,7 @@ function EditListForm({ list }: { list: ListDataFragment }) {
         <Field textarea>Description</Field>
         <Space block>
           <SubmitButton>
-            <Button block styleType="primary">
-              Update list
-            </Button>
+            <Button block>Update list</Button>
           </SubmitButton>
           <Button onClick={handleDelete} danger>
             Delete list

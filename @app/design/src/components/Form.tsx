@@ -373,7 +373,7 @@ const Success = styled.div`
 `;
 
 const FormWrapper = styled.div`
-  width: 100%;
+  width: var(--full-width);
   max-width: var(--max-width-form);
 `;
 

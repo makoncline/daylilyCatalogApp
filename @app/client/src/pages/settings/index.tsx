@@ -229,7 +229,14 @@ function ProfileSettingsForm({
   return (
     <Space responsive>
       <FormWrapper>
-        <Form formId={profileFormName} onSubmit={handleSubmit}>
+        <Form
+          formId={profileFormName}
+          onSubmit={handleSubmit}
+          onChange={() => {
+            setSuccess(false);
+            setError(null);
+          }}
+        >
           <Space direction="column" block>
             <Heading level={3} id="profile">
               Profile
@@ -245,9 +252,9 @@ function ProfileSettingsForm({
               Intro
             </Field>
             {error ? (
-              <div>
-                <p>Updating username</p>
-                <span>
+              <Alert type="danger">
+                <Alert.Heading>Updating profile</Alert.Heading>
+                <Alert.Body>
                   {extractError(error).message}
                   {code ? (
                     <span>
@@ -255,10 +262,12 @@ function ProfileSettingsForm({
                       (Error code: <code>ERR_{code}</code>)
                     </span>
                   ) : null}
-                </span>
-              </div>
+                </Alert.Body>
+              </Alert>
             ) : success ? (
-              <p>Profile updated</p>
+              <Alert type="success">
+                <Alert.Body>Profile updated</Alert.Body>
+              </Alert>
             ) : null}
             <SubmitButton>
               <Button>Update Profile</Button>
@@ -272,77 +281,93 @@ function ProfileSettingsForm({
             <Field name="bio" hidden>
               bio
             </Field>
+            {error ? (
+              <Alert type="danger">
+                <Alert.Heading>Error updating profile</Alert.Heading>
+                <Alert.Body>
+                  {extractError(error).message}
+                  {code ? (
+                    <span>
+                      {" "}
+                      (Error code: <code>ERR_{code}</code>)
+                    </span>
+                  ) : null}
+                </Alert.Body>
+              </Alert>
+            ) : success ? (
+              <Alert type="success">
+                <Alert.Body>Profile updated</Alert.Body>
+              </Alert>
+            ) : null}
             <SubmitButton>
               <Button>Update Profile</Button>
             </SubmitButton>
           </Space>
         </Form>
       </FormWrapper>
-      <FormWrapper>
+      <Space direction="column">
         <Space direction="column">
-          <Space direction="column">
-            <Heading level={3} id="avatar">
-              Avatar
-            </Heading>
-            {!avatarPhotoUrl && (
-              <ImageUpload
-                keyPrefix="avatar"
-                handleImageUploaded={handleAvatarImageUploaded}
-                single
-                showTitle={false}
-              />
-            )}
-            {avatarUploadError && (
-              <Alert type="danger">
-                <Alert.Heading>Error uploading avatar photo</Alert.Heading>
-                <Alert.Body>{avatarUploadError}</Alert.Body>
-              </Alert>
-            )}
-            {avatarPhotoUrl && (
-              <ImageDisplay
-                imageUrls={avatarPhotoUrl ? [avatarPhotoUrl] : []}
-                setImageUrls={(imageUrls: string[]) =>
-                  setAvatarPhotoUrl(imageUrls.at(0) || null)
-                }
-              />
-            )}
-            {!user.isVerified && <UploadDisabledNotVerified />}
-            {user.isVerified && !isPhotoUploadActive && (
-              <UploadDisabledNoMembership />
-            )}
-          </Space>
-
-          <Space direction="column">
-            <Heading level={3} id="images">
-              Images
-            </Heading>
-            {showProfileImageUpload && (
-              <ImageUpload
-                keyPrefix="profile"
-                handleImageUploaded={handleProfileImageUploaded}
-                handleBeforeUpload={handleBeforeProfileImageUpload}
-                showTitle={false}
-              />
-            )}
-            {profilePhotoUploadError && (
-              <Alert type="danger">
-                <Alert.Heading>Error uploading profile photo</Alert.Heading>
-                <Alert.Body>{profilePhotoUploadError}</Alert.Body>
-              </Alert>
-            )}
-            {profilePhotoUrls.length ? (
-              <ImageDisplay
-                imageUrls={profilePhotoUrls}
-                setImageUrls={setProfilePhotoUrls}
-              />
-            ) : null}
-            {!user.isVerified && <UploadDisabledNotVerified />}
-            {user.isVerified && !isPhotoUploadActive && (
-              <UploadDisabledNoMembership />
-            )}
-          </Space>
+          <Heading level={3} id="avatar">
+            Avatar
+          </Heading>
+          {!avatarPhotoUrl && (
+            <ImageUpload
+              keyPrefix="avatar"
+              handleImageUploaded={handleAvatarImageUploaded}
+              single
+              showTitle={false}
+            />
+          )}
+          {avatarUploadError && (
+            <Alert type="danger">
+              <Alert.Heading>Error uploading avatar photo</Alert.Heading>
+              <Alert.Body>{avatarUploadError}</Alert.Body>
+            </Alert>
+          )}
+          {avatarPhotoUrl && (
+            <ImageDisplay
+              imageUrls={avatarPhotoUrl ? [avatarPhotoUrl] : []}
+              setImageUrls={(imageUrls: string[]) =>
+                setAvatarPhotoUrl(imageUrls.at(0) || null)
+              }
+            />
+          )}
+          {!user.isVerified && <UploadDisabledNotVerified />}
+          {user.isVerified && !isPhotoUploadActive && (
+            <UploadDisabledNoMembership />
+          )}
         </Space>
-      </FormWrapper>
+
+        <Space direction="column">
+          <Heading level={3} id="images">
+            Images
+          </Heading>
+          {showProfileImageUpload && (
+            <ImageUpload
+              keyPrefix="profile"
+              handleImageUploaded={handleProfileImageUploaded}
+              handleBeforeUpload={handleBeforeProfileImageUpload}
+              showTitle={false}
+            />
+          )}
+          {profilePhotoUploadError && (
+            <Alert type="danger">
+              <Alert.Heading>Error uploading profile photo</Alert.Heading>
+              <Alert.Body>{profilePhotoUploadError}</Alert.Body>
+            </Alert>
+          )}
+          {profilePhotoUrls.length ? (
+            <ImageDisplay
+              imageUrls={profilePhotoUrls}
+              setImageUrls={setProfilePhotoUrls}
+            />
+          ) : null}
+          {!user.isVerified && <UploadDisabledNotVerified />}
+          {user.isVerified && !isPhotoUploadActive && (
+            <UploadDisabledNoMembership />
+          )}
+        </Space>
+      </Space>
     </Space>
   );
 }
