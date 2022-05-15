@@ -1,25 +1,14 @@
-import { Alert, Button, Field, Form, Space, useForm } from "@app/design";
+import { Alert, Button, Space, useForm } from "@app/design";
 import { useLiliesQuery } from "@app/graphql";
 import { toCreateListingUrl } from "@app/lib";
 import React from "react";
-import styled from "styled-components";
 
 import { LiliesTable } from "./";
 
 export const Lilies = () => {
-  const filterFormName = "list-filter";
-  const { values } = useForm(filterFormName);
-  const nameFilter = values && values.filter;
-
   const { data } = useLiliesQuery();
   const user = data && data.currentUser;
   const userLilies = user && user.lilies.nodes;
-  const filteredUserLilies =
-    userLilies &&
-    userLilies.filter((lily: any) => {
-      if (!nameFilter) return;
-      return lily.name.toLowerCase().includes(nameFilter.toLowerCase());
-    });
 
   if (!user || !userLilies) return <p>Loading...</p>;
 
@@ -55,14 +44,7 @@ export const Lilies = () => {
           Create listing
         </Button>
       )}
-      <Form formId="list-filter" onSubmit={() => void 0}>
-        <Field label={false} placeholder="Filter catalog by name...">
-          Filter
-        </Field>
-      </Form>
-      <LiliesTable
-        dataSource={(nameFilter ? filteredUserLilies : userLilies) || []}
-      />
+      <LiliesTable dataSource={userLilies || []} />
     </Space>
   );
 };

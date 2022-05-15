@@ -2,6 +2,7 @@ import "nprogress/nprogress.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "../styles.css";
 import "@reach/dialog/styles.css";
+import "regenerator-runtime/runtime";
 
 import { ApolloClient, ApolloProvider } from "@apollo/client";
 import { FormValuesProvider } from "@app/design";
