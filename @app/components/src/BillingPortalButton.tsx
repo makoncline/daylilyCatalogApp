@@ -26,7 +26,7 @@ export const BillingPortalButton = () => {
   }
 
   return (
-    <Button type="primary" block onClick={redirectToBillingPortal}>
+    <Button styleType="primary" block onClick={redirectToBillingPortal}>
       Manage Membership
     </Button>
   );

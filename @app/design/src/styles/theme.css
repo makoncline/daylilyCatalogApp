@@ -5,17 +5,26 @@
   color: var(--text-2);
   background-color: var(--surface-1);
 
-  --hsl-success: var(--hsl-green-5);
+  --primary: var(--blue-6);
+  --primary--glint: var(--blue-5);
+
+  --secondary: var(--violet-6);
+  --secondary--glint: var(--violet-5);
+
+  --hsl-success: var(--hsl-green-6);
   --success: hsl(var(--hsl-success));
-  --success--glint: hsla(var(--hsl-success), 0.1);
+  --success--glint: var(--green-5);
+  --success--transparent: hsla(var(--hsl-success), 0.1);
 
-  --hsl-danger: var(--hsl-red-5);
+  --hsl-danger: var(--hsl-red-6);
   --danger: hsl(var(--hsl-danger));
-  --danger--glint: hsla(var(--hsl-danger), 0.1);
+  --danger--glint: var(--red-5);
+  --danger--transparent: hsla(var(--hsl-danger), 0.1);
 
-  --hsl-Info: var(--hsl-yellow-5);
+  --hsl-info: var(--hsl-yellow-6);
   --info: hsl(var(--hsl-info));
-  --info--glint: hsla(var(--hsl-info), 0.1);
+  --info--glint: var(--yellow-5);
+  --info--transparent: hsla(var(--hsl-info), 0.1);
 
   --max-width: 80rem;
   --max-width-form: 40rem;

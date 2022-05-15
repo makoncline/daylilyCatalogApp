@@ -19,7 +19,7 @@ export function ErrorAlert({ error }: ErrorAlertProps) {
           solve this you need to refresh the page:
         </Alert.Body>
         <Alert.Actions>
-          <Button type="primary" onClick={() => window.location.reload()}>
+          <Button styleType="primary" onClick={() => window.location.reload()}>
             Refresh page
           </Button>
         </Alert.Actions>

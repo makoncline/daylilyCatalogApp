@@ -2,12 +2,6 @@
   :where(html) {
     color-scheme: dark;
 
-    --primary: var(--blue-5);
-    --primary--glint: var(--blue-4);
-    --primary-2: var(--blue-5);
-    --secondary: var(--violet-5);
-    --secondary--glint: var(--violet-4);
-
     --link: var(--indigo-3);
     --link-visited: var(--grape-3);
 

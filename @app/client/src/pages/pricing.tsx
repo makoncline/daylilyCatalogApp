@@ -15,7 +15,7 @@ const Pricing = () => {
           <FreePlan
             action={
               <Button
-                type="primary"
+                styleType="primary"
                 block
                 href={`${process.env.ROOT_URL}/catalog`}
                 data-cy="free"
@@ -27,7 +27,7 @@ const Pricing = () => {
           <ProPlan
             action={
               <Button
-                type="primary"
+                styleType="primary"
                 block
                 href={`${process.env.ROOT_URL}/membership`}
                 data-cy="get-membership"

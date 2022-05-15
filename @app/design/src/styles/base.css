@@ -117,7 +117,7 @@
   letter-spacing: inherit;
 }
 
-:where(input) {
+:where(input, textarea) {
   padding-inline: var(--size-2);
   padding-block: var(--size-1);
 }

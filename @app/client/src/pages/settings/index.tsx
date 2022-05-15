@@ -347,14 +347,6 @@ function ProfileSettingsForm({
   );
 }
 
-const StyledSpace = styled(Space)`
-  grid-template-columns: var(--max-width-form) 1fr;
-  ${below.lg`
-    grid-template-columns: 1fr;
-    justify-items: center
-  `}
-`;
-
 const UploadDisabledNotVerified = () => (
   <Alert type="danger">
     <Alert.Heading>Image upload disabled</Alert.Heading>
@@ -364,7 +356,10 @@ const UploadDisabledNotVerified = () => (
       to verify.
     </Alert.Body>
     <Alert.Actions>
-      <Button type="primary" href={`${process.env.ROOT_URL}/settings/emails`}>
+      <Button
+        styleType="primary"
+        href={`${process.env.ROOT_URL}/settings/emails`}
+      >
         View email settings
       </Button>
     </Alert.Actions>

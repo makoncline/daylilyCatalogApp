@@ -2,7 +2,7 @@ import { Request, RequestHandler, Response } from "express";
 import Stripe from "stripe";
 
 import { saveStripeCustomer } from "../db/saveStripeCustomer";
-import getStripe from "../utils/getStripe";
+import { getStripe } from "../utils";
 
 export const createCustomerHandler: RequestHandler = async (
   req: Request,

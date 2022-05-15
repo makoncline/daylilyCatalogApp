@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-key */
-import { Hr, Thumbnail } from "@app/design";
+import { Thumbnail } from "@app/design";
 import { LilyDataFragment, Maybe } from "@app/graphql";
 import { toViewListingUrl } from "@app/lib";
 import Image from "next/image";
@@ -8,6 +8,8 @@ import React from "react";
 import type { Column } from "react-table";
 import { useFilters, useGlobalFilter, useTable } from "react-table";
 import styled from "styled-components";
+
+import { truncate } from "./util";
 
 type ListingRow = {
   id: number;
@@ -127,11 +129,6 @@ export function LiliesTable({
     </StyledTable>
   );
 }
-
-const truncate = (input: string, length: number = 100) =>
-  input && input.length > length
-    ? `${input.substring(0, length - 3)}...`
-    : input;
 
 const currency = (input: number) =>
   new Intl.NumberFormat("en-US", {

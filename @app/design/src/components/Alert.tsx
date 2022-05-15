@@ -12,9 +12,9 @@ type AlertProps = {
 
 function Alert({ type, children, ...props }: AlertProps) {
   const backgroundColors = {
-    success: "--success--glint",
-    danger: "--danger--glint",
-    info: "--info--glint",
+    success: "--success--transparent",
+    danger: "--danger--transparent",
+    info: "--info--transparent",
   };
   const borderColors = {
     success: "--success",

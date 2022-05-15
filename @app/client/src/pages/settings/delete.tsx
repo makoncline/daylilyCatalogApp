@@ -171,10 +171,10 @@ const Settings_Accounts: NextPage = () => {
               </p>
             </Alert.Body>
             <Alert.Actions>
-              <Button type="primary" onClick={closeModal}>
+              <Button styleType="primary" onClick={closeModal}>
                 Cancel
               </Button>
-              <Button type="primary" onClick={doIt}>
+              <Button styleType="primary" onClick={doIt}>
                 Send delete account email
               </Button>
             </Alert.Actions>
@@ -194,7 +194,7 @@ const Settings_Accounts: NextPage = () => {
             best.
           </Alert.Body>
           <Alert.Actions>
-            <Button type="primary" onClick={() => router.push("/")}>
+            <Button styleType="primary" onClick={() => router.push("/")}>
               Return to homepage
             </Button>
           </Alert.Actions>

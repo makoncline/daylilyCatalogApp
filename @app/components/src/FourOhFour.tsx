@@ -16,7 +16,7 @@ export function FourOhFour(props: FourOhFourProps) {
           {currentUser ? "" : " Maybe you need to log in?"}
         </Alert.Body>
         <Alert.Actions>
-          <Button type="primary" href="/">
+          <Button styleType="primary" href="/">
             Back Home
           </Button>
         </Alert.Actions>

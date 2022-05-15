@@ -1,4 +1,4 @@
-import { Button, Field, Form, Space, useForm } from "@app/design";
+import { Alert, Button, Field, Form, Space, useForm } from "@app/design";
 import { useLiliesQuery } from "@app/graphql";
 import { toCreateListingUrl } from "@app/lib";
 import React from "react";
@@ -31,23 +31,26 @@ export const Lilies = () => {
   return (
     <Style>
       {!isAddActive && (
-        <div className="over-limit">
-          <Space direction="column">
+        <Alert type="danger">
+          <Alert.Heading>Create listing disabled</Alert.Heading>
+          <Alert.Body>
             <p>
               You have reached the free plan limit. You must have an active
               membership to add more daylilies.
             </p>
-            <Button type="primary" href={`${process.env.ROOT_URL}/membership`}>
+          </Alert.Body>
+          <Alert.Actions>
+            <Button href={`${process.env.ROOT_URL}/membership`}>
               Become a Daylily Catalog Member
             </Button>
-          </Space>
-        </div>
+          </Alert.Actions>
+        </Alert>
       )}
       <Button
-        type="primary"
+        styleType="primary"
         href={`${process.env.ROOT_URL}${toCreateListingUrl()}`}
       >
-        Add daylily
+        Create listing
       </Button>
       <Form formId="list-filter" onSubmit={() => void 0}>
         <Field label={false} placeholder="Filter catalog by name...">

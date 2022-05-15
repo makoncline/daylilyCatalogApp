@@ -4,7 +4,7 @@ import {
   Field,
   Form,
   FormWrapper,
-  Heading,
+  Space,
   SubmitButton,
   useForm,
 } from "@app/design";
@@ -63,14 +63,19 @@ function EditListForm({ list }: { list: ListDataFragment }) {
 
   return (
     <FormWrapper>
-      <Heading level={2}>Edit List</Heading>
       <Form formId={editListFormName} onSubmit={handleSubmit}>
         <Field>Name</Field>
         <Field textarea>Description</Field>
-        <SubmitButton>
-          <Button>Update list</Button>
-        </SubmitButton>
-        <Button onClick={handleDelete}>Delete list</Button>
+        <Space block>
+          <SubmitButton>
+            <Button block styleType="primary">
+              Update list
+            </Button>
+          </SubmitButton>
+          <Button onClick={handleDelete} danger>
+            Delete list
+          </Button>
+        </Space>
       </Form>
       {error && (
         <Alert type="danger">

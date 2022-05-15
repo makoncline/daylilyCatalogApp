@@ -1,7 +1,7 @@
 import { gql, makeExtendSchemaPlugin } from "graphile-utils";
 import type Stripe from "stripe";
 
-import getStripe from "../utils/getStripe";
+import { getStripe } from "../utils";
 const stripe = getStripe();
 
 export async function getStripeSubscriptionInfo(

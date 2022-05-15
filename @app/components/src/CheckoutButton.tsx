@@ -4,8 +4,8 @@ import { useRouter } from "next/router";
 import React from "react";
 import type { Stripe } from "stripe";
 
+import { getStripe } from "./util";
 import { fetchPostJsonCsrf } from "./util/apiHelpers";
-import getStripe from "./util/getStripe";
 
 export const CheckoutButton = () => {
   const { data } = useStripeCustomerQuery();
@@ -43,7 +43,7 @@ export const CheckoutButton = () => {
 
   return (
     <Button
-      type="primary"
+      styleType="primary"
       block
       onClick={redirectToCheckout}
       className="pro price-button"

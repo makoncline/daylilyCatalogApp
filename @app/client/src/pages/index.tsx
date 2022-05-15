@@ -61,7 +61,7 @@ const Home: NextPage = () => {
             </p>
             <p>Every member helps me spend more time working on the site.</p>
             <Button
-              type="primary"
+              styleType="primary"
               href={`${process.env.ROOT_URL}/pricing`}
               data-cy="become-a-member"
             >

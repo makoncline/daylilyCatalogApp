@@ -16,11 +16,7 @@ const ListsPage: NextPage = () => {
     } else if (!user) {
       return "Loading";
     } else {
-      return (
-        <>
-          <Lists />
-        </>
-      );
+      return <Lists />;
     }
   })();
   const query = useSharedQuery();

@@ -1,7 +1,7 @@
 import { Request, RequestHandler, Response } from "express";
 import Stripe from "stripe";
 
-import getStripe from "../utils/getStripe";
+import { getStripe } from "../utils";
 
 export const createBillingPortalSession: RequestHandler = async (
   req: Request,

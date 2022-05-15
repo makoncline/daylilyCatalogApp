@@ -159,7 +159,7 @@ const Settings_Emails: NextPage = () => {
           {!showAddEmailForm ? (
             <div>
               <Button
-                type="primary"
+                styleType="primary"
                 onClick={() => setShowAddEmailForm(true)}
                 data-cy="settingsemails-button-addemail"
               >

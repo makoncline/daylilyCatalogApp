@@ -4,19 +4,67 @@ import styled from "styled-components";
 import { above } from "../utilities";
 import { Mobile as MoblieNav } from "./";
 
+type ButtonType = "primary" | "default" | "text";
+
 type Props = {
   children: string;
   href?: string;
   block?: boolean;
-  [other: string]: unknown;
-};
+  styleType?: ButtonType;
+  danger?: boolean;
+} & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export const Button = React.forwardRef(
   (
-    { children, href, block = false, ...props }: Props,
+    {
+      children: child,
+      href,
+      block = false,
+      styleType = "default",
+      danger = false,
+      ...props
+    }: Props,
     ref: React.ForwardedRef<HTMLButtonElement>
   ) => {
     const isLink = typeof href === "string";
+    let border = "var(--text-3)";
+    let borderGlint = "var(--text-1)";
+    let background = "transparent";
+    let backgroundGlint = background;
+    let color = "var(--text-1)";
+    let width = "auto";
+    if (danger) {
+      border = "var(--danger)";
+      borderGlint = "var(--danger--glint)";
+      color = "var(--danger)";
+    }
+    switch (styleType) {
+      case "primary": {
+        border = danger ? "var(--danger)" : "var(--primary)";
+        borderGlint = danger ? "var(--danger--glint)" : "var(--primary--glint)";
+        background = border;
+        backgroundGlint = borderGlint;
+        color = "var(--text-1)";
+        break;
+      }
+      case "text": {
+        border = "transparent";
+        break;
+      }
+    }
+    if (block) {
+      width = "100%";
+    }
+
+    const style = {
+      "--border": border,
+      "--border--glint": borderGlint,
+      "--background": background,
+      "--background--glint": backgroundGlint,
+      "--color": color,
+      "--width": width,
+    } as React.CSSProperties;
+
     return (
       <>
         {isLink ? (
@@ -25,13 +73,13 @@ export const Button = React.forwardRef(
             method="get"
             style={block ? { width: "100%" } : {}}
           >
-            <StyledButton type="submit" block={block} ref={ref} {...props}>
-              {children}
+            <StyledButton type="submit" style={style} ref={ref} {...props}>
+              {child}
             </StyledButton>
           </form>
         ) : (
-          <StyledButton type="button" block={block} ref={ref} {...props}>
-            {children}
+          <StyledButton type="button" style={style} ref={ref} {...props}>
+            {child}
           </StyledButton>
         )}
       </>
@@ -40,8 +88,7 @@ export const Button = React.forwardRef(
 );
 Button.displayName = "Button";
 
-const StyledButton = styled.button<{ block: boolean }>`
-  ${({ block }) => block && `width: 100%;`}
+const StyledButton = styled.button`
   display: inline-flex;
   justify-content: center;
   white-space: nowrap;
@@ -52,20 +99,22 @@ const StyledButton = styled.button<{ block: boolean }>`
   padding-inline: var(--size-3);
   padding-block: var(--size-1);
 
-  color: var(--text-1);
-  border: var(--border-size-1) solid var(--text-1);
-  background-color: transparent;
+  border: var(--hairline);
   border-radius: var(--radius-2);
+
+  border-color: var(--border);
+  background-color: var(--background);
+  color: var(--color);
+  width: var(--width);
   :hover {
     cursor: pointer;
-    border-color: var(--text-2);
-    color: var(--text-2);
+    background-color: var(--background--glint);
+    border-color: var(--border--glint);
 
     @media (prefers-color-scheme: light) {
       text-shadow: 0 1px 0 var(--shadow-color);
     }
   }
-
   &:active {
     position: relative;
     inset-block-start: 1px;

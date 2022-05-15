@@ -4,6 +4,9 @@ import { createListUrl, toEditListUrl } from "@app/lib";
 import Link from "next/link";
 import Router from "next/router";
 import React from "react";
+import styled from "styled-components";
+
+import { truncate } from "./util";
 
 export const Lists = () => {
   const { data } = useListsQuery();
@@ -15,7 +18,7 @@ export const Lists = () => {
       <Link href={createListUrl} passHref>
         <Button>Create List</Button>
       </Link>
-      <table>
+      <StyledTable>
         <thead>
           <tr>
             <th>Name</th>
@@ -33,7 +36,41 @@ export const Lists = () => {
             </tr>
           ))}
         </tbody>
-      </table>
+      </StyledTable>
     </div>
   );
 };
+
+const StyledTable = styled.table`
+  border-collapse: collapse;
+  thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--surface-1);
+  }
+  thead::after {
+    content: "";
+    position: absolute;
+    top: -1px;
+    width: 100%;
+    height: 100%;
+    border-bottom: var(--hairline);
+  }
+  th {
+    padding: var(--size-2);
+    text-align: left;
+  }
+  td {
+    padding: var(--size-2);
+    &:first-child {
+      white-space: nowrap;
+    }
+  }
+  tbody tr {
+    cursor: pointer;
+  }
+  tbody tr:hover {
+    background: var(--surface-2);
+  }
+`;
