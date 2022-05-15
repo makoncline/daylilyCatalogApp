@@ -1,6 +1,7 @@
 import { ApolloError, useApolloClient } from "@apollo/client";
 import { RegisteredLilyDisplay, RegisteredLilyInput } from "@app/components";
 import {
+  Alert,
   Button,
   Field,
   Form,
@@ -108,20 +109,18 @@ function CreateListingForm({ error, setError }: EditListingFormProps) {
           Listing Name
         </Field>
         {error ? (
-          <FormGroup>
-            <FormError>
-              <p>Create listing failed</p>
-              <span>
-                {extractError(error).message}
-                {code ? (
-                  <span>
-                    {" "}
-                    (Error code: <code>ERR_{code}</code>)
-                  </span>
-                ) : null}
-              </span>
-            </FormError>
-          </FormGroup>
+          <Alert type="danger">
+            <Alert.Heading>Create listing failed</Alert.Heading>
+            <Alert.Body>
+              {extractError(error).message}
+              {code ? (
+                <span>
+                  {" "}
+                  (Error code: <code>ERR_{code}</code>)
+                </span>
+              ) : null}
+            </Alert.Body>
+          </Alert>
         ) : null}
         <SubmitButton>
           <Button block>Create listing</Button>

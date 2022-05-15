@@ -29,9 +29,9 @@ export const Lilies = () => {
   const isFree = user.freeUntil ? new Date() < new Date(user.freeUntil) : false;
   const isAddActive = isFree || isActive || !isOverFreeLimit;
   return (
-    <Style>
+    <Space direction="column" block center>
       {!isAddActive && (
-        <Alert type="danger">
+        <Alert type="info">
           <Alert.Heading>Create listing disabled</Alert.Heading>
           <Alert.Body>
             <p>
@@ -40,18 +40,21 @@ export const Lilies = () => {
             </p>
           </Alert.Body>
           <Alert.Actions>
-            <Button href={`${process.env.ROOT_URL}/membership`}>
+            <Button
+              href={`${process.env.ROOT_URL}/membership`}
+              styleType="primary"
+              block
+            >
               Become a Daylily Catalog Member
             </Button>
           </Alert.Actions>
         </Alert>
       )}
-      <Button
-        styleType="primary"
-        href={`${process.env.ROOT_URL}${toCreateListingUrl()}`}
-      >
-        Create listing
-      </Button>
+      {isAddActive && (
+        <Button href={`${process.env.ROOT_URL}${toCreateListingUrl()}`} block>
+          Create listing
+        </Button>
+      )}
       <Form formId="list-filter" onSubmit={() => void 0}>
         <Field label={false} placeholder="Filter catalog by name...">
           Filter
@@ -60,21 +63,6 @@ export const Lilies = () => {
       <LiliesTable
         dataSource={(nameFilter ? filteredUserLilies : userLilies) || []}
       />
-    </Style>
+    </Space>
   );
 };
-
-const Style = styled.div`
-  .over-limit {
-    margin: var(--spacing-sm) auto var(--spacing-lg);
-    max-width: 400px;
-    border: var(--hairline);
-    padding: var(--spacing-sm);
-    .ant-btn {
-      height: var(--spacing-lg);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-  }
-`;

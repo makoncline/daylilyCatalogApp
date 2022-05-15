@@ -44,7 +44,7 @@ export const RegisteredLilyInput = ({
       onInputValueChange={handleInputValueChange}
       onSelectedItemChange={onSelectedItemChange}
     >
-      Link to a registered daylily
+      Link to a registered daylily?
     </AutocompleteInput>
   );
 };
