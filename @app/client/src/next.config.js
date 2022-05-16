@@ -1,6 +1,4 @@
 require("@app/config");
-const compose = require("lodash/flowRight");
-const AntDDayjsWebpackPlugin = require("antd-dayjs-webpack-plugin");
 
 if (!process.env.ROOT_URL) {
   if (process.argv[1].endsWith("/depcheck")) {
@@ -15,37 +13,10 @@ if (!process.env.ROOT_URL) {
   // You *must not* use `process.env` in here, because we need to check we have
   // those variables. To enforce this, we've deliberately shadowed process.
   module.exports = () => {
-    const withCss = require("@zeit/next-css");
-    const withLess = require("@zeit/next-less");
-    const withAntdLess = require("next-plugin-antd-less");
-    const lessToJS = require("less-vars-to-js");
-    const fs = require("fs");
-    const path = require("path");
-    // Where your antd-custom.less file lives
-    const themeVariables = lessToJS(
-      fs.readFileSync(
-        path.resolve(__dirname, "../assets/antd-custom.less"),
-        "utf8"
-      )
-    );
-    // fix: prevents error when .less files are required by node
-    if (typeof require !== "undefined") {
-      require.extensions[".less"] = () => {};
-      require.extensions[".css"] = () => {};
-    }
-
-    return compose(
-      // withCss,
-      // withLess
-      withAntdLess
-    )({
+    return {
       poweredByHeader: false,
       distDir: `../.next`,
       trailingSlash: false,
-      lessLoaderOptions: {
-        javascriptEnabled: true,
-        modifyVars: themeVariables, // make your antd custom effective
-      },
       images: {
         domains: [
           "daylily-catalog-images-stage.s3.amazonaws.com",
@@ -102,7 +73,6 @@ if (!process.env.ROOT_URL) {
               // attempting to bundle them into the client.
               /^(node-gyp-build|bufferutil|utf-8-validate)$/
             ),
-            new AntDDayjsWebpackPlugin(),
           ],
           externals: [
             ...(externals || []),
@@ -110,6 +80,6 @@ if (!process.env.ROOT_URL) {
           ].filter((_) => _),
         };
       },
-    });
+    };
   };
 })();

@@ -9,6 +9,7 @@ query Users {
       updatedAt
       userLocation
       stripeSubscription {
+        id
         subscriptionInfo {
           status
         }

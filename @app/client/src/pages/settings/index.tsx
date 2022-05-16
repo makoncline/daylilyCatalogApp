@@ -2,13 +2,11 @@ import { ApolloError } from "@apollo/client";
 import { ErrorAlert, Redirect, SettingsLayout, Wysiwyg } from "@app/components";
 import {
   Alert,
-  below,
   Button,
   Field,
   Form,
   FormWrapper,
   Heading,
-  Link,
   Space,
   SubmitButton,
   useForm,
@@ -27,7 +25,6 @@ import {
 import { NextPage } from "next";
 import NextLink from "next/link";
 import React, { useCallback, useState } from "react";
-import styled from "styled-components";
 
 import { ImageDisplay } from "../ImageDisplay";
 import { ImageUpload } from "../ImageUpload";
@@ -111,6 +108,7 @@ function ProfileSettingsForm({
       bio: user.bio || "",
       userLocation: user.userLocation || "",
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const handleSubmit = useCallback(async () => {

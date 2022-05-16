@@ -184,7 +184,7 @@ function NumberRangeColumnFilter<T extends object>({
 
 function textFilter<T extends object>(
   rows: Row<T>[],
-  id: string,
+  id: any,
   filterValue: FilterValue
 ) {
   return rows.filter((row: any) => {
@@ -199,7 +199,7 @@ function textFilter<T extends object>(
 
 function betweenLengthFilter<T extends object>(
   rows: Row<T>[],
-  id: string,
+  id: any,
   filterValue: FilterValue
 ) {
   const min = filterValue[0] || Number.MIN_SAFE_INTEGER;
@@ -213,7 +213,7 @@ function betweenLengthFilter<T extends object>(
 
 function fuzzyTextFilterFn<T extends object>(
   rows: Row<T>[],
-  id: string,
+  id: any,
   filterValue: FilterValue
 ) {
   return matchSorter(rows, filterValue, {

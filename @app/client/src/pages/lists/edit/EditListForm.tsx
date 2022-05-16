@@ -28,6 +28,7 @@ function EditListForm({ list }: { list: ListDataFragment }) {
       name: list.name,
       description: list.intro || "",
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [list]);
 
   async function handleSubmit() {

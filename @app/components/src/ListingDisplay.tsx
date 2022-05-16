@@ -15,7 +15,6 @@ import React from "react";
 import styled from "styled-components";
 
 import { ImageDisplay } from "./ImageDisplay";
-import { getDescription } from "./RegisteredLilyDisplay";
 
 function ListingDisplay({
   listingId,
@@ -40,16 +39,8 @@ function ListingDisplay({
     Boolean
   ) as string[];
   const imageUrls = Array.from(new Set([...listingImageUrls, ...ahsImageUrls]));
-  const {
-    name,
-    publicNote,
-    privateNote,
-    price,
-    updatedAt,
-    list,
-    ahsDatumByAhsRef,
-  } = listing;
-  const description = ahsDatumByAhsRef && getDescription(ahsDatumByAhsRef);
+  const { publicNote, privateNote, price, updatedAt, list, ahsDatumByAhsRef } =
+    listing;
   const listName = list?.name;
   const isOwner = userId === listing.user?.id;
   return (
