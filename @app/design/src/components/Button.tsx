@@ -137,9 +137,9 @@ const StyledButton = styled.button`
   }
   :disabled {
     cursor: not-allowed;
-    border-color: var(--border);
-    background-color: var(--background);
-    color: var(--color);
+    border-color: var(--text-3);
+    background-color: transparent;
+    color: var(--text-3);
     :active {
       inset-block-start: 0;
     }

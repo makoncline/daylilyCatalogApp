@@ -7,9 +7,12 @@ import { truncate } from "./util";
 
 function ImageCell({ value }: { value: string }) {
   return (
-    <Thumbnail>
-      <Image src={value.length > 0 ? value[0] : "/flowerPlaceholder.png"} />
-    </Thumbnail>
+    <div style={{ position: "relative" }}>
+      {/* hack to get around styled components not working correctly when columns move around */}
+      <Thumbnail>
+        <Image src={value.length > 0 ? value[0] : "/flowerPlaceholder.png"} />
+      </Thumbnail>
+    </div>
   );
 }
 function DateCell({ value }: { value: string }) {

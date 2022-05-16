@@ -1,4 +1,4 @@
-import { Space } from "@app/design";
+import { Button, IconButton, Space, useLocalStorage } from "@app/design";
 import { AhsDataFragment, LilyDataFragment } from "@app/graphql";
 import { toViewListingUrl } from "@app/lib";
 import router from "next/router";
@@ -34,7 +34,70 @@ type ListingRow = Omit<
     registeredName?: string | null;
   };
 
+const defaultColumnOrder = [
+  "name",
+  "imgUrl",
+  "price",
+  "publicNote",
+  "privateNote",
+  "list",
+  "registeredName",
+  "hybridizer",
+  "year",
+  "ploidy",
+  "scapeHeight",
+  "bloomSize",
+  "branches",
+  "budcount",
+  "color",
+  "bloomHabit",
+  "bloomSeason",
+  "flower",
+  "foliage",
+  "foliageType",
+  "form",
+  "fragrance",
+  "parentage",
+  "seedlingNum",
+  "sculpting",
+  "createdAt",
+  "updatedAt",
+];
+
+const defaultHiddenColumns = [
+  "registeredName",
+  "hybridizer",
+  "year",
+  "parentage",
+  "ploidy",
+  "scapeHeight",
+  "bloomSize",
+  "bloomHabit",
+  "bloomSeason",
+  "budcount",
+  "branches",
+  "color",
+  "flower",
+  "foliage",
+  "foliageType",
+  "form",
+  "fragrance",
+  "sculpting",
+  "seedlingNum",
+  "createdAt",
+  "updatedAt",
+];
+
 const useReactTable = ({ rawData }: { rawData: LilyDataFragment[] }) => {
+  const [columnOrder, setColumnOrder] = useLocalStorage<string[]>(
+    "columnOrder",
+    defaultColumnOrder
+  );
+  const [hiddenColumns, setHiddenColumns] = useLocalStorage<string[]>(
+    "hiddenColumns",
+    defaultHiddenColumns
+  );
+
   const data: ListingRow[] = React.useMemo(
     () =>
       rawData.slice(0, 10).map((row) => {
@@ -220,58 +283,8 @@ const useReactTable = ({ rawData }: { rawData: LilyDataFragment[] }) => {
       defaultColumn,
       filterTypes,
       initialState: {
-        columnOrder: [
-          "name",
-          "imgUrl",
-          "price",
-          "publicNote",
-          "privateNote",
-          "list",
-          "registeredName",
-          "hybridizer",
-          "year",
-          "ploidy",
-          "scapeHeight",
-          "bloomSize",
-          "branches",
-          "budcount",
-          "color",
-          "bloomHabit",
-          "bloomSeason",
-          "flower",
-          "foliage",
-          "foliageType",
-          "form",
-          "fragrance",
-          "parentage",
-          "seedlingNum",
-          "sculpting",
-          "createdAt",
-          "updatedAt",
-        ],
-        hiddenColumns: [
-          "registeredName",
-          "hybridizer",
-          "year",
-          "parentage",
-          "ploidy",
-          "scapeHeight",
-          "bloomSize",
-          "bloomHabit",
-          "bloomSeason",
-          "budcount",
-          "branches",
-          "color",
-          "flower",
-          "foliage",
-          "foliageType",
-          "form",
-          "fragrance",
-          "sculpting",
-          "seedlingNum",
-          "createdAt",
-          "updatedAt",
-        ],
+        columnOrder,
+        hiddenColumns,
       },
     },
     useFilters,
@@ -280,7 +293,30 @@ const useReactTable = ({ rawData }: { rawData: LilyDataFragment[] }) => {
     useColumnOrder
   );
 
-  return tableInstance;
+  React.useEffect(() => {
+    tableInstance.setColumnOrder(columnOrder);
+  }, [columnOrder, tableInstance]);
+  React.useEffect(() => {
+    tableInstance.setHiddenColumns(hiddenColumns);
+  }, [hiddenColumns, tableInstance]);
+
+  return {
+    tableInstance,
+    setColumnOrder: (columnOrder: string[]) => {
+      setColumnOrder(columnOrder);
+      tableInstance.setColumnOrder(columnOrder);
+    },
+    setHiddenColumns: (hidenColumns: string[]) => {
+      setHiddenColumns(hidenColumns);
+      tableInstance.setHiddenColumns(hidenColumns);
+    },
+    columnOrder,
+    hiddenColumns,
+    resetToDefault: () => {
+      setColumnOrder(defaultColumnOrder);
+      setHiddenColumns(defaultHiddenColumns);
+    },
+  };
 };
 
 export function LiliesTable({
@@ -289,16 +325,24 @@ export function LiliesTable({
   dataSource: LilyDataFragment[];
 }) {
   const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    state,
-    visibleColumns,
-    preGlobalFilteredRows,
-    setGlobalFilter,
-    allColumns,
+    tableInstance: {
+      getTableProps,
+      getTableBodyProps,
+      headerGroups,
+      rows,
+      prepareRow,
+      state,
+      visibleColumns,
+      preGlobalFilteredRows,
+      setGlobalFilter,
+      allColumns,
+      setColumnOrder: rtSetColumnOrder,
+    },
+    setColumnOrder,
+    columnOrder,
+    setHiddenColumns,
+    hiddenColumns,
+    resetToDefault,
   } = useReactTable({
     rawData: dataSource,
   });
@@ -308,20 +352,90 @@ export function LiliesTable({
     router.push(`${url}`);
   }
 
+  const rtColumnOrder = allColumns.map((column) => column.id);
+  const rtHidenColumns = allColumns
+    .filter((column) => !visibleColumns.includes(column))
+    .map((column) => column.id);
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setColumnOrder(rtColumnOrder);
+    setHiddenColumns(rtHidenColumns);
+  }
+
+  function handleMove(direction: "<" | ">", index: number) {
+    const newColumnOrder = [...rtColumnOrder];
+    const [moved] = newColumnOrder.splice(index, 1);
+    if (direction === "<") {
+      newColumnOrder.splice(index - 1, 0, moved);
+    } else {
+      newColumnOrder.splice(index + 1, 0, moved);
+    }
+    rtSetColumnOrder(newColumnOrder);
+  }
+
   return (
     <>
       <SelectColumns>
-        <summary>Select columns</summary>
-        <ColumnGrid>
-          {allColumns.map((column) => (
-            <div key={column.id}>
-              <label>
-                <input type="checkbox" {...column.getToggleHiddenProps()} />{" "}
-                {column.Header}
-              </label>
-            </div>
-          ))}
-        </ColumnGrid>
+        <summary>Edit listing table</summary>
+        <form onSubmit={handleSubmit}>
+          <Space direction="column">
+            <ColumnGrid>
+              {allColumns.map((column, index) => (
+                <div key={column.id}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      id={column.id}
+                      {...column.getToggleHiddenProps()}
+                    />{" "}
+                    {column.Header}
+                    <StyledButton
+                      onClick={() => handleMove("<", index)}
+                      styleType="text"
+                    >
+                      ◀️
+                    </StyledButton>
+                    <StyledButton
+                      onClick={() => handleMove(">", index)}
+                      styleType="text"
+                    >
+                      ▶️
+                    </StyledButton>
+                  </label>
+                </div>
+              ))}
+            </ColumnGrid>
+            <Space>
+              <Button
+                type="submit"
+                styleType="primary"
+                disabled={
+                  JSON.stringify(columnOrder) ==
+                    JSON.stringify(rtColumnOrder) &&
+                  JSON.stringify(hiddenColumns) ==
+                    JSON.stringify(rtHidenColumns)
+                }
+              >
+                Save
+              </Button>
+              <Button
+                onClick={() => {
+                  if (
+                    confirm(
+                      "Are you sure you want to reset column order and visibility to the default?"
+                    )
+                  ) {
+                    resetToDefault();
+                  }
+                }}
+                styleType="text"
+                danger
+              >
+                Reset to default
+              </Button>
+            </Space>
+          </Space>
+        </form>
       </SelectColumns>
       <TableWrapper>
         <StyledTable {...getTableProps()}>
@@ -387,12 +501,16 @@ export function LiliesTable({
   );
 }
 
+const StyledButton = styled(Button)`
+  padding: 0 var(--size-1);
+`;
+
 const SelectColumns = styled.details`
   width: 100%;
 `;
 const ColumnGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
 `;
 const NoWrap = styled.span`
