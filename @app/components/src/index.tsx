@@ -20,5 +20,7 @@ export * from "./SettingsLayout";
 export * from "./SharedLayout";
 export * from "./SpinPadded";
 export * from "./StandardWidth";
+export * from "./TableCells";
+export * from "./TableFilters";
 export * from "./UserCard";
 export * from "./Wysiwyg";
