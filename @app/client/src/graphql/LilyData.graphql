@@ -7,9 +7,8 @@ fragment LilyData on Lily {
   privateNote
   ahsId
   ahsDatumByAhsRef {
-    image
-    ahsId
     id
+    ...AhsData
   }
   list {
     id

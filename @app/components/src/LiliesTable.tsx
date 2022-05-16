@@ -22,24 +22,102 @@ type ListingRow = {
   id: number;
   name: string;
   imgUrl: Maybe<String>[];
-  list: string | null;
+  price: any;
   publicNote: Maybe<string>;
   privateNote: Maybe<string>;
-  price: any;
+  createdAt: string;
+  updatedAt: string;
+  list: string | null;
+  bloomHabit: string | null;
+  bloomSeason: string | null;
+  bloomSize: string | null;
+  branches: string | null;
+  budcount: string | null;
+  color: string | null;
+  flower: string | null;
+  foliage: string | null;
+  foliageType: string | null;
+  form: string | null;
+  fragrance: string | null;
+  hybridizer: string | null;
+  registeredName: string | null;
+  parentage: string | null;
+  ploidy: string | null;
+  scapeHeight: string | null;
+  sculpting: string | null;
+  seedlingNum: string | null;
+  year: string | null;
 };
 
 const useReactTable = ({ rawData }: { rawData: LilyDataFragment[] }) => {
   const data: ListingRow[] = React.useMemo(
     () =>
-      rawData.slice(0, 10).map((row) => ({
-        id: row.id,
-        name: row.name,
-        imgUrl: row.imgUrl || [],
-        list: row.list?.name || null,
-        publicNote: row.publicNote,
-        privateNote: row.privateNote,
-        price: row.price,
-      })),
+      rawData.slice(0, 10).map((row) => {
+        const {
+          id,
+          name,
+          imgUrl,
+          publicNote,
+          privateNote,
+          price,
+          createdAt,
+          updatedAt,
+          list,
+          ahsDatumByAhsRef,
+        } = row;
+        const { name: listName } = list || {};
+        const {
+          bloomHabit,
+          bloomSeason,
+          bloomSize,
+          branches,
+          budcount,
+          color,
+          flower,
+          foliage,
+          foliageType,
+          form,
+          fragrance,
+          hybridizer,
+          name: registeredName,
+          parentage,
+          ploidy,
+          scapeHeight,
+          sculpting,
+          seedlingNum,
+          year,
+        } = ahsDatumByAhsRef || {};
+        return {
+          id: id,
+          name: name,
+          imgUrl: imgUrl || [],
+          price: price,
+          publicNote: publicNote,
+          privateNote: privateNote,
+          createdAt: createdAt,
+          updatedAt: updatedAt,
+          list: listName || null,
+          bloomHabit: bloomHabit || null,
+          bloomSeason: bloomSeason || null,
+          bloomSize: bloomSize || null,
+          branches: branches || null,
+          budcount: budcount || null,
+          color: color || null,
+          flower: flower || null,
+          foliage: foliage || null,
+          foliageType: foliageType || null,
+          form: form || null,
+          fragrance: fragrance || null,
+          hybridizer: hybridizer || null,
+          registeredName: registeredName || null,
+          parentage: parentage || null,
+          ploidy: ploidy || null,
+          scapeHeight: scapeHeight || null,
+          sculpting: sculpting || null,
+          seedlingNum: seedlingNum || null,
+          year: year || null,
+        };
+      }),
     [rawData]
   );
   const columns: Column<ListingRow>[] = React.useMemo(
@@ -64,7 +142,6 @@ const useReactTable = ({ rawData }: { rawData: LilyDataFragment[] }) => {
       },
       {
         Header: "Price",
-
         accessor: "price",
         Cell: ({ value }) => (value > 0 ? currency(value) : "-"),
         Filter: NumberRangeColumnFilter,
@@ -73,14 +150,112 @@ const useReactTable = ({ rawData }: { rawData: LilyDataFragment[] }) => {
       {
         Header: "Public note",
         accessor: "publicNote",
-        Cell: ({ value }) => truncate(value || ""),
+        Cell: Truncate,
         filter: "fuzzyText",
       },
       {
         Header: "Private note",
         accessor: "privateNote",
-        Cell: ({ value }) => truncate(value || ""),
+        Cell: Truncate,
         filter: "fuzzyText",
+      },
+      {
+        Header: "Created at",
+        accessor: "createdAt",
+        filter: undefined,
+        Cell: DateDisplay,
+      },
+      {
+        Header: "Updated at",
+        accessor: "updatedAt",
+        filter: undefined,
+        Cell: DateDisplay,
+      },
+      {
+        Header: "List",
+        accessor: "list",
+        Filter: SelectColumnFilter,
+      },
+      {
+        Header: "Bloom habit",
+        accessor: "bloomHabit",
+        Filter: SelectColumnFilter,
+      },
+      {
+        Header: "Bloom season",
+        accessor: "bloomSeason",
+        Filter: SelectColumnFilter,
+      },
+      {
+        Header: "Bloom size",
+        accessor: "bloomSize",
+        Filter: NumberRangeColumnFilter,
+        filter: "betweenLength",
+      },
+      {
+        Header: "Branches",
+        accessor: "branches",
+        Filter: NumberRangeColumnFilter,
+        filter: "between",
+      },
+      {
+        Header: "Budcount",
+        accessor: "budcount",
+        Filter: NumberRangeColumnFilter,
+        filter: "between",
+      },
+      {
+        Header: "Color",
+        accessor: "color",
+        filter: "fuzzyText",
+        Cell: Truncate,
+      },
+      { Header: "Flower", accessor: "flower", Filter: SelectColumnFilter },
+      { Header: "Foliage", accessor: "foliage", Filter: SelectColumnFilter },
+      {
+        Header: "Foliage type",
+        accessor: "foliageType",
+        Filter: SelectColumnFilter,
+      },
+      {
+        Header: "Form",
+        accessor: "form",
+        Filter: SelectColumnFilter,
+      },
+      {
+        Header: "Fragrance",
+        accessor: "fragrance",
+        Filter: SelectColumnFilter,
+      },
+      { Header: "Hybridizer", accessor: "hybridizer", filter: "fuzzyText" },
+      {
+        Header: "Registered name",
+        accessor: "registeredName",
+        filter: "fuzzyText",
+      },
+      {
+        Header: "Parentage",
+        accessor: "parentage",
+        filter: "fuzzyText",
+      },
+      { Header: "Ploidy", accessor: "ploidy", Filter: SelectColumnFilter },
+      {
+        Header: "Scape height",
+        accessor: "scapeHeight",
+        Filter: NumberRangeColumnFilter,
+        filter: "betweenLength",
+      },
+      {
+        Header: "Sculpting",
+        accessor: "sculpting",
+        Filter: SelectColumnFilter,
+      },
+      { Header: "Seedling #", accessor: "seedlingNum", filter: "fuzzyText" },
+      {
+        Header: "Year",
+        accessor: "year",
+        Filter: NumberRangeColumnFilter,
+        filter: "between",
       },
     ],
     []
@@ -88,10 +263,7 @@ const useReactTable = ({ rawData }: { rawData: LilyDataFragment[] }) => {
 
   const filterTypes = React.useMemo(
     () => ({
-      // Add a new fuzzyTextFilterFn filter type.
       fuzzyText: fuzzyTextFilterFn,
-      // Or, override the default text filter to use
-      // "startWith"
       text: (rows: any, id: any, filterValue: any) => {
         return rows.filter((row: any) => {
           const rowValue = row.values[id];
@@ -102,14 +274,30 @@ const useReactTable = ({ rawData }: { rawData: LilyDataFragment[] }) => {
             : true;
         });
       },
+      betweenLength: (
+        rows: any,
+        id: any,
+        filterValue: [number | undefined, number | undefined]
+      ) => {
+        const min = filterValue[0] || Number.MIN_SAFE_INTEGER;
+        const max = filterValue[1] || Number.MAX_SAFE_INTEGER;
+        return rows.filter((row: any) => {
+          const rowValue = row.values[id];
+          const inches = lengthToNumber(rowValue);
+          return isNaN(inches) ? false : inches >= min && inches <= max;
+        });
+      },
     }),
     []
   );
 
   const defaultColumn = React.useMemo(
     () => ({
-      // Let's set up our default Filter UI
       Filter: DefaultColumnFilter,
+      // eslint-disable-next-line react/display-name
+      Cell: ({ value }: { value: string }) => (
+        <LimitLength>{value}</LimitLength>
+      ),
     }),
     []
   );
@@ -120,6 +308,32 @@ const useReactTable = ({ rawData }: { rawData: LilyDataFragment[] }) => {
       data,
       defaultColumn,
       filterTypes,
+      initialState: {
+        hiddenColumns: [
+          // "list",
+          // "registeredName",
+          // "hybridizer",
+          // "year",
+          // "parentage",
+          // "ploidy",
+          // "scapeHeight",
+          // "bloomSize",
+          // "bloomHabit",
+          // "bloomSeason",
+          // "budcount",
+          // "branches",
+          // "color",
+          // "flower",
+          // "foliage",
+          // "foliageType",
+          // "form",
+          // "fragrance",
+          // "sculpting",
+          // "seedlingNum",
+          // "createdAt",
+          // "updatedAt",
+        ],
+      },
     },
     useFilters,
     useGlobalFilter,
@@ -144,66 +358,88 @@ export function LiliesTable({
     visibleColumns,
     preGlobalFilteredRows,
     setGlobalFilter,
+    allColumns,
   } = useReactTable({
     rawData: dataSource,
   });
 
   function handleClick(id: number) {
     const url = toViewListingUrl(id);
-    console.log(url);
     router.push(`${url}`);
   }
+
   return (
-    <StyledTable {...getTableProps()}>
-      <thead>
-        <tr>
-          <th colSpan={visibleColumns.length}>
-            <GlobalFilter
-              preGlobalFilteredRows={preGlobalFilteredRows}
-              globalFilter={state.globalFilter}
-              setGlobalFilter={setGlobalFilter}
-            />
-          </th>
-        </tr>
-        {headerGroups.map((headerGroup) => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
-              <th {...column.getHeaderProps()}>
-                <Space
-                  {...column.getSortByToggleProps()}
-                  style={{ "--direction": "row" }}
-                >
-                  {column.render("Header")}
-                  <span>
-                    {column.isSorted
-                      ? column.isSortedDesc
-                        ? " 🔽"
-                        : " 🔼"
-                      : ""}
-                  </span>
-                </Space>
-                <div>{column.canFilter ? column.render("Filter") : null}</div>
+    <>
+      <SelectColumns>
+        <summary>Select columns</summary>
+        <ColumnGrid>
+          {allColumns.map((column) => (
+            <div key={column.id}>
+              <label>
+                <input type="checkbox" {...column.getToggleHiddenProps()} />{" "}
+                {column.Header}
+              </label>
+            </div>
+          ))}
+        </ColumnGrid>
+      </SelectColumns>
+      <TableWrapper>
+        <StyledTable {...getTableProps()}>
+          <thead>
+            <tr>
+              <th colSpan={visibleColumns.length}>
+                <GlobalFilter
+                  preGlobalFilteredRows={preGlobalFilteredRows}
+                  globalFilter={state.globalFilter}
+                  setGlobalFilter={setGlobalFilter}
+                />
               </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody {...getTableBodyProps()}>
-        {rows.map((row) => {
-          prepareRow(row);
-          return (
-            <tr
-              {...row.getRowProps()}
-              onClick={() => handleClick(row.original.id)}
-            >
-              {row.cells.map((cell) => {
-                return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
-              })}
             </tr>
-          );
-        })}
-      </tbody>
-    </StyledTable>
+            {headerGroups.map((headerGroup) => (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => (
+                  <th {...column.getHeaderProps()}>
+                    <Space
+                      {...column.getSortByToggleProps()}
+                      style={{ "--direction": "row" }}
+                    >
+                      <NoWrap>{column.render("Header")}</NoWrap>
+                      <span>
+                        {column.isSorted
+                          ? column.isSortedDesc
+                            ? " 🔽"
+                            : " 🔼"
+                          : ""}
+                      </span>
+                    </Space>
+                    <div>
+                      {column.canFilter ? column.render("Filter") : null}
+                    </div>
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody {...getTableBodyProps()}>
+            {rows.map((row) => {
+              prepareRow(row);
+              return (
+                <tr
+                  {...row.getRowProps()}
+                  onClick={() => handleClick(row.original.id)}
+                >
+                  {row.cells.map((cell) => {
+                    return (
+                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </StyledTable>
+      </TableWrapper>
+    </>
   );
 }
 
@@ -219,7 +455,7 @@ function GlobalFilter({
   }, 200);
 
   return (
-    <span>
+    <Space>
       Search:{" "}
       <input
         value={value || ""}
@@ -228,13 +464,11 @@ function GlobalFilter({
           onChange(e.target.value);
         }}
         placeholder={`${count} records...`}
-        style={{ width: "100%" }}
       />
-    </span>
+    </Space>
   );
 }
 
-// Define a default UI for filtering
 function DefaultColumnFilter({
   column: { filterValue, preFilteredRows, setFilter },
 }: any) {
@@ -244,20 +478,16 @@ function DefaultColumnFilter({
     <input
       value={filterValue || ""}
       onChange={(e) => {
-        setFilter(e.target.value || undefined); // Set undefined to remove the filter entirely
+        setFilter(e.target.value || undefined);
       }}
       placeholder={`Search ${count} records...`}
     />
   );
 }
 
-// This is a custom filter UI for selecting
-// a unique option from a list
 function SelectColumnFilter({
   column: { filterValue, setFilter, preFilteredRows, id },
 }: any) {
-  // Calculate the options for filtering
-  // using the preFilteredRows
   const options = React.useMemo(() => {
     const options = new Set();
     preFilteredRows.forEach((row: any) => {
@@ -266,7 +496,6 @@ function SelectColumnFilter({
     return [...Array.from(options.values())];
   }, [id, preFilteredRows]);
 
-  // Render a multi-select box
   return (
     <select
       value={filterValue}
@@ -284,18 +513,34 @@ function SelectColumnFilter({
   );
 }
 
-// This is a custom UI for our 'between' or number range
-// filter. It uses two number boxes and filters rows to
-// ones that have values between the two
+function lengthToNumber(length: string) {
+  return parseInt((length || "").replace(/(^\d+(\.\d+)?)(.+$)/i, "$1"), 10);
+}
 function NumberRangeColumnFilter({
   column: { filterValue = [], preFilteredRows, setFilter, id },
 }: any) {
   const [min, max] = React.useMemo(() => {
-    let min = preFilteredRows.length ? preFilteredRows[0].values[id] : 0;
-    let max = preFilteredRows.length ? preFilteredRows[0].values[id] : 0;
+    let min: number;
+    let max: number;
+    if (id === "bloomSize" || id === "scapeHeight") {
+      min = preFilteredRows.length
+        ? lengthToNumber(preFilteredRows[0].values[id])
+        : 0;
+      max = preFilteredRows.length
+        ? lengthToNumber(preFilteredRows[0].values[id])
+        : 0;
+    } else {
+      min = preFilteredRows.length ? preFilteredRows[0].values[id] : 0;
+      max = preFilteredRows.length ? preFilteredRows[0].values[id] : 0;
+    }
     preFilteredRows.forEach((row: any) => {
-      min = Math.min(row.values[id], min);
-      max = Math.max(row.values[id], max);
+      if (id === "bloomSize" || id === "scapeHeight") {
+        min = Math.min(lengthToNumber(row.values[id]), min);
+        max = Math.max(lengthToNumber(row.values[id]), max);
+      } else {
+        min = Math.min(row.values[id], min);
+        max = Math.max(row.values[id], max);
+      }
     });
     return [min, max];
   }, [id, preFilteredRows]);
@@ -307,6 +552,7 @@ function NumberRangeColumnFilter({
         type="number"
         onChange={(e) => {
           const val = e.target.value;
+
           setFilter((old = []) => [
             val ? parseInt(val, 10) : undefined,
             old[1],
@@ -353,40 +599,91 @@ const currency = (input: number) =>
     maximumFractionDigits: 0,
   }).format(input);
 
+function DateDisplay({ value }: { value: string }) {
+  return (
+    <LimitLength>{new Date(value).toLocaleDateString("en-US")}</LimitLength>
+  );
+}
+function Truncate({ value }: { value: string }) {
+  return <LimitLength>{truncate(value || "")}</LimitLength>;
+}
+const LimitLength = styled.div`
+  max-width: 300px;
+  width: max-content;
+`;
+
+const SelectColumns = styled.details`
+  width: 100%;
+`;
+const ColumnGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+`;
+const NoWrap = styled.span`
+  white-space: nowrap;
+`;
+
+const TableWrapper = styled.div`
+  align-self: flex-start;
+`;
 const StyledTable = styled.table`
   border-collapse: collapse;
+  align-self: flex-start;
+  position: relative;
+  z-index: 0;
   thead {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    background: var(--surface-1);
+    position: relative;
+    z-index: 1;
+    tr {
+      vertical-align: bottom;
+    }
+    th {
+      padding: var(--size-2);
+      text-align: left;
+      min-width: 150px;
+    }
+    tr:last-child {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: var(--surface-1);
+      th:first-child {
+        position: sticky;
+        left: 0;
+        z-index: 2;
+        background: var(--surface-1);
+      }
+    }
   }
-  thead::after {
-    content: "";
-    position: absolute;
-    top: -1px;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    border-bottom: var(--hairline);
+  tbody {
+    position: relative;
+    z-index: 0;
+    td {
+      padding: 0 var(--size-2);
+    }
+    tr {
+      cursor: pointer;
+
+      td:first-child {
+        position: sticky;
+        left: 0;
+        z-index: 1;
+        background: var(--surface-1);
+      }
+      :hover {
+        td {
+          background: var(--surface-2);
+        }
+      }
+    }
   }
-  th {
-    padding: var(--size-2);
-    text-align: left;
-  }
-  td {
-    padding: 0 var(--size-2);
-  }
-  tbody tr {
-    cursor: pointer;
-  }
-  tbody tr:hover {
-    background: var(--surface-2);
-  }
-  input {
+  input,
+  select {
     font-size: var(--font-size-0);
     padding-inline: var(--size-1);
     width: 100%;
+    min-width: 10px;
     &::-webkit-outer-spin-button,
     &::-webkit-inner-spin-button {
       -webkit-appearance: none;
@@ -394,7 +691,7 @@ const StyledTable = styled.table`
     }
     &[type="number"] {
       -moz-appearance: textfield;
-      width: 50%;
+      min-width: 75px;
     }
   }
 `;
