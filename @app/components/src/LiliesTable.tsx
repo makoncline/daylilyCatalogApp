@@ -1,4 +1,4 @@
-import { Button, IconButton, Space, useLocalStorage } from "@app/design";
+import { above, Button, Space, useLocalStorage } from "@app/design";
 import { AhsDataFragment, LilyDataFragment } from "@app/graphql";
 import { toViewListingUrl } from "@app/lib";
 import router from "next/router";
@@ -8,6 +8,7 @@ import {
   useColumnOrder,
   useFilters,
   useGlobalFilter,
+  usePagination,
   useSortBy,
   useTable,
 } from "react-table";
@@ -23,7 +24,7 @@ import {
   SelectColumnFilter,
   textFilter,
 } from "./TableFilters";
-import { currency } from "./util";
+import { currency, download } from "./util";
 
 type ListingRow = Omit<
   LilyDataFragment,
@@ -100,7 +101,7 @@ const useReactTable = ({ rawData }: { rawData: LilyDataFragment[] }) => {
 
   const data: ListingRow[] = React.useMemo(
     () =>
-      rawData.slice(0, 10).map((row) => {
+      rawData.map((row) => {
         const rowDataOrNull = Object.entries(row).reduce(
           (acc, [key, value]) => {
             acc[key] = value || null;
@@ -290,7 +291,8 @@ const useReactTable = ({ rawData }: { rawData: LilyDataFragment[] }) => {
     useFilters,
     useGlobalFilter,
     useSortBy,
-    useColumnOrder
+    useColumnOrder,
+    usePagination
   );
 
   React.useEffect(() => {
@@ -319,6 +321,12 @@ const useReactTable = ({ rawData }: { rawData: LilyDataFragment[] }) => {
   };
 };
 
+const handleEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  if (event.key.toLowerCase() === "enter") {
+    event.currentTarget.blur();
+  }
+};
+
 export function LiliesTable({
   dataSource,
 }: {
@@ -329,7 +337,6 @@ export function LiliesTable({
       getTableProps,
       getTableBodyProps,
       headerGroups,
-      rows,
       prepareRow,
       state,
       visibleColumns,
@@ -337,6 +344,15 @@ export function LiliesTable({
       setGlobalFilter,
       allColumns,
       setColumnOrder: rtSetColumnOrder,
+      page,
+      canPreviousPage,
+      canNextPage,
+      pageOptions,
+      gotoPage,
+      nextPage,
+      previousPage,
+      setPageSize,
+      state: { pageIndex, pageSize },
     },
     setColumnOrder,
     columnOrder,
@@ -371,6 +387,69 @@ export function LiliesTable({
       newColumnOrder.splice(index + 1, 0, moved);
     }
     rtSetColumnOrder(newColumnOrder);
+  }
+
+  function Pagination() {
+    return (
+      <Space
+        block
+        responsive
+        style={{ alignItems: "center", justifyContent: "flex-end" }}
+      >
+        <Space center>
+          <Button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+            {"<<"}
+          </Button>{" "}
+          <Button onClick={() => previousPage()} disabled={!canPreviousPage}>
+            {"<"}
+          </Button>{" "}
+          <Button onClick={() => nextPage()} disabled={!canNextPage}>
+            {">"}
+          </Button>{" "}
+          <Button
+            onClick={() => gotoPage(pageOptions.length - 1)}
+            disabled={!canNextPage}
+          >
+            {">>"}
+          </Button>{" "}
+        </Space>
+        <Space center>
+          <span>
+            Page{" "}
+            <strong>
+              {pageIndex + 1} of {pageOptions.length}
+            </strong>{" "}
+          </span>
+          <span>
+            | Go to page:{" "}
+            <input
+              type="number"
+              defaultValue={pageIndex + 1}
+              onKeyDown={handleEnter}
+              onBlur={(e) => {
+                const page = e.target.value ? Number(e.target.value) - 1 : 0;
+                gotoPage(page);
+              }}
+              style={{ width: "100px" }}
+            />
+          </span>{" "}
+        </Space>
+        <Space center>
+          <select
+            value={pageSize}
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+            }}
+          >
+            {[10, 20, 30, 40, 50].map((pageSize) => (
+              <option key={pageSize} value={pageSize}>
+                Show {pageSize}
+              </option>
+            ))}
+          </select>
+        </Space>
+      </Space>
+    );
   }
 
   return (
@@ -437,18 +516,10 @@ export function LiliesTable({
           </Space>
         </form>
       </SelectColumns>
+      <Pagination />
       <TableWrapper>
         <StyledTable {...getTableProps()}>
           <thead>
-            <tr>
-              <th colSpan={visibleColumns.length}>
-                <GlobalFilter
-                  preGlobalFilteredRows={preGlobalFilteredRows}
-                  globalFilter={state.globalFilter}
-                  setGlobalFilter={setGlobalFilter}
-                />
-              </th>
-            </tr>
             {headerGroups.map((headerGroup) => (
               // eslint-disable-next-line react/jsx-key
               <tr {...headerGroup.getHeaderGroupProps()}>
@@ -475,9 +546,23 @@ export function LiliesTable({
                 ))}
               </tr>
             ))}
+            <tr>
+              <th colSpan={3}>
+                <GlobalFilter
+                  preGlobalFilteredRows={preGlobalFilteredRows}
+                  globalFilter={state.globalFilter}
+                  setGlobalFilter={setGlobalFilter}
+                />
+              </th>
+              {Array(visibleColumns.length > 3 ? visibleColumns.length - 3 : 0)
+                .fill(0)
+                .map((_, i) => (
+                  <th key={i} />
+                ))}
+            </tr>
           </thead>
           <tbody {...getTableBodyProps()}>
-            {rows.map((row) => {
+            {page.map((row) => {
               prepareRow(row);
               return (
                 // eslint-disable-next-line react/jsx-key
@@ -497,6 +582,12 @@ export function LiliesTable({
           </tbody>
         </StyledTable>
       </TableWrapper>
+      <Pagination />
+      <Space block style={{ justifyContent: "flex-end" }}>
+        <Button onClick={() => download(dataSource)}>
+          Download listing data
+        </Button>
+      </Space>
     </>
   );
 }
@@ -519,6 +610,10 @@ const NoWrap = styled.span`
 
 const TableWrapper = styled.div`
   align-self: flex-start;
+  width: 100%;
+  height: 100vh;
+  max-width: var(--full-width);
+  overflow: scroll;
 `;
 const StyledTable = styled.table`
   border-collapse: collapse;
@@ -528,6 +623,7 @@ const StyledTable = styled.table`
   thead {
     position: relative;
     z-index: 1;
+    background: var(--surface-1);
     tr {
       vertical-align: bottom;
     }
@@ -536,17 +632,16 @@ const StyledTable = styled.table`
       text-align: left;
       min-width: 150px;
     }
-    tr:last-child {
-      position: sticky;
-      top: 0;
-      z-index: 1;
-      background: var(--surface-1);
-      th:first-child {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    th:first-child {
+      ${above.sm`
         position: sticky;
         left: 0;
         z-index: 2;
         background: var(--surface-1);
-      }
+      `}
     }
   }
   tbody {
@@ -559,10 +654,12 @@ const StyledTable = styled.table`
       cursor: pointer;
 
       td:first-child {
-        position: sticky;
-        left: 0;
-        z-index: 1;
-        background: var(--surface-1);
+        ${above.sm`
+          position: sticky;
+          left: 0;
+          z-index: 1;
+          background: var(--surface-1);
+        `}
       }
       :hover {
         td {

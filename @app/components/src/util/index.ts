@@ -4,5 +4,6 @@ export const truncate = (input: string, length: number = 100) =>
     : input;
 
 export * from "./apiHelpers";
+export * from "./download";
 export * from "./getStripe";
 export * from "./tableHelpers";

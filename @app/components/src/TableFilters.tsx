@@ -115,31 +115,40 @@ type NumberRangeColumnFilterProps<T extends object> = {
 function NumberRangeColumnFilter<T extends object>({
   column: { filterValue = [], preFilteredRows, setFilter, id },
 }: NumberRangeColumnFilterProps<T>) {
+  const rowsWithValue = preFilteredRows.filter((row) => {
+    return (
+      row.values[id] !== null &&
+      row.values[id] !== undefined &&
+      row.values[id] !== ""
+    );
+  });
   const [min, max] = React.useMemo(() => {
     let min: number;
     let max: number;
     if (id === "bloomSize" || id === "scapeHeight") {
-      min = preFilteredRows.length
-        ? lengthToNumber(preFilteredRows[0].values[id])
+      const value = rowsWithValue.length
+        ? lengthToNumber(rowsWithValue[0].values[id])
         : 0;
-      max = preFilteredRows.length
-        ? lengthToNumber(preFilteredRows[0].values[id])
-        : 0;
+      min = value;
+      max = value;
     } else {
-      min = preFilteredRows.length ? preFilteredRows[0].values[id] : 0;
-      max = preFilteredRows.length ? preFilteredRows[0].values[id] : 0;
+      const value = rowsWithValue.length ? rowsWithValue[0].values[id] : 0;
+      min = value;
+      max = value;
     }
-    preFilteredRows.forEach((row) => {
+    rowsWithValue.forEach((row) => {
       if (id === "bloomSize" || id === "scapeHeight") {
-        min = Math.min(lengthToNumber(row.values[id]), min);
-        max = Math.max(lengthToNumber(row.values[id]), max);
+        const value = lengthToNumber(row.values[id]);
+        min = Math.min(value, min);
+        max = Math.max(value, max);
       } else {
-        min = Math.min(row.values[id], min);
-        max = Math.max(row.values[id], max);
+        const value = row.values[id];
+        min = Math.min(value, min);
+        max = Math.max(value, max);
       }
     });
     return [min, max];
-  }, [id, preFilteredRows]);
+  }, [id, rowsWithValue]);
 
   return (
     <Space gap="none">

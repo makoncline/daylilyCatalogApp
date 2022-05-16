@@ -18,6 +18,7 @@ const Space = ({
   responsive = false,
   block = false,
   children,
+  style,
   ...props
 }: Props) => {
   const gapSize =
@@ -32,7 +33,7 @@ const Space = ({
     <Wrapper
       style={
         {
-          ...props.style,
+          ...style,
           "--direction": direction,
           "--gap": gapSize,
         } as React.CSSProperties
