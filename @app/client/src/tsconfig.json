@@ -3,7 +3,7 @@
   "compilerOptions": {
     "composite": false,
     "incremental": false,
-    "target": "es5",
+    "target": "es6",
     "lib": ["dom", "dom.iterable", "esnext"],
     "noEmit": true,
     "esModuleInterop": true,
@@ -12,7 +12,7 @@
     "isolatedModules": true
   },
   "exclude": ["node_modules"],
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "../../lib/src/urls.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "references": [
     { "path": "../../config" },
     { "path": "../../graphql" },

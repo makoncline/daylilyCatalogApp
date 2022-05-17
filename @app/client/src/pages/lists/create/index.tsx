@@ -1,10 +1,13 @@
-import { ErrorAlert, Redirect, SharedLayout } from "@app/components";
+import {
+  CreateListForm,
+  ErrorAlert,
+  Redirect,
+  SharedLayout,
+} from "@app/components";
 import { useSharedQuery } from "@app/graphql";
 import { loginUrl } from "@app/lib";
 import { NextPage } from "next";
 import React from "react";
-
-import { CreateListForm } from "./CreateListForm";
 
 const Create: NextPage = () => {
   const query = useSharedQuery();

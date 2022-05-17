@@ -20,7 +20,7 @@ export const BillingPortalButton = () => {
       if (typeof window !== "undefined") {
         window.location.href = billingPortalSession.url;
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err.message);
       Sentry.captureException(err);
     }

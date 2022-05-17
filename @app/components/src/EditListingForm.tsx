@@ -1,10 +1,5 @@
 import { ApolloError, useApolloClient } from "@apollo/client";
 import {
-  ListInput,
-  RegisteredLilyDisplay,
-  RegisteredLilyInput,
-} from "@app/components";
-import {
   Button,
   Field,
   Form,
@@ -39,8 +34,11 @@ import Router from "next/router";
 import React, { useCallback } from "react";
 import styled from "styled-components";
 
-import { ImageDisplay } from "../../ImageDisplay";
-import { ImageUpload } from "../../ImageUpload";
+import { ImageDisplay } from "./ImageDisplay";
+import { ImageUpload } from "./ImageUpload";
+import { ListInput } from "./ListInput";
+import { RegisteredLilyDisplay } from "./RegisteredLilyDisplay";
+import { RegisteredLilyInput } from "./RegisteredLilyInput";
 
 type EditListingFormProps = {
   error: Error | ApolloError | null;
@@ -106,7 +104,7 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
       });
     } catch (err) {
       console.log(`Error deleting file: `, key, " at url: ", imageUrl);
-      Sentry.captureException(e);
+      Sentry.captureException(err);
       throw err;
     }
   }

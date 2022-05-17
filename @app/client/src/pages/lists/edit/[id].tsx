@@ -1,11 +1,14 @@
-import { ErrorAlert, Redirect, SharedLayout } from "@app/components";
+import {
+  EditListForm,
+  ErrorAlert,
+  Redirect,
+  SharedLayout,
+} from "@app/components";
 import { useListByIdQuery, useSharedQuery } from "@app/graphql";
 import { loginUrl } from "@app/lib";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React from "react";
-
-import { EditListForm } from "./EditListForm";
 
 const Edit: NextPage = () => {
   const router = useRouter();
@@ -29,7 +32,10 @@ const Edit: NextPage = () => {
       ) : sharedQueryLoading || listQueryLoading ? (
         "Loading..."
       ) : sharedQueryError || listQueryError ? (
-        <ErrorAlert error={sharedQueryError} />
+        <>
+          {sharedQueryError && <ErrorAlert error={sharedQueryError} />}
+          {listQueryError && <ErrorAlert error={listQueryError} />}
+        </>
       ) : (
         <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />
       )}

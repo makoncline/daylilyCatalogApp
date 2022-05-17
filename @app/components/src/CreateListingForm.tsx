@@ -1,5 +1,4 @@
 import { ApolloError, useApolloClient } from "@apollo/client";
-import { RegisteredLilyDisplay, RegisteredLilyInput } from "@app/components";
 import {
   Alert,
   Button,
@@ -23,6 +22,9 @@ import { UseComboboxStateChange } from "downshift";
 import Router from "next/router";
 import React, { useCallback } from "react";
 import styled from "styled-components";
+
+import { RegisteredLilyDisplay } from "./RegisteredLilyDisplay";
+import { RegisteredLilyInput } from "./RegisteredLilyInput";
 
 type EditListingFormProps = {
   error: Error | ApolloError | null;

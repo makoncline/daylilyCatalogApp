@@ -1,12 +1,15 @@
 import { ApolloError } from "@apollo/client";
-import { ErrorAlert, Redirect, SharedLayout } from "@app/components";
+import {
+  EditListingForm,
+  ErrorAlert,
+  Redirect,
+  SharedLayout,
+} from "@app/components";
 import { useSharedQuery } from "@app/graphql";
 import { loginUrl } from "@app/lib";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-
-import { EditListingForm } from "./EditListingForm";
 
 const Edit: NextPage = () => {
   const router = useRouter();

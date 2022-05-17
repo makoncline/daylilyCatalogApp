@@ -11,6 +11,7 @@ import {
 } from "@app/design";
 import { useForgotPasswordMutation, useSharedQuery } from "@app/graphql";
 import { extractError, getCodeFromError, loginUrl } from "@app/lib";
+import * as Sentry from "@sentry/nextjs";
 import { NextPage } from "next";
 import Link from "next/link";
 import React, { useCallback, useState } from "react";
@@ -24,7 +25,6 @@ const ForgotPassword: NextPage = () => {
   const { values } = useForm(forgotPasswordFormName);
   const [forgotPassword] = useForgotPasswordMutation();
   const [successfulEmail, setSuccessfulEmail] = useState<string | null>(null);
-  import * as Sentry from "@sentry/nextjs";
 
   const handleSubmit = useCallback((): void => {
     setError(null);
@@ -43,7 +43,7 @@ const ForgotPassword: NextPage = () => {
         Sentry.captureException(e);
       }
     })();
-  }, [Sentry, forgotPassword, values.email]);
+  }, [forgotPassword, values.email]);
 
   const code = getCodeFromError(error);
 

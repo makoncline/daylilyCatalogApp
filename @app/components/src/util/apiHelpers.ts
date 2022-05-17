@@ -18,8 +18,8 @@ export async function fetchPostJsonCsrf(url: string, data?: {}) {
       body: JSON.stringify(data || {}),
     });
     return await response.json();
-  } catch (err) {
-    Sentry.captureException(e);
+  } catch (err: any) {
+    Sentry.captureException(err);
     throw new Error(err.message);
   }
 }

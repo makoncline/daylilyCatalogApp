@@ -1,11 +1,14 @@
 import { ApolloError } from "@apollo/client";
-import { ErrorAlert, Redirect, SharedLayout } from "@app/components";
+import {
+  CreateListingForm,
+  ErrorAlert,
+  Redirect,
+  SharedLayout,
+} from "@app/components";
 import { useSharedQuery } from "@app/graphql";
 import { loginUrl } from "@app/lib";
 import { NextPage } from "next";
 import React, { useState } from "react";
-
-import { CreateListingForm } from "./CreateListingForm";
 
 const Edit: NextPage = () => {
   const query = useSharedQuery();

@@ -101,14 +101,16 @@
   "prettier": {
     "trailingComma": "es5",
     "proseWrap": "always",
-    "overrides": [{
-      "files": [
-        "*.yml",
-        "*.yaml"
-      ],
-      "options": {
-        "printWidth": 120
+    "overrides": [
+      {
+        "files": [
+          "*.yml",
+          "*.yaml"
+        ],
+        "options": {
+          "printWidth": 120
+        }
       }
-    }]
+    ]
   }
 }

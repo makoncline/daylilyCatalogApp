@@ -14,7 +14,7 @@ import Link from "next/link";
 import React from "react";
 import styled from "styled-components";
 
-import { ImageDisplay } from "./ImageDisplay";
+import { ListingImageDisplay } from "./ListingImageDisplay";
 
 function ListingDisplay({
   listingId,
@@ -45,7 +45,7 @@ function ListingDisplay({
   const isOwner = userId === listing.user?.id;
   return (
     <Space center responsive gap="medium">
-      {imageUrls.length > 0 && <ImageDisplay imageUrls={imageUrls} />}
+      {imageUrls.length > 0 && <ListingImageDisplay imageUrls={imageUrls} />}
       <StyledSpace direction="column">
         <PropertyList divider>
           {price && <PropertyListItem label="Price">${price}</PropertyListItem>}

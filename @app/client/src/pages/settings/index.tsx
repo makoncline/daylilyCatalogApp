@@ -1,5 +1,12 @@
 import { ApolloError } from "@apollo/client";
-import { ErrorAlert, Redirect, SettingsLayout, Wysiwyg } from "@app/components";
+import {
+  ErrorAlert,
+  ImageDisplay,
+  ImageUpload,
+  Redirect,
+  SettingsLayout,
+  Wysiwyg,
+} from "@app/components";
 import {
   Alert,
   Button,
@@ -26,9 +33,6 @@ import * as Sentry from "@sentry/nextjs";
 import { NextPage } from "next";
 import NextLink from "next/link";
 import React, { useCallback, useState } from "react";
-
-import { ImageDisplay } from "../ImageDisplay";
-import { ImageUpload } from "../ImageUpload";
 
 const Settings_Profile: NextPage = () => {
   const [formError, setFormError] = useState<Error | ApolloError | null>(null);
