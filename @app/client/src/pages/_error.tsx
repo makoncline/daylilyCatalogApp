@@ -2,7 +2,9 @@ import { ErrorOccurred, FourOhFour, SharedLayout } from "@app/components";
 import { Alert, Heading, Space } from "@app/design";
 import { useSharedQuery } from "@app/graphql";
 import { loginUrl } from "@app/lib";
+import * as Sentry from "@sentry/nextjs";
 import { NextPage } from "next";
+import NextErrorComponent from "next/error";
 import Link from "next/link";
 import * as React from "react";
 
@@ -48,6 +50,8 @@ function SocialAuthError({ provider }: SocialAuthErrorProps) {
 interface ErrorPageProps {
   statusCode: number | null;
   pathname: string | null;
+  hasGetInitialPropsRun: boolean;
+  err: Error | null;
 }
 
 interface ErrorComponentSpec<TProps> {
@@ -56,9 +60,13 @@ interface ErrorComponentSpec<TProps> {
   props?: TProps;
 }
 
-const getDisplayForError = (props: ErrorPageProps): ErrorComponentSpec<any> => {
-  const { statusCode, pathname } = props;
-
+const getDisplayForError = (
+  props: ErrorPageProps & { hasGetInitialPropsRun: boolean; err: Error | null }
+): ErrorComponentSpec<any> => {
+  const { statusCode, pathname, hasGetInitialPropsRun, err } = props;
+  if (!hasGetInitialPropsRun && err) {
+    Sentry.captureException(err);
+  }
   const authMatches = pathname ? pathname.match(/^\/auth\/([^/?#]+)/) : null;
   if (authMatches) {
     return {
@@ -98,9 +106,30 @@ const ErrorPage: NextPage<ErrorPageProps> = (props) => {
   );
 };
 
-ErrorPage.getInitialProps = async ({ res, err, asPath }) => ({
-  pathname: asPath || null,
-  statusCode: res ? res.statusCode : err ? err["statusCode"] || null : null,
-});
+ErrorPage.getInitialProps = async (context) => {
+  const errorInitialProps = (await NextErrorComponent.getInitialProps(
+    context
+  )) as ErrorPageProps;
+  const { res, err, asPath } = context;
+  errorInitialProps.hasGetInitialPropsRun = true;
+  const props = {
+    ...errorInitialProps,
+    pathname: asPath || null,
+    statusCode: res ? res.statusCode : err ? err["statusCode"] || null : null,
+  };
+  if (res?.statusCode === 404) {
+    return props;
+  }
+  if (err) {
+    Sentry.captureException(err);
+    await Sentry.flush(2000);
+    return props;
+  }
+  Sentry.captureException(
+    new Error(`_error.js getInitialProps missing data at path: ${asPath}`)
+  );
+  await Sentry.flush(2000);
+  return props;
+};
 
 export default ErrorPage;

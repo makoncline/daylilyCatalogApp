@@ -1,5 +1,6 @@
 import { Button } from "@app/design";
 import { useStripeCustomerQuery } from "@app/graphql";
+import * as Sentry from "@sentry/nextjs";
 import React from "react";
 import type { Stripe } from "stripe";
 
@@ -21,6 +22,7 @@ export const BillingPortalButton = () => {
       }
     } catch (err) {
       console.error(err.message);
+      Sentry.captureException(err);
     }
   }
 

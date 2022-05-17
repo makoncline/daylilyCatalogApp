@@ -12,6 +12,7 @@
     "@app/design": "0.0.0",
     "@app/graphql": "0.0.0",
     "@app/lib": "0.0.0",
+    "@sentry/nextjs": "^6.17.5",
     "@stripe/stripe-js": "^1.16.0",
     "@types/draft-js": "^0.11.3",
     "@types/react-draft-wysiwyg": "^1.13.2",

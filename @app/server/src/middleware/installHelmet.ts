@@ -22,6 +22,7 @@ const CSP_DIRECTIVES = {
     ROOT_URL.replace(/^http/, "ws"),
     "*.s3.amazonaws.com",
     "*.daylilycatalog.com",
+    "*.ingest.sentry.io",
   ],
   "script-src": ["'self'", "'unsafe-eval'", "*.stripe.com"],
   "script-src-elem": ["'self'", "'unsafe-eval'", "*.stripe.com"],

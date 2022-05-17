@@ -8,6 +8,7 @@ import {
   useLogoutMutation,
 } from "@app/graphql";
 import { loginUrl } from "@app/lib";
+import * as Sentry from "@sentry/nextjs";
 import Head from "next/head";
 import Link from "next/link";
 import Router, { useRouter } from "next/router";
@@ -103,6 +104,7 @@ export function SharedLayout({
         client.resetStore();
       } catch (e) {
         console.error(e);
+        Sentry.captureException(e);
         // Something went wrong; redirect to /logout to force logout.
         window.location.href = "/logout";
       }

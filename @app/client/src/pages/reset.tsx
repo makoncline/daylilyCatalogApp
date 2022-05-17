@@ -12,6 +12,7 @@ import {
 } from "@app/design";
 import { useResetPasswordMutation, useSharedQuery } from "@app/graphql";
 import { setPasswordInfo } from "@app/lib";
+import * as Sentry from "@sentry/nextjs";
 import get from "lodash/get";
 import { NextPage } from "next";
 import React, { useCallback, useState } from "react";
@@ -73,6 +74,7 @@ const ResetPage: NextPage<IProps> = ({
           setError(new Error("Please check the errors above and try again"));
           console.dir(e);
         }
+        Sentry.captureException(e);
         setState(State.PENDING);
       }
     })();

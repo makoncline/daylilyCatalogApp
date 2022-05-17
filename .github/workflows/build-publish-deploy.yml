@@ -1,0 +1,110 @@
+name: Build and publish docker Image CI
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+jobs:
+  build-publish-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get short SHA
+        id: env
+        run: echo "::set-output name=sha::$(echo ${GITHUB_SHA} | cut -c1-7)"
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: makon/daylilycatalog:server-${{ steps.env.outputs.sha }}
+          file: production.Dockerfile
+          build-args: |
+            TARGET=server
+  build-publish-worker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get short SHA
+        id: env
+        run: echo "::set-output name=sha::$(echo ${GITHUB_SHA} | cut -c1-7)"
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: makon/daylilycatalog:worker-${{ steps.env.outputs.sha }}
+          file: production.Dockerfile
+          build-args: |
+            TARGET=worker
+  deploy:
+    needs: [build-publish-server, build-publish-worker]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get short SHA
+        id: env
+        run: echo "::set-output name=sha::$(echo ${GITHUB_SHA} | cut -c1-7)"
+      - name: Deploy containers to droplet
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script_stop: true
+          script: |
+            echo starting...
+            SHA=${{ steps.env.outputs.sha }}
+            echo SHA set to $SHA
+            cd daylilyCatalog/
+            cd server/
+            TAG=-$SHA docker-compose pull
+            echo server image pulled
+            cd ../worker
+            TAG=-$SHA docker-compose pull
+            echo worker image pulled
+            cd ../server
+            echo "$(date +%F-%T) - $SHA" >> tags.txt
+            echo TAG: $SHA saved to server tags.txt
+            TAG=-$SHA docker-compose down
+            echo server stopped
+            TAG=-$SHA docker-compose up -d
+            echo server started
+            cd ../worker
+            echo "$(date +%F-%T) - $SHA" >> tags.txt
+            echo TAG: $SHA saved to worker tags.txt
+            TAG=-$SHA docker-compose down
+            echo worker stopped
+            TAG=-$SHA docker-compose up -d
+            echo worker started
+            sleep 5
+            cd ../server
+            echo server logs:
+            TAG=-$SHA docker-compose logs
+            echo
+            cd ../worker
+            echo worker logs:
+            TAG=-$SHA docker-compose logs
+            echo
+            docker system prune -a --volumes -f
+            echo docker pruned
+            unset SHA
+            echo SHA unset
+            echo done
