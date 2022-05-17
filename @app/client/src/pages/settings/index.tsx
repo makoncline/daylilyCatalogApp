@@ -225,7 +225,7 @@ function ProfileSettingsForm({
             },
           },
         });
-        console.log("saved img urls to db: ", profilePhotoUrls);
+        // console.log("saved img urls to db: ", profilePhotoUrls);
       } catch (e: any) {
         Sentry.captureException(e);
         setProfilePhotoUploadError(e.message);

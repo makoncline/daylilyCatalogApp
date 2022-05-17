@@ -103,7 +103,7 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
         },
       });
     } catch (err) {
-      console.log(`Error deleting file: `, key, " at url: ", imageUrl);
+      console.error(`Error deleting file: `, key, " at url: ", imageUrl);
       Sentry.captureException(err);
       throw err;
     }
@@ -194,7 +194,6 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
   const handleBeforeUpload = React.useCallback(
     (files: File[]) => {
       const newNumImages = numImages + files.length;
-      console.log("i", numImages, newNumImages);
       if (newNumImages > MAX_NUM_IMAGES) {
         alert(
           `Only ${MAX_NUM_IMAGES} images allowed per listing. Please remove ${
@@ -224,8 +223,8 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
             imgUrl: imageUrls,
           },
         });
-        console.log("saved img urls to db: ", imageUrls);
       } catch (e: any) {
+        console.error(`Error editing lily ${id}`);
         Sentry.captureException(e);
         setError(e);
       }

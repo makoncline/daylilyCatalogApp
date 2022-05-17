@@ -59,7 +59,7 @@ function useFileUpload(
           (err) => {
             setProgress(null);
             setError(err);
-            console.log("upload error: ", key);
+            console.error("upload error: ", key);
           }
         );
     } else {

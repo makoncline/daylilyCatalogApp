@@ -20,7 +20,6 @@ function CreateListForm() {
   const [error, setError] = React.useState<Error | null>(null);
   async function handleSubmit() {
     try {
-      console.log(values);
       await addList({
         variables: {
           name: values.name,

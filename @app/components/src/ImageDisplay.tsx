@@ -38,7 +38,7 @@ function ImageDisplay({ imageUrls, setImageUrls }: ImageDisplayProps) {
         });
         setImageUrls(imageUrls.filter((_, i) => i !== index));
       } catch (err) {
-        console.log(`Error deleting file: `, key, " at url: ", url);
+        console.error(`Error deleting file: `, key, " at url: ", url);
         Sentry.captureException(err);
         throw err;
       }

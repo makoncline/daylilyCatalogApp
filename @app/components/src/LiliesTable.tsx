@@ -1,6 +1,7 @@
 import { above, Button, Space, useLocalStorage } from "@app/design";
 import { AhsDataFragment, LilyDataFragment } from "@app/graphql";
 import { toViewListingUrl } from "@app/lib";
+import Link from "next/link";
 import router from "next/router";
 import React from "react";
 import type { Column, FilterTypes } from "react-table";
@@ -116,11 +117,16 @@ const useReactTable = ({ rawData }: { rawData: LilyDataFragment[] }) => {
           },
           {} as AhsDataFragment
         );
+        const images = [
+          ...(rowDataOrNull.imgUrl || []),
+          ahsDataOrNull.image,
+        ].filter(Boolean);
         return {
           ...ahsDataOrNull,
           registeredName: ahsDataOrNull.name,
           ...rowDataOrNull,
           list: row.list?.name || null,
+          imgUrl: images,
         };
       }),
     [rawData]
@@ -521,11 +527,9 @@ export function LiliesTable({
         <StyledTable {...getTableProps()}>
           <thead>
             {headerGroups.map((headerGroup) => (
-              // eslint-disable-next-line react/jsx-key
-              <tr {...headerGroup.getHeaderGroupProps()}>
+              <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
                 {headerGroup.headers.map((column) => (
-                  // eslint-disable-next-line react/jsx-key
-                  <th {...column.getHeaderProps()}>
+                  <th {...column.getHeaderProps()} key={column.id}>
                     <Space
                       {...column.getSortByToggleProps()}
                       style={{ "--direction": "row" }}
@@ -564,11 +568,12 @@ export function LiliesTable({
           <tbody {...getTableBodyProps()}>
             {page.map((row) => {
               prepareRow(row);
+              const id = row.original.id;
               return (
-                // eslint-disable-next-line react/jsx-key
                 <tr
                   {...row.getRowProps()}
-                  onClick={() => handleClick(row.original.id)}
+                  key={id}
+                  onClick={() => handleClick(id)}
                 >
                   {row.cells.map((cell) => {
                     return (

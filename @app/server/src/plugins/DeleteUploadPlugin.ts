@@ -65,7 +65,7 @@ const DeleteUploadPlugin = makeExtendSchemaPlugin(() => ({
           await s3.deleteObject(params).promise();
           success = true;
         } catch (err) {
-          console.log("ERROR in file Deleting : " + JSON.stringify(err));
+          console.error("ERROR in file Deleting : " + JSON.stringify(err));
         }
 
         return {

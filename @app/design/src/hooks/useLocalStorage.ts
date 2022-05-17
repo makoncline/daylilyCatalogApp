@@ -17,7 +17,7 @@ function useLocalStorage<T>(key: string, initialValue: T) {
     } catch (error) {
       Sentry.captureException(error);
       // If error also return initialValue
-      console.log(error);
+      console.error(`Error getting value from local storage for key ${key}`);
       return initialValue;
     }
   });

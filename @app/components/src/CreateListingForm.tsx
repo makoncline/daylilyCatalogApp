@@ -52,7 +52,6 @@ function CreateListingForm({ error, setError }: EditListingFormProps) {
         resetWebsocketConnection();
         client.resetStore();
         const lily = data?.createLily?.lily;
-        console.log("Created lily:", lily);
         if (lily) {
           Router.push(toEditListingUrl(lily.id));
         }

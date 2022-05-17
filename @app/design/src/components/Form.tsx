@@ -37,20 +37,18 @@ const FormValuesProvider = ({ children }: { children: React.ReactNode }) => {
   const [data, setData] = React.useState<{ [key: string]: FormValues }>({});
   const [isReady, setIsReady] = React.useState<FormIsReady>({});
 
-  React.useEffect(() => {
-    console.log("data: ", data);
-  }, [data]);
-  React.useEffect(() => {
-    console.log("isReady: ", isReady);
-  }, [isReady]);
+  // React.useEffect(() => {
+  //   console.log("data: ", data);
+  // }, [data]);
+  // React.useEffect(() => {
+  //   console.log("isReady: ", isReady);
+  // }, [isReady]);
 
   const register = React.useCallback((formId: string) => {
-    console.log("registering form: ", formId);
     setData((prevData) => ({ ...prevData, [formId]: {} }));
     setIsReady((prevIsReady) => ({ ...prevIsReady, [formId]: true }));
   }, []);
   const unregister = React.useCallback((formId: string) => {
-    console.log("unregistering form: ", formId);
     setIsReady((prevIsReady) => ({ ...prevIsReady, [formId]: false }));
   }, []);
 
@@ -198,7 +196,6 @@ const Form = ({
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    console.log(values, errors);
     event.preventDefault();
     const allFieldsValid = validateFields();
     if (allFieldsValid) {
