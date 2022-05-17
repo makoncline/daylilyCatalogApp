@@ -12,12 +12,5 @@
     "jsx": "react"
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "references": [
-    {
-      "path": "../graphql"
-    },
-    {
-      "path": "../lib"
-    }
-  ]
+  "references": []
 }
