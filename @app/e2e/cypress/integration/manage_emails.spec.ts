@@ -26,7 +26,7 @@ context("Manage emails", () => {
     const email = "newemail@example.com";
     // Setup
     cy.login({ next: "/settings/emails", verified: true });
-    cy.contains("testuser@example.com").should("exist");
+    cy.contains("testuser@example.com", { timeout: 20000 }).should("exist");
     cy.contains("(unverified)").should("not.exist");
 
     // Action: add email

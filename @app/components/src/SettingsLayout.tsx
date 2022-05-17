@@ -84,8 +84,13 @@ export function SettingsLayout({
           <Space direction="column" gap="large">
             <Space direction="row" gap="large">
               {Object.keys(pages).map((pageHref, i) => (
-                <Link href={pageHref} key={i} data-cy={pages[pageHref].cy}>
-                  {pages[pageHref].title}
+                <Link
+                  href={pageHref}
+                  key={i}
+                  data-cy={pages[pageHref].cy}
+                  passHref
+                >
+                  <a data-cy={pages[pageHref].cy}>{pages[pageHref].title}</a>
                 </Link>
               ))}
             </Space>
