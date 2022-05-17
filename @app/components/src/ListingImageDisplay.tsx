@@ -38,9 +38,14 @@ export { ListingImageDisplay };
 
 const Wrapper = styled.div`
   display: grid;
-  grid-template-rows: var(--size-image) var(--size-image-thumbnail);
-  grid-template-columns: repeat(4, var(--size-image-thumbnail));
-  gap: var(--size-1);
+  grid-template-rows: min(var(--full-width), var(--size-image)) min(
+      calc(var(--full-width) / 4),
+      var(--size-image-thumbnail)
+    );
+  grid-template-columns: repeat(
+    4,
+    min(calc(var(--full-width) / 4), var(--size-image-thumbnail))
+  );
 `;
 const DisplayImage = styled.div`
   position: relative;

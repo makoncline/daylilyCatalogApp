@@ -1,4 +1,5 @@
 require("@app/config");
+require("sharp");
 
 if (!process.env.ROOT_URL) {
   if (process.argv[1].endsWith("/depcheck")) {
@@ -44,6 +45,8 @@ if (!process.env.SENTRY_AUTH_TOKEN) {
           "daylilies.org",
           "www.daylilies.org",
         ],
+        minimumCacheTTL: 3600,
+        deviceSizes: [100, 400],
       },
       poweredByHeader: false,
       distDir: `../.next`,

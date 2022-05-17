@@ -40,6 +40,7 @@ export const Lists = () => {
 };
 
 const StyledTable = styled.table`
+  width: 100%;
   border-collapse: collapse;
   thead {
     position: sticky;

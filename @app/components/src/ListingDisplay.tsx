@@ -133,4 +133,5 @@ function getTraits(ahsData: AhsDataFragment): [string, string][] {
 
 const StyledSpace = styled(Space)`
   min-width: var(--image-size);
+  max-width: var(--full-width);
 `;

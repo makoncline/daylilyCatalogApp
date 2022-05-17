@@ -620,6 +620,7 @@ const TableWrapper = styled.div`
   overflow: scroll;
 `;
 const StyledTable = styled.table`
+  width: 100%;
   border-collapse: collapse;
   align-self: flex-start;
   position: relative;

@@ -33,6 +33,7 @@ import * as Sentry from "@sentry/nextjs";
 import { NextPage } from "next";
 import NextLink from "next/link";
 import React, { useCallback, useState } from "react";
+import styled from "styled-components";
 
 const Settings_Profile: NextPage = () => {
   const [formError, setFormError] = useState<Error | ApolloError | null>(null);
@@ -40,20 +41,22 @@ const Settings_Profile: NextPage = () => {
   const { data, loading, error } = query;
   return (
     <SettingsLayout href={settingsUrl} query={query} noPad>
-      <Space gap="medium">
+      <Space direction="column">
         <p>Jump to edit:</p>
-        <NextLink href="#profile" passHref>
-          Profile
-        </NextLink>
-        <NextLink href="#bio" passHref>
-          Bio
-        </NextLink>
-        <NextLink href="#avatar" passHref>
-          Avatar
-        </NextLink>
-        <NextLink href="#images" passHref>
-          Images
-        </NextLink>
+        <Wrap>
+          <NextLink href="#profile" passHref>
+            Profile
+          </NextLink>
+          <NextLink href="#bio" passHref>
+            Bio
+          </NextLink>
+          <NextLink href="#avatar" passHref>
+            Avatar
+          </NextLink>
+          <NextLink href="#images" passHref>
+            Images
+          </NextLink>
+        </Wrap>
       </Space>
       {data && data.currentUser ? (
         <ProfileSettingsForm
@@ -410,3 +413,9 @@ const UploadDisabledNoMembership = () => (
     </Alert.Actions>
   </Alert>
 );
+
+const Wrap = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-4);
+`;

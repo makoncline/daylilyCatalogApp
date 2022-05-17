@@ -10,6 +10,7 @@ import Link from "next/link";
 import { NextRouter, useRouter } from "next/router";
 import * as qs from "querystring";
 import React from "react";
+import styled from "styled-components";
 
 import { Redirect } from "./Redirect";
 import {
@@ -82,7 +83,7 @@ export function SettingsLayout({
           <Redirect href={`${loginUrl}?next=${encodeURIComponent(fullHref)}`} />
         ) : (
           <Space direction="column" gap="large">
-            <Space direction="row" gap="large">
+            <Wrap>
               {Object.keys(pages).map((pageHref, i) => (
                 <Link
                   href={pageHref}
@@ -93,7 +94,7 @@ export function SettingsLayout({
                   <a data-cy={pages[pageHref].cy}>{pages[pageHref].title}</a>
                 </Link>
               ))}
-            </Space>
+            </Wrap>
             {noPad ? children : <StandardWidth>{children}</StandardWidth>}
           </Space>
         )
@@ -101,3 +102,9 @@ export function SettingsLayout({
     </SharedLayout>
   );
 }
+
+const Wrap = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-4);
+`;

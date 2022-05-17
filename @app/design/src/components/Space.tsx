@@ -62,6 +62,7 @@ const Wrapper = styled.div<{
   gap: var(--gap);
   justify-content: ${({ center }) => (center ? "center" : "unset")};
   align-items: ${({ center }) => (center ? "center" : "unset")};
+  max-width: var(--full-width);
   ${({ block }) => block && "width: 100%;"}
   ${({ responsive, items, center }) =>
     responsive &&
