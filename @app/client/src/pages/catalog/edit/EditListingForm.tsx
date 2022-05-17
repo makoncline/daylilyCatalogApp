@@ -32,6 +32,7 @@ import {
   resetWebsocketConnection,
   toViewListingUrl,
 } from "@app/lib";
+import * as Sentry from "@sentry/nextjs";
 import AmazonS3URI from "amazon-s3-uri";
 import { UseComboboxStateChange } from "downshift";
 import Router from "next/router";
@@ -87,6 +88,7 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
         }
       } catch (e: any) {
         setError(e);
+        Sentry.captureException(e);
       }
     },
     [client, editLily, id, linkedLily, list, setError]
@@ -104,6 +106,7 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
       });
     } catch (err) {
       console.log(`Error deleting file: `, key, " at url: ", imageUrl);
+      Sentry.captureException(e);
       throw err;
     }
   }
@@ -122,6 +125,7 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
         client.resetStore();
         Router.push(catalogUrl);
       } catch (e: any) {
+        Sentry.captureException(e);
         setError(e);
       }
     }
@@ -224,6 +228,7 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
         });
         console.log("saved img urls to db: ", imageUrls);
       } catch (e: any) {
+        Sentry.captureException(e);
         setError(e);
       }
     }

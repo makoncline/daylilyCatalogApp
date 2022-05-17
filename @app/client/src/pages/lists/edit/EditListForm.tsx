@@ -13,6 +13,7 @@ import {
   useDeleteListMutation,
   useUpdateListMutation,
 } from "@app/graphql";
+import * as Sentry from "@sentry/nextjs";
 import Router from "next/router";
 import React from "react";
 
@@ -44,6 +45,7 @@ function EditListForm({ list }: { list: ListDataFragment }) {
       });
       Router.push(`/lists`);
     } catch (e: any) {
+      Sentry.captureException(e);
       setError(e.message);
     }
   }
@@ -58,6 +60,7 @@ function EditListForm({ list }: { list: ListDataFragment }) {
       });
       Router.push(`/lists`);
     } catch (e: any) {
+      Sentry.captureException(e);
       setError(e.message);
     }
   }

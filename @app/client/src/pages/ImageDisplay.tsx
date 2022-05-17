@@ -1,5 +1,6 @@
 import { Button, Thumbnail, thumbnailProps } from "@app/design";
 import { useDeleteUploadMutation } from "@app/graphql";
+import * as Sentry from "@sentry/nextjs";
 import AmazonS3URI from "amazon-s3-uri";
 import Image from "next/image";
 import React from "react";
@@ -37,6 +38,7 @@ function ImageDisplay({ imageUrls, setImageUrls }: ImageDisplayProps) {
         setImageUrls(imageUrls.filter((_, i) => i !== index));
       } catch (err) {
         console.log(`Error deleting file: `, key, " at url: ", url);
+        Sentry.captureException(err);
         throw err;
       }
     }

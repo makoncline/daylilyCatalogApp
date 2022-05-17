@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import React from "react";
 
 // Hook
@@ -14,6 +15,7 @@ function useLocalStorage<T>(key: string, initialValue: T) {
       // Parse stored json or if none return initialValue
       return item ? JSON.parse(item) : initialValue;
     } catch (error) {
+      Sentry.captureException(e);
       // If error also return initialValue
       console.log(error);
       return initialValue;
@@ -33,6 +35,7 @@ function useLocalStorage<T>(key: string, initialValue: T) {
         window.localStorage.setItem(key, JSON.stringify(valueToStore));
       }
     } catch (error) {
+      Sentry.captureException(e);
       // A more advanced implementation would handle the error case
       console.log(error);
     }

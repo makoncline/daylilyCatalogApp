@@ -18,6 +18,7 @@ import {
   resetWebsocketConnection,
   toEditListingUrl,
 } from "@app/lib";
+import * as Sentry from "@sentry/nextjs";
 import { UseComboboxStateChange } from "downshift";
 import Router from "next/router";
 import React, { useCallback } from "react";
@@ -55,6 +56,7 @@ function CreateListingForm({ error, setError }: EditListingFormProps) {
         }
       } catch (e: any) {
         setError(e);
+        Sentry.captureException(e);
       }
     },
     [addLily, client, linkedLily, setError]

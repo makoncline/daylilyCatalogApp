@@ -25,6 +25,7 @@ import {
   registerUrl,
   resetWebsocketConnection,
 } from "@app/lib";
+import * as Sentry from "@sentry/nextjs";
 import { NextPage } from "next";
 import Router from "next/router";
 import React, { useCallback, useState } from "react";
@@ -131,6 +132,7 @@ function LoginForm({
         } else {
           setError(e);
         }
+        Sentry.captureException(e);
       }
     },
     [client, login, onSuccessRedirectTo, setError]

@@ -24,6 +24,7 @@ import {
   resetWebsocketConnection,
   setPasswordInfo,
 } from "@app/lib";
+import * as Sentry from "@sentry/nextjs";
 import { NextPage } from "next";
 import Router from "next/router";
 import React, { FocusEvent, useCallback, useState } from "react";
@@ -96,6 +97,7 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
         } else {
           setError(e);
         }
+        Sentry.captureException(e);
       }
     },
     [register, client, next]

@@ -9,6 +9,7 @@ import {
   useForm,
 } from "@app/design";
 import { useAddListMutation } from "@app/graphql";
+import * as Sentry from "@sentry/nextjs";
 import Router from "next/router";
 import React from "react";
 
@@ -28,6 +29,7 @@ function CreateListForm() {
       });
       Router.push(`/lists`);
     } catch (e: any) {
+      Sentry.captureException(e);
       setError(e.message);
     }
   }

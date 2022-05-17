@@ -24,6 +24,7 @@ const ForgotPassword: NextPage = () => {
   const { values } = useForm(forgotPasswordFormName);
   const [forgotPassword] = useForgotPasswordMutation();
   const [successfulEmail, setSuccessfulEmail] = useState<string | null>(null);
+  import * as Sentry from "@sentry/nextjs";
 
   const handleSubmit = useCallback((): void => {
     setError(null);
@@ -39,9 +40,10 @@ const ForgotPassword: NextPage = () => {
         setSuccessfulEmail(email);
       } catch (e: any) {
         setError(e);
+        Sentry.captureException(e);
       }
     })();
-  }, [forgotPassword, values]);
+  }, [Sentry, forgotPassword, values.email]);
 
   const code = getCodeFromError(error);
 

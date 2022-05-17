@@ -24,6 +24,7 @@ import {
   getPasswordSuggestions,
   securityUrl,
 } from "@app/lib";
+import * as Sentry from "@sentry/nextjs";
 import { NextPage } from "next";
 import Link from "next/link";
 import { Store } from "rc-field-form/lib/interface";
@@ -53,6 +54,7 @@ const Settings_Security: NextPage = () => {
         setError(null);
         setSuccess(true);
       } catch (e: any) {
+        Sentry.captureException(e);
         const errcode = getCodeFromError(e);
         if (errcode === "WEAKP") {
           setError(
@@ -89,6 +91,7 @@ const Settings_Security: NextPage = () => {
       try {
         await forgotPassword({ variables: { email } });
       } catch (e) {
+        Sentry.captureException(e);
         setResetError(resetError);
       }
       setResetInProgress(false);

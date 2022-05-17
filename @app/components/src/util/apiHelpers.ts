@@ -1,3 +1,5 @@
+import * as Sentry from "@sentry/nextjs";
+
 export async function fetchPostJsonCsrf(url: string, data?: {}) {
   try {
     const nextDataEl = document.getElementById("__NEXT_DATA__");
@@ -17,6 +19,7 @@ export async function fetchPostJsonCsrf(url: string, data?: {}) {
     });
     return await response.json();
   } catch (err) {
+    Sentry.captureException(e);
     throw new Error(err.message);
   }
 }

@@ -22,6 +22,7 @@ import {
   loginUrl,
   settingsUrl,
 } from "@app/lib";
+import * as Sentry from "@sentry/nextjs";
 import { NextPage } from "next";
 import NextLink from "next/link";
 import React, { useCallback, useState } from "react";
@@ -130,6 +131,7 @@ function ProfileSettingsForm({
       setError(null);
       setSuccess(true);
     } catch (e: any) {
+      Sentry.captureException(e);
       const errcode = getCodeFromError(e);
       if (errcode === "23505") {
         setFormError(
@@ -167,6 +169,7 @@ function ProfileSettingsForm({
           },
         });
       } catch (e: any) {
+        Sentry.captureException(e);
         setAvatarPhotoUrl(null);
         setAvatarUploadError(`${e.message}`);
       }
@@ -220,6 +223,7 @@ function ProfileSettingsForm({
         });
         console.log("saved img urls to db: ", profilePhotoUrls);
       } catch (e: any) {
+        Sentry.captureException(e);
         setProfilePhotoUploadError(e.message);
       }
     }

@@ -19,6 +19,7 @@ import {
   useSettingsEmailsQuery,
 } from "@app/graphql";
 import { emailsUrl, extractError, getCodeFromError } from "@app/lib";
+import * as Sentry from "@sentry/nextjs";
 import { NextPage } from "next";
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
@@ -206,6 +207,7 @@ function AddEmailForm({ error, setError, onComplete }: AddEmailFormProps) {
         await addEmail({ variables: { email: values.email } });
         onComplete();
       } catch (e: any) {
+        Sentry.captureException(e);
         setError(e);
       }
     },

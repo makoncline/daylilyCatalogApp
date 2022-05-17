@@ -7,6 +7,7 @@ import {
   useSharedQuery,
 } from "@app/graphql";
 import { deleteUrl, getCodeFromError } from "@app/lib";
+import * as Sentry from "@sentry/nextjs";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useCallback, useState } from "react";
@@ -44,6 +45,7 @@ const Settings_Accounts: NextPage = () => {
         }
         setItIsDone(true);
       } catch (e: any) {
+        Sentry.captureException(e);
         setError(e);
       }
       setDoingIt(false);
@@ -65,6 +67,7 @@ const Settings_Accounts: NextPage = () => {
         // Display confirmation
         setDeleted(true);
       } catch (e: any) {
+        Sentry.captureException(e);
         setError(e);
       }
       setDeleting(false);
