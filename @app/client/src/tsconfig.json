@@ -3,7 +3,7 @@
   "compilerOptions": {
     "composite": false,
     "incremental": false,
-    "target": "es5",
+    "target": "es6",
     "lib": ["dom", "dom.iterable", "esnext"],
     "noEmit": true,
     "esModuleInterop": true,
@@ -17,6 +17,7 @@
     { "path": "../../config" },
     { "path": "../../graphql" },
     { "path": "../../components" },
-    { "path": "../../lib" }
+    { "path": "../../lib" },
+    { "path": "../../design" }
   ]
 }

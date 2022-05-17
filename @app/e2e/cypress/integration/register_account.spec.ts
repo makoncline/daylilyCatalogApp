@@ -17,7 +17,7 @@ context("RegisterAccount", () => {
       "equal",
       Cypress.env("ROOT_URL") + "/register?next=%2F"
     );
-    cy.getCy("registerpage-name-label").should("exist");
+    cy.getCy("layout-header-title").should("contain", "Register");
   });
 
   it("requires the form be filled", () => {
@@ -27,9 +27,13 @@ context("RegisterAccount", () => {
     // Action
     cy.getCy("registerpage-submit-button").click();
     // Assertions
-    cy.getCy("registerpage-name-label").should("exist");
-    cy.contains("input your name");
-    cy.contains("input your passphrase");
+    cy.getCy("layout-header-title").should("contain", "Register");
+    cy.getCy("registerpage-input-name")
+      .invoke("attr", "placeholder")
+      .should("contain", "What is your name");
+    cy.getCy("registerpage-input-password")
+      .invoke("attr", "placeholder")
+      .should("contain", "Enter a secure passphrase");
   });
 
   context("Account creation", () => {
@@ -56,7 +60,7 @@ context("RegisterAccount", () => {
       // Assertions
       cy.url({ timeout: 10000 }).should("equal", Cypress.env("ROOT_URL") + "/"); // Should be on homepage
       cy.getCy("header-login-button").should("not.exist");
-      cy.getCy("layout-dropdown-user").should("contain", "Test User"); // Should be logged in
+      cy.getCy("header-logout-button").should("exist");
     });
 
     it("prevents creation if username is in use", () => {
@@ -72,7 +76,7 @@ context("RegisterAccount", () => {
       cy.getCy("registerpage-submit-button").click();
       // Assertions
       cy.contains("account with this username").should("exist");
-      cy.getCy("header-login-button").should("not.exist"); // No login button on register page
+      cy.getCy("header-login-button").should("not.exist");
     });
   });
 });

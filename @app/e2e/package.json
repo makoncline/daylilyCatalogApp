@@ -14,5 +14,9 @@
     "cypress": "^7.4.0",
     "jest": "^27.0.1",
     "webpack": "^4.43.0"
+  },
+  "dependencies": {
+    "@cypress/webpack-preprocessor": "^5.11.1",
+    "cypress": "^9.6.1"
   }
 }

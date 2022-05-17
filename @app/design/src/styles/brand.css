@@ -1,0 +1,19 @@
+@import "theme.css";
+
+:where(html) {
+  --scrollbar-color: var(--gray-7);
+
+  scrollbar-color: var(--scrollbar-color) transparent;
+  accent-color: var(--primary);
+  caret-color: var(--primary);
+}
+
+@media (prefers-color-scheme: light) {
+  :where(html) {
+    --scrollbar-color: var(--gray-4);
+  }
+}
+
+:focus-visible {
+  outline-color: var(--primary);
+}

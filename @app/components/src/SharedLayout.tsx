@@ -1,26 +1,23 @@
-import { DownOutlined } from "@ant-design/icons";
 import { ApolloError, QueryResult, useApolloClient } from "@apollo/client";
-import { companyName, projectName } from "@app/config";
+import { projectName } from "@app/config/dist";
+import { FancyHeading, Space } from "@app/design";
 import {
   SharedLayout_QueryFragment,
   SharedLayout_UserFragment,
   useCurrentUserUpdatedSubscription,
   useLogoutMutation,
 } from "@app/graphql";
+import { loginUrl } from "@app/lib";
 import * as Sentry from "@sentry/nextjs";
-import { Col, Dropdown, Layout, Menu, Row, Typography } from "antd";
 import Head from "next/head";
 import Link from "next/link";
 import Router, { useRouter } from "next/router";
 import * as React from "react";
 import { useCallback } from "react";
 
-import { ErrorAlert, H1, P, StandardWidth, Warn } from ".";
+import { ErrorAlert, NextLayout, StandardWidth } from ".";
 import { Redirect } from "./Redirect";
-import { UserAvatar } from "./UserAvatar";
 
-const { Header, Content, Footer } = Layout;
-const { Text } = Typography;
 /*
  * For some reason, possibly related to the interaction between
  * `babel-plugin-import` and https://github.com/babel/babel/pull/9766, we can't
@@ -29,9 +26,7 @@ const { Text } = Typography;
  *
  * TODO: change back to `export { Row, Col, Link }` when this issue is fixed.
  */
-const _babelHackRow = Row;
-const _babelHackCol = Col;
-export { _babelHackCol as Col, Link, _babelHackRow as Row };
+export { Link };
 
 export const contentMinHeight = "calc(100vh - 64px - 70px)";
 
@@ -64,9 +59,7 @@ export interface SharedLayoutProps {
     "data" | "loading" | "error" | "networkStatus" | "client" | "refetch"
   >;
 
-  title: string;
-  titleHref?: string;
-  titleHrefAs?: string;
+  title?: string;
   children:
     | React.ReactNode
     | ((props: SharedLayoutChildProps) => React.ReactNode);
@@ -93,8 +86,6 @@ function CurrentUserUpdatedSubscription() {
 
 export function SharedLayout({
   title,
-  titleHref,
-  titleHrefAs,
   noPad = false,
   noHandleErrors = false,
   query,
@@ -155,7 +146,9 @@ export function SharedLayout({
       forbidsLoggedOut
     ) {
       return (
-        <Redirect href={`/login?next=${encodeURIComponent(router.asPath)}`} />
+        <Redirect
+          href={`${loginUrl}?next=${encodeURIComponent(router.asPath)}`}
+        />
       );
     }
 
@@ -164,142 +157,27 @@ export function SharedLayout({
   const { data, loading, error } = query;
 
   return (
-    <Layout>
+    <NextLayout
+      handleLogout={handleLogout}
+      isLoggedIn={!!data?.currentUser}
+      currentUrl={currentUrl}
+    >
       {data && data.currentUser ? <CurrentUserUpdatedSubscription /> : null}
-      <Header
-        style={{
-          boxShadow: "0 2px 8px #f0f1f2",
-          zIndex: 1,
-          overflow: "hidden",
-          padding: "0 5%",
-        }}
-      >
-        <Head>
-          <title>{title ? `${title} — ${projectName}` : projectName}</title>
-        </Head>
-        <Row justify="space-between">
-          <Col xs={0}>
-            <P data-cy="layout-header-logo">
-              <Link href="/">
-                <a data-cy="layout-header-homelink">
-                  <strong>Home</strong>
-                </a>
-              </Link>
-            </P>
-          </Col>
-          <Col>
-            <H1
-              style={{
-                margin: 0,
-                padding: 0,
-                textAlign: "center",
-                lineHeight: "64px",
-                fontSize: "1.2rem",
-              }}
-              data-cy="layout-header-title"
-            >
-              {titleHref ? (
-                <Link href={titleHref} as={titleHrefAs}>
-                  <a data-cy="layout-header-titlelink">{title}</a>
-                </Link>
-              ) : (
-                title
-              )}
-            </H1>
-          </Col>
-          <Col style={{ textAlign: "right" }}>
-            {data && data.currentUser ? (
-              <Dropdown
-                overlay={
-                  <Menu>
-                    <Menu.Item>
-                      <Link href="/">
-                        <a data-cy="layout-link-home">Home</a>
-                      </Link>
-                    </Menu.Item>
-                    <Menu.Item>
-                      <Link href="/catalog">
-                        <a data-cy="layout-link-catalog">Catalog</a>
-                      </Link>
-                    </Menu.Item>
-                    <Menu.Item>
-                      <Link href="/lists">
-                        <a data-cy="layout-link-lists">Lists</a>
-                      </Link>
-                    </Menu.Item>
-                    <Menu.Item>
-                      <Link href="/settings">
-                        <a data-cy="layout-link-settings">
-                          <Warn okay={data.currentUser.isVerified}>
-                            Settings
-                          </Warn>
-                        </a>
-                      </Link>
-                    </Menu.Item>
-                    <Menu.Item>
-                      <Link href="/membership">
-                        <a data-cy="layout-link-membership">Membership</a>
-                      </Link>
-                    </Menu.Item>
-                    <Menu.Item>
-                      <a onClick={handleLogout}>Logout</a>
-                    </Menu.Item>
-                  </Menu>
-                }
-              >
-                <div
-                  data-cy="layout-dropdown-user"
-                  style={{ whiteSpace: "nowrap", height: "75%" }}
-                >
-                  <UserAvatar user={data.currentUser} />
-                  <Warn okay={data.currentUser.isVerified}>
-                    <span style={{ marginLeft: 8, marginRight: 8 }}>
-                      {data.currentUser.name}
-                    </span>
-                    <DownOutlined />
-                  </Warn>
-                </div>
-              </Dropdown>
-            ) : forbidsLoggedIn ? null : (
-              <Link href={`/login?next=${encodeURIComponent(currentUrl)}`}>
-                <a data-cy="header-login-button">Sign in</a>
-              </Link>
-            )}
-          </Col>
-        </Row>
-      </Header>
-      <Content style={{ minHeight: contentMinHeight }}>
+      <Head>
+        <title>{title ? `${title} — ${projectName}` : projectName}</title>
+      </Head>
+      <Space gap="large" direction="column" center>
+        {title ? (
+          <FancyHeading level={1} data-cy="layout-header-title">
+            {title}
+          </FancyHeading>
+        ) : null}
         {renderChildren({
           error,
           loading,
           currentUser: data && data.currentUser,
         })}
-      </Content>
-      <Footer>
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "space-between",
-          }}
-        >
-          <Text>
-            Copyright &copy; {new Date().getFullYear()} {companyName}. All
-            rights reserved.
-            {process.env.T_AND_C_URL ? (
-              <span>
-                {" "}
-                <a
-                  style={{ textDecoration: "underline" }}
-                  href={process.env.T_AND_C_URL}
-                >
-                  Terms and conditions
-                </a>
-              </span>
-            ) : null}
-          </Text>
-        </div>
-      </Footer>
-    </Layout>
+      </Space>
+    </NextLayout>
   );
 }

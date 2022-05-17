@@ -1,60 +1,61 @@
-import { UserOutlined } from "@ant-design/icons";
 import { ApolloError } from "@apollo/client";
 import { AuthRestrict, SharedLayout } from "@app/components";
+import {
+  Alert,
+  Button,
+  Field,
+  Form,
+  FormWrapper,
+  SubmitButton,
+  useForm,
+} from "@app/design";
 import { useForgotPasswordMutation, useSharedQuery } from "@app/graphql";
-import { extractError, getCodeFromError } from "@app/lib";
-import { Alert, Button, Form, Input } from "antd";
-import { useForm } from "antd/lib/form/Form";
+import { extractError, getCodeFromError, loginUrl } from "@app/lib";
+import * as Sentry from "@sentry/nextjs";
 import { NextPage } from "next";
 import Link from "next/link";
-import { Store } from "rc-field-form/lib/interface";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
+
+import { validateEmail } from "../util";
 
 const ForgotPassword: NextPage = () => {
   const [error, setError] = useState<Error | ApolloError | null>(null);
   const query = useSharedQuery();
-
-  const [form] = useForm();
+  const forgotPasswordFormName = "forgot-password";
+  const { values } = useForm(forgotPasswordFormName);
   const [forgotPassword] = useForgotPasswordMutation();
   const [successfulEmail, setSuccessfulEmail] = useState<string | null>(null);
 
-  const handleSubmit = useCallback(
-    (values: Store): void => {
-      setError(null);
-      (async () => {
-        try {
-          const email = values.email;
-          await forgotPassword({
-            variables: {
-              email,
-            },
-          });
-          // Success: refetch
-          setSuccessfulEmail(email);
-        } catch (e) {
-          setError(e);
-        }
-      })();
-    },
-    [forgotPassword, setError]
-  );
-
-  const focusElement = useRef<Input>(null);
-  useEffect(
-    () => void (focusElement.current && focusElement.current!.focus()),
-    [focusElement]
-  );
+  const handleSubmit = useCallback((): void => {
+    setError(null);
+    (async () => {
+      try {
+        const email = values.email;
+        await forgotPassword({
+          variables: {
+            email,
+          },
+        });
+        // Success: refetch
+        setSuccessfulEmail(email);
+      } catch (e: any) {
+        setError(e);
+        Sentry.captureException(e);
+      }
+    })();
+  }, [forgotPassword, values.email]);
 
   const code = getCodeFromError(error);
 
   if (successfulEmail != null) {
     return (
       <SharedLayout title="Forgot Password" query={query}>
-        <Alert
-          type="success"
-          message="You've got mail"
-          description={`We've sent an email reset link to '${successfulEmail}'; click the link and follow the instructions. If you don't receive the link, please ensure you entered the email address correctly, and check in your spam folder just in case.`}
-        />
+        <Alert type="success">
+          <Alert.Heading>You've got mail</Alert.Heading>
+          <Alert.Body>
+            {`We've sent an email reset link to '${successfulEmail}'; click the link and follow the instructions. If you don't receive the link, please ensure you entered the email address correctly, and check in your spam folder just in case.`}
+          </Alert.Body>
+        </Alert>
       </SharedLayout>
     );
   }
@@ -65,30 +66,18 @@ const ForgotPassword: NextPage = () => {
       query={query}
       forbidWhen={AuthRestrict.LOGGED_IN}
     >
-      <Form form={form} layout="vertical" onFinish={handleSubmit}>
-        <Form.Item
-          name="email"
-          rules={[
-            {
-              type: "email",
-              message: "The input is not valid E-mail",
-            },
-            { required: true, message: "Please input your email" },
-          ]}
+      <FormWrapper>
+        <Form
+          formId={forgotPasswordFormName}
+          onSubmit={handleSubmit}
+          validation={{ email: validateEmail }}
         >
-          <Input
-            prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-            placeholder="Email"
-            ref={focusElement}
-          />
-        </Form.Item>
-
-        {error ? (
-          <Form.Item>
-            <Alert
-              type="error"
-              message={`Something went wrong`}
-              description={
+          <Field>Email</Field>
+          {error ? (
+            <Alert type="danger">
+              <Alert.Heading>Something went wrong</Alert.Heading>
+              <Alert.Body>
+                {" "}
                 <span>
                   {extractError(error).message}
                   {code ? (
@@ -98,23 +87,19 @@ const ForgotPassword: NextPage = () => {
                     </span>
                   ) : null}
                 </span>
-              }
-            />
-          </Form.Item>
-        ) : null}
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Reset password
-          </Button>
-        </Form.Item>
-        <Form.Item>
+              </Alert.Body>
+            </Alert>
+          ) : null}
+          <SubmitButton>
+            <Button styleType="primary">Reset password</Button>
+          </SubmitButton>
           <p>
-            <Link href="/login">
+            <Link href={loginUrl}>
               <a>Remembered your password? Log in.</a>
             </Link>
           </p>
-        </Form.Item>
-      </Form>
+        </Form>
+      </FormWrapper>
     </SharedLayout>
   );
 };

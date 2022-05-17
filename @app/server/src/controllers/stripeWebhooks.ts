@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import { deleteStripeSubscription, saveStripeSubscription } from "../db";
-import getStripe from "../utils/getStripe";
+import { getStripe } from "../utils";
 // import { createCustomer } from "./customer";
 
 export const stripeWebhooks = async (req: Request, res: Response) => {

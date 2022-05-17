@@ -1,12 +1,13 @@
-import { Col, Row } from "antd";
-import React, { FC } from "react";
+import { Space } from "@app/design";
+import React from "react";
+import styled from "styled-components";
 
-export interface StandardWidthProps {
-  children: React.ReactNode;
-}
-
-export const StandardWidth: FC<StandardWidthProps> = ({ children }) => (
-  <Row style={{ padding: "1rem", maxWidth: "80rem", margin: "0 auto" }}>
-    <Col flex={1}>{children}</Col>
-  </Row>
+export const StandardWidth = ({ children }: { children: React.ReactNode }) => (
+  <StyledSpace direction="column" center block>
+    {children}
+  </StyledSpace>
 );
+
+const StyledSpace = styled(Space)`
+  max-width: var(--max-width);
+`;

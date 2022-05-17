@@ -1,0 +1,19 @@
+{
+  "name": "@app/design",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@reach/dialog": "^0.16.2",
+    "@sentry/nextjs": "^6.19.7",
+    "@types/styled-components": "^5.1.25",
+    "react": "^17.0.2",
+    "styled-components": "^5.3.5",
+    "tslib": "^2.4.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.0.2"
+  }
+}

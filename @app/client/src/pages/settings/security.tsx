@@ -1,10 +1,15 @@
 import { ApolloError } from "@apollo/client";
+import { ErrorAlert, PasswordStrength, SettingsLayout } from "@app/components";
 import {
-  ErrorAlert,
-  P,
-  PasswordStrength,
-  SettingsLayout,
-} from "@app/components";
+  Alert,
+  Button,
+  Field,
+  Form,
+  FormWrapper,
+  Heading,
+  OnChangeCallbackProps,
+  SubmitButton,
+} from "@app/design";
 import {
   useChangePasswordMutation,
   useForgotPasswordMutation,
@@ -12,14 +17,14 @@ import {
   useSharedQuery,
 } from "@app/graphql";
 import {
+  emailsUrl,
   extractError,
-  formItemLayout,
   getCodeFromError,
-  setPasswordInfo,
-  tailFormItemLayout,
+  getPasswordStrength,
+  getPasswordSuggestions,
+  securityUrl,
 } from "@app/lib";
-import { Alert, Button, Form, Input, PageHeader } from "antd";
-import { useForm } from "antd/lib/form/Form";
+import * as Sentry from "@sentry/nextjs";
 import { NextPage } from "next";
 import Link from "next/link";
 import { Store } from "rc-field-form/lib/interface";
@@ -32,7 +37,6 @@ const Settings_Security: NextPage = () => {
 
   const query = useSharedQuery();
 
-  const [form] = useForm();
   const [changePassword] = useChangePasswordMutation();
   const [success, setSuccess] = useState(false);
 
@@ -49,32 +53,23 @@ const Settings_Security: NextPage = () => {
         });
         setError(null);
         setSuccess(true);
-      } catch (e) {
+      } catch (e: any) {
+        Sentry.captureException(e);
         const errcode = getCodeFromError(e);
         if (errcode === "WEAKP") {
-          form.setFields([
-            {
-              name: "newPassword",
-              value: form.getFieldValue("newPassword"),
-              errors: [
-                "The server believes this passphrase is too weak, please make it stronger",
-              ],
-            },
-          ]);
+          setError(
+            new Error(
+              "The server believes this passphrase is too weak, please make it stronger"
+            )
+          );
         } else if (errcode === "CREDS") {
-          form.setFields([
-            {
-              name: "oldPassword",
-              value: form.getFieldValue("oldPassword"),
-              errors: ["Incorrect old passphrase"],
-            },
-          ]);
+          setError(new Error("Incorrect old passphrase"));
         } else {
           setError(e);
         }
       }
     },
-    [changePassword, form, setError]
+    [changePassword, setError]
   );
 
   const {
@@ -93,35 +88,25 @@ const Settings_Security: NextPage = () => {
     if (resetInProgress) return;
     (async () => {
       setResetInProgress(true);
-
       try {
         await forgotPassword({ variables: { email } });
       } catch (e) {
+        Sentry.captureException(e);
         setResetError(resetError);
       }
       setResetInProgress(false);
     })();
   }, [email, forgotPassword, resetError, resetInProgress]);
 
-  const [passwordIsFocussed, setPasswordIsFocussed] = useState(false);
-  const setPasswordFocussed = useCallback(() => {
-    setPasswordIsFocussed(true);
-  }, [setPasswordIsFocussed]);
-  const setPasswordNotFocussed = useCallback(() => {
-    setPasswordIsFocussed(false);
-  }, [setPasswordIsFocussed]);
-  const [passwordIsDirty, setPasswordIsDirty] = useState(false);
-  const handleValuesChange = useCallback(
-    (changedValues) => {
-      setPasswordInfo(
-        { setPasswordStrength, setPasswordSuggestions },
-        changedValues,
-        "newPassword"
-      );
-      setPasswordIsDirty(form.isFieldTouched("password"));
-    },
-    [form]
-  );
+  const handleChange = ({ values, changedField }: OnChangeCallbackProps) => {
+    if (changedField === "new-password") {
+      const value = values[changedField];
+      if (value.length > 0) {
+        setPasswordStrength(getPasswordStrength(value));
+        setPasswordSuggestions(getPasswordSuggestions(value));
+      }
+    }
+  };
 
   const inner = () => {
     if (loading) {
@@ -130,100 +115,73 @@ const Settings_Security: NextPage = () => {
       return <ErrorAlert error={graphqlQueryError} />;
     } else if (data && data.currentUser && !data.currentUser.hasPassword) {
       return (
-        <div>
-          <PageHeader title="Change passphrase" />
-          <P>
-            You registered your account through social login, so you do not
-            currently have a passphrase. If you would like a passphrase, press
-            the button below to request a passphrase reset email to '{email}'
-            (you can choose a different email by making it primary in{" "}
-            <Link href="/settings/emails">email settings</Link>).
-          </P>
-          <Button onClick={handleResetPassword} disabled={resetInProgress}>
-            Reset passphrase
-          </Button>
-        </div>
+        <Alert type="info">
+          <Alert.Heading>Change passphrase</Alert.Heading>
+          <Alert.Body>
+            <p>
+              You registered your account through social login, so you do not
+              currently have a passphrase. If you would like a passphrase, press
+              the button below to request a passphrase reset email to '{email}'
+              (you can choose a different email by making it primary in{" "}
+              <Link href={emailsUrl}>email settings</Link>).
+            </p>
+          </Alert.Body>
+          <Alert.Actions>
+            <Button
+              onClick={handleResetPassword}
+              disabled={resetInProgress}
+              block
+            >
+              Reset passphrase
+            </Button>
+          </Alert.Actions>
+        </Alert>
       );
     }
 
     const code = getCodeFromError(error);
+    const securityFormName = "security";
     return (
-      <div>
-        <PageHeader title="Change passphrase" />
+      <FormWrapper>
+        <Heading level={2}>Change passphrase</Heading>
         <Form
-          {...formItemLayout}
-          form={form}
-          onFinish={handleSubmit}
-          onValuesChange={handleValuesChange}
+          formId={securityFormName}
+          onSubmit={handleSubmit}
+          onChange={handleChange}
         >
-          <Form.Item
-            label="Old passphrase"
-            name="oldPassword"
-            rules={[
-              {
-                required: true,
-                message: "Please input your passphrase",
-              },
-            ]}
-          >
-            <Input type="password" />
-          </Form.Item>
-          <Form.Item label="New passphrase" required>
-            <Form.Item
-              noStyle
-              name="newPassword"
-              rules={[
-                {
-                  required: true,
-                  message: "Please confirm your passphrase",
-                },
-              ]}
-            >
-              <Input
-                type="password"
-                onFocus={setPasswordFocussed}
-                onBlur={setPasswordNotFocussed}
-              />
-            </Form.Item>
-            <PasswordStrength
-              passwordStrength={passwordStrength}
-              suggestions={passwordSuggestions}
-              isDirty={passwordIsDirty}
-              isFocussed={passwordIsFocussed}
-            />
-          </Form.Item>
+          <Field name="old-password" required>
+            Old passphrase
+          </Field>
+          <Field name="new-password">New passphrase</Field>
+          <PasswordStrength
+            passwordStrength={passwordStrength}
+            suggestions={passwordSuggestions}
+          />
           {error ? (
-            <Form.Item>
-              <Alert
-                type="error"
-                message={`Changing passphrase failed`}
-                description={
+            <div>
+              <p>Changing passphrase failed</p>
+              <span>
+                {extractError(error).message}
+                {code ? (
                   <span>
-                    {extractError(error).message}
-                    {code ? (
-                      <span>
-                        {" "}
-                        (Error code: <code>ERR_{code}</code>)
-                      </span>
-                    ) : null}
+                    {" "}
+                    (Error code: <code>ERR_{code}</code>)
                   </span>
-                }
-              />
-            </Form.Item>
+                ) : null}
+              </span>
+            </div>
           ) : success ? (
-            <Form.Item>
-              <Alert type="success" message={`Password changed!`} />
-            </Form.Item>
+            <p>Password changed!</p>
           ) : null}
-          <Form.Item {...tailFormItemLayout}>
-            <Button htmlType="submit">Change Passphrase</Button>
-          </Form.Item>
+          <SubmitButton>
+            <Button block>Change Passphrase</Button>
+          </SubmitButton>
         </Form>
-      </div>
+      </FormWrapper>
     );
   };
   return (
-    <SettingsLayout href="/settings/security" query={query}>
+    <SettingsLayout href={securityUrl} query={query}>
       {inner()}
     </SettingsLayout>
   );

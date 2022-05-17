@@ -1,5 +1,11 @@
-import { Layout, Menu, Typography } from "antd";
-import { TextProps } from "antd/lib/typography/Text";
+import { Space } from "@app/design";
+import {
+  deleteUrl,
+  emailsUrl,
+  loginUrl,
+  securityUrl,
+  settingsUrl,
+} from "@app/lib";
 import Link from "next/link";
 import { NextRouter, useRouter } from "next/router";
 import * as qs from "querystring";
@@ -9,22 +15,16 @@ import styled from "styled-components";
 import { Redirect } from "./Redirect";
 import {
   AuthRestrict,
-  contentMinHeight,
   SharedLayout,
   SharedLayoutChildProps,
   SharedLayoutProps,
 } from "./SharedLayout";
 import { StandardWidth } from "./StandardWidth";
-import { Warn } from "./Warn";
-
-const { Text } = Typography;
-const { Sider, Content } = Layout;
 
 interface PageSpec {
   title: string;
   cy: string;
   warnIfUnverified?: boolean;
-  titleProps?: TextProps;
 }
 
 // TypeScript shenanigans (so we can still use `keyof typeof pages` later)
@@ -33,28 +33,21 @@ function page(spec: PageSpec): PageSpec {
 }
 
 const pages = {
-  "/settings": page({
+  [settingsUrl]: page({
     title: "Profile",
     cy: "settingslayout-link-profile",
   }),
-  "/settings/security": page({
+  [securityUrl]: page({
     title: "Passphrase",
     cy: "settingslayout-link-password",
   }),
-  // "/settings/accounts": page({
-  //   title: "Linked Accounts",
-  //   cy: "settingslayout-link-accounts",
-  // }),
-  "/settings/emails": page({
+  [emailsUrl]: page({
     title: "Emails",
     warnIfUnverified: true,
     cy: "settingslayout-link-emails",
   }),
-  "/settings/delete": page({
+  [deleteUrl]: page({
     title: "Delete Account",
-    titleProps: {
-      type: "danger",
-    },
     cy: "settingslayout-link-delete",
   }),
 };
@@ -63,12 +56,14 @@ export interface SettingsLayoutProps {
   query: SharedLayoutProps["query"];
   href: keyof typeof pages;
   children: React.ReactNode;
+  noPad?: boolean;
 }
 
 export function SettingsLayout({
   query,
   href: inHref,
   children,
+  noPad = false,
 }: SettingsLayoutProps) {
   const href = pages[inHref] ? inHref : Object.keys(pages)[0];
   const page = pages[href];
@@ -85,57 +80,31 @@ export function SettingsLayout({
     >
       {({ currentUser, error, loading }: SharedLayoutChildProps) =>
         !currentUser && !error && !loading ? (
-          <Redirect href={`/login?next=${encodeURIComponent(fullHref)}`} />
+          <Redirect href={`${loginUrl}?next=${encodeURIComponent(fullHref)}`} />
         ) : (
-          <Layout style={{ minHeight: contentMinHeight }} hasSider>
-            <Sider
-              breakpoint="md"
-              collapsedWidth="0"
-              zeroWidthTriggerStyle={{
-                color: "#757575",
-                boxShadow: "0 2px 2px #f0f1f2",
-              }}
-              style={{
-                position: "absolute",
-                zIndex: 1,
-                borderBottom: "var(--hairline)",
-              }}
-            >
-              <Menu selectedKeys={[href]}>
-                {Object.keys(pages).map((pageHref) => (
-                  <Menu.Item key={pageHref}>
-                    <Link href={pageHref}>
-                      <a data-cy={pages[pageHref].cy}>
-                        <Warn
-                          okay={
-                            !currentUser ||
-                            currentUser.isVerified ||
-                            !pages[pageHref].warnIfUnverified
-                          }
-                        >
-                          <Text {...pages[pageHref].titleProps}>
-                            {pages[pageHref].title}
-                          </Text>
-                        </Warn>
-                      </a>
-                    </Link>
-                  </Menu.Item>
-                ))}
-              </Menu>
-            </Sider>
-            <StyledContent>
-              <StandardWidth>{children}</StandardWidth>
-            </StyledContent>
-          </Layout>
+          <Space direction="column" gap="large">
+            <Wrap>
+              {Object.keys(pages).map((pageHref, i) => (
+                <Link
+                  href={pageHref}
+                  key={i}
+                  data-cy={pages[pageHref].cy}
+                  passHref
+                >
+                  <a data-cy={pages[pageHref].cy}>{pages[pageHref].title}</a>
+                </Link>
+              ))}
+            </Wrap>
+            {noPad ? children : <StandardWidth>{children}</StandardWidth>}
+          </Space>
         )
       }
     </SharedLayout>
   );
 }
 
-const StyledContent = styled(Content)`
-  padding-left: 36px;
-  @media (min-width: 768px) {
-    padding-left: 200px;
-  }
+const Wrap = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-4);
 `;

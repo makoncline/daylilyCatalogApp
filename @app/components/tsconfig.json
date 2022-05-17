@@ -7,17 +7,14 @@
     "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
     "declarationDir": "dist",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "target": "es5",
+    "target": "es6",
     "module": "commonjs",
     "jsx": "react"
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "references": [
-    {
-      "path": "../graphql"
-    },
-    {
-      "path": "../lib"
-    }
+    { "path": "../graphql" },
+    { "path": "../lib" },
+    { "path": "../design" }
   ]
 }

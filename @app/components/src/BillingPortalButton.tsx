@@ -1,6 +1,6 @@
+import { Button } from "@app/design";
 import { useStripeCustomerQuery } from "@app/graphql";
 import * as Sentry from "@sentry/nextjs";
-import { Button } from "antd";
 import React from "react";
 import type { Stripe } from "stripe";
 
@@ -20,14 +20,14 @@ export const BillingPortalButton = () => {
       if (typeof window !== "undefined") {
         window.location.href = billingPortalSession.url;
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err.message);
       Sentry.captureException(err);
     }
   }
 
   return (
-    <Button type="primary" block onClick={redirectToBillingPortal}>
+    <Button styleType="primary" onClick={redirectToBillingPortal}>
       Manage Membership
     </Button>
   );

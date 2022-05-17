@@ -144,7 +144,6 @@ const CreateUploadUrlPlugin = makeExtendSchemaPlugin(() => ({
         }
 
         const user = await getCurrentUser(context.pgClient);
-        console.log("user: ", user);
 
         if (!user) {
           const err = new Error("Login required");

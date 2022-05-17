@@ -1,10 +1,9 @@
+#import "./AhsSearchData.graphql"
 query SearchAhsLilies($search: String!) {
   searchAhsLilies(search: $search, first: 10) {
     nodes {
       id
-      ahsId
-      name
-      image
+      ...AhsSearchData
     }
   }
 }

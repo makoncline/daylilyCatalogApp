@@ -1,0 +1,21 @@
+:where(html) {
+  color-scheme: light;
+
+  --primary: var(--blue-5);
+  --primary--glint: var(--blue-4);
+  --secondary: var(--violet-5);
+  --secondary--glint: var(--violet-4);
+
+  --link: var(--indigo-7);
+  --link-visited: var(--grape-7);
+
+  --text-1: var(--gray-9);
+  --text-2: var(--gray-7);
+  --text-1--reversed: var(--gray-1);
+  --text-2--reversed: var(--gray-3);
+
+  --surface-1: var(--gray-0);
+  --surface-2: var(--gray-2);
+  --surface-3: var(--gray-3);
+  --surface-4: var(--gray-4);
+}

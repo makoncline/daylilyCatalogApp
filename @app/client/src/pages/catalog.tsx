@@ -1,5 +1,6 @@
 import { ErrorAlert, Lilies, Redirect, SharedLayout } from "@app/components";
 import { useSharedQuery } from "@app/graphql";
+import { loginUrl } from "@app/lib";
 import { NextPage } from "next";
 import React from "react";
 
@@ -16,7 +17,7 @@ const Catalog: NextPage = () => {
       ) : error ? (
         <ErrorAlert error={error} />
       ) : (
-        <Redirect href={`/login?next=${encodeURIComponent("/")}`} />
+        <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />
       )}
     </SharedLayout>
   );

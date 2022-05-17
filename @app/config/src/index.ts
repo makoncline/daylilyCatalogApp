@@ -1,11 +1,6 @@
-// @ts-ignore
-const packageJson = require("../../../package.json");
-
-// TODO: customise this with your own settings!
-
 export const fromEmail = '"Daylily Catalog" <no-reply@daylilycatalog.com>';
 export const awsRegion = "us-east-1";
-export const projectName = packageJson.name.replace(/[-_]/g, " ");
+export const projectName = "Daylily Catalog";
 export const companyName = "Daylily Catalog"; // For copyright ownership
 export const emailLegalText =
   // Envvar here so we can override on the demo website

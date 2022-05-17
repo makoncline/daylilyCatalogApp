@@ -1,31 +1,34 @@
-import { LockOutlined, UserAddOutlined, UserOutlined } from "@ant-design/icons";
 import { ApolloError, useApolloClient } from "@apollo/client";
 import {
   AuthRestrict,
-  ButtonLink,
-  Col,
+  Link,
   Redirect,
-  Row,
   SharedLayout,
   SharedLayoutChildProps,
 } from "@app/components";
+import {
+  Button,
+  Field,
+  Form,
+  FormError,
+  FormGroup,
+  FormStateContextProps,
+  FormWrapper,
+  Space,
+  SubmitButton,
+} from "@app/design";
 import { useLoginMutation, useSharedQuery } from "@app/graphql";
 import {
   extractError,
+  forgotUrl,
   getCodeFromError,
+  registerUrl,
   resetWebsocketConnection,
 } from "@app/lib";
-import { Alert, Button, Form, Input } from "antd";
-import { useForm } from "antd/lib/form/Form";
+import * as Sentry from "@sentry/nextjs";
 import { NextPage } from "next";
-import Link from "next/link";
 import Router from "next/router";
-import { Store } from "rc-field-form/lib/interface";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-
-function hasErrors(fieldsError: Object) {
-  return Object.keys(fieldsError).some((field) => fieldsError[field]);
-}
+import React, { useCallback, useState } from "react";
 
 interface LoginProps {
   next: string | null;
@@ -35,9 +38,6 @@ export function isSafe(nextUrl: string | null) {
   return (nextUrl && nextUrl[0] === "/") || false;
 }
 
-/**
- * Login page just renders the standard layout and embeds the login form
- */
 const Login: NextPage<LoginProps> = ({ next: rawNext }) => {
   const [error, setError] = useState<Error | ApolloError | null>(null);
   const [showLogin, setShowLogin] = useState<boolean>(false);
@@ -53,52 +53,33 @@ const Login: NextPage<LoginProps> = ({ next: rawNext }) => {
         currentUser ? (
           <Redirect href={next} />
         ) : (
-          <Row justify="center" style={{ marginTop: 32 }}>
+          <FormWrapper>
             {showLogin ? (
-              <Col xs={24} sm={12}>
-                <Row>
-                  <LoginForm
-                    onSuccessRedirectTo={next}
-                    onCancel={() => setShowLogin(false)}
-                    error={error}
-                    setError={setError}
-                  />
-                </Row>
-              </Col>
+              <LoginForm
+                onSuccessRedirectTo={next}
+                onCancel={() => setShowLogin(false)}
+                error={error}
+                setError={setError}
+              />
             ) : (
-              <Col xs={24} sm={12}>
-                <Row style={{ marginBottom: 8 }}>
-                  <Col span={24}>
-                    <Button
-                      data-cy="loginpage-button-withusername"
-                      icon={<UserOutlined />}
-                      size="large"
-                      block
-                      onClick={() => setShowLogin(true)}
-                      type="primary"
-                    >
-                      Sign in with E-mail or Username
-                    </Button>
-                  </Col>
-                </Row>
-                <Row justify="center">
-                  <Col flex={1}>
-                    <ButtonLink
-                      icon={<UserAddOutlined />}
-                      size="large"
-                      block
-                      type="default"
-                      href={`/register?next=${encodeURIComponent(next)}`}
-                    >
-                      <a data-cy="loginpage-button-register">
-                        Create an account
-                      </a>
-                    </ButtonLink>
-                  </Col>
-                </Row>
-              </Col>
+              <Space direction="column">
+                <Button
+                  data-cy="loginpage-button-withusername"
+                  onClick={() => setShowLogin(true)}
+                >
+                  Sign in with E-mail or Username
+                </Button>
+                <Link
+                  href={`${registerUrl}?next=${encodeURIComponent(next)}`}
+                  passHref
+                >
+                  <Button block data-cy="loginpage-button-register">
+                    Create an account
+                  </Button>
+                </Link>
+              </Space>
             )}
-          </Row>
+          </FormWrapper>
         )
       }
     </SharedLayout>
@@ -120,17 +101,15 @@ interface LoginFormProps {
 
 function LoginForm({
   onSuccessRedirectTo,
-  onCancel,
   error,
   setError,
+  onCancel,
 }: LoginFormProps) {
-  const [form] = useForm();
   const [login] = useLoginMutation({});
   const client = useApolloClient();
 
-  const [submitDisabled, setSubmitDisabled] = useState(false);
   const handleSubmit = useCallback(
-    async (values: Store) => {
+    async ({ values, errors, setErrors }: FormStateContextProps) => {
       setError(null);
       try {
         await login({
@@ -143,109 +122,79 @@ function LoginForm({
         resetWebsocketConnection();
         client.resetStore();
         Router.push(onSuccessRedirectTo);
-      } catch (e) {
+      } catch (e: any) {
         const code = getCodeFromError(e);
         if (code === "CREDS") {
-          form.setFields([
-            {
-              name: "password",
-              value: form.getFieldValue("password"),
-              errors: ["Incorrect username or passphrase"],
-            },
-          ]);
-          setSubmitDisabled(true);
+          setErrors({
+            ...errors,
+            password: "Incorrect username or passphrase",
+          });
         } else {
           setError(e);
         }
+        Sentry.captureException(e);
       }
     },
-    [client, form, login, onSuccessRedirectTo, setError]
+    [client, login, onSuccessRedirectTo, setError]
   );
-
-  const focusElement = useRef<Input>(null);
-  useEffect(
-    () => void (focusElement.current && focusElement.current!.focus()),
-    [focusElement]
-  );
-
-  const handleValuesChange = useCallback(() => {
-    setSubmitDisabled(hasErrors(form.getFieldsError().length !== 0));
-  }, [form]);
 
   const code = getCodeFromError(error);
 
   return (
     <Form
-      form={form}
-      layout="vertical"
-      onFinish={handleSubmit}
-      onValuesChange={handleValuesChange}
-      style={{ width: "100%" }}
+      formId="login"
+      onSubmit={handleSubmit}
+      validation={{
+        username: (username) =>
+          username?.length === 0 ? "Please input your username" : null,
+        password: (password) =>
+          password?.length === 0 ? "Please input your passphrase" : null,
+      }}
     >
-      <Form.Item
-        name="username"
-        rules={[{ required: true, message: "Please input your username" }]}
+      <Field
+        placeholder="👤    E-mail or Username"
+        autoComplete="email username"
+        data-cy="loginpage-input-username"
       >
-        <Input
-          size="large"
-          prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-          placeholder="E-mail or Username"
-          autoComplete="email username"
-          ref={focusElement}
-          data-cy="loginpage-input-username"
-        />
-      </Form.Item>
-      <Form.Item
+        Username
+      </Field>
+      <Field
         name="password"
-        rules={[{ required: true, message: "Please input your passphrase" }]}
+        placeholder="🔒    Passphrase"
+        autoComplete="current-password"
+        data-cy="loginpage-input-password"
       >
-        <Input
-          prefix={<LockOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-          size="large"
-          type="password"
-          placeholder="Passphrase"
-          autoComplete="current-password"
-          data-cy="loginpage-input-password"
-        />
-      </Form.Item>
-      <Form.Item>
-        <Link href="/forgot">
+        Passphrase
+      </Field>
+      <FormGroup>
+        <Link href={forgotUrl}>
           <a>Forgotten passphrase?</a>
         </Link>
-      </Form.Item>
-
+      </FormGroup>
       {error ? (
-        <Form.Item>
-          <Alert
-            type="error"
-            message={`Sign in failed`}
-            description={
-              <span>
-                {extractError(error).message}
-                {code ? (
-                  <span>
-                    {" "}
-                    (Error code: <code>ERR_{code}</code>)
-                  </span>
-                ) : null}
-              </span>
-            }
-          />
-        </Form.Item>
+        <FormGroup>
+          <FormError>
+            <p>Sign in failed</p>
+            <span>
+              {extractError(error).message}
+              {code ? (
+                <span>
+                  {" "}
+                  (Error code: <code>ERR_{code}</code>)
+                </span>
+              ) : null}
+            </span>
+          </FormError>
+        </FormGroup>
       ) : null}
-      <Form.Item>
-        <Button
-          type="primary"
-          htmlType="submit"
-          disabled={submitDisabled}
-          data-cy="loginpage-button-submit"
-        >
-          Sign in
-        </Button>
+      <FormGroup direction="row">
+        <SubmitButton>
+          <Button data-cy="loginpage-button-submit">Sign in</Button>
+        </SubmitButton>
         <a style={{ marginLeft: 16 }} onClick={onCancel}>
           Use a different sign in method
         </a>
-      </Form.Item>
+      </FormGroup>
     </Form>
   );
 }

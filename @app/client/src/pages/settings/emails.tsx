@@ -1,11 +1,15 @@
 import { ApolloError } from "@apollo/client";
+import { ErrorAlert, Redirect, SettingsLayout } from "@app/components";
 import {
-  ErrorAlert,
-  P,
-  Redirect,
-  SettingsLayout,
-  Strong,
-} from "@app/components";
+  Alert,
+  Button,
+  Field,
+  Form,
+  FormStateContextProps,
+  Heading,
+  Space,
+  SubmitButton,
+} from "@app/design";
 import {
   EmailsForm_UserEmailFragment,
   useAddEmailMutation,
@@ -14,17 +18,11 @@ import {
   useResendEmailVerificationMutation,
   useSettingsEmailsQuery,
 } from "@app/graphql";
-import {
-  extractError,
-  formItemLayout,
-  getCodeFromError,
-  tailFormItemLayout,
-} from "@app/lib";
-import { Alert, Avatar, Button, Form, Input, List, PageHeader } from "antd";
-import { useForm } from "antd/lib/form/Form";
+import { emailsUrl, extractError, getCodeFromError } from "@app/lib";
+import * as Sentry from "@sentry/nextjs";
 import { NextPage } from "next";
-import { Store } from "rc-field-form/lib/interface";
 import React, { useCallback, useState } from "react";
+import styled from "styled-components";
 
 function Email({
   email,
@@ -38,55 +36,17 @@ function Email({
   const [resendEmailVerification] = useResendEmailVerificationMutation();
   const [makeEmailPrimary] = useMakeEmailPrimaryMutation();
   return (
-    <List.Item
+    <StyledEmail
       data-cy={`settingsemails-emailitem-${email.email.replace(
         /[^a-zA-Z0-9]/g,
         "-"
       )}`}
-      key={email.id}
-      actions={[
-        email.isPrimary && (
-          <span data-cy="settingsemails-indicator-primary">Primary</span>
-        ),
-        canDelete && (
-          <a
-            onClick={() => deleteEmail({ variables: { emailId: email.id } })}
-            data-cy="settingsemails-button-delete"
-          >
-            Delete
-          </a>
-        ),
-        !email.isVerified && (
-          <a
-            onClick={() =>
-              resendEmailVerification({ variables: { emailId: email.id } })
-            }
-          >
-            Resend verification
-          </a>
-        ),
-        email.isVerified && !email.isPrimary && (
-          <a
-            onClick={() =>
-              makeEmailPrimary({ variables: { emailId: email.id } })
-            }
-            data-cy="settingsemails-button-makeprimary"
-          >
-            Make primary
-          </a>
-        ),
-      ].filter((_) => _)}
     >
-      <List.Item.Meta
-        avatar={
-          <Avatar size="large" style={{ backgroundColor: "transparent" }}>
-            ✉️
-          </Avatar>
-        }
-        title={
-          <span>
-            {" "}
-            {email.email}{" "}
+      <Space center gap="large">
+        ✉️
+        <Space direction="column">
+          <Space gap="large">
+            {email.email}
             <span
               title={
                 email.isVerified
@@ -94,20 +54,51 @@ function Email({
                   : "Pending verification (please check your inbox / spam folder"
               }
             >
-              {" "}
               {email.isVerified ? (
                 "✅"
               ) : (
-                <small style={{ color: "red" }}>(unverified)</small>
-              )}{" "}
-            </span>{" "}
-          </span>
-        }
-        description={`Added ${new Date(
-          Date.parse(email.createdAt)
-        ).toLocaleString()}`}
-      />
-    </List.Item>
+                <small style={{ color: "var(--danger)" }}>(unverified)</small>
+              )}
+            </span>
+          </Space>
+          {`Added ${new Date(Date.parse(email.createdAt)).toLocaleString()}`}
+        </Space>
+      </Space>
+      <Space>
+        {[
+          email.isPrimary && (
+            <span data-cy="settingsemails-indicator-primary">Primary</span>
+          ),
+          canDelete && (
+            <Button
+              onClick={() => deleteEmail({ variables: { emailId: email.id } })}
+              data-cy="settingsemails-button-delete"
+            >
+              Delete
+            </Button>
+          ),
+          !email.isVerified && (
+            <Button
+              onClick={() =>
+                resendEmailVerification({ variables: { emailId: email.id } })
+              }
+            >
+              Resend verification
+            </Button>
+          ),
+          email.isVerified && !email.isPrimary && (
+            <Button
+              onClick={() =>
+                makeEmailPrimary({ variables: { emailId: email.id } })
+              }
+              data-cy="settingsemails-button-makeprimary"
+            >
+              Make primary
+            </Button>
+          ),
+        ].filter((_) => _)}
+      </Space>
+    </StyledEmail>
   );
 }
 
@@ -130,67 +121,65 @@ const Settings_Emails: NextPage = () => {
       return "Loading";
     } else {
       return (
-        <div>
+        <Space direction="column" gap="large">
           {user.isVerified ? null : (
-            <div style={{ marginBottom: "0.5rem" }}>
-              <Alert
-                type="warning"
-                showIcon
-                message="No verified emails"
-                description={`
+            <Alert type="danger">
+              <Alert.Heading>No verified emails</Alert.Heading>
+              <Alert.Body>
+                <p>
                   You do not have any verified email addresses, this will make
                   account recovery impossible and may limit your available
                   functionality within this application. Please complete email
                   verification.
-                `}
-              />
-            </div>
+                </p>
+              </Alert.Body>
+            </Alert>
           )}
-          <PageHeader title="Email addresses" />
-          <P>
-            <Strong>
-              Account notices will be sent your primary email address.
-            </Strong>{" "}
-            Additional email addresses may be added to help with account
-            recovery (or to change your primary email), but they cannot be used
-            until verified.
-          </P>
-          <List
-            bordered
-            size="large"
-            dataSource={user.userEmails.nodes}
-            renderItem={(email) => (
-              <Email
-                email={email}
-                hasOtherEmails={user.userEmails.nodes.length > 1}
-              />
-            )}
-            footer={
-              !showAddEmailForm ? (
-                <div>
-                  <Button
-                    type="primary"
-                    onClick={() => setShowAddEmailForm(true)}
-                    data-cy="settingsemails-button-addemail"
-                  >
-                    Add email
-                  </Button>
-                </div>
-              ) : (
-                <AddEmailForm
-                  onComplete={() => setShowAddEmailForm(false)}
-                  error={formError}
-                  setError={setFormError}
+          <div>
+            <Heading level={2}>Email addresses</Heading>
+            <p>
+              <strong>
+                Account notices will be sent your primary email address.{" "}
+              </strong>
+              Additional email addresses may be added to help with account
+              recovery (or to change your primary email), but they cannot be
+              used until verified.
+            </p>
+          </div>
+          <div>
+            <EmailList>
+              {user.userEmails.nodes.map((email, index) => (
+                <Email
+                  email={email}
+                  key={index}
+                  hasOtherEmails={user.userEmails.nodes.length > 1}
                 />
-              )
-            }
-          />
-        </div>
+              ))}
+            </EmailList>
+          </div>
+          {!showAddEmailForm ? (
+            <div>
+              <Button
+                onClick={() => setShowAddEmailForm(true)}
+                data-cy="settingsemails-button-addemail"
+                block
+              >
+                Add email
+              </Button>
+            </div>
+          ) : (
+            <AddEmailForm
+              onComplete={() => setShowAddEmailForm(false)}
+              error={formError}
+              setError={setFormError}
+            />
+          )}
+        </Space>
       );
     }
   })();
   return (
-    <SettingsLayout href="/settings/emails" query={query}>
+    <SettingsLayout href={emailsUrl} query={query}>
       {pageContent}
     </SettingsLayout>
   );
@@ -210,59 +199,64 @@ interface AddEmailFormProps {
 }
 
 function AddEmailForm({ error, setError, onComplete }: AddEmailFormProps) {
-  const [form] = useForm();
   const [addEmail] = useAddEmailMutation();
   const handleSubmit = useCallback(
-    async (values: Store) => {
+    async ({ values }: FormStateContextProps) => {
       try {
         setError(null);
         await addEmail({ variables: { email: values.email } });
         onComplete();
-      } catch (e) {
+      } catch (e: any) {
+        Sentry.captureException(e);
         setError(e);
       }
     },
     [addEmail, onComplete, setError]
   );
   const code = getCodeFromError(error);
+  const newEmailForm = "new-email";
   return (
-    <Form {...formItemLayout} form={form} onFinish={handleSubmit}>
-      <Form.Item
-        label="New email"
-        name="email"
-        rules={[
-          {
-            required: true,
-            message: "Please enter an email address",
-          },
-        ]}
-      >
-        <Input data-cy="settingsemails-input-email" />
-      </Form.Item>
+    <Form formId={newEmailForm} onSubmit={handleSubmit}>
+      <Field name="email" required data-cy="settingsemails-input-email">
+        New email
+      </Field>
       {error ? (
-        <Form.Item>
-          <Alert
-            type="error"
-            message={`Error adding email`}
-            description={
-              <span>
-                {extractError(error).message}
-                {code ? (
-                  <span>
-                    {" "}
-                    (Error code: <code>ERR_{code}</code>)
-                  </span>
-                ) : null}
-              </span>
-            }
-          />
-        </Form.Item>
+        <Alert type="danger">
+          <Alert.Heading>Error adding email</Alert.Heading>
+          <Alert.Body>
+            <span>
+              {extractError(error).message}
+              {code ? (
+                <span>
+                  {" "}
+                  (Error code: <code>ERR_{code}</code>)
+                </span>
+              ) : null}
+            </span>
+          </Alert.Body>
+        </Alert>
       ) : null}
-      <Form.Item {...tailFormItemLayout}>
-        <Button htmlType="submit" data-cy="settingsemails-button-submit">
+      <SubmitButton>
+        <Button data-cy="settingsemails-button-submit" block>
           Add email
         </Button>
-      </Form.Item>
+      </SubmitButton>
     </Form>
   );
 }
+
+const StyledEmail = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--size-2);
+`;
+
+const EmailList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2);
+  & > :not(:last-child) {
+    border-bottom: var(--hairline);
+  }
+`;

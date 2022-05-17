@@ -1,0 +1,26 @@
+@import "baseline.css";
+@import "fonts.css";
+@import "sizes.css";
+@import "easing.css";
+@import "zindex.css";
+@import "shadows.css";
+@import "aspects.css";
+@import "colors.css";
+@import "gradients.css";
+@import "animations.css";
+@import "borders.css";
+@import "base.css";
+
+html {
+  background-color: var(--surface-1);
+  color: var(--text-1);
+}
+body {
+  display: grid;
+  grid-template-columns: var(--size-8) auto var(--size-8);
+}
+
+body > * {
+  grid-column: 2;
+  width: var(--full-width);
+}

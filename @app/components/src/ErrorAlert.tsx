@@ -1,7 +1,5 @@
-import { SyncOutlined } from "@ant-design/icons";
 import { ApolloError } from "@apollo/client";
-import { Alert, Button, Result } from "antd";
-import Paragraph from "antd/lib/typography/Paragraph";
+import { Alert, Button } from "@app/design";
 import Link from "next/link";
 import React from "react";
 
@@ -14,34 +12,24 @@ export function ErrorAlert({ error }: ErrorAlertProps) {
     ?.errors?.[0]?.code;
   if (code === "EBADCSRFTOKEN") {
     return (
-      <Result
-        status="403"
-        title="Invalid CSRF token"
-        subTitle={
-          <>
-            <Paragraph type="secondary">
-              Our security protections have failed to authenticate your request;
-              to solve this you need to refresh the page:
-            </Paragraph>
-            <Paragraph>
-              <Button
-                type="primary"
-                onClick={() => window.location.reload()}
-                icon={<SyncOutlined />}
-              >
-                Refresh page
-              </Button>
-            </Paragraph>
-          </>
-        }
-      />
+      <Alert type="danger">
+        <Alert.Heading>Invalid CSRF token</Alert.Heading>
+        <Alert.Body>
+          Our security protections have failed to authenticate your request; to
+          solve this you need to refresh the page:
+        </Alert.Body>
+        <Alert.Actions>
+          <Button styleType="primary" onClick={() => window.location.reload()}>
+            Refresh page
+          </Button>
+        </Alert.Actions>
+      </Alert>
     );
   }
   return (
-    <Result
-      status="error"
-      title="Unexpected error occurred"
-      subTitle={
+    <Alert type="danger">
+      <Alert.Heading>Unexpected error occurred</Alert.Heading>
+      <Alert.Body>
         <span>
           We're really sorry, but an unexpected error occurred. Please{" "}
           <Link href="/">
@@ -49,9 +37,8 @@ export function ErrorAlert({ error }: ErrorAlertProps) {
           </Link>
           and try again.
         </span>
-      }
-    >
-      <Alert type="error" message={error.message} />
-    </Result>
+        {error.message}
+      </Alert.Body>
+    </Alert>
   );
 }

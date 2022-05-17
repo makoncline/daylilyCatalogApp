@@ -5,14 +5,16 @@ context("buy membership", () => {
     cy.visit(Cypress.env("ROOT_URL"));
     cy.get("[data-cy=get-started-for-free]").click();
     cy.url({ timeout: 20000 }).should("contain", "/login");
-    cy.get("[data-cy=layout-header-title]").should("contain", "Sign in");
+    cy.getCy("header-login-button").should("not.exist");
+    cy.getCy("header-logout-button").should("not.exist");
   });
 
   it("get started when logged in navigates to catalog", () => {
     cy.login({ next: "/", verified: true });
     cy.get("[data-cy=get-started-for-free]").click();
     cy.url({ timeout: 20000 }).should("contain", "/catalog");
-    cy.get("[data-cy=layout-header-title]").should("contain", "Catalog");
+    cy.getCy("header-login-button").should("not.exist");
+    cy.getCy("header-logout-button").should("exist");
   });
 
   it("pricing leads to pricing page", () => {

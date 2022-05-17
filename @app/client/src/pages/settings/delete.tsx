@@ -1,17 +1,16 @@
 import { ApolloError } from "@apollo/client";
-import { ErrorAlert, P, SettingsLayout } from "@app/components";
+import { ErrorAlert, SettingsLayout } from "@app/components";
+import { Alert, Button, Dialog, Heading, Space } from "@app/design";
 import {
   useConfirmAccountDeletionMutation,
   useRequestAccountDeletionMutation,
   useSharedQuery,
 } from "@app/graphql";
-import { getCodeFromError } from "@app/lib";
-import { Alert, Button, Modal, PageHeader, Typography } from "antd";
+import { deleteUrl, getCodeFromError } from "@app/lib";
+import * as Sentry from "@sentry/nextjs";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useCallback, useState } from "react";
-
-const { Text } = Typography;
 
 const Settings_Accounts: NextPage = () => {
   const router = useRouter();
@@ -45,7 +44,8 @@ const Settings_Accounts: NextPage = () => {
           throw new Error("Requesting deletion failed");
         }
         setItIsDone(true);
-      } catch (e) {
+      } catch (e: any) {
+        Sentry.captureException(e);
         setError(e);
       }
       setDoingIt(false);
@@ -66,7 +66,8 @@ const Settings_Accounts: NextPage = () => {
         await confirmAccountDeletion({ variables: { token } });
         // Display confirmation
         setDeleted(true);
-      } catch (e) {
+      } catch (e: any) {
+        Sentry.captureException(e);
         setError(e);
       }
       setDeleting(false);
@@ -74,132 +75,137 @@ const Settings_Accounts: NextPage = () => {
   }, [confirmAccountDeletion, deleting, token]);
   const query = useSharedQuery();
   return (
-    <SettingsLayout href="/settings/delete" query={query}>
-      <PageHeader title="Delete account" />
-      <P>
-        Deleting your user account will delete all data (except that which we
-        must retain for legal, compliance and accounting reasons) and cannot be
-        undone. Make sure you want to do this.
-      </P>
-      <P>
-        To protect your account, we require you to confirm you wish to delete
-        your account here, then you will be sent an email with a confirmation
-        code (to check your identity) and when you click that link you will be
-        asked to confirm your account deletion again.
-      </P>
-      {token ? (
-        <Alert
-          type="error"
-          message="Confirm account deletion"
-          description={
-            <>
-              <P>
+    <SettingsLayout href={deleteUrl} query={query}>
+      <Space direction="column" gap="large">
+        <Heading level={2}>Delete account</Heading>
+        <p>
+          Deleting your user account will delete all data (except that which we
+          must retain for legal, compliance and accounting reasons) and cannot
+          be undone. Make sure you want to do this.
+        </p>
+        <p>
+          To protect your account, we require you to confirm you wish to delete
+          your account here, then you will be sent an email with a confirmation
+          code (to check your identity) and when you click that link you will be
+          asked to confirm your account deletion again.
+        </p>
+        {token ? (
+          <Alert type="danger">
+            <Alert.Heading>Confirm account deletion</Alert.Heading>
+            <Alert.Body>
+              <p>
                 This is it.{" "}
-                <Text mark>
-                  Press this button and your account will be deleted.
-                </Text>{" "}
+                <span>Press this button and your account will be deleted.</span>{" "}
                 We're sorry to see you go, please don't hesitate to reach out
                 and let us know why you no longer want your account.
-              </P>
-              <Button onClick={confirmDeletion} danger disabled={deleting}>
+              </p>
+            </Alert.Body>
+            <Alert.Actions>
+              <Button
+                onClick={confirmDeletion}
+                disabled={deleting}
+                danger
+                styleType="primary"
+              >
                 PERMANENTLY DELETE MY ACCOUNT
               </Button>
-            </>
-          }
-        />
-      ) : itIsDone ? (
-        <Alert
-          type="warning"
-          message="Confirm deletion via email link"
-          description={
-            <P>
+            </Alert.Actions>
+          </Alert>
+        ) : itIsDone ? (
+          <Alert type="danger">
+            <Alert.Heading>Confirm deletion via email link</Alert.Heading>
+            <Alert.Body>
               You've been sent an email with a confirmation link in it, you must
               click it to confirm that you are the account holder so that you
               may continue deleting your account.
-            </P>
-          }
-        />
-      ) : (
-        <Alert
-          type="error"
-          message="Delete user account?"
-          description={
-            <>
-              <P>
-                Deleting your account cannot be undone, you will lose all your
-                data.
-              </P>
+            </Alert.Body>
+          </Alert>
+        ) : (
+          <Alert type="danger">
+            <Alert.Heading>Delete user account?</Alert.Heading>
+            <Alert.Body>
+              Deleting your account cannot be undone, you will lose all your
+              data.
+            </Alert.Body>
+            <Alert.Actions>
               <Button onClick={openModal} danger>
                 I want to delete my account
               </Button>
-            </>
-          }
-        />
-      )}
-      {error ? (
-        getCodeFromError(error) === "OWNER" ? (
-          <Alert
-            type="error"
-            showIcon
-            message="Cannot delete account"
-            description={
-              <>
-                <P>
-                  You cannot delete your account whilst you are the owner of an
-                  organization.
-                </P>
-                <P>
-                  For each organization you are the owner of, please either
-                  assign your ownership to another user or delete the
-                  organization to continue.
-                </P>
-              </>
-            }
-          />
-        ) : (
-          <ErrorAlert error={error} />
-        )
-      ) : null}
-
-      <Modal
-        visible={confirmOpen}
-        onCancel={closeModal}
-        onOk={doIt}
-        okText="Send delete account email"
-        okType="primary"
-        okButtonProps={{ danger: true }}
-        title="Send delete account confirmation email?"
-        confirmLoading={doingIt}
+            </Alert.Actions>
+          </Alert>
+        )}
+        {error ? (
+          getCodeFromError(error) === "OWNER" ? (
+            <div>
+              <Heading level={3}>Cannot delete account</Heading>
+              <p>
+                You cannot delete your account whilst you are the owner of an
+                organization.
+              </p>
+              <p>
+                For each organization you are the owner of, please either assign
+                your ownership to another user or delete the organization to
+                continue.
+              </p>
+            </div>
+          ) : (
+            <ErrorAlert error={error} />
+          )
+        ) : null}
+      </Space>
+      <Dialog
+        isOpen={confirmOpen}
+        onDismiss={closeModal}
+        aria-label="delete account dialog"
       >
-        <P>
-          Before we can delete your account, we need to confirm it's definitely
-          you. We'll send you an email with a link in it, which when clicked
-          will give you the option to delete your account.
-        </P>
-        <P>
-          You should not trigger this unless you're sure you want to delete your
-          account.
-        </P>
-      </Modal>
-      <Modal
-        visible={deleted}
-        closable={false}
+        {doingIt ? (
+          <Alert type="danger">
+            <Alert.Heading>Deleting Account...</Alert.Heading>
+          </Alert>
+        ) : (
+          <Alert type="danger">
+            <Alert.Heading>
+              Send delete account confirmation email?
+            </Alert.Heading>
+            <Alert.Body>
+              <p>
+                Before we can delete your account, we need to confirm it's
+                definitely you. We'll send you an email with a link in it, which
+                when clicked will give you the option to delete your account.
+              </p>
+              <p>
+                You should not trigger this unless you're sure you want to
+                delete your account.
+              </p>
+            </Alert.Body>
+            <Alert.Actions>
+              <Button onClick={closeModal}>Cancel</Button>
+              <Button onClick={doIt} danger>
+                Send delete account email
+              </Button>
+            </Alert.Actions>
+          </Alert>
+        )}
+      </Dialog>
+      <Dialog
+        isOpen={deleted}
+        onDismiss={() => router.push("/")}
         title="Account deleted"
-        footer={
-          <div>
-            <Button
-              type="primary"
-              onClick={() => {
-                window.location.href = "/";
-              }}
-            >
+        aria-label="Account deleted dialog"
+      >
+        <Alert type="danger">
+          <Alert.Heading>Account deleted</Alert.Heading>
+          <Alert.Body>
+            Your account has been successfully deleted. We wish you all the
+            best.
+          </Alert.Body>
+          <Alert.Actions>
+            <Button styleType="primary" onClick={() => router.push("/")}>
               Return to homepage
             </Button>
-          </div>
-        }
-      >
-        Your account has been successfully deleted. We wish you all the best.
-      </Modal>
+          </Alert.Actions>
+        </Alert>
+      </Dialog>
     </SettingsLayout>
   );
 };

@@ -1,0 +1,7 @@
+#import "./AhsData.graphql"
+query RegisteredLily($ahsId: Int!) {
+  ahsDatumByAhsId(ahsId: $ahsId) {
+    id
+    ...AhsData
+  }
+}

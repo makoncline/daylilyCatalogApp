@@ -1,11 +1,12 @@
 import "nprogress/nprogress.css";
-require("../styles.less");
-import "../styles.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import "../styles.css";
+import "@reach/dialog/styles.css";
+import "regenerator-runtime/runtime";
 
 import { ApolloClient, ApolloProvider } from "@apollo/client";
+import { FormValuesProvider } from "@app/design";
 import { withApollo } from "@app/lib";
-import { notification } from "antd";
 import App from "next/app";
 import Router from "next/router";
 import NProgress from "nprogress";
@@ -49,13 +50,11 @@ if (typeof window !== "undefined") {
     if (err["cancelled"]) {
       // No worries; you deliberately cancelled it
     } else {
-      notification.open({
-        message: "Page load failed",
-        description: `This is very embarrassing! Please reload the page. Further error details: ${
+      alert(
+        `This is very embarrassing! Please reload the page. Further error details: ${
           typeof err === "string" ? err : err.message
-        }`,
-        duration: 0,
-      });
+        }`
+      );
     }
   });
 }
@@ -76,7 +75,9 @@ class MyApp extends App<{ apollo: ApolloClient<any> }> {
 
     return (
       <ApolloProvider client={apollo}>
-        <Component {...pageProps} />
+        <FormValuesProvider>
+          <Component {...pageProps} />
+        </FormValuesProvider>
       </ApolloProvider>
     );
   }
