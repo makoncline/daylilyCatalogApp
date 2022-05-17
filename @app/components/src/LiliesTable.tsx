@@ -1,7 +1,6 @@
 import { above, Button, Space, useLocalStorage } from "@app/design";
 import { AhsDataFragment, LilyDataFragment } from "@app/graphql";
 import { toViewListingUrl } from "@app/lib";
-import Link from "next/link";
 import router from "next/router";
 import React from "react";
 import type { Column, FilterTypes } from "react-table";
