@@ -11,7 +11,13 @@ export const UserAvatar: FC<{
   const { avatarUrl } = props.user;
   return (
     <Thumbnail>
-      <Image src={avatarUrl ? avatarUrl : "/flowerPlaceholder.png"} />
+      <Image
+        src={
+          avatarUrl
+            ? avatarUrl
+            : `${process.env.ROOT_URL}/flowerPlaceholder.png`
+        }
+      />
     </Thumbnail>
   );
 };

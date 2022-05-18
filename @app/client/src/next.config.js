@@ -32,80 +32,85 @@ if (!process.env.SENTRY_AUTH_TOKEN) {
       // https://github.com/getsentry/sentry-webpack-plugin#options.
     };
 
-    return withSentryConfig({
-      sentry: {
-        disableServerWebpackPlugin: sentryDisabled,
-        disableClientWebpackPlugin: sentryDisabled,
-      },
-      webpack5: false,
-      images: {
-        domains: [
-          "daylily-catalog-images-stage.s3.amazonaws.com",
-          "daylily-catalog-images.s3.amazonaws.com",
-          "daylilies.org",
-          "www.daylilies.org",
-        ],
-        minimumCacheTTL: 3600,
-        deviceSizes: [100, 400],
-      },
-      poweredByHeader: false,
-      distDir: `../.next`,
-      trailingSlash: false,
-      webpack(config, { webpack, dev, isServer }) {
-        if (dev) config.devtool = "cheap-module-source-map";
-
-        const makeSafe = (externals) => {
-          if (Array.isArray(externals)) {
-            return externals.map((ext) => {
-              if (typeof ext === "function") {
-                return (context, request, callback) => {
-                  if (/^@app\//.test(request)) {
-                    callback();
-                  } else {
-                    return ext(context, request, callback);
-                  }
-                };
-              } else {
-                return ext;
-              }
-            });
-          }
-        };
-
-        const externals =
-          isServer && dev ? makeSafe(config.externals) : config.externals;
-
-        return {
-          ...config,
-          plugins: [
-            ...config.plugins,
-            new webpack.DefinePlugin({
-              /*
-               * IMPORTANT: we don't want to hard-code these values, otherwise
-               * we cannot promote a bundle to another environment. Further,
-               * they need to be valid both within the browser _AND_ on the
-               * server side when performing SSR.
-               */
-              "process.env.ROOT_URL":
-                "(typeof window !== 'undefined' ? window.__GRAPHILE_APP__.ROOT_URL : process.env.ROOT_URL)",
-              "process.env.T_AND_C_URL":
-                "(typeof window !== 'undefined' ? window.__GRAPHILE_APP__.T_AND_C_URL : process.env.T_AND_C_URL)",
-              "process.env.S3_UPLOAD_BUCKET":
-                "(typeof window !== 'undefined' ? window.__GRAPHILE_APP__.S3_UPLOAD_BUCKET : process.env.S3_UPLOAD_BUCKET)",
-            }),
-            new webpack.IgnorePlugin(
-              // These modules are server-side only; we don't want webpack
-              // attempting to bundle them into the client.
-              /^(node-gyp-build|bufferutil|utf-8-validate)$/
-            ),
+    return withSentryConfig(
+      {
+        sentry: {
+          disableServerWebpackPlugin: sentryDisabled,
+          disableClientWebpackPlugin: sentryDisabled,
+        },
+        webpack5: false,
+        images: {
+          domains: [
+            "daylily-catalog-images-stage.s3.amazonaws.com",
+            "daylily-catalog-images.s3.amazonaws.com",
+            "daylilies.org",
+            "www.daylilies.org",
+            "localhost",
+            "daylilycatalog.com",
+            "app.daylilycatalog.com",
           ],
-          externals: [
-            ...(externals || []),
-            isServer ? { "pg-native": "pg/lib/client" } : null,
-          ].filter((_) => _),
-        };
+          minimumCacheTTL: 3600,
+          deviceSizes: [100, 400],
+        },
+        poweredByHeader: false,
+        distDir: `../.next`,
+        trailingSlash: false,
+        webpack(config, { webpack, dev, isServer }) {
+          if (dev) config.devtool = "cheap-module-source-map";
+
+          const makeSafe = (externals) => {
+            if (Array.isArray(externals)) {
+              return externals.map((ext) => {
+                if (typeof ext === "function") {
+                  return (context, request, callback) => {
+                    if (/^@app\//.test(request)) {
+                      callback();
+                    } else {
+                      return ext(context, request, callback);
+                    }
+                  };
+                } else {
+                  return ext;
+                }
+              });
+            }
+          };
+
+          const externals =
+            isServer && dev ? makeSafe(config.externals) : config.externals;
+
+          return {
+            ...config,
+            plugins: [
+              ...config.plugins,
+              new webpack.DefinePlugin({
+                /*
+                 * IMPORTANT: we don't want to hard-code these values, otherwise
+                 * we cannot promote a bundle to another environment. Further,
+                 * they need to be valid both within the browser _AND_ on the
+                 * server side when performing SSR.
+                 */
+                "process.env.ROOT_URL":
+                  "(typeof window !== 'undefined' ? window.__GRAPHILE_APP__.ROOT_URL : process.env.ROOT_URL)",
+                "process.env.T_AND_C_URL":
+                  "(typeof window !== 'undefined' ? window.__GRAPHILE_APP__.T_AND_C_URL : process.env.T_AND_C_URL)",
+                "process.env.S3_UPLOAD_BUCKET":
+                  "(typeof window !== 'undefined' ? window.__GRAPHILE_APP__.S3_UPLOAD_BUCKET : process.env.S3_UPLOAD_BUCKET)",
+              }),
+              new webpack.IgnorePlugin(
+                // These modules are server-side only; we don't want webpack
+                // attempting to bundle them into the client.
+                /^(node-gyp-build|bufferutil|utf-8-validate)$/
+              ),
+            ],
+            externals: [
+              ...(externals || []),
+              isServer ? { "pg-native": "pg/lib/client" } : null,
+            ].filter((_) => _),
+          };
+        },
       },
-      sentryWebpackPluginOptions,
-    });
+      sentryWebpackPluginOptions
+    );
   };
 })();
