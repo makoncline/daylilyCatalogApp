@@ -1,4 +1,5 @@
-@import "theme.light.css";
+/* no light theme for now */
+/* @import "theme.light.css"; */
 @import "theme.dark.css";
 
 :where(html) {
