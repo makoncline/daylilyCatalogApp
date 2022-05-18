@@ -526,9 +526,11 @@ export function LiliesTable({
         <StyledTable {...getTableProps()}>
           <thead>
             {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
+              // eslint-disable-next-line react/jsx-key
+              <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
-                  <th {...column.getHeaderProps()} key={column.id}>
+                  // eslint-disable-next-line react/jsx-key
+                  <th {...column.getHeaderProps()}>
                     <Space
                       {...column.getSortByToggleProps()}
                       style={{ "--direction": "row" }}
@@ -569,11 +571,8 @@ export function LiliesTable({
               prepareRow(row);
               const id = row.original.id;
               return (
-                <tr
-                  {...row.getRowProps()}
-                  key={id}
-                  onClick={() => handleClick(id)}
-                >
+                // eslint-disable-next-line react/jsx-key
+                <tr {...row.getRowProps()} onClick={() => handleClick(id)}>
                   {row.cells.map((cell) => {
                     return (
                       // eslint-disable-next-line react/jsx-key
