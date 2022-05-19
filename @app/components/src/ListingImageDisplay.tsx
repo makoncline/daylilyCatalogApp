@@ -1,6 +1,7 @@
-import Image from "next/image";
 import React from "react";
 import styled from "styled-components";
+
+import { Image } from "./Image";
 
 function ListingImageDisplay({ imageUrls }: { imageUrls: string[] }) {
   const [imageIndex, setImageIndex] = React.useState(0);

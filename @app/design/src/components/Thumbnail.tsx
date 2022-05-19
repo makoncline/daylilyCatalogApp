@@ -19,8 +19,8 @@ const StyledThumbnail = styled.div`
   aspect-ratio: 1;
 `;
 
-export const thumbnailProps: {
-  layout?: "fixed" | "fill" | "intrinsic" | "responsive";
-  objectFit?: "cover" | "contain" | "fill" | "none";
-  placeholder?: "blur";
-} = { layout: "fill", objectFit: "cover" };
+export const thumbnailProps = {
+  layout: "fill",
+  objectFit: "cover",
+  thumb: true,
+};

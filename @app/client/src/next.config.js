@@ -48,6 +48,8 @@ if (!process.env.SENTRY_AUTH_TOKEN) {
             "localhost",
             "daylilycatalog.com",
             "app.daylilycatalog.com",
+            "images.daylilycatalog.com",
+            "images-stage.daylilycatalog.com",
           ],
           minimumCacheTTL: 3600,
           deviceSizes: [100, 400],

@@ -1,6 +1,7 @@
 import { Card, CardBody, CardImage, Heading } from "@app/design";
-import Image from "next/image";
 import React from "react";
+
+import { Image } from "./Image";
 
 export const UserCard = ({
   image,

@@ -1,10 +1,11 @@
-import { Button, Heading, Space } from "@app/design";
+import { Button, Heading, Space, Thumbnail } from "@app/design";
 import type { CreateUploadUrlPayload } from "@app/graphql";
 import { useCreateUploadUrlMutation } from "@app/graphql";
 import axios from "axios";
-import Image from "next/image";
 import React from "react";
 import styled from "styled-components";
+
+import { Image } from "./Image";
 
 function useFileUpload(
   file: File,
@@ -273,21 +274,15 @@ function getImagePreview(file: File): JSX.Element {
   };
   return (
     <Space direction="row">
-      <PreviewImageContainer>
-        <Image src={src} onLoad={onLoad} layout="fill" objectFit="cover" />
-      </PreviewImageContainer>
+      <Thumbnail>
+        <Image src={src} onLoad={onLoad} />
+      </Thumbnail>
       <div>
         <p>{file.name}</p>
       </div>
     </Space>
   );
 }
-
-const PreviewImageContainer = styled.div`
-  position: relative;
-  width: 75px;
-  height: 75px;
-`;
 
 const FileSelect = styled.label`
   width: 100%;

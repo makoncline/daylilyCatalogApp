@@ -1,10 +1,10 @@
 import { Card, CardBody, CardImage, Heading } from "@app/design";
 import { AhsDataFragment, useRegisteredLilyQuery } from "@app/graphql";
-import Image from "next/image";
 import React from "react";
 import styled from "styled-components";
 
 import { ErrorAlert } from ".";
+import { Image } from "./Image";
 
 export function RegisteredLilyDisplay({
   ahsId,
