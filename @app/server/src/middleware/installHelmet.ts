@@ -34,6 +34,7 @@ const CSP_DIRECTIVES = {
     "*.weserv.nl",
     "*.daylilies.org",
     "*.s3.amazonaws.com",
+    "*.daylilycatalog.com",
   ],
 };
 

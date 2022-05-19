@@ -8,6 +8,7 @@ export * from "./EditListingForm";
 export * from "./ErrorAlert";
 export * from "./ErrorOccurred";
 export * from "./FourOhFour";
+export * from "./Image";
 export * from "./ImageDisplay";
 export * from "./ImageUpload";
 export * from "./Lilies";

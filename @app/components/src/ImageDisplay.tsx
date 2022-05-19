@@ -1,10 +1,11 @@
-import { Button, Thumbnail, thumbnailProps } from "@app/design";
+import { Button, Thumbnail } from "@app/design";
 import { useDeleteUploadMutation } from "@app/graphql";
 import * as Sentry from "@sentry/nextjs";
 import AmazonS3URI from "amazon-s3-uri";
-import Image from "next/image";
 import React from "react";
 import styled from "styled-components";
+
+import { Image } from "./Image";
 
 type ImageDisplayProps = {
   imageUrls: string[];
@@ -54,9 +55,9 @@ function ImageDisplay({ imageUrls, setImageUrls }: ImageDisplayProps) {
         <>
           <Wrapper>
             {imageUrls.map((url, i) => (
-              <ImageDisplayItem key={i}>
+              <ImageDisplayItem key={url}>
                 <Thumbnail>
-                  <Image src={url} {...thumbnailProps} />
+                  <Image src={url} />
                 </Thumbnail>
                 {showControls && (
                   <ControlsWrapper>

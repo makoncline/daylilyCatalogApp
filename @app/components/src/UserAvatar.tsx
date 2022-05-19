@@ -1,6 +1,7 @@
 import { Thumbnail } from "@app/design";
-import Image from "next/image";
 import React, { FC } from "react";
+
+import { Image } from "./Image";
 
 export const UserAvatar: FC<{
   user: {

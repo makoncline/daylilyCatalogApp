@@ -1,8 +1,8 @@
 import { Thumbnail } from "@app/design";
-import Image from "next/image";
 import React from "react";
 import styled from "styled-components";
 
+import { Image } from "./Image";
 import { truncate } from "./util";
 
 function ImageCell({ value }: { value?: string[] }) {
