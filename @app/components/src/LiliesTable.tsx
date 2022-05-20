@@ -101,33 +101,34 @@ const useReactTable = ({ rawData }: { rawData: LilyDataFragment[] }) => {
 
   const data: ListingRow[] = React.useMemo(
     () =>
-      rawData.map((row) => {
-        const rowDataOrNull = Object.entries(row).reduce(
-          (acc, [key, value]) => {
+      rawData
+        .map((row) => {
+          const rowDataOrNull = Object.entries(row).reduce(
+            (acc, [key, value]) => {
+              acc[key] = value || null;
+              return acc;
+            },
+            {} as LilyDataFragment
+          );
+          const ahsDataOrNull = Object.entries(
+            row.ahsDatumByAhsRef || {}
+          ).reduce((acc, [key, value]) => {
             acc[key] = value || null;
             return acc;
-          },
-          {} as LilyDataFragment
-        );
-        const ahsDataOrNull = Object.entries(row.ahsDatumByAhsRef || {}).reduce(
-          (acc, [key, value]) => {
-            acc[key] = value || null;
-            return acc;
-          },
-          {} as AhsDataFragment
-        );
-        const images = [
-          ...(rowDataOrNull.imgUrl || []),
-          ahsDataOrNull.image,
-        ].filter(Boolean);
-        return {
-          ...ahsDataOrNull,
-          registeredName: ahsDataOrNull.name,
-          ...rowDataOrNull,
-          list: row.list?.name || null,
-          imgUrl: images,
-        };
-      }),
+          }, {} as AhsDataFragment);
+          const images = [
+            ...(rowDataOrNull.imgUrl || []),
+            ahsDataOrNull.image,
+          ].filter(Boolean);
+          return {
+            ...ahsDataOrNull,
+            registeredName: ahsDataOrNull.name,
+            ...rowDataOrNull,
+            list: row.list?.name || null,
+            imgUrl: images,
+          };
+        })
+        .sort((a, b) => (a.name > b.name ? 1 : -1)),
     [rawData]
   );
   const columns: Column<ListingRow>[] = React.useMemo(
@@ -231,6 +232,7 @@ const useReactTable = ({ rawData }: { rawData: LilyDataFragment[] }) => {
         Header: "Form",
         accessor: "form",
         Filter: SelectColumnFilter,
+        filter: "text",
       },
       {
         Header: "Fragrance",
@@ -459,7 +461,7 @@ export function LiliesTable({
 
   return (
     <>
-      <SelectColumns>
+      <StyledDetails>
         <summary>Edit listing table</summary>
         <form onSubmit={handleSubmit}>
           <Space direction="column">
@@ -520,7 +522,26 @@ export function LiliesTable({
             </Space>
           </Space>
         </form>
-      </SelectColumns>
+      </StyledDetails>
+      <StyledDetails>
+        <summary>Filter listing table</summary>
+        <Space direction="column">
+          <table>
+            <tbody>
+              {allColumns.map((column) => (
+                <>
+                  {column.canFilter ? (
+                    <tr style={{ verticalAlign: "top" }}>
+                      <td>{column.render("Header")}</td>
+                      <td>{column.render("Filter")}</td>
+                    </tr>
+                  ) : null}
+                </>
+              ))}
+            </tbody>
+          </table>
+        </Space>
+      </StyledDetails>
       <Pagination />
       <StyledTable {...getTableProps()}>
         <thead>
@@ -595,7 +616,7 @@ const StyledButton = styled(Button)`
   padding: 0 var(--size-1);
 `;
 
-const SelectColumns = styled.details`
+const StyledDetails = styled.details`
   width: 100%;
 `;
 const ColumnGrid = styled.div`
@@ -642,6 +663,7 @@ const StyledTable = styled.table`
     z-index: 0;
     td {
       padding: 0 var(--size-2);
+      min-width: max-content;
     }
     tr {
       cursor: pointer;

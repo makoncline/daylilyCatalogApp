@@ -251,6 +251,10 @@
   background: var(--surface-2);
   border-radius: var(--radius-2);
 }
+:where(details) input,
+:where(details) select {
+  background: var(--surface-1);
+}
 
 :where(details[open] > summary) {
   margin-bottom: var(--size-2);
