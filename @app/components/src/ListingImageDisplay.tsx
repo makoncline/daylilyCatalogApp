@@ -11,6 +11,7 @@ function ListingImageDisplay({ imageUrls }: { imageUrls: string[] }) {
       <DisplayImage>
         {imageUrl && (
           <Image
+            key={imageIndex}
             src={imageUrl}
             alt={`listing photo`}
             layout="fill"
