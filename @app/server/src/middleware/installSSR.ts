@@ -40,6 +40,7 @@ export default async function installSSR(app: Express) {
         ROOT_URL: process.env.ROOT_URL || "http://localhost:5678",
         T_AND_C_URL: process.env.T_AND_C_URL,
         S3_UPLOAD_BUCKET: process.env.S3_UPLOAD_BUCKET,
+        S3_RESIZED_IMAGE_BUCKET: process.env.S3_RESIZED_IMAGE_BUCKET,
       },
     });
   });

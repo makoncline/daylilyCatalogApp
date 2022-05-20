@@ -6,41 +6,45 @@ const S3_BUCKET_HOST_NAMES = [
   "daylily-catalog-images-stage.s3.amazonaws.com",
   "daylily-catalog-images.s3.amazonaws.com",
 ];
-const RESIZED_IMAGES_BUCKET_HOST_NAME = "images-stage.daylilycatalog.com";
 
 function Image({
-  src,
+  src: originalSrc,
   thumb = false,
   ...props
 }: ImageProps & {
   thumb?: boolean;
 }) {
-  const [main, setMain] = React.useState(src);
-  const [placeholder, setPlaceholder] = React.useState<string | null>(null);
-  const [isError, setIsError] = React.useState(false);
-  const { hostname, pathname } = new URL(src);
-  if (S3_BUCKET_HOST_NAMES.includes(hostname) && !isError && main === src) {
-    const filePathNoExt =
-      pathname.substr(0, pathname.lastIndexOf(".")) || pathname;
-    const srcs = {
-      placeholder: `https://${RESIZED_IMAGES_BUCKET_HOST_NAME}${filePathNoExt}-placeholder.webp`,
-      thumb: `https://${RESIZED_IMAGES_BUCKET_HOST_NAME}${filePathNoExt}-thumb.webp`,
-      full: `https://${RESIZED_IMAGES_BUCKET_HOST_NAME}${filePathNoExt}.webp`,
-    };
-    setMain(thumb ? srcs.thumb : srcs.full);
-    setPlaceholder(srcs.placeholder);
-  }
+  const { hostname, pathname } = new URL(originalSrc);
+  const filePathNoExt =
+    pathname.substr(0, pathname.lastIndexOf(".")) || pathname;
+  const base = `https://${process.env.S3_RESIZED_IMAGE_BUCKET}${filePathNoExt}`;
+  const ext = `.webp`;
+  const srcs = {
+    placeholder: `${base}-placeholder${ext}`,
+    thumb: `${base}-thumb${ext}`,
+    full: `${base}${ext}`,
+  };
+  const resizedImage = thumb ? srcs.thumb : srcs.full;
+  const shouldUseResizedImage = S3_BUCKET_HOST_NAMES.includes(hostname);
+  const [src, setSrc] = React.useState(
+    shouldUseResizedImage ? resizedImage : originalSrc
+  );
+  const [placeholder, setPlaceholder] = React.useState<string | null>(
+    shouldUseResizedImage ? srcs.placeholder : null
+  );
+
   function handleError() {
-    if (main !== src) {
-      console.log("Error loading resized image, falling back to original");
-      setIsError(true);
-      setMain(src);
+    if (src !== originalSrc) {
+      console.log(
+        `Error loading resized image, falling back to original. ${src}`
+      );
+      setSrc(originalSrc);
       setPlaceholder(null);
     }
   }
   return (
     <NextImage
-      src={main}
+      src={src}
       placeholder={placeholder ? "blur" : undefined}
       blurDataURL={placeholder ? placeholder : undefined}
       onError={handleError}
