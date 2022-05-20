@@ -1,8 +1,9 @@
-import { Space } from "@app/design";
+import { below, Space } from "@app/design";
 import { matchSorter } from "match-sorter";
 import React from "react";
 import type { FilterValue, Row } from "react-table";
 import { useAsyncDebounce } from "react-table";
+import styled from "styled-components";
 
 import { lengthToNumber } from "./util";
 
@@ -58,6 +59,7 @@ function DefaultColumnFilter<T extends object>({
         setFilter(e.target.value || undefined);
       }}
       placeholder={`Search ${count} records...`}
+      style={{ width: "100%" }}
     />
   );
 }
@@ -77,21 +79,28 @@ function SelectColumnFilter<T extends object>({
   column: { filterValue, setFilter, preFilteredRows, id },
 }: SelectColumnFilterProps<T>) {
   const options = React.useMemo(() => {
-    const options = new Set();
-    preFilteredRows.forEach((row) => {
-      options.add(row.values[id]);
-    });
-    return [...Array.from(options.values())] as HTMLOptionElement["value"][];
+    let options = new Set(
+      preFilteredRows
+        .map((row) => (Boolean(row.values[id]) ? row.values[id] : null))
+        .sort()
+    );
+    return Array.from(options.values()) as HTMLOptionElement["value"][];
   }, [id, preFilteredRows]);
+  switch (id) {
+    case "fragrance": {
+    }
+  }
 
   return (
     <select
       value={filterValue}
       onChange={(e) => {
-        setFilter(e.target.value || undefined);
+        console.log(e.target.value);
+        setFilter(e.target.value);
       }}
+      style={{ width: "100%" }}
     >
-      <option value="">All</option>
+      <option value="all">All</option>
       {options.map((option, i) => (
         <option key={i} value={option}>
           {option}
@@ -151,7 +160,7 @@ function NumberRangeColumnFilter<T extends object>({
   }, [id, rowsWithValue]);
 
   return (
-    <Space gap="none">
+    <RangeWrapper>
       <input
         value={filterValue[0] || ""}
         type="number"
@@ -165,7 +174,6 @@ function NumberRangeColumnFilter<T extends object>({
         }}
         placeholder={`Min (${min})`}
       />
-      -
       <input
         value={filterValue[1] || ""}
         type="number"
@@ -178,9 +186,18 @@ function NumberRangeColumnFilter<T extends object>({
         }}
         placeholder={`Max (${max})`}
       />
-    </Space>
+    </RangeWrapper>
   );
 }
+
+const RangeWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--size-1);
+  ${below.md`
+    grid-template-columns: 1fr;
+  `}
+`;
 
 function textFilter<T extends object>(
   rows: Row<T>[],
@@ -188,12 +205,18 @@ function textFilter<T extends object>(
   filterValue: FilterValue
 ) {
   return rows.filter((row: any) => {
-    const rowValue = row.values[id];
-    return rowValue !== undefined
-      ? String(rowValue)
-          .toLowerCase()
-          .startsWith(String(filterValue).toLowerCase())
-      : true;
+    const rowValue = row.values[id]
+      ? String(row.values[id]).toLowerCase()
+      : "__none";
+    const filterString = filterValue
+      ? String(filterValue).toLowerCase()
+      : "__none";
+    const isMatch =
+      filterString === "all" ||
+      (!rowValue && !filterString) ||
+      rowValue == filterString ||
+      rowValue.startsWith(filterString);
+    return isMatch;
   });
 }
 
