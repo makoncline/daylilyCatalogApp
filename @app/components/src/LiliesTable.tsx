@@ -565,7 +565,7 @@ export function LiliesTable({
         <Space direction="column">
           {page.map((row) => {
             prepareRow(row);
-            const { id, name, publicNote, price, image } = row.original;
+            const { id, name, publicNote, price, imgUrl } = row.original;
             return (
               <ListingCard
                 key={`${id}${showBasicDisplay}`}
@@ -573,7 +573,7 @@ export function LiliesTable({
                 name={name}
                 description={publicNote}
                 price={price}
-                image={image}
+                image={imgUrl ? imgUrl[0] : null}
               />
             );
           })}
