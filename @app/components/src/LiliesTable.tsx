@@ -535,16 +535,14 @@ export function LiliesTable({
         <Space direction="column">
           <table>
             <tbody>
-              {allColumns.map((column, i) => (
-                <>
-                  {column.canFilter ? (
-                    <tr style={{ verticalAlign: "top" }} key={i}>
-                      <td>{column.render("Header")}</td>
-                      <td>{column.render("Filter")}</td>
-                    </tr>
-                  ) : null}
-                </>
-              ))}
+              {allColumns
+                .filter((col) => col.canFilter)
+                .map((column, i) => (
+                  <tr style={{ verticalAlign: "top" }} key={i}>
+                    <td>{column.render("Header")}</td>
+                    <td>{column.render("Filter")}</td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </Space>
