@@ -42,61 +42,75 @@ function Email({
         "-"
       )}`}
     >
-      <Space center gap="large">
+      <Space gap="large">
         ✉️
-        <Space direction="column">
-          <Space gap="large">
-            {email.email}
-            <span
-              title={
-                email.isVerified
-                  ? "Verified"
-                  : "Pending verification (please check your inbox / spam folder"
-              }
-            >
-              {email.isVerified ? (
-                "✅"
-              ) : (
-                <small style={{ color: "var(--danger)" }}>(unverified)</small>
-              )}
-            </span>
+        <Space responsive>
+          <Space direction="column">
+            <div>
+              {email.email}
+              <span
+                title={
+                  email.isVerified
+                    ? "Verified"
+                    : "Pending verification (please check your inbox / spam folder"
+                }
+              >
+                {email.isVerified ? (
+                  " ✅"
+                ) : (
+                  <small style={{ color: "var(--danger)" }}>
+                    {" "}
+                    (unverified)
+                  </small>
+                )}
+              </span>
+            </div>
+            {`Added ${new Date(Date.parse(email.createdAt)).toLocaleString()}`}
           </Space>
-          {`Added ${new Date(Date.parse(email.createdAt)).toLocaleString()}`}
+          <Space block>
+            {[
+              email.isPrimary && (
+                <span
+                  data-cy="settingsemails-indicator-primary"
+                  style={{ color: "var(--success)" }}
+                >
+                  Primary
+                </span>
+              ),
+              canDelete && (
+                <Button
+                  onClick={() =>
+                    deleteEmail({ variables: { emailId: email.id } })
+                  }
+                  data-cy="settingsemails-button-delete"
+                >
+                  Delete
+                </Button>
+              ),
+              !email.isVerified && (
+                <Button
+                  onClick={() =>
+                    resendEmailVerification({
+                      variables: { emailId: email.id },
+                    })
+                  }
+                >
+                  Resend verification
+                </Button>
+              ),
+              email.isVerified && !email.isPrimary && (
+                <Button
+                  onClick={() =>
+                    makeEmailPrimary({ variables: { emailId: email.id } })
+                  }
+                  data-cy="settingsemails-button-makeprimary"
+                >
+                  Make primary
+                </Button>
+              ),
+            ].filter((_) => _)}
+          </Space>
         </Space>
-      </Space>
-      <Space>
-        {[
-          email.isPrimary && (
-            <span data-cy="settingsemails-indicator-primary">Primary</span>
-          ),
-          canDelete && (
-            <Button
-              onClick={() => deleteEmail({ variables: { emailId: email.id } })}
-              data-cy="settingsemails-button-delete"
-            >
-              Delete
-            </Button>
-          ),
-          !email.isVerified && (
-            <Button
-              onClick={() =>
-                resendEmailVerification({ variables: { emailId: email.id } })
-              }
-            >
-              Resend verification
-            </Button>
-          ),
-          email.isVerified && !email.isPrimary && (
-            <Button
-              onClick={() =>
-                makeEmailPrimary({ variables: { emailId: email.id } })
-              }
-              data-cy="settingsemails-button-makeprimary"
-            >
-              Make primary
-            </Button>
-          ),
-        ].filter((_) => _)}
       </Space>
     </StyledEmail>
   );
