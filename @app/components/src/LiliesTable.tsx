@@ -14,6 +14,7 @@ import {
 } from "react-table";
 import styled from "styled-components";
 
+import { ListingCard } from "./ListingCard";
 import { DateCell, ImageCell, LimitWidth, TruncateCell } from "./TableCells";
 import {
   betweenLengthFilter,
@@ -339,6 +340,10 @@ export function LiliesTable({
 }: {
   dataSource: LilyDataFragment[];
 }) {
+  const [showBasicDisplay, setShowBasicDisplay] = useLocalStorage<boolean>(
+    "showBasicDisplay",
+    true
+  );
   const {
     tableInstance: {
       getTableProps,
@@ -461,70 +466,72 @@ export function LiliesTable({
 
   return (
     <>
-      <StyledDetails>
-        <summary>Edit listing table</summary>
-        <form onSubmit={handleSubmit}>
-          <Space direction="column">
-            <ColumnGrid>
-              {allColumns.map((column, index) => (
-                <div key={column.id}>
-                  <label>
-                    <input
-                      type="checkbox"
-                      id={column.id}
-                      {...column.getToggleHiddenProps()}
-                    />{" "}
-                    {column.Header}
-                    <StyledButton
-                      onClick={() => handleMove("<", index)}
-                      styleType="text"
-                    >
-                      ◀️
-                    </StyledButton>
-                    <StyledButton
-                      onClick={() => handleMove(">", index)}
-                      styleType="text"
-                    >
-                      ▶️
-                    </StyledButton>
-                  </label>
-                </div>
-              ))}
-            </ColumnGrid>
-            <Space>
-              <Button
-                type="submit"
-                styleType="primary"
-                disabled={
-                  JSON.stringify(columnOrder) ==
-                    JSON.stringify(rtColumnOrder) &&
-                  JSON.stringify(hiddenColumns) ==
-                    JSON.stringify(rtHidenColumns)
-                }
-              >
-                Save
-              </Button>
-              <Button
-                onClick={() => {
-                  if (
-                    confirm(
-                      "Are you sure you want to reset column order and visibility to the default?"
-                    )
-                  ) {
-                    resetToDefault();
+      {!showBasicDisplay && (
+        <StyledDetails>
+          <summary>Edit listing table</summary>
+          <form onSubmit={handleSubmit}>
+            <Space direction="column">
+              <ColumnGrid>
+                {allColumns.map((column, index) => (
+                  <div key={column.id}>
+                    <label>
+                      <input
+                        type="checkbox"
+                        id={column.id}
+                        {...column.getToggleHiddenProps()}
+                      />{" "}
+                      {column.Header}
+                      <StyledButton
+                        onClick={() => handleMove("<", index)}
+                        styleType="text"
+                      >
+                        ◀️
+                      </StyledButton>
+                      <StyledButton
+                        onClick={() => handleMove(">", index)}
+                        styleType="text"
+                      >
+                        ▶️
+                      </StyledButton>
+                    </label>
+                  </div>
+                ))}
+              </ColumnGrid>
+              <Space>
+                <Button
+                  type="submit"
+                  styleType="primary"
+                  disabled={
+                    JSON.stringify(columnOrder) ==
+                      JSON.stringify(rtColumnOrder) &&
+                    JSON.stringify(hiddenColumns) ==
+                      JSON.stringify(rtHidenColumns)
                   }
-                }}
-                styleType="text"
-                danger
-              >
-                Reset to default
-              </Button>
+                >
+                  Save
+                </Button>
+                <Button
+                  onClick={() => {
+                    if (
+                      confirm(
+                        "Are you sure you want to reset column order and visibility to the default?"
+                      )
+                    ) {
+                      resetToDefault();
+                    }
+                  }}
+                  styleType="text"
+                  danger
+                >
+                  Reset to default
+                </Button>
+              </Space>
             </Space>
-          </Space>
-        </form>
-      </StyledDetails>
+          </form>
+        </StyledDetails>
+      )}
       <StyledDetails>
-        <summary>Filter listing table</summary>
+        <summary>Filter listings</summary>
         <Space direction="column">
           <table>
             <tbody>
@@ -542,66 +549,99 @@ export function LiliesTable({
           </table>
         </Space>
       </StyledDetails>
+      <Space block>
+        <Button
+          onClick={() => {
+            setShowBasicDisplay(!showBasicDisplay);
+          }}
+        >
+          {showBasicDisplay
+            ? "Switch to advanced view"
+            : "Switch to basic view"}
+        </Button>
+      </Space>
       <Pagination />
-      <StyledTable {...getTableProps()}>
-        <thead>
-          {headerGroups.map((headerGroup) => (
-            // eslint-disable-next-line react/jsx-key
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                // eslint-disable-next-line react/jsx-key
-                <th {...column.getHeaderProps()}>
-                  <Space
-                    {...column.getSortByToggleProps()}
-                    style={{ "--direction": "row" }}
-                  >
-                    <NoWrap>{column.render("Header")}</NoWrap>
-                    <span>
-                      {column.isSorted
-                        ? column.isSortedDesc
-                          ? " 🔽"
-                          : " 🔼"
-                        : ""}
-                    </span>
-                  </Space>
-                  <div>{column.canFilter ? column.render("Filter") : null}</div>
-                </th>
-              ))}
-            </tr>
-          ))}
-          <tr>
-            <th colSpan={3}>
-              <GlobalFilter
-                preGlobalFilteredRows={preGlobalFilteredRows}
-                globalFilter={state.globalFilter}
-                setGlobalFilter={setGlobalFilter}
-              />
-            </th>
-            {Array(visibleColumns.length > 3 ? visibleColumns.length - 3 : 0)
-              .fill(0)
-              .map((_, i) => (
-                <th key={i} />
-              ))}
-          </tr>
-        </thead>
-        <tbody {...getTableBodyProps()}>
+      {showBasicDisplay && (
+        <Space direction="column">
           {page.map((row) => {
             prepareRow(row);
-            const id = row.original.id;
+            const { id, name, publicNote, price, image } = row.original;
             return (
-              // eslint-disable-next-line react/jsx-key
-              <tr {...row.getRowProps()} onClick={() => handleClick(id)}>
-                {row.cells.map((cell) => {
-                  return (
-                    // eslint-disable-next-line react/jsx-key
-                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                  );
-                })}
-              </tr>
+              <ListingCard
+                key={`${id}${showBasicDisplay}`}
+                id={id}
+                name={name}
+                description={publicNote}
+                price={price}
+                image={image}
+              />
             );
           })}
-        </tbody>
-      </StyledTable>
+        </Space>
+      )}
+      {!showBasicDisplay && (
+        <StyledTable {...getTableProps()}>
+          <thead>
+            {headerGroups.map((headerGroup) => (
+              // eslint-disable-next-line react/jsx-key
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => (
+                  // eslint-disable-next-line react/jsx-key
+                  <th {...column.getHeaderProps()}>
+                    <Space
+                      {...column.getSortByToggleProps()}
+                      style={{ "--direction": "row" }}
+                    >
+                      <NoWrap>{column.render("Header")}</NoWrap>
+                      <span>
+                        {column.isSorted
+                          ? column.isSortedDesc
+                            ? " 🔽"
+                            : " 🔼"
+                          : ""}
+                      </span>
+                    </Space>
+                    <div>
+                      {column.canFilter ? column.render("Filter") : null}
+                    </div>
+                  </th>
+                ))}
+              </tr>
+            ))}
+            <tr>
+              <th colSpan={3}>
+                <GlobalFilter
+                  preGlobalFilteredRows={preGlobalFilteredRows}
+                  globalFilter={state.globalFilter}
+                  setGlobalFilter={setGlobalFilter}
+                />
+              </th>
+              {Array(visibleColumns.length > 3 ? visibleColumns.length - 3 : 0)
+                .fill(0)
+                .map((_, i) => (
+                  <th key={i} />
+                ))}
+            </tr>
+          </thead>
+          <tbody {...getTableBodyProps()}>
+            {page.map((row) => {
+              prepareRow(row);
+              const id = row.original.id;
+              return (
+                // eslint-disable-next-line react/jsx-key
+                <tr {...row.getRowProps()} onClick={() => handleClick(id)}>
+                  {row.cells.map((cell) => {
+                    return (
+                      // eslint-disable-next-line react/jsx-key
+                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </StyledTable>
+      )}
       <Pagination />
       <Space block style={{ justifyContent: "flex-end" }}>
         <Button onClick={() => download(dataSource)}>

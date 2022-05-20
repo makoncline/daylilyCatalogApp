@@ -3,11 +3,13 @@ import styled from "styled-components";
 
 export function Thumbnail({
   children: child,
+  ...props
 }: {
   children: React.ReactElement<any, string | React.JSXElementConstructor<any>>;
+  [key: string]: any;
 }) {
   return (
-    <StyledThumbnail>
+    <StyledThumbnail {...props}>
       {React.cloneElement(child, thumbnailProps)}
     </StyledThumbnail>
   );
@@ -15,7 +17,10 @@ export function Thumbnail({
 
 const StyledThumbnail = styled.div`
   position: relative;
-  width: 100px;
+  width: var(--width, 100px);
+  max-width: var(--size-image);
+  height: var(--width, 100px);
+  max-height: var(--size-image);
   aspect-ratio: 1;
 `;
 
