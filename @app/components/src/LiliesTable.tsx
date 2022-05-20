@@ -535,10 +535,10 @@ export function LiliesTable({
         <Space direction="column">
           <table>
             <tbody>
-              {allColumns.map((column) => (
+              {allColumns.map((column, i) => (
                 <>
                   {column.canFilter ? (
-                    <tr style={{ verticalAlign: "top" }}>
+                    <tr style={{ verticalAlign: "top" }} key={i}>
                       <td>{column.render("Header")}</td>
                       <td>{column.render("Filter")}</td>
                     </tr>
