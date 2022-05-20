@@ -522,69 +522,65 @@ export function LiliesTable({
         </form>
       </SelectColumns>
       <Pagination />
-      <TableWrapper>
-        <StyledTable {...getTableProps()}>
-          <thead>
-            {headerGroups.map((headerGroup) => (
-              // eslint-disable-next-line react/jsx-key
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
-                  // eslint-disable-next-line react/jsx-key
-                  <th {...column.getHeaderProps()}>
-                    <Space
-                      {...column.getSortByToggleProps()}
-                      style={{ "--direction": "row" }}
-                    >
-                      <NoWrap>{column.render("Header")}</NoWrap>
-                      <span>
-                        {column.isSorted
-                          ? column.isSortedDesc
-                            ? " 🔽"
-                            : " 🔼"
-                          : ""}
-                      </span>
-                    </Space>
-                    <div>
-                      {column.canFilter ? column.render("Filter") : null}
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            ))}
-            <tr>
-              <th colSpan={3}>
-                <GlobalFilter
-                  preGlobalFilteredRows={preGlobalFilteredRows}
-                  globalFilter={state.globalFilter}
-                  setGlobalFilter={setGlobalFilter}
-                />
-              </th>
-              {Array(visibleColumns.length > 3 ? visibleColumns.length - 3 : 0)
-                .fill(0)
-                .map((_, i) => (
-                  <th key={i} />
-                ))}
-            </tr>
-          </thead>
-          <tbody {...getTableBodyProps()}>
-            {page.map((row) => {
-              prepareRow(row);
-              const id = row.original.id;
-              return (
+      <StyledTable {...getTableProps()}>
+        <thead>
+          {headerGroups.map((headerGroup) => (
+            // eslint-disable-next-line react/jsx-key
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((column) => (
                 // eslint-disable-next-line react/jsx-key
-                <tr {...row.getRowProps()} onClick={() => handleClick(id)}>
-                  {row.cells.map((cell) => {
-                    return (
-                      // eslint-disable-next-line react/jsx-key
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
-        </StyledTable>
-      </TableWrapper>
+                <th {...column.getHeaderProps()}>
+                  <Space
+                    {...column.getSortByToggleProps()}
+                    style={{ "--direction": "row" }}
+                  >
+                    <NoWrap>{column.render("Header")}</NoWrap>
+                    <span>
+                      {column.isSorted
+                        ? column.isSortedDesc
+                          ? " 🔽"
+                          : " 🔼"
+                        : ""}
+                    </span>
+                  </Space>
+                  <div>{column.canFilter ? column.render("Filter") : null}</div>
+                </th>
+              ))}
+            </tr>
+          ))}
+          <tr>
+            <th colSpan={3}>
+              <GlobalFilter
+                preGlobalFilteredRows={preGlobalFilteredRows}
+                globalFilter={state.globalFilter}
+                setGlobalFilter={setGlobalFilter}
+              />
+            </th>
+            {Array(visibleColumns.length > 3 ? visibleColumns.length - 3 : 0)
+              .fill(0)
+              .map((_, i) => (
+                <th key={i} />
+              ))}
+          </tr>
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {page.map((row) => {
+            prepareRow(row);
+            const id = row.original.id;
+            return (
+              // eslint-disable-next-line react/jsx-key
+              <tr {...row.getRowProps()} onClick={() => handleClick(id)}>
+                {row.cells.map((cell) => {
+                  return (
+                    // eslint-disable-next-line react/jsx-key
+                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                  );
+                })}
+              </tr>
+            );
+          })}
+        </tbody>
+      </StyledTable>
       <Pagination />
       <Space block style={{ justifyContent: "flex-end" }}>
         <Button onClick={() => download(dataSource)}>
@@ -611,13 +607,6 @@ const NoWrap = styled.span`
   white-space: nowrap;
 `;
 
-const TableWrapper = styled.div`
-  align-self: flex-start;
-  width: 100%;
-  height: 100vh;
-  max-width: var(--full-width);
-  overflow: scroll;
-`;
 const StyledTable = styled.table`
   width: 100%;
   border-collapse: collapse;
@@ -625,9 +614,6 @@ const StyledTable = styled.table`
   position: relative;
   z-index: 0;
   thead {
-    position: relative;
-    z-index: 1;
-    background: var(--surface-1);
     tr {
       vertical-align: bottom;
     }
@@ -636,17 +622,20 @@ const StyledTable = styled.table`
       text-align: left;
       min-width: 150px;
     }
+    position: -webkit-sticky;
     position: sticky;
     top: 0;
     z-index: 1;
-    th:first-child {
-      ${above.sm`
+    background: var(--surface-1);
+    ${above.sm`
+      th:first-child {
+        position: -webkit-sticky;
         position: sticky;
         left: 0;
         z-index: 2;
         background: var(--surface-1);
-      `}
-    }
+      }
+    `}
   }
   tbody {
     position: relative;
@@ -656,15 +645,15 @@ const StyledTable = styled.table`
     }
     tr {
       cursor: pointer;
-
-      td:first-child {
-        ${above.sm`
+      ${above.sm`
+        td:first-child {
+          position: -webkit-sticky;
           position: sticky;
           left: 0;
           z-index: 1;
           background: var(--surface-1);
-        `}
-      }
+        }
+      `}
       :hover {
         td {
           background: var(--surface-2);
