@@ -47,11 +47,10 @@ const StyledCard = styled.div`
   gap: var(--size-4);
   grid-template-columns: 1fr;
   grid-template-rows: var(--size-image-card) auto;
-  width: var(--size-image-card);
   ${above.sm`
     grid-template-columns: var(--size-image-card) 1fr;
     grid-template-rows: var(--size-image-card);
-    width: var(--full-width);
+    width: var(--max-width);
   `}
   :hover {
     background: var(--surface-2);
