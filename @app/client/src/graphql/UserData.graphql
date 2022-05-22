@@ -1,0 +1,21 @@
+fragment UserData on User {
+  id
+  name
+  username
+  intro
+  avatarUrl
+  createdAt
+  updatedAt
+  userLocation
+  imgUrls
+  bio
+  stripeSubscription {
+    id
+    subscriptionInfo {
+      status
+    }
+  }
+  lilies {
+    totalCount
+  }
+}

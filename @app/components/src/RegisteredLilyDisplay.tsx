@@ -1,4 +1,11 @@
-import { Card, CardBody, CardImage, Heading } from "@app/design";
+import {
+  Card,
+  CardBody,
+  CardImage,
+  Center,
+  Heading,
+  Spinner,
+} from "@app/design";
 import { AhsDataFragment, useRegisteredLilyQuery } from "@app/graphql";
 import React from "react";
 import styled from "styled-components";
@@ -16,7 +23,12 @@ export function RegisteredLilyDisplay({
   const { data, loading, error } = useRegisteredLilyQuery({
     variables: { ahsId },
   });
-  if (loading) return <p>loading...</p>;
+  if (loading)
+    return (
+      <Center>
+        <Spinner />
+      </Center>
+    );
   if (error) return <ErrorAlert error={error} />;
   const lily = data?.ahsDatumByAhsId;
   return (

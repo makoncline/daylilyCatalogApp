@@ -24,6 +24,7 @@ export const ListingCard = ({
       <div style={{ position: "relative" }}>
         {image && (
           <Thumbnail
+            thumb={false}
             style={
               { "--width": "var(--size-image-card)" } as React.CSSProperties
             }
@@ -50,7 +51,7 @@ const StyledCard = styled.div`
   ${above.sm`
     grid-template-columns: var(--size-image-card) 1fr;
     grid-template-rows: var(--size-image-card);
-    width: var(--max-width);
+    width: 100%;
   `}
   :hover {
     background: var(--surface-2);

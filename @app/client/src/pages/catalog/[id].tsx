@@ -4,6 +4,7 @@ import {
   Redirect,
   SharedLayout,
 } from "@app/components";
+import { Center, Spinner } from "@app/design";
 import { useLilyByIdQuery, useSharedQuery } from "@app/graphql";
 import { loginUrl } from "@app/lib";
 import { NextPage } from "next";
@@ -27,18 +28,20 @@ const View: NextPage = () => {
   if (!listingId) return <p>invalid id: {id}</p>;
   return (
     <SharedLayout title={data?.lily?.name} query={query}>
-      {sharedQueryData?.currentUser ? (
+      {sharedQueryLoading ? (
+        <Center>
+          <Spinner />
+        </Center>
+      ) : sharedQueryError ? (
+        <ErrorAlert error={sharedQueryError} />
+      ) : sharedQueryData ? (
         <ListingDisplay
           listingId={listingId}
           data={data}
           loading={loading}
           error={error}
-          userId={sharedQueryData.currentUser.id}
+          userId={sharedQueryData?.currentUser?.id || null}
         />
-      ) : sharedQueryLoading ? (
-        "Loading..."
-      ) : sharedQueryError ? (
-        <ErrorAlert error={sharedQueryError} />
       ) : (
         <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />
       )}

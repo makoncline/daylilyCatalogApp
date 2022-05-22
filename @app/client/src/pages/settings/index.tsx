@@ -10,11 +10,13 @@ import {
 import {
   Alert,
   Button,
+  Center,
   Field,
   Form,
   FormWrapper,
   Heading,
   Space,
+  Spinner,
   SubmitButton,
   useForm,
 } from "@app/design";
@@ -65,7 +67,9 @@ const Settings_Profile: NextPage = () => {
           user={data.currentUser}
         />
       ) : loading ? (
-        "Loading..."
+        <Center>
+          <Spinner />
+        </Center>
       ) : error ? (
         <ErrorAlert error={error} />
       ) : (

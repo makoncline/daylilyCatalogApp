@@ -4,7 +4,6 @@ fragment LilyData on Lily {
   imgUrl
   price
   publicNote
-  privateNote
   ahsId
   ahsDatumByAhsRef {
     id

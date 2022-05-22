@@ -1,4 +1,5 @@
 import { ErrorAlert, Lilies, Redirect, SharedLayout } from "@app/components";
+import { Center, Spinner } from "@app/design";
 import { useSharedQuery } from "@app/graphql";
 import { loginUrl } from "@app/lib";
 import { NextPage } from "next";
@@ -17,7 +18,9 @@ const Catalog: NextPage = () => {
       {data && data.currentUser ? (
         <Lilies />
       ) : loading ? (
-        "Loading..."
+        <Center>
+          <Spinner />
+        </Center>
       ) : error ? (
         <ErrorAlert error={error} />
       ) : (

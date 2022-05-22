@@ -2,11 +2,14 @@ import { ApolloError } from "@apollo/client";
 import {
   Badge,
   Button,
+  Center,
+  getPlaceholderImageUrl,
   Heading,
   Hr,
   PropertyList,
   PropertyListItem,
   Space,
+  Spinner,
 } from "@app/design";
 import { AhsDataFragment, LilyByIdQuery } from "@app/graphql";
 import { toEditListingUrl } from "@app/lib";
@@ -27,9 +30,14 @@ function ListingDisplay({
   data: LilyByIdQuery | undefined;
   loading: boolean;
   error: ApolloError | undefined;
-  userId: number;
+  userId: number | null;
 }) {
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return (
+      <Center>
+        <Spinner />
+      </Center>
+    );
   if (error) return <p>Error: {error.message}</p>;
   const listing = data?.lily;
   if (!listing) return <p>No listing found with id {listingId}</p>;
@@ -45,7 +53,13 @@ function ListingDisplay({
   const isOwner = userId === listing.user?.id;
   return (
     <Space center responsive gap="medium">
-      {imageUrls.length > 0 && <ListingImageDisplay imageUrls={imageUrls} />}
+      {imageUrls.length > 0 ? (
+        <ListingImageDisplay imageUrls={imageUrls} />
+      ) : (
+        <ListingImageDisplay
+          imageUrls={[getPlaceholderImageUrl(listing.name)]}
+        />
+      )}
       <StyledSpace direction="column">
         <PropertyList divider>
           {price && <PropertyListItem label="Price">${price}</PropertyListItem>}

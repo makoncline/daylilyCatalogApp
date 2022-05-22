@@ -15,6 +15,7 @@ import {
 import styled from "styled-components";
 
 import { ListingCard } from "./ListingCard";
+import { Pagination } from "./Pagination";
 import { DateCell, ImageCell, LimitWidth, TruncateCell } from "./TableCells";
 import {
   betweenLengthFilter,
@@ -32,6 +33,7 @@ type ListingRow = Omit<
   "__typename" | "list" | "ahsDatumByAhsRef" | "ahsId"
 > &
   Omit<AhsDataFragment, "__typename" | "name" | "ahsId"> & {
+    privateNote?: string | null;
     list?: string | null;
     registeredName?: string | null;
   };
@@ -90,7 +92,13 @@ const defaultHiddenColumns = [
   "updatedAt",
 ];
 
-const useReactTable = ({ rawData }: { rawData: LilyDataFragment[] }) => {
+const useReactTable = ({
+  rawData,
+  isOwner,
+}: {
+  rawData: LilyDataFragment[];
+  isOwner: boolean;
+}) => {
   const [columnOrder, setColumnOrder] = useLocalStorage<string[]>(
     "columnOrder",
     defaultColumnOrder
@@ -132,8 +140,16 @@ const useReactTable = ({ rawData }: { rawData: LilyDataFragment[] }) => {
         .sort((a, b) => (a.name > b.name ? 1 : -1)),
     [rawData]
   );
-  const columns: Column<ListingRow>[] = React.useMemo(
-    () => [
+  const columns: Column<ListingRow>[] = React.useMemo(() => {
+    const ownerColumns: Column<ListingRow>[] = [
+      {
+        Header: "Private note",
+        accessor: "privateNote",
+        Cell: TruncateCell,
+        filter: "fuzzyText",
+      },
+    ];
+    const publicColumns: Column<ListingRow>[] = [
       {
         Header: "Listing name",
         accessor: "name",
@@ -155,12 +171,6 @@ const useReactTable = ({ rawData }: { rawData: LilyDataFragment[] }) => {
       {
         Header: "Public note",
         accessor: "publicNote",
-        Cell: TruncateCell,
-        filter: "fuzzyText",
-      },
-      {
-        Header: "Private note",
-        accessor: "privateNote",
         Cell: TruncateCell,
         filter: "fuzzyText",
       },
@@ -263,9 +273,9 @@ const useReactTable = ({ rawData }: { rawData: LilyDataFragment[] }) => {
         filter: undefined,
         Cell: DateCell,
       },
-    ],
-    []
-  );
+    ];
+    return isOwner ? [...publicColumns, ...ownerColumns] : publicColumns;
+  }, [isOwner]);
 
   const filterTypes: FilterTypes<ListingRow> = React.useMemo(
     () => ({
@@ -329,16 +339,12 @@ const useReactTable = ({ rawData }: { rawData: LilyDataFragment[] }) => {
   };
 };
 
-const handleEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
-  if (event.key.toLowerCase() === "enter") {
-    event.currentTarget.blur();
-  }
-};
-
 export function LiliesTable({
   dataSource,
+  isOwner,
 }: {
   dataSource: LilyDataFragment[];
+  isOwner: boolean;
 }) {
   const [showBasicDisplay, setShowBasicDisplay] = useLocalStorage<boolean>(
     "showBasicDisplay",
@@ -373,6 +379,7 @@ export function LiliesTable({
     resetToDefault,
   } = useReactTable({
     rawData: dataSource,
+    isOwner,
   });
 
   function handleClick(id: number) {
@@ -401,72 +408,9 @@ export function LiliesTable({
     rtSetColumnOrder(newColumnOrder);
   }
 
-  function Pagination() {
-    return (
-      <Space
-        block
-        responsive
-        style={{ alignItems: "center", justifyContent: "flex-end" }}
-      >
-        <Space center>
-          <Button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-            {"<<"}
-          </Button>{" "}
-          <Button onClick={() => previousPage()} disabled={!canPreviousPage}>
-            {"<"}
-          </Button>{" "}
-          <Button onClick={() => nextPage()} disabled={!canNextPage}>
-            {">"}
-          </Button>{" "}
-          <Button
-            onClick={() => gotoPage(pageOptions.length - 1)}
-            disabled={!canNextPage}
-          >
-            {">>"}
-          </Button>{" "}
-        </Space>
-        <Space center>
-          <span>
-            Page{" "}
-            <strong>
-              {pageIndex + 1} of {pageOptions.length}
-            </strong>{" "}
-          </span>
-          <span>
-            | Go to page:{" "}
-            <input
-              type="number"
-              defaultValue={pageIndex + 1}
-              onKeyDown={handleEnter}
-              onBlur={(e) => {
-                const page = e.target.value ? Number(e.target.value) - 1 : 0;
-                gotoPage(page);
-              }}
-              style={{ width: "100px" }}
-            />
-          </span>{" "}
-        </Space>
-        <Space center>
-          <select
-            value={pageSize}
-            onChange={(e) => {
-              setPageSize(Number(e.target.value));
-            }}
-          >
-            {[10, 20, 30, 40, 50].map((pageSize) => (
-              <option key={pageSize} value={pageSize}>
-                Show {pageSize}
-              </option>
-            ))}
-          </select>
-        </Space>
-      </Space>
-    );
-  }
-
   return (
-    <>
-      {!showBasicDisplay && (
+    <Space direction="column" id="top-of-table" block>
+      {!showBasicDisplay && isOwner && (
         <StyledDetails>
           <summary>Edit listing table</summary>
           <form onSubmit={handleSubmit}>
@@ -547,19 +491,31 @@ export function LiliesTable({
           </table>
         </Space>
       </StyledDetails>
-      <Space block>
-        <Button
-          onClick={() => {
-            setShowBasicDisplay(!showBasicDisplay);
-          }}
-        >
-          {showBasicDisplay
-            ? "Switch to advanced view"
-            : "Switch to basic view"}
-        </Button>
-      </Space>
-      <Pagination />
-      {showBasicDisplay && (
+      {isOwner && (
+        <Space block>
+          <Button
+            onClick={() => {
+              setShowBasicDisplay(!showBasicDisplay);
+            }}
+          >
+            {showBasicDisplay
+              ? "Switch to advanced view"
+              : "Switch to basic view"}
+          </Button>
+        </Space>
+      )}
+      <Pagination
+        canPreviousPage={canPreviousPage}
+        canNextPage={canNextPage}
+        pageOptions={pageOptions}
+        gotoPage={gotoPage}
+        nextPage={nextPage}
+        previousPage={previousPage}
+        setPageSize={setPageSize}
+        pageIndex={pageIndex}
+        pageSize={pageSize}
+      />
+      {(showBasicDisplay || !isOwner) && (
         <Space direction="column">
           {page.map((row) => {
             prepareRow(row);
@@ -577,7 +533,7 @@ export function LiliesTable({
           })}
         </Space>
       )}
-      {!showBasicDisplay && (
+      {!showBasicDisplay && isOwner && (
         <StyledTable {...getTableProps()}>
           <thead>
             {headerGroups.map((headerGroup) => (
@@ -640,13 +596,23 @@ export function LiliesTable({
           </tbody>
         </StyledTable>
       )}
-      <Pagination />
       <Space block style={{ justifyContent: "flex-end" }}>
-        <Button onClick={() => download(dataSource)}>
-          Download listing data
+        {isOwner && (
+          <Button onClick={() => download(dataSource)}>
+            Download listing data
+          </Button>
+        )}
+        <Button
+          onClick={() => {
+            document?.getElementById("top-of-table")?.scrollIntoView({
+              behavior: "smooth",
+            });
+          }}
+        >
+          Return to top
         </Button>
       </Space>
-    </>
+    </Space>
   );
 }
 

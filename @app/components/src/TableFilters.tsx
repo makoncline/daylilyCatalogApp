@@ -24,7 +24,7 @@ function GlobalFilter<T extends object>({
   }, 200);
 
   return (
-    <Space>
+    <Space block>
       Search:{" "}
       <input
         value={value || ""}
@@ -33,6 +33,7 @@ function GlobalFilter<T extends object>({
           onChange(e.target.value);
         }}
         placeholder={`${count} records...`}
+        style={{ width: "100%" }}
       />
     </Space>
   );

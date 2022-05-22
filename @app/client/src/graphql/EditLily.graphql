@@ -27,6 +27,7 @@ mutation EditLily(
     lily {
       id
       ...LilyData
+      privateNote
     }
     user {
       id
@@ -34,6 +35,7 @@ mutation EditLily(
         nodes {
           id
           ...LilyData
+          privateNote
         }
       }
     }

@@ -8,6 +8,7 @@ query Lilies {
       nodes {
         id
         ...LilyData
+        privateNote
       }
     }
   }

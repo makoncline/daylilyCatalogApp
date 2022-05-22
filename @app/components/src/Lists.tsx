@@ -1,4 +1,4 @@
-import { Button } from "@app/design";
+import { Button, Center, Spinner } from "@app/design";
 import { useListsQuery } from "@app/graphql";
 import { createListUrl, toEditListUrl } from "@app/lib";
 import Link from "next/link";
@@ -9,7 +9,12 @@ import styled from "styled-components";
 export const Lists = () => {
   const { data } = useListsQuery();
   const user = data && data.currentUser;
-  if (!user) return <p>Loading...</p>;
+  if (!user)
+    return (
+      <Center>
+        <Spinner />
+      </Center>
+    );
 
   return (
     <>

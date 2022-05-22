@@ -5,13 +5,6 @@ query LilyById($id: Int!) {
   lily(id: $id) {
     id
     ...LilyData
-    ahsDatumByAhsRef {
-      id
-      ...AhsData
-    }
-    list {
-      id
-      ...ListData
-    }
+    privateNote
   }
 }
