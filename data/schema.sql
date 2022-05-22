@@ -2537,6 +2537,13 @@ CREATE POLICY select_all ON app_public.ahs_data FOR SELECT USING (true);
 
 
 --
+-- Name: lilies select_all; Type: POLICY; Schema: app_public; Owner: -
+--
+
+CREATE POLICY select_all ON app_public.lilies FOR SELECT USING (true);
+
+
+--
 -- Name: lists select_all; Type: POLICY; Schema: app_public; Owner: -
 --
 
@@ -2562,13 +2569,6 @@ CREATE POLICY select_all ON app_public.stripe_subscriptions FOR SELECT USING (tr
 --
 
 CREATE POLICY select_all ON app_public.users FOR SELECT USING (true);
-
-
---
--- Name: lilies select_lilies; Type: POLICY; Schema: app_public; Owner: -
---
-
-CREATE POLICY select_lilies ON app_public.lilies FOR SELECT USING ((user_id = app_public.current_user_id()));
 
 
 --
