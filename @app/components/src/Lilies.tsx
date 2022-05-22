@@ -1,4 +1,4 @@
-import { Alert, Button, Space } from "@app/design";
+import { Alert, Button, Center, Space, Spinner } from "@app/design";
 import { useLiliesQuery } from "@app/graphql";
 import { toCreateListingUrl } from "@app/lib";
 import React from "react";
@@ -10,7 +10,12 @@ export const Lilies = () => {
   const user = data && data.currentUser;
   const userLilies = user && user.lilies.nodes;
 
-  if (!user || !userLilies) return <p>Loading...</p>;
+  if (!user || !userLilies)
+    return (
+      <Center>
+        <Spinner />
+      </Center>
+    );
 
   const isActive =
     user.stripeSubscription?.subscriptionInfo?.status == "active";
@@ -44,7 +49,7 @@ export const Lilies = () => {
           Create listing
         </Button>
       )}
-      <LiliesTable dataSource={userLilies || []} />
+      <LiliesTable dataSource={userLilies || []} isOwner={true} />
     </Space>
   );
 };

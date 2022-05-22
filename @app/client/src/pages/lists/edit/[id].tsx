@@ -4,6 +4,7 @@ import {
   Redirect,
   SharedLayout,
 } from "@app/components";
+import { Center, Spinner } from "@app/design";
 import { useListByIdQuery, useSharedQuery } from "@app/graphql";
 import { loginUrl } from "@app/lib";
 import { NextPage } from "next";
@@ -30,7 +31,9 @@ const Edit: NextPage = () => {
       {sharedQueryData?.currentUser && listQueryData?.list ? (
         <EditListForm list={listQueryData.list} />
       ) : sharedQueryLoading || listQueryLoading ? (
-        "Loading..."
+        <Center>
+          <Spinner />
+        </Center>
       ) : sharedQueryError || listQueryError ? (
         <>
           {sharedQueryError && <ErrorAlert error={sharedQueryError} />}

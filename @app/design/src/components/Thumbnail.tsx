@@ -3,14 +3,16 @@ import styled from "styled-components";
 
 export function Thumbnail({
   children: child,
+  thumb = true,
   ...props
 }: {
   children: React.ReactElement<any, string | React.JSXElementConstructor<any>>;
+  thumb?: boolean;
   [key: string]: any;
 }) {
   return (
     <StyledThumbnail {...props}>
-      {React.cloneElement(child, thumbnailProps)}
+      {React.cloneElement(child, { ...thumbnailProps, thumb })}
     </StyledThumbnail>
   );
 }
@@ -27,5 +29,4 @@ const StyledThumbnail = styled.div`
 export const thumbnailProps = {
   layout: "fill",
   objectFit: "cover",
-  thumb: true,
 };

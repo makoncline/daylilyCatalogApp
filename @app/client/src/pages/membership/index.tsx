@@ -5,7 +5,7 @@ import {
   Redirect,
   SharedLayout,
 } from "@app/components";
-import { Button, Heading, Hr, Space } from "@app/design";
+import { Button, Center, Heading, Hr, Space, Spinner } from "@app/design";
 import { useMembershipQuery } from "@app/graphql";
 import { emailsUrl, loginUrl } from "@app/lib";
 import { NextPage } from "next";
@@ -24,7 +24,9 @@ const Membership: NextPage = () => {
       {data && data.currentUser ? (
         <Plans active={isSubscriptionActive} isVerified={isVerified} />
       ) : loading ? (
-        "Loading..."
+        <Center>
+          <Spinner />
+        </Center>
       ) : error ? (
         <ErrorAlert error={error} />
       ) : (

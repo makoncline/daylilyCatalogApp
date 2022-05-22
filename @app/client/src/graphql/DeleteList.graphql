@@ -15,6 +15,7 @@ mutation DeleteList($id: Int!) {
         nodes {
           id
           ...LilyData
+          privateNote
         }
       }
     }

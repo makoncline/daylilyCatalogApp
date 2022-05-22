@@ -8,6 +8,7 @@ mutation DeleteLily($id: Int!) {
         nodes {
           id
           ...LilyData
+          privateNote
         }
       }
     }

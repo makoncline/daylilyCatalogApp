@@ -13,6 +13,9 @@ export const deleteUrl = `${settingsUrl}/delete`;
 export const emailsUrl = `${settingsUrl}/emails`;
 export const securityUrl = `${settingsUrl}/security`;
 
+export function toViewUserUrl(id: number) {
+  return `${usersUrl}/${id}`;
+}
 export function toViewListingUrl(id: number) {
   return `${catalogUrl}/${id}`;
 }

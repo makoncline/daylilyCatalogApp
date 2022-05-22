@@ -5,6 +5,7 @@ const Badge = styled.div`
   color: var(--gray-9);
   padding: 1px var(--size-1);
   border-radius: var(--radius-2);
+  white-space: nowrap;
 `;
 
 const GreenBadge = styled(Badge)`

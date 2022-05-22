@@ -1,6 +1,7 @@
 import { ApolloError, useApolloClient } from "@apollo/client";
 import {
   Button,
+  Center,
   Field,
   Form,
   FormError,
@@ -9,6 +10,7 @@ import {
   FormWrapper,
   Heading,
   Space,
+  Spinner,
   SubmitButton,
   useForm,
 } from "@app/design";
@@ -231,7 +233,12 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
     }
   }, [data?.lily?.imgUrl, editLily, id, imageUrls, isReady, setError]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return (
+      <Center>
+        <Spinner />
+      </Center>
+    );
   if (queryError) return <p>Error: {queryError.message}</p>;
   if (!data?.lily && formState === "deleting")
     return <p>Daylily with id {id} has been deleted</p>;

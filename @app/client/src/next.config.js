@@ -50,6 +50,7 @@ if (!process.env.SENTRY_AUTH_TOKEN) {
             "app.daylilycatalog.com",
             "images.daylilycatalog.com",
             "images-stage.daylilycatalog.com",
+            "source.boringavatars.com",
           ],
           minimumCacheTTL: 3600,
           deviceSizes: [100, 400],
