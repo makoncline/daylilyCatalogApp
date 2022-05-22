@@ -30,6 +30,7 @@ import {
   getCodeFromError,
   loginUrl,
   settingsUrl,
+  toViewUserUrl,
 } from "@app/lib";
 import * as Sentry from "@sentry/nextjs";
 import { NextPage } from "next";
@@ -41,6 +42,7 @@ const Settings_Profile: NextPage = () => {
   const [formError, setFormError] = useState<Error | ApolloError | null>(null);
   const query = useSettingsProfileQuery();
   const { data, loading, error } = query;
+  const id = data?.currentUser?.id;
   return (
     <SettingsLayout href={settingsUrl} query={query} noPad>
       <Space direction="column">
@@ -59,6 +61,7 @@ const Settings_Profile: NextPage = () => {
             Images
           </NextLink>
         </Wrap>
+        {id && <Button href={toViewUserUrl(id)}>View public profile</Button>}
       </Space>
       {data && data.currentUser ? (
         <ProfileSettingsForm
