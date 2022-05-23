@@ -75,7 +75,6 @@ export function ProPlan({ action }: { action: React.ReactNode }) {
             <p>Unlimited daylily listings</p>
             <p>Upload garden and daylily photos</p>
             <p>Website for your catalog</p>
-            <p>Limit 100 daylily listings</p>
           </Space>
         </>
       }
