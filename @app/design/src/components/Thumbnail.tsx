@@ -12,7 +12,11 @@ export function Thumbnail({
 }) {
   return (
     <StyledThumbnail {...props}>
-      {React.cloneElement(child, { ...thumbnailProps, thumb })}
+      {React.cloneElement(child, {
+        ...thumbnailProps,
+        thumb,
+        sizes: thumb ? "100px" : "100vw",
+      })}
     </StyledThumbnail>
   );
 }

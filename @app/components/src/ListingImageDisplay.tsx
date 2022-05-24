@@ -29,6 +29,8 @@ function ListingImageDisplay({ imageUrls }: { imageUrls: string[] }) {
               layout="fill"
               objectFit="cover"
               onClick={() => setImageIndex(i)}
+              thumb
+              sizes="200px"
             />
           </Thumbnail>
         ))}

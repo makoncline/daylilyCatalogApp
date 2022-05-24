@@ -1,6 +1,7 @@
 import type { ImageProps } from "next/image";
 import { default as NextImage } from "next/image";
 import React from "react";
+import styled from "styled-components";
 
 const S3_BUCKET_HOST_NAMES = [
   "daylily-catalog-images-stage.s3.amazonaws.com",
@@ -42,16 +43,29 @@ function Image({
       setPlaceholder(null);
     }
   }
+  const isPlaceholder = src.includes("boringavatars");
   return (
-    <NextImage
-      src={src}
-      placeholder={placeholder ? "blur" : undefined}
-      blurDataURL={placeholder ? placeholder : undefined}
-      onError={handleError}
-      quality={100}
-      {...props}
-    />
+    <Wrapper isPlaceholder={isPlaceholder}>
+      <NextImage
+        src={src}
+        placeholder={placeholder ? "blur" : undefined}
+        blurDataURL={placeholder ? placeholder : undefined}
+        onError={handleError}
+        quality={100}
+        {...props}
+      />
+    </Wrapper>
   );
 }
 
 export { Image };
+
+const Wrapper = styled.div<{ isPlaceholder: boolean }>`
+  ${({ isPlaceholder }) =>
+    isPlaceholder &&
+    `
+    img{
+      transform: scale(1.1);
+    }
+  `}
+`;
