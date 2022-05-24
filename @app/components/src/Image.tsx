@@ -48,6 +48,7 @@ function Image({
       placeholder={placeholder ? "blur" : undefined}
       blurDataURL={placeholder ? placeholder : undefined}
       onError={handleError}
+      quality={100}
       {...props}
     />
   );
