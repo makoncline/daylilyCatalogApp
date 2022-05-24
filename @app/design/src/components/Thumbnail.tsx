@@ -15,7 +15,7 @@ export function Thumbnail({
       {React.cloneElement(child, {
         ...thumbnailProps,
         thumb,
-        sizes: thumb ? "100px" : "100vw",
+        sizes: thumb ? "200px" : "100vw",
       })}
     </StyledThumbnail>
   );
