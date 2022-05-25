@@ -41,14 +41,24 @@ import { ImageUpload } from "./ImageUpload";
 import { ListInput } from "./ListInput";
 import { RegisteredLilyDisplay } from "./RegisteredLilyDisplay";
 import { RegisteredLilyInput } from "./RegisteredLilyInput";
+import {
+  UploadDisabledNoMembership,
+  UploadDisabledNotVerified,
+} from "./UploadDisabled";
 
 type EditListingFormProps = {
   error: Error | ApolloError | null;
   setError: (error: Error | ApolloError | null) => void;
   id: number;
+  isPhotoUploadEnabled: "NOT_VERIFIED" | "NO_MEMBERSHIP" | "ENABLED";
 };
 
-function EditListingForm({ error, setError, id }: EditListingFormProps) {
+function EditListingForm({
+  error,
+  setError,
+  id,
+  isPhotoUploadEnabled,
+}: EditListingFormProps) {
   const [formState, setFormState] = React.useState<"idle" | "deleting">("idle");
   const [linkedLily, setLinkedLily] =
     React.useState<AhsSearchDataFragment | null>(null);
@@ -353,6 +363,11 @@ function EditListingForm({ error, setError, id }: EditListingFormProps) {
               <Heading level={3}>Listing images</Heading>
               <ImageDisplay imageUrls={imageUrls} setImageUrls={setImageUrls} />
             </Space>
+          ) : null}
+          {isPhotoUploadEnabled === "NOT_VERIFIED" ? (
+            <UploadDisabledNotVerified />
+          ) : isPhotoUploadEnabled === "NO_MEMBERSHIP" ? (
+            <UploadDisabledNoMembership />
           ) : null}
         </Space>
       </Space>

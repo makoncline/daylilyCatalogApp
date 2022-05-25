@@ -15,4 +15,11 @@ fragment SharedLayout_User on User {
   bio
   userLocation
   isVerified
+  freeUntil
+  stripeSubscription {
+    id
+    subscriptionInfo {
+      status
+    }
+  }
 }

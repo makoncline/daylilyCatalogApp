@@ -31,6 +31,7 @@ export * from "./SpinPadded";
 export * from "./StandardWidth";
 export * from "./TableCells";
 export * from "./TableFilters";
+export * from "./UploadDisabled";
 export * from "./UserCard";
 export * from "./UsersTable";
 export * from "./Wysiwyg";
