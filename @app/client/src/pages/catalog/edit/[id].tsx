@@ -25,11 +25,28 @@ const Edit: NextPage = () => {
 
   const lilyId = (typeof id === "string" && parseInt(id)) || null;
   if (!lilyId) return <p>invalid id: {id}</p>;
+  const user = sharedQueryData?.currentUser;
+  const isActive =
+    user?.stripeSubscription?.subscriptionInfo?.status == "active";
+  const isFree = user?.freeUntil
+    ? new Date() < new Date(user.freeUntil)
+    : false;
+  const isPhotoUploadActive = user?.isVerified && (isFree || isActive);
+  const isPhotoUploadEnabled = !user?.isVerified
+    ? "NOT_VERIFIED"
+    : !isPhotoUploadActive
+    ? "NO_MEMBERSHIP"
+    : "ENABLED";
 
   return (
     <SharedLayout title="Edit Listing" query={query}>
       {sharedQueryData?.currentUser ? (
-        <EditListingForm error={error} setError={setError} id={lilyId} />
+        <EditListingForm
+          error={error}
+          setError={setError}
+          id={lilyId}
+          isPhotoUploadEnabled={isPhotoUploadEnabled}
+        />
       ) : sharedQueryLoading ? (
         <Center>
           <Spinner />
