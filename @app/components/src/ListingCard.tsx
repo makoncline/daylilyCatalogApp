@@ -11,13 +11,15 @@ export const ListingCard = ({
   image,
   name,
   price,
+  note,
   description,
 }: {
   id: number;
   image?: string | null;
   name: string;
   price?: number | null;
-  description?: string | null;
+  note?: string | null;
+  description: string | null;
 }) => {
   return (
     <StyledCard>
@@ -36,6 +38,7 @@ export const ListingCard = ({
       <Body block direction="column">
         <Heading level={3}>{name}</Heading>
         {price && <p>{price > 0 ? currency(price) : "-"}</p>}
+        {note && <p>{note}</p>}
         {description && <p>{description}</p>}
         <Button href={toViewListingUrl(id)}>View</Button>
       </Body>
