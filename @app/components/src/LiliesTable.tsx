@@ -36,11 +36,13 @@ type ListingRow = Omit<
     privateNote?: string | null;
     list?: string | null;
     registeredName?: string | null;
+    description: string | null;
   };
 
 const defaultColumnOrder = [
   "name",
   "imgUrl",
+  "description",
   "price",
   "publicNote",
   "privateNote",
@@ -135,6 +137,9 @@ const useReactTable = ({
             ...rowDataOrNull,
             list: row.list?.name || null,
             imgUrl: images,
+            description: row.ahsDatumByAhsRef
+              ? getAhsDescription(row.ahsDatumByAhsRef)
+              : null,
           };
         })
         .sort((a, b) => (a.name > b.name ? 1 : -1)),
@@ -283,6 +288,11 @@ const useReactTable = ({
         Cell: DateCell,
         disableFilters: true,
       },
+      {
+        Header: "Description",
+        accessor: "description",
+        filter: "fuzzyText",
+      },
     ];
     return isOwner ? [...publicColumns, ...ownerColumns] : publicColumns;
   }, [isOwner]);
@@ -409,6 +419,17 @@ export function LiliesTable({
     rawData: dataSource,
     isOwner,
   });
+
+  const mounted = React.useRef(false);
+  React.useEffect(() => {
+    mounted.current = true;
+  }, []);
+  React.useEffect(() => {
+    if (mounted.current && pageIndex) {
+      scrollToTop();
+    }
+  }, [pageIndex]);
+
   function handleClick(id: number) {
     const url = toViewListingUrl(id);
     router.push(`${url}`);
@@ -561,15 +582,17 @@ export function LiliesTable({
         <Space direction="column">
           {page.map((row) => {
             prepareRow(row);
-            const { id, name, publicNote, price, imgUrl } = row.original;
+            const { id, name, publicNote, price, imgUrl, description } =
+              row.original;
             return (
               <ListingCard
                 key={`${id}${showBasicDisplay}`}
                 id={id}
                 name={name}
-                description={publicNote}
+                note={publicNote}
                 price={price}
                 image={imgUrl ? imgUrl[0] : null}
+                description={description}
               />
             );
           })}
@@ -638,24 +661,55 @@ export function LiliesTable({
           </tbody>
         </StyledTable>
       )}
+      <Pagination
+        canPreviousPage={canPreviousPage}
+        canNextPage={canNextPage}
+        pageOptions={pageOptions}
+        gotoPage={gotoPage}
+        nextPage={nextPage}
+        previousPage={previousPage}
+        setPageSize={setPageSize}
+        pageIndex={pageIndex}
+        pageSize={pageSize}
+      />
       <Space block style={{ justifyContent: "flex-end" }}>
         {isOwner && (
           <Button onClick={() => download(dataSource)}>
             Download listing data
           </Button>
         )}
-        <Button
-          onClick={() => {
-            document?.getElementById("top-of-table")?.scrollIntoView({
-              behavior: "smooth",
-            });
-          }}
-        >
-          Return to top
-        </Button>
+        <Button onClick={() => scrollToTop()}>Return to top</Button>
       </Space>
     </Space>
   );
+}
+
+function scrollToTop() {
+  document?.getElementById("top-of-table")?.scrollIntoView({
+    behavior: "smooth",
+  });
+}
+
+function getAhsDescription(ahsData: AhsDataFragment) {
+  const descriptionProperties: (keyof AhsDataFragment)[] = [
+    "hybridizer",
+    "year",
+    "ploidy",
+    "foliageType",
+    "color",
+  ];
+  let description = "";
+  descriptionProperties.forEach((property, i) => {
+    if (ahsData[property]) {
+      description += `${ahsData[property]}`;
+      if (i !== descriptionProperties.length - 1) {
+        description += ", ";
+      } else {
+        description += ".";
+      }
+    }
+  });
+  return description;
 }
 
 const StyledButton = styled(Button)`
@@ -667,7 +721,7 @@ const StyledDetails = styled.details`
 `;
 const ColumnGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
   gap: 1rem;
 `;
 const NoWrap = styled.span`

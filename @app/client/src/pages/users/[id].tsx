@@ -28,14 +28,7 @@ import styled from "styled-components";
 
 const Catalogs: NextPage = () => {
   const [selectedList, setSelectedList] = React.useState<string | null>(null);
-  const [ready, setReady] = React.useState(false);
   const listingSection = React.useRef<HTMLDivElement>(null);
-  React.useEffect(() => {
-    if (ready) {
-      listingSection?.current?.scrollIntoView({ behavior: "smooth" });
-    }
-    setReady(true);
-  }, [ready, selectedList]);
   const router = useRouter();
   const { id } = router.query;
   const sharedQuery = useSharedQuery();
@@ -75,6 +68,10 @@ const Catalogs: NextPage = () => {
       : selectedList
     : "All Listings";
 
+  const handleListChange = (list: string | null) => {
+    setSelectedList(list);
+    listingSection?.current?.scrollIntoView({ behavior: "smooth" });
+  };
   return (
     <SharedLayout
       title={username ? `${username}` : "Catalog"}
@@ -173,10 +170,7 @@ const Catalogs: NextPage = () => {
                 <p>View listings with a price</p>
                 <p>{forSale.length.toLocaleString()} listings</p>
                 <Space>
-                  <Button
-                    onClick={() => setSelectedList("forSale")}
-                    disabled={selectedList === "forSale"}
-                  >
+                  <Button onClick={() => handleListChange("forSale")}>
                     {selectedList === "forSale" ? "Now viewing" : "View"}
                   </Button>
                 </Space>
@@ -193,10 +187,7 @@ const Catalogs: NextPage = () => {
                     {list.intro && <p>{list.intro}</p>}
                     <p>{list.lilies.totalCount.toLocaleString()} listings</p>
                     <Space>
-                      <Button
-                        onClick={() => setSelectedList(list.name)}
-                        disabled={selectedList === list.name}
-                      >
+                      <Button onClick={() => handleListChange(list.name)}>
                         {selectedList === list.name ? "Now viewing" : "View"}
                       </Button>
                     </Space>
@@ -207,10 +198,7 @@ const Catalogs: NextPage = () => {
               <p>View all of {username}'s listings</p>
               <p>{listings.length.toLocaleString()} listings</p>
               <Space>
-                <Button
-                  onClick={() => setSelectedList(null)}
-                  disabled={selectedList === null}
-                >
+                <Button onClick={() => handleListChange(null)}>
                   {selectedList === null ? "Now viewing" : "View"}
                 </Button>
               </Space>
