@@ -159,7 +159,9 @@ const useReactTable = ({
         Header: "Image",
         accessor: "imgUrl",
         Cell: ImageCell,
-        filter: undefined,
+        disableFilters: true,
+        sortType: "basic",
+        sortInverted: true,
       },
       {
         Header: "Price",
@@ -184,7 +186,11 @@ const useReactTable = ({
         accessor: "registeredName",
         filter: "fuzzyText",
       },
-      { Header: "Hybridizer", accessor: "hybridizer", filter: "fuzzyText" },
+      {
+        Header: "Hybridizer",
+        accessor: "hybridizer",
+        filter: "fuzzyText",
+      },
       {
         Header: "Year",
         accessor: "year",
@@ -255,7 +261,11 @@ const useReactTable = ({
         accessor: "parentage",
         filter: "fuzzyText",
       },
-      { Header: "Seedling #", accessor: "seedlingNum", filter: "fuzzyText" },
+      {
+        Header: "Seedling #",
+        accessor: "seedlingNum",
+        filter: "fuzzyText",
+      },
       {
         Header: "Sculpting",
         accessor: "sculpting",
@@ -264,14 +274,14 @@ const useReactTable = ({
       {
         Header: "Created at",
         accessor: "createdAt",
-        filter: undefined,
         Cell: DateCell,
+        disableFilters: true,
       },
       {
         Header: "Updated at",
         accessor: "updatedAt",
-        filter: undefined,
         Cell: DateCell,
+        disableFilters: true,
       },
     ];
     return isOwner ? [...publicColumns, ...ownerColumns] : publicColumns;
@@ -294,6 +304,15 @@ const useReactTable = ({
     }),
     []
   );
+  const publicColumns = [
+    "name",
+    "price",
+    "publicNote",
+    "list",
+    "imgUrl",
+    "createdAt",
+    "updatedAt",
+  ];
 
   const tableInstance = useTable(
     {
@@ -303,7 +322,9 @@ const useReactTable = ({
       filterTypes,
       initialState: {
         columnOrder,
-        hiddenColumns,
+        hiddenColumns: isOwner
+          ? hiddenColumns
+          : columnOrder.filter((col) => !publicColumns.includes(col)),
       },
     },
     useFilters,
@@ -314,11 +335,15 @@ const useReactTable = ({
   );
 
   React.useEffect(() => {
-    tableInstance.setColumnOrder(columnOrder);
-  }, [columnOrder, tableInstance]);
+    if (isOwner) {
+      tableInstance.setColumnOrder(columnOrder);
+    }
+  }, [columnOrder, isOwner, tableInstance]);
   React.useEffect(() => {
-    tableInstance.setHiddenColumns(hiddenColumns);
-  }, [hiddenColumns, tableInstance]);
+    if (isOwner) {
+      tableInstance.setHiddenColumns(hiddenColumns);
+    }
+  }, [hiddenColumns, isOwner, tableInstance]);
 
   return {
     tableInstance,
@@ -331,7 +356,9 @@ const useReactTable = ({
       tableInstance.setHiddenColumns(hidenColumns);
     },
     columnOrder,
-    hiddenColumns,
+    hiddenColumns: isOwner
+      ? hiddenColumns
+      : columnOrder.filter((col) => !publicColumns.includes(col)),
     resetToDefault: () => {
       setColumnOrder(defaultColumnOrder);
       setHiddenColumns(defaultHiddenColumns);
@@ -371,6 +398,7 @@ export function LiliesTable({
       previousPage,
       setPageSize,
       state: { pageIndex, pageSize },
+      setAllFilters,
     },
     setColumnOrder,
     columnOrder,
@@ -381,7 +409,6 @@ export function LiliesTable({
     rawData: dataSource,
     isOwner,
   });
-
   function handleClick(id: number) {
     const url = toViewListingUrl(id);
     router.push(`${url}`);
@@ -475,20 +502,35 @@ export function LiliesTable({
         </StyledDetails>
       )}
       <StyledDetails>
-        <summary>Filter listings</summary>
+        <summary>Sort and filter listings</summary>
         <Space direction="column">
           <table>
             <tbody>
-              {allColumns
-                .filter((col) => col.canFilter)
-                .map((column, i) => (
-                  <tr style={{ verticalAlign: "top" }} key={i}>
-                    <td>{column.render("Header")}</td>
-                    <td>{column.render("Filter")}</td>
+              {[
+                ...visibleColumns.filter((col) => col.canFilter),
+                ...visibleColumns.filter((col) => !col.canFilter),
+              ]
+                .filter((col) => col.canFilter || col.canSort)
+                .map((column) => (
+                  <tr style={{ verticalAlign: "top" }} key={column.id}>
+                    <td>
+                      <Space {...column.getSortByToggleProps()}>
+                        <NoWrap>{column.render("Header")}</NoWrap>
+                        <span>
+                          {column.isSorted
+                            ? column.isSortedDesc
+                              ? " 🔽"
+                              : " 🔼"
+                            : ""}
+                        </span>
+                      </Space>
+                    </td>
+                    {column.canFilter && <td>{column.render("Filter")}</td>}
                   </tr>
                 ))}
             </tbody>
           </table>
+          <Button onClick={() => setAllFilters([])}>Reset all filters</Button>
         </Space>
       </StyledDetails>
       {isOwner && (

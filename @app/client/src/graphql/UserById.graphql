@@ -8,5 +8,11 @@ query UserById($id: Int!) {
         ...LilyData
       }
     }
+    lists {
+      nodes {
+        id
+        ...ListData
+      }
+    }
   }
 }

@@ -3,7 +3,9 @@ fragment ListData on List {
   userId
   name
   intro
-  bio
   updatedAt
   createdAt
+  lilies {
+    totalCount
+  }
 }

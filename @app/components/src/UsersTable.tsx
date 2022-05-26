@@ -1,4 +1,4 @@
-import { getPlaceholderImageUrl, Space } from "@app/design";
+import { Button, getPlaceholderImageUrl, Space } from "@app/design";
 import { UserDataFragment, UsersQuery } from "@app/graphql";
 import React from "react";
 import {
@@ -33,7 +33,7 @@ function UsersTable({ data }: { data: UsersQuery }) {
     rawData: users,
   });
   return (
-    <>
+    <Space direction="column" id="top-of-table">
       <GlobalFilter
         preGlobalFilteredRows={preGlobalFilteredRows}
         globalFilter={state.globalFilter}
@@ -74,7 +74,18 @@ function UsersTable({ data }: { data: UsersQuery }) {
           );
         })}
       </Space>
-    </>
+      <Space block style={{ justifyContent: "flex-end" }}>
+        <Button
+          onClick={() => {
+            document?.getElementById("top-of-table")?.scrollIntoView({
+              behavior: "smooth",
+            });
+          }}
+        >
+          Return to top
+        </Button>
+      </Space>
+    </Space>
   );
 }
 export { UsersTable };
@@ -95,7 +106,7 @@ const useReactTable = ({ rawData }: { rawData: UserDataFragment[] }) => {
         (u) => u.stripeSubscription?.subscriptionInfo?.status !== "active"
       )
       .sort(sortByNumListings);
-    return [...paidUsers, ...freeUsers];
+    return [...paidUsers, ...freeUsers].filter((u) => u.lilies.totalCount > 0);
   }, [rawData]);
   const columns: Column<UserDataFragment>[] = React.useMemo(
     () => [

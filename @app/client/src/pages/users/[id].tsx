@@ -11,6 +11,7 @@ import {
   Center,
   FancyHeading,
   getPlaceholderImageUrl,
+  Heading,
   PropertyList,
   PropertyListItem,
   Space,
@@ -23,8 +24,18 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React from "react";
 import ReactMarkdown from "react-markdown";
+import styled from "styled-components";
 
 const Catalogs: NextPage = () => {
+  const [selectedList, setSelectedList] = React.useState<string | null>(null);
+  const [ready, setReady] = React.useState(false);
+  const listingSection = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    if (ready) {
+      listingSection?.current?.scrollIntoView({ behavior: "smooth" });
+    }
+    setReady(true);
+  }, [ready, selectedList]);
   const router = useRouter();
   const { id } = router.query;
   const sharedQuery = useSharedQuery();
@@ -45,12 +56,25 @@ const Catalogs: NextPage = () => {
     imgUrls,
     bio,
     lilies,
+    lists,
     userLocation,
     avatarUrl,
     updatedAt,
     createdAt,
   } = userQueryData?.user || {};
   const listings = lilies?.nodes || [];
+  const forSale = listings.filter((listing) => listing.price > 0);
+  const displayListings = selectedList
+    ? selectedList === "forSale"
+      ? forSale
+      : listings.filter((listing) => listing.list?.name === selectedList)
+    : listings;
+  const listingsHeading = selectedList
+    ? selectedList === "forSale"
+      ? "For Sale"
+      : selectedList
+    : "All Listings";
+
   return (
     <SharedLayout
       title={username ? `${username}` : "Catalog"}
@@ -141,8 +165,63 @@ const Catalogs: NextPage = () => {
               )}
             </Space>
           </Space>
-          <FancyHeading level={2}>Listings</FancyHeading>
-          <LiliesTable dataSource={listings} isOwner={false} />
+          <Space direction="column" center block>
+            <FancyHeading level={2}>Lists</FancyHeading>
+            {forSale.length > 0 && (
+              <ListCard direction="column" block>
+                <Heading level={3}>For sale</Heading>
+                <p>View listings with a price</p>
+                <p>{forSale.length.toLocaleString()} listings</p>
+                <Space>
+                  <Button
+                    onClick={() => setSelectedList("forSale")}
+                    disabled={selectedList === "forSale"}
+                  >
+                    {selectedList === "forSale" ? "Now viewing" : "View"}
+                  </Button>
+                </Space>
+              </ListCard>
+            )}
+            {lists?.nodes &&
+              lists.nodes.length > 0 &&
+              lists.nodes
+                .filter((list) => list.lilies.totalCount > 0)
+                .sort((a, b) => b.lilies.totalCount - a.lilies.totalCount)
+                .map((list) => (
+                  <ListCard direction="column" block key={list.id}>
+                    <Heading level={3}>{list.name}</Heading>
+                    {list.intro && <p>{list.intro}</p>}
+                    <p>{list.lilies.totalCount.toLocaleString()} listings</p>
+                    <Space>
+                      <Button
+                        onClick={() => setSelectedList(list.name)}
+                        disabled={selectedList === list.name}
+                      >
+                        {selectedList === list.name ? "Now viewing" : "View"}
+                      </Button>
+                    </Space>
+                  </ListCard>
+                ))}
+            <ListCard direction="column" block>
+              <Heading level={3}>All Listings</Heading>
+              <p>View all of {username}'s listings</p>
+              <p>{listings.length.toLocaleString()} listings</p>
+              <Space>
+                <Button
+                  onClick={() => setSelectedList(null)}
+                  disabled={selectedList === null}
+                >
+                  {selectedList === null ? "Now viewing" : "View"}
+                </Button>
+              </Space>
+            </ListCard>
+          </Space>
+          <div ref={listingSection} id="top">
+            <Space direction="column">
+              <FancyHeading level={2}>{listingsHeading}</FancyHeading>
+              <LiliesTable dataSource={displayListings} isOwner={false} />
+            </Space>
+          </div>
         </>
       ) : (
         <p>User with id, {id}, not found...</p>
@@ -152,3 +231,11 @@ const Catalogs: NextPage = () => {
 };
 
 export default Catalogs;
+
+const ListCard = styled(Space)`
+  max-width: var(--size-content-2);
+  padding: var(--size-4);
+  :hover {
+    background: var(--surface-2);
+  }
+`;
