@@ -40,6 +40,8 @@ import NextLink from "next/link";
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 
+import { validateUsername } from "../../util";
+
 const Settings_Profile: NextPage = () => {
   const [formError, setFormError] = useState<Error | ApolloError | null>(null);
   const query = useSettingsProfileQuery();
@@ -253,6 +255,9 @@ function ProfileSettingsForm({
           onChange={() => {
             setSuccess(false);
             setError(null);
+          }}
+          validation={{
+            username: validateUsername,
           }}
         >
           <Space direction="column" block>
