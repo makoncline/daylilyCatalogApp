@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import { below } from "../utilities";
+import { below, breakAll } from "../utilities";
 import { Hr } from ".";
 import { Wrapper as NavWrapper } from "./Nav";
 
@@ -49,8 +49,9 @@ export const FancyHeading = styled(FancyHeadingComponent)`
   grid-template: auto / auto;
   width: 100%;
   text-align: center;
-  overflow-x: scroll;
-  word-break: break-all;
+
+  ${breakAll}
+
   span {
     grid-area: 1 / 1;
     background: inherit;
