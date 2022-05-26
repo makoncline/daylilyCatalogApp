@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
+import { below, breakAll } from "../utilities";
 import { Hr } from ".";
 import { Wrapper as NavWrapper } from "./Nav";
 
@@ -48,6 +49,9 @@ export const FancyHeading = styled(FancyHeadingComponent)`
   grid-template: auto / auto;
   width: 100%;
   text-align: center;
+
+  ${breakAll}
+
   span {
     grid-area: 1 / 1;
     background: inherit;
@@ -55,4 +59,21 @@ export const FancyHeading = styled(FancyHeadingComponent)`
     z-index: 1;
     padding: 0 var(--size-3);
   }
+  ${below.sm`
+    :is(h1) {
+      font-size: var(--font-size-5);
+    }
+    :is(h2) {
+      font-size: var(--font-size-4);
+    }
+    :is(h3) {
+      font-size: var(--font-size-3);
+    }
+    :is(h4) {
+      font-size: var(--font-size-2);
+    }
+    :is(h5, h6) {
+      font-size: var(--font-size-1);
+    }
+  `}
 `;

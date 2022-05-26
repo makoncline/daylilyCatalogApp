@@ -76,7 +76,7 @@ const Catalogs: NextPage = () => {
               }
             />
             <Space direction="column">
-              <Space>
+              <Space responsive>
                 <Thumbnail>
                   <Image
                     src={avatarUrl || getPlaceholderImageUrl(username)}
