@@ -308,7 +308,7 @@ function EditListingForm({
                     onClick={handleRemoveFromList}
                     disabled={formState === "deleting"}
                   >
-                    Remove from list
+                    Change list
                   </Button>
                 </FormGroup>
               </FormGroup>
