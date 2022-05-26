@@ -216,12 +216,10 @@ const Catalogs: NextPage = () => {
               </Space>
             </ListCard>
           </Space>
-          <div ref={listingSection} id="top">
-            <Space direction="column">
-              <FancyHeading level={2}>{listingsHeading}</FancyHeading>
-              <LiliesTable dataSource={displayListings} isOwner={false} />
-            </Space>
-          </div>
+          <Space direction="column" block ref={listingSection}>
+            <FancyHeading level={2}>{listingsHeading}</FancyHeading>
+            <LiliesTable dataSource={displayListings} isOwner={false} />
+          </Space>
         </>
       ) : (
         <p>User with id, {id}, not found...</p>
