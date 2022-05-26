@@ -61,6 +61,9 @@ function Image({
 export { Image };
 
 const Wrapper = styled.div<{ isPlaceholder: boolean }>`
+  position: relative;
+  width: 100%;
+  height: 100%;
   ${({ isPlaceholder }) =>
     isPlaceholder &&
     `

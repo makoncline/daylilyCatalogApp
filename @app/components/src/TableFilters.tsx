@@ -91,12 +91,10 @@ function SelectColumnFilter<T extends object>({
     case "fragrance": {
     }
   }
-
   return (
     <select
-      value={filterValue}
+      value={filterValue ? filterValue : "all"}
       onChange={(e) => {
-        console.log(e.target.value);
         setFilter(e.target.value);
       }}
       style={{ width: "100%" }}

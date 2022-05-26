@@ -11,43 +11,50 @@ type Props = {
   block?: boolean;
   [key: string]: any;
 };
-const Space = ({
-  direction = "row",
-  gap = "small",
-  center = false,
-  responsive = false,
-  block = false,
-  children,
-  style,
-  ...props
-}: Props) => {
-  const gapSize =
-    gap === "none"
-      ? 0
-      : gap === "small"
-      ? "var(--size-4)"
-      : gap === "medium"
-      ? "var(--size-8)"
-      : "var(--size-12)";
-  return (
-    <Wrapper
-      style={
-        {
-          ...style,
-          "--direction": direction,
-          "--gap": gapSize,
-        } as React.CSSProperties
-      }
-      center={center}
-      responsive={responsive}
-      block={block}
-      items={Children.count(children)}
-      {...props}
-    >
-      {children}
-    </Wrapper>
-  );
-};
+const Space = React.forwardRef(
+  (
+    {
+      direction = "row",
+      gap = "small",
+      center = false,
+      responsive = false,
+      block = false,
+      children,
+      style,
+      ...props
+    }: Props,
+    ref: React.ForwardedRef<HTMLDivElement>
+  ) => {
+    const gapSize =
+      gap === "none"
+        ? 0
+        : gap === "small"
+        ? "var(--size-4)"
+        : gap === "medium"
+        ? "var(--size-8)"
+        : "var(--size-12)";
+    return (
+      <Wrapper
+        style={
+          {
+            ...style,
+            "--direction": direction,
+            "--gap": gapSize,
+          } as React.CSSProperties
+        }
+        center={center}
+        responsive={responsive}
+        block={block}
+        items={Children.count(children)}
+        ref={ref}
+        {...props}
+      >
+        {children}
+      </Wrapper>
+    );
+  }
+);
+Space.displayName = "Space";
 
 export { Space };
 
