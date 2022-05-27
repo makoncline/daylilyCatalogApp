@@ -25,7 +25,12 @@ const CSP_DIRECTIVES = {
     "*.ingest.sentry.io",
   ],
   "script-src": ["'self'", "'unsafe-eval'", "*.stripe.com"],
-  "script-src-elem": ["'self'", "'unsafe-eval'", "*.stripe.com"],
+  "script-src-elem": [
+    "'self'",
+    "'unsafe-eval'",
+    "*.stripe.com",
+    "*.cloudflareinsights.com",
+  ],
   "frame-src": ["'self'", "*.stripe.com"],
   "img-src": [
     "'self'",
