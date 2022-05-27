@@ -94,6 +94,22 @@ export async function makeApp({
     [];
   app.set("websocketMiddlewares", websocketMiddlewares);
 
+  // CORS
+  app.use((req, res, next) => {
+    if (req.hostname.toLowerCase().endsWith("daylilycatalog.com")) {
+      res.setHeader("Access-Control-Allow-Origin", "https://" + req.hostname);
+      res.setHeader(
+        "Access-Control-Allow-Headers",
+        "X-Requested-With,Content-Type"
+      );
+      res.setHeader(
+        "Access-Control-Allow-Methods",
+        "GET, POST, OPTIONS, PUT, DELETE"
+      );
+    }
+    next();
+  });
+
   /*
    * Middleware is installed from the /server/middleware directory. These
    * helpers may augment the express app with new settings and/or install
@@ -111,6 +127,7 @@ export async function makeApp({
   if (process.env.FORCE_SSL) {
     await middleware.installForceSSL(app);
   }
+
   // These are our assets: images/etc; served out of the /@app/server/public folder (if present)
   await middleware.installSharedStatic(app);
   if (isTest || isDev) {
