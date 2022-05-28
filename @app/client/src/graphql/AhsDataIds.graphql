@@ -1,0 +1,8 @@
+query AhsDataIds {
+  ahsData {
+    nodes {
+      id
+      ahsId
+    }
+  }
+}

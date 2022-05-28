@@ -1,0 +1,8 @@
+mutation CreateAhsDatum($input: CreateAhsDatumInput!) {
+  createAhsDatum(input: $input) {
+    ahsDatum {
+      id
+      ...AhsData
+    }
+  }
+}

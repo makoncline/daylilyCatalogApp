@@ -860,6 +860,25 @@ COMMENT ON FUNCTION app_public.current_user_id() IS 'Handy method to get the cur
 
 
 --
+-- Name: current_user_is_admin(); Type: FUNCTION; Schema: app_public; Owner: -
+--
+
+CREATE FUNCTION app_public.current_user_is_admin() RETURNS boolean
+    LANGUAGE sql STABLE SECURITY DEFINER
+    SET search_path TO 'app_public', 'app_private', 'app_hidden', 'public'
+    AS $$
+  select is_admin from app_public.current_user();
+$$;
+
+
+--
+-- Name: FUNCTION current_user_is_admin(); Type: COMMENT; Schema: app_public; Owner: -
+--
+
+COMMENT ON FUNCTION app_public.current_user_is_admin() IS 'Check if the current user is an admin for use in RLS policies, etc;';
+
+
+--
 -- Name: forgot_password(public.citext); Type: FUNCTION; Schema: app_public; Owner: -
 --
 
@@ -2474,6 +2493,13 @@ CREATE POLICY delete_self ON app_public.users FOR DELETE USING ((id = app_public
 
 
 --
+-- Name: ahs_data insert_admin; Type: POLICY; Schema: app_public; Owner: -
+--
+
+CREATE POLICY insert_admin ON app_public.ahs_data FOR INSERT WITH CHECK ((app_public.current_user_is_admin() = true));
+
+
+--
 -- Name: lilies insert_lilies; Type: POLICY; Schema: app_public; Owner: -
 --
 
@@ -2748,7 +2774,7 @@ GRANT INSERT(email) ON TABLE app_public.user_emails TO daylily_catalog_visitor;
 -- Name: TABLE ahs_data; Type: ACL; Schema: app_public; Owner: -
 --
 
-GRANT SELECT ON TABLE app_public.ahs_data TO daylily_catalog_visitor;
+GRANT SELECT,INSERT ON TABLE app_public.ahs_data TO daylily_catalog_visitor;
 
 
 --

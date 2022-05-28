@@ -21,4 +21,7 @@ fragment AhsData on AhsDatum {
   sculpting
   seedlingNum
   year
+  createdAt
+  updatedAt
+  ahsId
 }
