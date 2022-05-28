@@ -160,6 +160,7 @@ function LoginForm({
       </Field>
       <Field
         name="password"
+        type="password"
         placeholder="🔒    Passphrase"
         autoComplete="current-password"
         data-cy="loginpage-input-password"
