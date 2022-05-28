@@ -23,13 +23,10 @@ const Add: NextPage = () => {
   const ahsDataIdsQuery = useAhsDataIdsQuery();
   const [createAhsDatum] = useCreateAhsDatumMutation();
   const [lastAdded, setLastAdded] = React.useState<ImportData | null>(null);
-  const {
-    data: lastAddedData,
-    loading: lastAddedLoading,
-    error: lastAddedError,
-  } = useAhsDatumByIdQuery({
-    variables: { ahsId: lastAdded ? parseInt(lastAdded?.ahsId!) : 0 },
-  });
+  const { data: lastAddedData, loading: lastAddedLoading } =
+    useAhsDatumByIdQuery({
+      variables: { ahsId: lastAdded ? parseInt(lastAdded?.ahsId!) : 0 },
+    });
   const {
     data: sharedQueryData,
     loading: sharedQueryLoading,
