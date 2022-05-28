@@ -190,7 +190,7 @@ const ResetPage: NextPage<IProps> = ({
 };
 
 ResetPage.getInitialProps = async ({ query: { user_id, token } = {} }) => ({
-  userId: typeof user_id === "number" ? user_id : 0,
+  userId: typeof user_id === "string" ? parseInt(user_id) : 0,
   token: typeof token === "string" ? token : null,
 });
 
