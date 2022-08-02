@@ -1,5 +1,0 @@
-mutation DeleteUserLilyPhoto($id: String!) {
-  deleteUserLilyPhoto(input: { id: $id }) {
-    clientMutationId
-  }
-}
