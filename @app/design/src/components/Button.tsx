@@ -1,9 +1,9 @@
+import Link from "next/link";
 import React from "react";
 import styled from "styled-components";
 
 import { above } from "../utilities";
 import { Mobile as MoblieNav } from "./";
-import Link from "next/link";
 
 type ButtonType = "primary" | "default" | "text";
 
