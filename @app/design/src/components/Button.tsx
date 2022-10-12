@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 import styled from "styled-components";
 
@@ -15,96 +16,80 @@ type Props = {
   disabled?: boolean;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
-export const Button = React.forwardRef(
-  (
-    {
-      children: child,
-      href,
-      block = false,
-      styleType = "default",
-      danger = false,
-      disabled = false,
-      ...props
-    }: Props,
-    ref: React.ForwardedRef<HTMLButtonElement>
-  ) => {
-    const isLink = typeof href === "string";
-    let border = "var(--text-3)";
-    let borderGlint = "var(--text-1)";
-    let background = "transparent";
-    let backgroundGlint = background;
-    let color = "var(--text-1)";
-    let width = "auto";
-    if (danger) {
-      border = "var(--danger)";
-      borderGlint = "var(--danger--glint)";
-      color = "var(--danger)";
+export const Button = ({
+  children: child,
+  href,
+  block = false,
+  styleType = "default",
+  danger = false,
+  disabled = false,
+  ...props
+}: Props) => {
+  const isLink = typeof href === "string";
+  let border = "var(--text-3)";
+  let borderGlint = "var(--text-1)";
+  let background = "transparent";
+  let backgroundGlint = background;
+  let color = "var(--text-1)";
+  let width = "auto";
+  if (danger) {
+    border = "var(--danger)";
+    borderGlint = "var(--danger--glint)";
+    color = "var(--danger)";
+  }
+  switch (styleType) {
+    case "primary": {
+      border = danger ? "var(--danger)" : "var(--primary)";
+      borderGlint = danger ? "var(--danger--glint)" : "var(--primary--glint)";
+      background = border;
+      backgroundGlint = borderGlint;
+      color = "var(--text-1)";
+      break;
     }
-    switch (styleType) {
-      case "primary": {
-        border = danger ? "var(--danger)" : "var(--primary)";
-        borderGlint = danger ? "var(--danger--glint)" : "var(--primary--glint)";
-        background = border;
-        backgroundGlint = borderGlint;
-        color = "var(--text-1)";
-        break;
-      }
-      case "text": {
-        border = "transparent";
-        break;
-      }
+    case "text": {
+      border = "transparent";
+      break;
     }
-    if (block) {
-      width = "100%";
-    }
-    if (disabled) {
-    }
+  }
+  if (block) {
+    width = "100%";
+  }
+  if (disabled) {
+  }
 
-    const style = {
-      "--border": border,
-      "--border--glint": borderGlint,
-      "--background": background,
-      "--background--glint": backgroundGlint,
-      "--color": color,
-      "--width": width,
-    } as React.CSSProperties;
+  const style = {
+    "--border": border,
+    "--border--glint": borderGlint,
+    "--background": background,
+    "--background--glint": backgroundGlint,
+    "--color": color,
+    "--width": width,
+  } as React.CSSProperties;
 
-    return (
-      <>
-        {isLink ? (
-          <form
-            action={href}
-            method="get"
-            style={block ? { width: "100%" } : {}}
-          >
-            <StyledButton
-              type="submit"
-              style={style}
-              ref={ref}
-              disabled={disabled}
-              {...props}
-            >
-              {child}
-            </StyledButton>
-          </form>
-        ) : (
-          <StyledButton
-            type="button"
-            style={style}
-            ref={ref}
-            disabled={disabled}
-            {...props}
-          >
+  return (
+    <>
+      {isLink ? (
+        <Link href={href as string} passHref>
+          <StyledButton style={style} disabled={disabled} as="a" {...props}>
             {child}
           </StyledButton>
-        )}
-      </>
-    );
-  }
-);
+        </Link>
+      ) : (
+        <StyledButton
+          type="button"
+          style={style}
+          disabled={disabled}
+          {...props}
+        >
+          {child}
+        </StyledButton>
+      )}
+    </>
+  );
+};
 Button.displayName = "Button";
 
-const StyledButton = styled.button`
+const StyledButton = styled.button<any>`
   display: inline-flex;
   justify-content: center;
   white-space: nowrap;
@@ -123,6 +108,7 @@ const StyledButton = styled.button`
   color: var(--color);
   width: var(--width);
   :hover {
+    text-decoration: none;
     cursor: pointer;
     background-color: var(--background--glint);
     border-color: var(--border--glint);
