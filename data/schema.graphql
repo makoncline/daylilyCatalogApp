@@ -400,47 +400,6 @@ type CreateUserEmailPayload {
   ): UserEmailsEdge
 }
 
-"""All input for the create `UserLilyPhoto` mutation."""
-input CreateUserLilyPhotoInput {
-  """
-  An arbitrary string value with no semantic meaning. Will be included in the
-  payload verbatim. May be used to track mutations by the client.
-  """
-  clientMutationId: String
-
-  """The `UserLilyPhoto` to be created by this mutation."""
-  userLilyPhoto: UserLilyPhotoInput!
-}
-
-"""The output of our create `UserLilyPhoto` mutation."""
-type CreateUserLilyPhotoPayload {
-  """
-  The exact same `clientMutationId` that was provided in the mutation input,
-  unchanged and unused. May be used by a client to track mutations.
-  """
-  clientMutationId: String
-
-  """Reads a single `Lily` that is related to this `UserLilyPhoto`."""
-  lily: Lily
-
-  """
-  Our root query field type. Allows us to run any query from our mutation payload.
-  """
-  query: Query
-
-  """Reads a single `User` that is related to this `UserLilyPhoto`."""
-  user: User
-
-  """The `UserLilyPhoto` that was created by this mutation."""
-  userLilyPhoto: UserLilyPhoto
-
-  """An edge for our `UserLilyPhoto`. May be used by Relay 1."""
-  userLilyPhotoEdge(
-    """The method to use when ordering `UserLilyPhoto`."""
-    orderBy: [UserLilyPhotosOrderBy!] = [PRIMARY_KEY_ASC]
-  ): UserLilyPhotosEdge
-}
-
 """A location in a connection that can be used for resuming pagination."""
 scalar Cursor
 
@@ -702,84 +661,6 @@ type DeleteUserEmailPayload {
   ): UserEmailsEdge
 }
 
-"""All input for the `deleteUser` mutation."""
-input DeleteUserInput {
-  """
-  An arbitrary string value with no semantic meaning. Will be included in the
-  payload verbatim. May be used to track mutations by the client.
-  """
-  clientMutationId: String
-
-  """Unique identifier for the user."""
-  id: Int!
-}
-
-"""All input for the `deleteUserLilyPhoto` mutation."""
-input DeleteUserLilyPhotoInput {
-  """
-  An arbitrary string value with no semantic meaning. Will be included in the
-  payload verbatim. May be used to track mutations by the client.
-  """
-  clientMutationId: String
-
-  """The s3 id the photo is saved at"""
-  id: String!
-}
-
-"""The output of our delete `UserLilyPhoto` mutation."""
-type DeleteUserLilyPhotoPayload {
-  """
-  The exact same `clientMutationId` that was provided in the mutation input,
-  unchanged and unused. May be used by a client to track mutations.
-  """
-  clientMutationId: String
-  deletedUserLilyPhotoNodeId: ID
-
-  """Reads a single `Lily` that is related to this `UserLilyPhoto`."""
-  lily: Lily
-
-  """
-  Our root query field type. Allows us to run any query from our mutation payload.
-  """
-  query: Query
-
-  """Reads a single `User` that is related to this `UserLilyPhoto`."""
-  user: User
-
-  """The `UserLilyPhoto` that was deleted by this mutation."""
-  userLilyPhoto: UserLilyPhoto
-
-  """An edge for our `UserLilyPhoto`. May be used by Relay 1."""
-  userLilyPhotoEdge(
-    """The method to use when ordering `UserLilyPhoto`."""
-    orderBy: [UserLilyPhotosOrderBy!] = [PRIMARY_KEY_ASC]
-  ): UserLilyPhotosEdge
-}
-
-"""The output of our delete `User` mutation."""
-type DeleteUserPayload {
-  """
-  The exact same `clientMutationId` that was provided in the mutation input,
-  unchanged and unused. May be used by a client to track mutations.
-  """
-  clientMutationId: String
-  deletedUserNodeId: ID
-
-  """
-  Our root query field type. Allows us to run any query from our mutation payload.
-  """
-  query: Query
-
-  """The `User` that was deleted by this mutation."""
-  user: User
-
-  """An edge for our `User`. May be used by Relay 1."""
-  userEdge(
-    """The method to use when ordering `User`."""
-    orderBy: [UsersOrderBy!] = [PRIMARY_KEY_ASC]
-  ): UsersEdge
-}
-
 """All input for the `forgotPassword` mutation."""
 input ForgotPasswordInput {
   """
@@ -870,35 +751,6 @@ type Lily {
   """Reads a single `User` that is related to this `Lily`."""
   user: User
   userId: Int!
-
-  """Reads and enables pagination through a set of `UserLilyPhoto`."""
-  userLilyPhotos(
-    """Read all values in the set after (below) this cursor."""
-    after: Cursor
-
-    """Read all values in the set before (above) this cursor."""
-    before: Cursor
-
-    """
-    A condition to be used in determining which values should be returned by the collection.
-    """
-    condition: UserLilyPhotoCondition
-
-    """Only read the first `n` values of the set."""
-    first: Int
-
-    """Only read the last `n` values of the set."""
-    last: Int
-
-    """
-    Skip the first `n` values from our `after` cursor, an alternative to cursor
-    based pagination. May not be used with `last`.
-    """
-    offset: Int
-
-    """The method to use when ordering `UserLilyPhoto`."""
-    orderBy: [UserLilyPhotosOrderBy!] = [PRIMARY_KEY_ASC]
-  ): UserLilyPhotosConnection!
 }
 
 """
@@ -921,11 +773,6 @@ input LilyCondition {
 """An input for mutations affecting `Lily`"""
 input LilyInput {
   ahsId: String
-
-  """The primary key for the `AHS Data` this `Lily` references."""
-  ahsRef: Int
-  createdAt: Datetime
-  id: Int
   imgUrl: [String]
 
   """The primary key for the `List` this `Lily` belongs to."""
@@ -934,18 +781,11 @@ input LilyInput {
   price: BigFloat
   privateNote: String
   publicNote: String
-  updatedAt: Datetime
-  userId: Int
 }
 
 """Represents an update to a `Lily`. Fields that are set will be updated."""
 input LilyPatch {
   ahsId: String
-
-  """The primary key for the `AHS Data` this `Lily` references."""
-  ahsRef: Int
-  createdAt: Datetime
-  id: Int
   imgUrl: [String]
 
   """The primary key for the `List` this `Lily` belongs to."""
@@ -954,8 +794,6 @@ input LilyPatch {
   price: BigFloat
   privateNote: String
   publicNote: String
-  updatedAt: Datetime
-  userId: Int
 }
 
 """A list of lilies."""
@@ -1203,14 +1041,6 @@ type Mutation {
     input: CreateUserEmailInput!
   ): CreateUserEmailPayload
 
-  """Creates a single `UserLilyPhoto`."""
-  createUserLilyPhoto(
-    """
-    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
-    """
-    input: CreateUserLilyPhotoInput!
-  ): CreateUserLilyPhotoPayload
-
   """Deletes a single `Lily` using a unique key."""
   deleteLily(
     """
@@ -1249,14 +1079,6 @@ type Mutation {
     input: DeleteUploadInput!
   ): DeleteUploadPayload
 
-  """Deletes a single `User` using a unique key."""
-  deleteUser(
-    """
-    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
-    """
-    input: DeleteUserInput!
-  ): DeleteUserPayload
-
   """Deletes a single `UserAuthentication` using a unique key."""
   deleteUserAuthentication(
     """
@@ -1272,14 +1094,6 @@ type Mutation {
     """
     input: DeleteUserEmailInput!
   ): DeleteUserEmailPayload
-
-  """Deletes a single `UserLilyPhoto` using a unique key."""
-  deleteUserLilyPhoto(
-    """
-    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
-    """
-    input: DeleteUserLilyPhotoInput!
-  ): DeleteUserLilyPhotoPayload
 
   """
   If you've forgotten your password, give us one of your email addresses and we'll send you a reset token. Note this only works if you have added an email address!
@@ -1604,36 +1418,6 @@ type Query {
   userAuthentication(id: Int!): UserAuthentication
   userByUsername(username: String!): User
   userEmail(id: Int!): UserEmail
-  userLilyPhoto(id: String!): UserLilyPhoto
-
-  """Reads and enables pagination through a set of `UserLilyPhoto`."""
-  userLilyPhotos(
-    """Read all values in the set after (below) this cursor."""
-    after: Cursor
-
-    """Read all values in the set before (above) this cursor."""
-    before: Cursor
-
-    """
-    A condition to be used in determining which values should be returned by the collection.
-    """
-    condition: UserLilyPhotoCondition
-
-    """Only read the first `n` values of the set."""
-    first: Int
-
-    """Only read the last `n` values of the set."""
-    last: Int
-
-    """
-    Skip the first `n` values from our `after` cursor, an alternative to cursor
-    based pagination. May not be used with `last`.
-    """
-    offset: Int
-
-    """The method to use when ordering `UserLilyPhoto`."""
-    orderBy: [UserLilyPhotosOrderBy!] = [PRIMARY_KEY_ASC]
-  ): UserLilyPhotosConnection
 
   """Reads and enables pagination through a set of `User`."""
   users(
@@ -2382,35 +2166,6 @@ type User {
     orderBy: [UserEmailsOrderBy!] = [PRIMARY_KEY_ASC]
   ): UserEmailsConnection!
 
-  """Reads and enables pagination through a set of `UserLilyPhoto`."""
-  userLilyPhotos(
-    """Read all values in the set after (below) this cursor."""
-    after: Cursor
-
-    """Read all values in the set before (above) this cursor."""
-    before: Cursor
-
-    """
-    A condition to be used in determining which values should be returned by the collection.
-    """
-    condition: UserLilyPhotoCondition
-
-    """Only read the first `n` values of the set."""
-    first: Int
-
-    """Only read the last `n` values of the set."""
-    last: Int
-
-    """
-    Skip the first `n` values from our `after` cursor, an alternative to cursor
-    based pagination. May not be used with `last`.
-    """
-    offset: Int
-
-    """The method to use when ordering `UserLilyPhoto`."""
-    orderBy: [UserLilyPhotosOrderBy!] = [PRIMARY_KEY_ASC]
-  ): UserLilyPhotosConnection!
-
   """A location for the user."""
   userLocation: String
 
@@ -2549,84 +2304,6 @@ enum UserEmailsOrderBy {
   ID_DESC
   IS_PRIMARY_ASC
   IS_PRIMARY_DESC
-  NATURAL
-  PRIMARY_KEY_ASC
-  PRIMARY_KEY_DESC
-  USER_ID_ASC
-  USER_ID_DESC
-}
-
-"""A photo of a `Lily` added by `User`."""
-type UserLilyPhoto {
-  """The time this photo item was added."""
-  createdAt: Datetime!
-
-  """The s3 id the photo is saved at"""
-  id: String!
-
-  """Reads a single `Lily` that is related to this `UserLilyPhoto`."""
-  lily: Lily
-  lilyId: Int!
-
-  """Reads a single `User` that is related to this `UserLilyPhoto`."""
-  user: User
-  userId: Int!
-}
-
-"""
-A condition to be used against `UserLilyPhoto` object types. All fields are
-tested for equality and combined with a logical ‘and.’
-"""
-input UserLilyPhotoCondition {
-  """Checks for equality with the object’s `id` field."""
-  id: String
-
-  """Checks for equality with the object’s `lilyId` field."""
-  lilyId: Int
-
-  """Checks for equality with the object’s `userId` field."""
-  userId: Int
-}
-
-"""An input for mutations affecting `UserLilyPhoto`"""
-input UserLilyPhotoInput {
-  """The s3 id the photo is saved at"""
-  id: String!
-  lilyId: Int!
-}
-
-"""A connection to a list of `UserLilyPhoto` values."""
-type UserLilyPhotosConnection {
-  """
-  A list of edges which contains the `UserLilyPhoto` and cursor to aid in pagination.
-  """
-  edges: [UserLilyPhotosEdge!]!
-
-  """A list of `UserLilyPhoto` objects."""
-  nodes: [UserLilyPhoto!]!
-
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-
-  """The count of *all* `UserLilyPhoto` you could get from the connection."""
-  totalCount: Int!
-}
-
-"""A `UserLilyPhoto` edge in the connection."""
-type UserLilyPhotosEdge {
-  """A cursor for use in pagination."""
-  cursor: Cursor
-
-  """The `UserLilyPhoto` at the end of the edge."""
-  node: UserLilyPhoto!
-}
-
-"""Methods to use when ordering `UserLilyPhoto`."""
-enum UserLilyPhotosOrderBy {
-  ID_ASC
-  ID_DESC
-  LILY_ID_ASC
-  LILY_ID_DESC
   NATURAL
   PRIMARY_KEY_ASC
   PRIMARY_KEY_DESC

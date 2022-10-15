@@ -1,5 +1,5 @@
 import { ApolloError } from "@apollo/client";
-import { ErrorAlert, SettingsLayout } from "@app/components";
+import { ErrorAlert, SEO, SettingsLayout } from "@app/components";
 import { Alert, Button, Dialog, Heading, Space } from "@app/design";
 import {
   useConfirmAccountDeletionMutation,
@@ -76,6 +76,10 @@ const Settings_Accounts: NextPage = () => {
   const query = useSharedQuery();
   return (
     <SettingsLayout href={deleteUrl} query={query}>
+      <SEO
+        title="Delete Account"
+        description="Delete your Daylily Catalog account"
+      />
       <Space direction="column" gap="large">
         <Heading level={2}>Delete account</Heading>
         <p>

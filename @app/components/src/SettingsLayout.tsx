@@ -13,6 +13,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { Redirect } from "./Redirect";
+import { SEO } from "./SEO";
 import {
   AuthRestrict,
   SharedLayout,
@@ -82,21 +83,28 @@ export function SettingsLayout({
         !currentUser && !error && !loading ? (
           <Redirect href={`${loginUrl}?next=${encodeURIComponent(fullHref)}`} />
         ) : (
-          <Space direction="column" gap="large">
-            <Wrap>
-              {Object.keys(pages).map((pageHref, i) => (
-                <Link
-                  href={pageHref}
-                  key={i}
-                  data-cy={pages[pageHref].cy}
-                  passHref
-                >
-                  <a data-cy={pages[pageHref].cy}>{pages[pageHref].title}</a>
-                </Link>
-              ))}
-            </Wrap>
-            {noPad ? children : <StandardWidth>{children}</StandardWidth>}
-          </Space>
+          <>
+            <SEO
+              title="Settings - Daylily Catalog"
+              description="Settings for your Daylily Catalog account"
+              noRobots
+            />
+            <Space direction="column" gap="large">
+              <Wrap>
+                {Object.keys(pages).map((pageHref, i) => (
+                  <Link
+                    href={pageHref}
+                    key={i}
+                    data-cy={pages[pageHref].cy}
+                    passHref
+                  >
+                    <a data-cy={pages[pageHref].cy}>{pages[pageHref].title}</a>
+                  </Link>
+                ))}
+              </Wrap>
+              {noPad ? children : <StandardWidth>{children}</StandardWidth>}
+            </Space>
+          </>
         )
       }
     </SharedLayout>

@@ -1,5 +1,5 @@
 import { ApolloError } from "@apollo/client";
-import { AuthRestrict, SharedLayout } from "@app/components";
+import { AuthRestrict, SEO, SharedLayout } from "@app/components";
 import {
   Alert,
   Button,
@@ -50,6 +50,11 @@ const ForgotPassword: NextPage = () => {
   if (successfulEmail != null) {
     return (
       <SharedLayout title="Forgot Password" query={query}>
+        <SEO
+          title="Forgot Password"
+          description="Create a new password for your Daylily Catalog account."
+          noRobots
+        />
         <Alert type="success">
           <Alert.Heading>You've got mail</Alert.Heading>
           <Alert.Body>

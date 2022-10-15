@@ -4,6 +4,7 @@ import {
   ImageDisplay,
   ImageUpload,
   Redirect,
+  SEO,
   SettingsLayout,
   UploadDisabledNoMembership,
   UploadDisabledNotVerified,
@@ -49,6 +50,10 @@ const Settings_Profile: NextPage = () => {
   const id = data?.currentUser?.id;
   return (
     <SettingsLayout href={settingsUrl} query={query} noPad>
+      <SEO
+        title="Edit Profile"
+        description="Manage your Daylily Catalog profile. Change your username, bio, profile photo, and garden photos."
+      />
       <Space direction="column">
         <p>Jump to edit:</p>
         <Wrap>

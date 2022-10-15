@@ -3,6 +3,7 @@ import {
   Image,
   LiliesTable,
   ListingImageDisplay,
+  SEO,
   SharedLayout,
 } from "@app/components";
 import {
@@ -77,6 +78,10 @@ const Catalogs: NextPage = () => {
       title={username ? `${username}` : "Catalog"}
       query={sharedQuery}
     >
+      <SEO
+        title={`Check out this daylily catalog by ${username}`}
+        description={`View garden information, daylily lists, and daylily listings. Buy daylilies online from daylily catalog user ${username}.`}
+      />
       {isLoading ? (
         <Center>
           <Spinner />

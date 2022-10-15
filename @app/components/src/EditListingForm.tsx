@@ -41,6 +41,7 @@ import { ImageUpload } from "./ImageUpload";
 import { ListInput } from "./ListInput";
 import { RegisteredLilyDisplay } from "./RegisteredLilyDisplay";
 import { RegisteredLilyInput } from "./RegisteredLilyInput";
+import { SEO } from "./SEO";
 import {
   UploadDisabledNoMembership,
   UploadDisabledNotVerified,
@@ -255,6 +256,11 @@ function EditListingForm({
   if (!data?.lily) return <p>No listing found with id {id}</p>;
   return (
     <Space direction="column" gap="large">
+      <SEO
+        title={`Edit ${data.lily.name}`}
+        description="Manage your Daylily Catalog listing. Manage photos, description, pricing, or delete your listing."
+        noRobots
+      />
       {linkedLily && (
         <details>
           <summary>

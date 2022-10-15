@@ -1,4 +1,9 @@
-import { AuthRestrict, PasswordStrength, SharedLayout } from "@app/components";
+import {
+  AuthRestrict,
+  PasswordStrength,
+  SEO,
+  SharedLayout,
+} from "@app/components";
 import {
   Alert,
   Button,
@@ -120,6 +125,11 @@ const ResetPage: NextPage<IProps> = ({
         AuthRestrict.NEVER
       }
     >
+      <SEO
+        title="Reset Password"
+        description="Create a new password for your Daylily Catalog account."
+        noRobots
+      />
       <FormWrapper>
         {state === "SUBMITTING" ? (
           <Alert type="info">

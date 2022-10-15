@@ -2,6 +2,7 @@ import {
   EditListForm,
   ErrorAlert,
   Redirect,
+  SEO,
   SharedLayout,
 } from "@app/components";
 import { Center, Spinner } from "@app/design";
@@ -28,6 +29,11 @@ const Edit: NextPage = () => {
 
   return (
     <SharedLayout title="Edit List" query={query}>
+      <SEO
+        title="Edit List"
+        description="Edit your Daylily Catalog list."
+        noRobots
+      />
       {sharedQueryData?.currentUser && listQueryData?.list ? (
         <EditListForm list={listQueryData.list} />
       ) : sharedQueryLoading || listQueryLoading ? (
