@@ -1,5 +1,5 @@
 import { ApolloError } from "@apollo/client";
-import { ErrorAlert, Redirect, SettingsLayout } from "@app/components";
+import { ErrorAlert, Redirect, SEO, SettingsLayout } from "@app/components";
 import {
   Alert,
   Button,
@@ -194,6 +194,10 @@ const Settings_Emails: NextPage = () => {
   })();
   return (
     <SettingsLayout href={emailsUrl} query={query}>
+      <SEO
+        title="Manage Email Addresses"
+        description="Manage email addresses associated with your Daylily Catalog account"
+      />
       {pageContent}
     </SettingsLayout>
   );

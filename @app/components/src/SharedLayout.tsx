@@ -1,5 +1,4 @@
 import { ApolloError, QueryResult, useApolloClient } from "@apollo/client";
-import { projectName } from "@app/config/dist";
 import { FancyHeading, Space } from "@app/design";
 import {
   SharedLayout_QueryFragment,
@@ -9,13 +8,12 @@ import {
 } from "@app/graphql";
 import { loginUrl } from "@app/lib";
 import * as Sentry from "@sentry/nextjs";
-import Head from "next/head";
 import Link from "next/link";
 import Router, { useRouter } from "next/router";
 import * as React from "react";
 import { useCallback } from "react";
 
-import { ErrorAlert, NextLayout, StandardWidth } from ".";
+import { ErrorAlert, NextLayout, SEO, StandardWidth } from ".";
 import { Redirect } from "./Redirect";
 
 /*
@@ -162,10 +160,12 @@ export function SharedLayout({
       isLoggedIn={!!data?.currentUser}
       currentUrl={currentUrl}
     >
+      <SEO
+        title="Create a website for your daylily garden - Get started for free"
+        description="Build your daylily business here. Share your daylily garden with the world. Add your daylily listings, upload photos, make lists, and access data and photos of 90,000+ registered daylilies with just a few clicks."
+        image="https://images.daylilycatalog.com/3/421a08-image.webp"
+      />
       {data && data.currentUser ? <CurrentUserUpdatedSubscription /> : null}
-      <Head>
-        <title>{title ? `${title} — ${projectName}` : projectName}</title>
-      </Head>
       <Space gap="large" direction="column" center>
         {title ? (
           <FancyHeading level={1} data-cy="layout-header-title">

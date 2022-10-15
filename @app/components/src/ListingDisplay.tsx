@@ -13,11 +13,13 @@ import {
 } from "@app/design";
 import { AhsDataFragment, LilyByIdQuery } from "@app/graphql";
 import { toEditListingUrl } from "@app/lib";
+import Head from "next/head";
 import Link from "next/link";
 import React from "react";
 import styled from "styled-components";
 
 import { ListingImageDisplay } from "./ListingImageDisplay";
+import { SEO } from "./SEO";
 
 function ListingDisplay({
   listingId,
@@ -51,8 +53,40 @@ function ListingDisplay({
     listing;
   const listName = list?.name;
   const isOwner = userId === listing.user?.id;
+  const description = listing.publicNote
+    ? listing.publicNote
+    : `View photos, description, and more for ${listing.name} daylily from the ${listing.user?.username} catalog.`;
+  const structuredData = {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    image:
+      imageUrls.length > 0 ? imageUrls : [getPlaceholderImageUrl(listing.name)],
+    name: `${listing.name} daylily`,
+    description: description,
+    offers: {
+      "@type": "Offer",
+      price: listing.price ? parseInt(listing.price) : 0,
+      priceCurrency: "USD",
+    },
+  };
   return (
     <Space center responsive gap="medium">
+      <SEO
+        title={`${listing.price ? `Buy` : "View"} ${listing.name} daylily${
+          listing.price ? ` for $${price}` : ""
+        } from the ${listing.user?.username} catalog`}
+        description={
+          listing.publicNote
+            ? listing.publicNote
+            : `View photos, description, and more for ${listing.name} daylily from the ${listing.user?.username} catalog.`
+        }
+      />
+      <Head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      </Head>
       {imageUrls.length > 0 ? (
         <ListingImageDisplay imageUrls={imageUrls} />
       ) : (

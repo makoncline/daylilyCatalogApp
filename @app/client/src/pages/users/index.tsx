@@ -1,4 +1,4 @@
-import { ErrorAlert, SharedLayout, UsersTable } from "@app/components";
+import { ErrorAlert, SEO, SharedLayout, UsersTable } from "@app/components";
 import { Center, Spinner } from "@app/design";
 import { useSharedQuery, useUsersQuery } from "@app/graphql";
 import { NextPage } from "next";
@@ -18,6 +18,10 @@ const View: NextPage = () => {
   const isError = sharedQueryError || usersQueryError;
   return (
     <SharedLayout title="Users" query={sharedQuery}>
+      <SEO
+        title={`Check out these daylily catalogs. Thousands of daylilies for sale.`}
+        description="View garden information, daylily lists, and daylily listings. Buy daylilies online from daylily catalog users."
+      />
       {isLoading ? (
         <Center>
           <Spinner />

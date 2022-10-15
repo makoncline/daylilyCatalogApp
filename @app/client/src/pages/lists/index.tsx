@@ -1,4 +1,10 @@
-import { ErrorAlert, Lists, Redirect, SharedLayout } from "@app/components";
+import {
+  ErrorAlert,
+  Lists,
+  Redirect,
+  SEO,
+  SharedLayout,
+} from "@app/components";
 import { useSharedQuery } from "@app/graphql";
 import { loginUrl } from "@app/lib";
 import { NextPage } from "next";
@@ -22,6 +28,11 @@ const ListsPage: NextPage = () => {
   const query = useSharedQuery();
   return (
     <SharedLayout title="Lists" query={query}>
+      <SEO
+        title="Lists"
+        description="Add and edit your Daylily Catalog lists."
+        noRobots
+      />
       {pageContent}
     </SharedLayout>
   );

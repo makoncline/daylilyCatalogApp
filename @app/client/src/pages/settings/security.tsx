@@ -1,5 +1,10 @@
 import { ApolloError } from "@apollo/client";
-import { ErrorAlert, PasswordStrength, SettingsLayout } from "@app/components";
+import {
+  ErrorAlert,
+  PasswordStrength,
+  SEO,
+  SettingsLayout,
+} from "@app/components";
 import {
   Alert,
   Button,
@@ -182,6 +187,10 @@ const Settings_Security: NextPage = () => {
   };
   return (
     <SettingsLayout href={securityUrl} query={query}>
+      <SEO
+        title="Change Passphrase"
+        description="Change you Daylily Catalog account passphrase"
+      />
       {inner()}
     </SettingsLayout>
   );
