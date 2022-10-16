@@ -14,12 +14,11 @@ const Home: NextPage = () => {
       <Space direction="column" gap="large" center>
         <Space direction="column" gap="large">
           <Heading level={1} data-cy="homepage-header">
-            Welcome to the Daylily Catalog
+            If you can grow it, you can sell it with Daylily Catalog
           </Heading>
           <p>
-            Made for daylily gardeners and hybridizers, this simple but
-            feature-packed app will help you feel comfortable organizing,
-            sharing, and selling your daylilies online.
+            Build your daylily business here. Add your daylilies, upload photos,
+            create lists, and share your daylily garden online.
           </p>
           <Space>
             <Button

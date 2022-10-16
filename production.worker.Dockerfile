@@ -1,7 +1,7 @@
 # Global args, set before the first FROM, shared by all stages
 ARG PORT=5678
 ARG NODE_ENV="production"
-ARG ROOT_URL="https://app.daylilycatalog.com"
+ARG ROOT_URL="https://daylilycatalog.com"
 ARG TARGET="worker"
 
 ################################################################################

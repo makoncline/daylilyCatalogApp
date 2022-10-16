@@ -2,6 +2,7 @@ import {
   CreateListForm,
   ErrorAlert,
   Redirect,
+  SEO,
   SharedLayout,
 } from "@app/components";
 import { Center, Spinner } from "@app/design";
@@ -20,6 +21,11 @@ const Create: NextPage = () => {
 
   return (
     <SharedLayout title="Create List" query={query}>
+      <SEO
+        title="Create List"
+        description="Create a new list for your Daylily Catalog"
+        noRobots
+      />
       {sharedQueryData?.currentUser ? (
         <CreateListForm />
       ) : sharedQueryLoading ? (

@@ -1,4 +1,4 @@
-import { SharedLayout } from "@app/components";
+import { SEO, SharedLayout } from "@app/components";
 import { Alert, Space } from "@app/design";
 import { useSharedQuery, useVerifyEmailMutation } from "@app/graphql";
 import get from "lodash/get";
@@ -60,6 +60,11 @@ const VerifyPage: NextPage<IProps> = (props) => {
   const query = useSharedQuery();
   return (
     <SharedLayout title="Verify Email Address" query={query}>
+      <SEO
+        title="Verify Email Address"
+        description="Verify your email address to enable all features of your Daylily Catalog account."
+        noRobots
+      />
       <Space>
         <Space direction="column">
           {state === "PENDING" ? (

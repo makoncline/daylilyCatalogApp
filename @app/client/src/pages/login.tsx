@@ -3,6 +3,7 @@ import {
   AuthRestrict,
   Link,
   Redirect,
+  SEO,
   SharedLayout,
   SharedLayoutChildProps,
 } from "@app/components";
@@ -53,33 +54,40 @@ const Login: NextPage<LoginProps> = ({ next: rawNext }) => {
         currentUser ? (
           <Redirect href={next} />
         ) : (
-          <FormWrapper>
-            {showLogin ? (
-              <LoginForm
-                onSuccessRedirectTo={next}
-                onCancel={() => setShowLogin(false)}
-                error={error}
-                setError={setError}
-              />
-            ) : (
-              <Space direction="column">
-                <Button
-                  data-cy="loginpage-button-withusername"
-                  onClick={() => setShowLogin(true)}
-                >
-                  Sign in with E-mail or Username
-                </Button>
-                <Link
-                  href={`${registerUrl}?next=${encodeURIComponent(next)}`}
-                  passHref
-                >
-                  <Button block data-cy="loginpage-button-register">
-                    Create an account
+          <>
+            <SEO
+              title="Sign in"
+              description="Sign in to your Daylily Catalog account."
+              noRobots
+            />
+            <FormWrapper>
+              {showLogin ? (
+                <LoginForm
+                  onSuccessRedirectTo={next}
+                  onCancel={() => setShowLogin(false)}
+                  error={error}
+                  setError={setError}
+                />
+              ) : (
+                <Space direction="column">
+                  <Button
+                    data-cy="loginpage-button-withusername"
+                    onClick={() => setShowLogin(true)}
+                  >
+                    Sign in with E-mail or Username
                   </Button>
-                </Link>
-              </Space>
-            )}
-          </FormWrapper>
+                  <Link
+                    href={`${registerUrl}?next=${encodeURIComponent(next)}`}
+                    passHref
+                  >
+                    <Button block data-cy="loginpage-button-register">
+                      Create an account
+                    </Button>
+                  </Link>
+                </Space>
+              )}
+            </FormWrapper>
+          </>
         )
       }
     </SharedLayout>

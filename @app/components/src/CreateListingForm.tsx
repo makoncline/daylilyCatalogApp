@@ -25,6 +25,7 @@ import styled from "styled-components";
 
 import { RegisteredLilyDisplay } from "./RegisteredLilyDisplay";
 import { RegisteredLilyInput } from "./RegisteredLilyInput";
+import { SEO } from "./SEO";
 
 type EditListingFormProps = {
   error: Error | ApolloError | null;
@@ -81,54 +82,61 @@ function CreateListingForm({ error, setError }: EditListingFormProps) {
   };
 
   return (
-    <FormWrapper>
-      <Form
-        formId="create-listing-form"
-        onSubmit={handleSubmit}
-        validation={{
-          name: (name: string) =>
-            name.length === 0 ? "Please enter a name for this listing" : null,
-        }}
-      >
-        <FormGroup>
-          {linkedLily ? (
-            <details open>
-              <summary>
-                <SummaryItems>
-                  Linked to {linkedLily?.name}
-                  <Button onClick={handleUnlink}>Unlink</Button>
-                </SummaryItems>
-              </summary>
-              <RegisteredLilyDisplay ahsId={linkedLily.ahsId} />
-            </details>
-          ) : (
-            <RegisteredLilyInput
-              onSelectedItemChange={handleLinkedLilyChange}
-            />
-          )}
-        </FormGroup>
-        <Field required={true} name="name">
-          Listing Name
-        </Field>
-        {error ? (
-          <Alert type="danger">
-            <Alert.Heading>Create listing failed</Alert.Heading>
-            <Alert.Body>
-              {extractError(error).message}
-              {code ? (
-                <span>
-                  {" "}
-                  (Error code: <code>ERR_{code}</code>)
-                </span>
-              ) : null}
-            </Alert.Body>
-          </Alert>
-        ) : null}
-        <SubmitButton>
-          <Button block>Create listing</Button>
-        </SubmitButton>
-      </Form>
-    </FormWrapper>
+    <>
+      <SEO
+        title={`Create Listing`}
+        description="Create a new listing in your Daylily Catalog. Add photos, description and pricing."
+        noRobots
+      />
+      <FormWrapper>
+        <Form
+          formId="create-listing-form"
+          onSubmit={handleSubmit}
+          validation={{
+            name: (name: string) =>
+              name.length === 0 ? "Please enter a name for this listing" : null,
+          }}
+        >
+          <FormGroup>
+            {linkedLily ? (
+              <details open>
+                <summary>
+                  <SummaryItems>
+                    Linked to {linkedLily?.name}
+                    <Button onClick={handleUnlink}>Unlink</Button>
+                  </SummaryItems>
+                </summary>
+                <RegisteredLilyDisplay ahsId={linkedLily.ahsId} />
+              </details>
+            ) : (
+              <RegisteredLilyInput
+                onSelectedItemChange={handleLinkedLilyChange}
+              />
+            )}
+          </FormGroup>
+          <Field required={true} name="name">
+            Listing Name
+          </Field>
+          {error ? (
+            <Alert type="danger">
+              <Alert.Heading>Create listing failed</Alert.Heading>
+              <Alert.Body>
+                {extractError(error).message}
+                {code ? (
+                  <span>
+                    {" "}
+                    (Error code: <code>ERR_{code}</code>)
+                  </span>
+                ) : null}
+              </Alert.Body>
+            </Alert>
+          ) : null}
+          <SubmitButton>
+            <Button block>Create listing</Button>
+          </SubmitButton>
+        </Form>
+      </FormWrapper>
+    </>
   );
 }
 

@@ -3,6 +3,7 @@ import {
   AuthRestrict,
   PasswordStrength,
   Redirect,
+  SEO,
   SharedLayout,
 } from "@app/components";
 import {
@@ -153,84 +154,91 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
         currentUser ? (
           <Redirect href={next} />
         ) : (
-          <FormWrapper>
-            <Form
-              formId="register"
-              onChange={handleChange}
-              onSubmit={handleSubmit}
-              validation={{
-                username: validateUsername,
-                email: validateEmail,
-                confirm: validateConfirm,
-              }}
-            >
-              <Field
-                placeholder="What is your name?"
-                autoComplete="name"
-                data-cy="registerpage-input-name"
+          <>
+            <SEO
+              title="Register"
+              description="Create a Daylily Catalog account."
+              noRobots
+            />
+            <FormWrapper>
+              <Form
+                formId="register"
+                onChange={handleChange}
+                onSubmit={handleSubmit}
+                validation={{
+                  username: validateUsername,
+                  email: validateEmail,
+                  confirm: validateConfirm,
+                }}
               >
-                Name
-              </Field>
-              <Field
-                placeholder="What would you like people to call you?"
-                autoComplete="username"
-                data-cy="registerpage-input-username"
-              >
-                Username
-              </Field>
-              <Field
-                placeholder="What is your email address?"
-                autoComplete="email"
-                data-cy="registerpage-input-email"
-              >
-                Email
-              </Field>
-              <FormGroup>
                 <Field
-                  name="password"
-                  placeholder="Enter a secure passphrase."
-                  autoComplete="current-password"
-                  type="password"
-                  data-cy="registerpage-input-password"
+                  placeholder="What is your name?"
+                  autoComplete="name"
+                  data-cy="registerpage-input-name"
                 >
-                  Passphrase
+                  Name
                 </Field>
-                <PasswordStrength
-                  passwordStrength={passwordStrength}
-                  suggestions={passwordSuggestions}
-                />
-              </FormGroup>
-              <Field
-                name="confirm"
-                placeholder="Confirm your passphrase."
-                autoComplete="new-password"
-                type="password"
-                data-cy="registerpage-input-password2"
-                onBlur={handleConfirmBlur}
-              >
-                Confirm Passphrase
-              </Field>
-              {error ? (
+                <Field
+                  placeholder="What would you like people to call you?"
+                  autoComplete="username"
+                  data-cy="registerpage-input-username"
+                >
+                  Username
+                </Field>
+                <Field
+                  placeholder="What is your email address?"
+                  autoComplete="email"
+                  data-cy="registerpage-input-email"
+                >
+                  Email
+                </Field>
                 <FormGroup>
-                  <FormError>
-                    <p>Registration failed</p>
-                    <span>
-                      {extractError(error).message}
-                      {code ? (
-                        <span>
-                          {" "}
-                          (Error code: <code>ERR_{code}</code>)
-                        </span>
-                      ) : null}
-                    </span>
-                  </FormError>
+                  <Field
+                    name="password"
+                    placeholder="Enter a secure passphrase."
+                    autoComplete="current-password"
+                    type="password"
+                    data-cy="registerpage-input-password"
+                  >
+                    Passphrase
+                  </Field>
+                  <PasswordStrength
+                    passwordStrength={passwordStrength}
+                    suggestions={passwordSuggestions}
+                  />
                 </FormGroup>
-              ) : null}
-              <SubmitButton>
-                <Button data-cy="registerpage-submit-button">Register</Button>
-              </SubmitButton>
-            </Form>
-          </FormWrapper>
+                <Field
+                  name="confirm"
+                  placeholder="Confirm your passphrase."
+                  autoComplete="new-password"
+                  type="password"
+                  data-cy="registerpage-input-password2"
+                  onBlur={handleConfirmBlur}
+                >
+                  Confirm Passphrase
+                </Field>
+                {error ? (
+                  <FormGroup>
+                    <FormError>
+                      <p>Registration failed</p>
+                      <span>
+                        {extractError(error).message}
+                        {code ? (
+                          <span>
+                            {" "}
+                            (Error code: <code>ERR_{code}</code>)
+                          </span>
+                        ) : null}
+                      </span>
+                    </FormError>
+                  </FormGroup>
+                ) : null}
+                <SubmitButton>
+                  <Button data-cy="registerpage-submit-button">Register</Button>
+                </SubmitButton>
+              </Form>
+            </FormWrapper>
+          </>
         )
       }
     </SharedLayout>

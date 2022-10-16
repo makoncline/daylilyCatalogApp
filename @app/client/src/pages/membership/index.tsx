@@ -3,6 +3,7 @@ import {
   CheckoutButton,
   ErrorAlert,
   Redirect,
+  SEO,
   SharedLayout,
 } from "@app/components";
 import { Button, Center, Heading, Hr, Space, Spinner } from "@app/design";
@@ -21,6 +22,11 @@ const Membership: NextPage = () => {
     data?.currentUser?.stripeSubscription?.subscriptionInfo?.status == "active";
   return (
     <SharedLayout title="Membership" query={query}>
+      <SEO
+        title="Membership"
+        description="Become a Daylily Catalog Pro and unlock unlimited number of listings and lists, and upload your own photos."
+        noRobots
+      />
       {data && data.currentUser ? (
         <Plans active={isSubscriptionActive} isVerified={isVerified} />
       ) : loading ? (

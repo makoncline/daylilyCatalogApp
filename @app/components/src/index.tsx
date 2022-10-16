@@ -25,6 +25,7 @@ export * from "./PasswordStrength";
 export * from "./Redirect";
 export * from "./RegisteredLilyDisplay";
 export * from "./RegisteredLilyInput";
+export * from "./SEO";
 export * from "./SettingsLayout";
 export * from "./SharedLayout";
 export * from "./SpinPadded";
