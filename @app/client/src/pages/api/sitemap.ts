@@ -35,8 +35,7 @@ export default async function handler(
     getSitemapEntry(`/catalog/${listing.id}`, listing.updated_at)
   );
 
-  const xml = `
-    <?xml version="1.0" encoding="UTF-8"?>
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     ${staticUrls.join("\n")}
     ${userUrls.join("\n")}
