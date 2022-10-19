@@ -32,19 +32,12 @@ const Catalogs: NextPage = () => {
   const listingSection = React.useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { id } = router.query;
-  const sharedQuery = useSharedQuery();
-  const { loading: sharedQueryLoading, error: sharedQueryError } = sharedQuery;
-  const userQuery = useUserByIdQuery({
-    variables: { id: parseInt(id as string) },
+  const userId = parseInt(id as string, 10);
+  const query = useUserByIdQuery({
+    variables: { id: userId },
   });
-  const {
-    data: userQueryData,
-    loading: userQueryLoading,
-    error: userQueryError,
-  } = userQuery;
-
-  const isLoading = sharedQueryLoading || userQueryLoading;
-  const isError = sharedQueryError || userQueryError;
+  const { data, loading, error } = query;
+  const user = data?.user;
   const {
     username,
     imgUrls,
@@ -55,7 +48,7 @@ const Catalogs: NextPage = () => {
     avatarUrl,
     updatedAt,
     createdAt,
-  } = userQueryData?.user || {};
+  } = user || {};
   const listings = lilies?.nodes || [];
   const forSale = listings.filter((listing) => listing.price > 0);
   const displayListings = selectedList
@@ -63,35 +56,27 @@ const Catalogs: NextPage = () => {
       ? forSale
       : listings.filter((listing) => listing.list?.name === selectedList)
     : listings;
-  const listingsHeading = selectedList
-    ? selectedList === "forSale"
-      ? "For Sale"
-      : selectedList
-    : "All Listings";
+  let listingsHeading = "All Listings";
+  if (selectedList) {
+    if (selectedList === "forSale") {
+      listingsHeading = "For Sale";
+    } else {
+      listingsHeading = selectedList;
+    }
+  }
+  const isOwner = data?.currentUser?.id === userId;
 
   const handleListChange = (list: string | null) => {
     setSelectedList(list);
     listingSection?.current?.scrollIntoView({ behavior: "smooth" });
   };
-  return (
-    <SharedLayout
-      title={username ? `${username}` : "Catalog"}
-      query={sharedQuery}
-    >
-      <SEO
-        title={`Check out this daylily catalog by ${username}`}
-        description={`View garden information, daylily lists, and daylily listings. Buy daylilies online from daylily catalog user ${username}.`}
-      />
-      {isLoading ? (
-        <Center>
-          <Spinner />
-        </Center>
-      ) : isError ? (
-        <>
-          {sharedQueryError && <ErrorAlert error={sharedQueryError} />}
-          {userQueryError && <ErrorAlert error={userQueryError} />}
-        </>
-      ) : userQueryData ? (
+  const pageContent = (() => {
+    if (error && !loading) {
+      return <ErrorAlert error={error} />;
+    } else if (!data) {
+      return "Loading";
+    } else {
+      return (
         <>
           <Space responsive>
             <ListingImageDisplay
@@ -148,9 +133,7 @@ const Catalogs: NextPage = () => {
                   </PropertyList>
                 </Space>
               </Space>
-              {sharedQuery.data?.currentUser?.id === parseInt(id as string) && (
-                <Button href={settingsUrl}>Edit Profile</Button>
-              )}
+              {isOwner && <Button href={settingsUrl}>Edit Profile</Button>}
               {bio && (
                 <ReactMarkdown
                   components={{
@@ -214,9 +197,16 @@ const Catalogs: NextPage = () => {
             <LiliesTable dataSource={displayListings} isOwner={false} />
           </Space>
         </>
-      ) : (
-        <p>User with id, {id}, not found...</p>
-      )}
+      );
+    }
+  })();
+  return (
+    <SharedLayout title={username ? `${username}` : "Catalog"} query={query}>
+      <SEO
+        title={`Check out this daylily catalog by ${username}`}
+        description={`View garden information, daylily lists, and daylily listings. Buy daylilies online from daylily catalog user ${username}.`}
+      />
+      {pageContent}
     </SharedLayout>
   );
 };
