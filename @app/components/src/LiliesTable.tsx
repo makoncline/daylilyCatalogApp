@@ -1,7 +1,7 @@
 import { above, Button, Space, useLocalStorage } from "@app/design";
 import { AhsDataFragment, LilyDataFragment } from "@app/graphql";
 import { toViewListingUrl } from "@app/lib";
-import router from "next/router";
+import router, { useRouter } from "next/router";
 import React from "react";
 import type { Column, FilterTypes } from "react-table";
 import {
@@ -407,7 +407,7 @@ export function LiliesTable({
       nextPage,
       previousPage,
       setPageSize,
-      state: { pageIndex, pageSize },
+      state: { pageIndex, pageSize, filters },
       setAllFilters,
     },
     setColumnOrder,
@@ -419,6 +419,88 @@ export function LiliesTable({
     rawData: dataSource,
     isOwner,
   });
+
+  const router = useRouter();
+  const {
+    filters: filtersQueryParam,
+    page: pageQueryParam,
+    pageSize: pageSizeQueryParam,
+  } = router.query;
+  // set filters from query param on mount
+  React.useEffect(() => {
+    if (typeof filtersQueryParam === "string") {
+      setAllFilters(JSON.parse(filtersQueryParam));
+    }
+    if (typeof pageQueryParam === "string") {
+      gotoPage(1);
+    }
+    if (typeof pageSizeQueryParam === "string") {
+      setPageSize(parseInt(pageSizeQueryParam, 10));
+    }
+  }, []);
+  // set flag oncefilters are in sync
+  const filtersSynced = React.useRef(false);
+  const pageSynced = React.useRef(false);
+  const pageSizeSynced = React.useRef(false);
+  React.useEffect(() => {
+    console.log(
+      "filtersSynced",
+      filtersSynced.current,
+      filters,
+      filtersQueryParam,
+      "pageSynced",
+      pageSynced.current,
+      pageIndex,
+      pageQueryParam,
+      "pageSizeSynced",
+      pageSizeSynced.current,
+      pageSize,
+      pageSizeQueryParam
+    );
+    if (!filtersSynced.current) {
+      filtersSynced.current =
+        (filtersQueryParam || "[]") === JSON.stringify(filters);
+    }
+    if (!pageSynced.current) {
+      console.log(
+        pageQueryParam || "0",
+        pageIndex.toString(),
+        (pageQueryParam || "0") === pageIndex.toString()
+      );
+      pageSynced.current = (pageQueryParam || "0") === pageIndex.toString();
+    }
+    if (!pageSizeSynced.current) {
+      pageSizeSynced.current =
+        (pageSizeQueryParam || "10") === pageSize.toString();
+    }
+  }, [
+    filtersQueryParam,
+    filters,
+    pageQueryParam,
+    pageIndex,
+    pageSizeQueryParam,
+    pageSize,
+  ]);
+  // set filters query param on filters change
+  React.useEffect(() => {
+    const newQueryParams = {};
+    if (filtersSynced.current) {
+      newQueryParams["filters"] = JSON.stringify(filters);
+    }
+    if (pageSynced.current) {
+      newQueryParams["page"] = pageIndex.toString();
+    }
+    if (pageSizeSynced.current) {
+      newQueryParams["pageSize"] = pageSize.toString();
+    }
+    router.replace({
+      pathname: router.pathname,
+      query: {
+        ...router.query,
+        ...newQueryParams,
+      },
+    });
+  }, [filters, pageIndex, pageSize]);
 
   const mounted = React.useRef(false);
   React.useEffect(() => {
