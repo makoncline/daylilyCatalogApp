@@ -34,6 +34,14 @@ if (!process.env.SENTRY_AUTH_TOKEN) {
 
     return withSentryConfig(
       {
+        async rewrites() {
+          return [
+            {
+              source: "/sitemap.xml",
+              destination: "/api/sitemap",
+            },
+          ];
+        },
         sentry: {
           disableServerWebpackPlugin: sentryDisabled,
           disableClientWebpackPlugin: sentryDisabled,
