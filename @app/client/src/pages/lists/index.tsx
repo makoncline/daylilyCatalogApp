@@ -11,7 +11,8 @@ import { NextPage } from "next";
 import React from "react";
 
 const ListsPage: NextPage = () => {
-  const { data, loading, error } = useSharedQuery();
+  const query = useSharedQuery();
+  const { data, loading, error } = query;
   const user = data && data.currentUser;
 
   const pageContent = (() => {
@@ -25,7 +26,6 @@ const ListsPage: NextPage = () => {
       return <Lists />;
     }
   })();
-  const query = useSharedQuery();
   return (
     <SharedLayout title="Lists" query={query}>
       <SEO

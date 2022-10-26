@@ -6,7 +6,7 @@ import {
   SharedLayout,
 } from "@app/components";
 import { Center, Spinner } from "@app/design";
-import { useSharedQuery } from "@app/graphql";
+import { useLilyByIdQuery, useSharedQuery } from "@app/graphql";
 import { loginUrl } from "@app/lib";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -15,17 +15,16 @@ import React, { useState } from "react";
 const Edit: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
-  const query = useSharedQuery();
+  const listingId = (typeof id === "string" && parseInt(id)) || null;
+  const query = useLilyByIdQuery({
+    variables: { id: listingId || 0 },
+  });
   const [error, setError] = useState<Error | ApolloError | null>(null);
-  const {
-    data: sharedQueryData,
-    loading: sharedQueryLoading,
-    error: sharedQueryError,
-  } = query;
+  const { data, loading, error: queryError } = query;
 
-  const lilyId = (typeof id === "string" && parseInt(id)) || null;
-  if (!lilyId) return <p>invalid id: {id}</p>;
-  const user = sharedQueryData?.currentUser;
+  if (!listingId) return <p>invalid id: {id}</p>;
+  const listing = data && data.lily;
+  const user = data && data.currentUser;
   const isActive =
     user?.stripeSubscription?.subscriptionInfo?.status == "active";
   const isFree = user?.freeUntil
@@ -38,24 +37,28 @@ const Edit: NextPage = () => {
     ? "NO_MEMBERSHIP"
     : "ENABLED";
 
-  return (
-    <SharedLayout title="Edit Listing" query={query}>
-      {sharedQueryData?.currentUser ? (
+  const pageContent = (() => {
+    if (error && !loading) {
+      return <ErrorAlert error={error} />;
+    } else if (!data && !loading) {
+      return <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />;
+    } else if (!user || !listing) {
+      return "Loading";
+    } else {
+      return (
         <EditListingForm
           error={error}
           setError={setError}
-          id={lilyId}
           isPhotoUploadEnabled={isPhotoUploadEnabled}
+          listing={listing}
         />
-      ) : sharedQueryLoading ? (
-        <Center>
-          <Spinner />
-        </Center>
-      ) : sharedQueryError ? (
-        <ErrorAlert error={sharedQueryError} />
-      ) : (
-        <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />
-      )}
+      );
+    }
+  })();
+
+  return (
+    <SharedLayout title="Edit Listing" query={query}>
+      {pageContent}
     </SharedLayout>
   );
 };

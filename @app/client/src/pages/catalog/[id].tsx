@@ -14,37 +14,29 @@ import React from "react";
 const View: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
-  const query = useSharedQuery();
-  const {
-    data: sharedQueryData,
-    loading: sharedQueryLoading,
-    error: sharedQueryError,
-  } = query;
-
   const listingId = (typeof id === "string" && parseInt(id)) || null;
-  const { data, loading, error } = useLilyByIdQuery({
+  const query = useLilyByIdQuery({
     variables: { id: listingId || 0 },
   });
+  const { data, loading, error } = query;
+  const user = data && data.currentUser;
+  const listing = data && data.lily;
+
+  const pageContent = (() => {
+    if (error && !loading) {
+      return <ErrorAlert error={error} />;
+    } else if (!data && !loading) {
+      return <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />;
+    } else if (!listing) {
+      return "Loading";
+    } else {
+      return <ListingDisplay listing={listing} userId={user?.id || null} />;
+    }
+  })();
   if (!listingId) return <p>invalid id: {id}</p>;
   return (
     <SharedLayout title={data?.lily?.name} query={query}>
-      {sharedQueryLoading ? (
-        <Center>
-          <Spinner />
-        </Center>
-      ) : sharedQueryError ? (
-        <ErrorAlert error={sharedQueryError} />
-      ) : sharedQueryData ? (
-        <ListingDisplay
-          listingId={listingId}
-          data={data}
-          loading={loading}
-          error={error}
-          userId={sharedQueryData?.currentUser?.id || null}
-        />
-      ) : (
-        <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />
-      )}
+      {pageContent}
     </SharedLayout>
   );
 };

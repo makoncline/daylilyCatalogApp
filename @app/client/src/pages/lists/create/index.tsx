@@ -5,7 +5,6 @@ import {
   SEO,
   SharedLayout,
 } from "@app/components";
-import { Center, Spinner } from "@app/design";
 import { useSharedQuery } from "@app/graphql";
 import { loginUrl } from "@app/lib";
 import { NextPage } from "next";
@@ -13,11 +12,19 @@ import React from "react";
 
 const Create: NextPage = () => {
   const query = useSharedQuery();
-  const {
-    data: sharedQueryData,
-    loading: sharedQueryLoading,
-    error: sharedQueryError,
-  } = query;
+  const { data, loading, error } = query;
+  const user = data && data.currentUser;
+  const pageContent = (() => {
+    if (error && !loading) {
+      return <ErrorAlert error={error} />;
+    } else if (!user && !loading) {
+      return <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />;
+    } else if (!user) {
+      return "Loading";
+    } else {
+      return <CreateListForm />;
+    }
+  })();
 
   return (
     <SharedLayout title="Create List" query={query}>
@@ -26,17 +33,7 @@ const Create: NextPage = () => {
         description="Create a new list for your Daylily Catalog"
         noRobots
       />
-      {sharedQueryData?.currentUser ? (
-        <CreateListForm />
-      ) : sharedQueryLoading ? (
-        <Center>
-          <Spinner />
-        </Center>
-      ) : sharedQueryError ? (
-        <ErrorAlert error={sharedQueryError} />
-      ) : (
-        <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />
-      )}
+      {pageContent}
     </SharedLayout>
   );
 };

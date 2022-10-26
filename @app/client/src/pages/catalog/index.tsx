@@ -12,9 +12,21 @@ import { NextPage } from "next";
 import React from "react";
 
 const Catalog: NextPage = () => {
-  const { data, loading, error } = useSharedQuery();
-
   const query = useSharedQuery();
+  const { data, loading, error } = query;
+  const user = data && data.currentUser;
+  const pageContent = (() => {
+    if (error && !loading) {
+      return <ErrorAlert error={error} />;
+    } else if (!user && !loading) {
+      return <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />;
+    } else if (!user) {
+      return "Loading";
+    } else {
+      return <Lilies />;
+    }
+  })();
+
   return (
     <SharedLayout title="Catalog" query={query}>
       <SEO
@@ -22,17 +34,7 @@ const Catalog: NextPage = () => {
         description="Manage your Daylily Catalog listings. View, sort, filter, add, edit, and delete your listings."
         noRobots
       />
-      {data && data.currentUser ? (
-        <Lilies />
-      ) : loading ? (
-        <Center>
-          <Spinner />
-        </Center>
-      ) : error ? (
-        <ErrorAlert error={error} />
-      ) : (
-        <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />
-      )}
+      {pageContent}
     </SharedLayout>
   );
 };

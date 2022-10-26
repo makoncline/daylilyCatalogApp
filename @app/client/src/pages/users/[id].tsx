@@ -9,14 +9,12 @@ import {
 import {
   Badge,
   Button,
-  Center,
   FancyHeading,
   getPlaceholderImageUrl,
   Heading,
   PropertyList,
   PropertyListItem,
   Space,
-  Spinner,
   Thumbnail,
 } from "@app/design";
 import { useSharedQuery, useUserByIdQuery } from "@app/graphql";
