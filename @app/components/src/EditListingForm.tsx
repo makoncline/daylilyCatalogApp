@@ -179,7 +179,7 @@ function EditListingForm({
       publicNote: publicNote || "",
       privateNote: privateNote || "",
     });
-  }, [listing]);
+  }, [name, price, privateNote, publicNote, setValues]);
 
   const MAX_NUM_IMAGES = 3;
   const imgUrls = imgUrl ? (imgUrl.filter(Boolean) as string[]) : null;
@@ -224,7 +224,7 @@ function EditListingForm({
         setError(e);
       }
     }
-  }, [listing.imgUrl, editLily, id, imageUrls, isReady, setError]);
+  }, [imgUrl, editLily, id, imageUrls, isReady, setError]);
 
   return (
     <Space direction="column" gap="large">
