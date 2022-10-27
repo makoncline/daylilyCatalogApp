@@ -15,15 +15,16 @@ const Create: NextPage = () => {
   const { data, loading, error } = query;
   const user = data && data.currentUser;
   const pageContent = (() => {
-    if (error && !loading) {
-      return <ErrorAlert error={error} />;
-    } else if (!user && !loading) {
-      return <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />;
-    } else if (!user) {
+    if (loading) {
       return "Loading";
-    } else {
-      return <CreateListForm />;
     }
+    if (error) {
+      return <ErrorAlert error={error} />;
+    }
+    if (!user) {
+      return <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />;
+    }
+    return <CreateListForm />;
   })();
 
   return (

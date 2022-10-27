@@ -2,12 +2,12 @@ import { ApolloError } from "@apollo/client";
 import {
   EditListingForm,
   ErrorAlert,
+  FourOhFour,
   Redirect,
   SharedLayout,
 } from "@app/components";
-import { Center, Spinner } from "@app/design";
-import { useLilyByIdQuery, useSharedQuery } from "@app/graphql";
-import { loginUrl } from "@app/lib";
+import { useLilyByIdQuery } from "@app/graphql";
+import { loginUrl, toViewListingUrl } from "@app/lib";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -19,10 +19,8 @@ const Edit: NextPage = () => {
   const query = useLilyByIdQuery({
     variables: { id: listingId || 0 },
   });
-  const [error, setError] = useState<Error | ApolloError | null>(null);
-  const { data, loading, error: queryError } = query;
+  const { data, loading, error } = query;
 
-  if (!listingId) return <p>invalid id: {id}</p>;
   const listing = data && data.lily;
   const user = data && data.currentUser;
   const isActive =
@@ -38,22 +36,27 @@ const Edit: NextPage = () => {
     : "ENABLED";
 
   const pageContent = (() => {
-    if (error && !loading) {
-      return <ErrorAlert error={error} />;
-    } else if (!data && !loading) {
-      return <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />;
-    } else if (!user || !listing) {
+    if (loading) {
       return "Loading";
-    } else {
-      return (
-        <EditListingForm
-          error={error}
-          setError={setError}
-          isPhotoUploadEnabled={isPhotoUploadEnabled}
-          listing={listing}
-        />
-      );
     }
+    if (error) {
+      return <ErrorAlert error={error} />;
+    }
+    if (!user) {
+      return <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />;
+    }
+    if (!listing) {
+      return <FourOhFour currentUser={user} />;
+    }
+    if (user.id !== listing.user?.id) {
+      return <Redirect href={toViewListingUrl(listing.id)} />;
+    }
+    return (
+      <EditListingForm
+        isPhotoUploadEnabled={isPhotoUploadEnabled}
+        listing={listing}
+      />
+    );
   })();
 
   return (

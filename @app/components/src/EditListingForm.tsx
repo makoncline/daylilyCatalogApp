@@ -46,15 +46,11 @@ import {
 } from "./UploadDisabled";
 
 type EditListingFormProps = {
-  error: Error | ApolloError | null;
-  setError: (error: Error | ApolloError | null) => void;
   isPhotoUploadEnabled: "NOT_VERIFIED" | "NO_MEMBERSHIP" | "ENABLED";
   listing: NonNullable<LilyByIdQuery["lily"]>;
 };
 
 function EditListingForm({
-  error,
-  setError,
   isPhotoUploadEnabled,
   listing,
 }: EditListingFormProps) {
@@ -68,7 +64,7 @@ function EditListingForm({
     list: origList,
     imgUrl,
   } = listing;
-
+  const [error, setError] = React.useState<Error | ApolloError | null>(null);
   const [formState, setFormState] = React.useState<"idle" | "deleting">("idle");
   const [linkedLily, setLinkedLily] =
     React.useState<AhsSearchDataFragment | null>(ahsDatumByAhsRef);

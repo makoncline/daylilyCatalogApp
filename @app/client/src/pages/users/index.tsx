@@ -9,13 +9,13 @@ const UsersPage: NextPage = () => {
   const { data, loading, error } = query;
   const users = data?.users?.nodes || [];
   const pageContent = (() => {
-    if (error && !loading) {
-      return <ErrorAlert error={error} />;
-    } else if (!data) {
+    if (loading) {
       return "Loading";
-    } else {
-      return <UsersTable users={users} />;
     }
+    if (error) {
+      return <ErrorAlert error={error} />;
+    }
+    return <UsersTable users={users} />;
   })();
   return (
     <SharedLayout title="Users" query={query}>

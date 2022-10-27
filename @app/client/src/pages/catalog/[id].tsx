@@ -1,5 +1,6 @@
 import {
   ErrorAlert,
+  FourOhFour,
   ListingDisplay,
   Redirect,
   SharedLayout,
@@ -23,17 +24,17 @@ const View: NextPage = () => {
   const listing = data && data.lily;
 
   const pageContent = (() => {
-    if (error && !loading) {
-      return <ErrorAlert error={error} />;
-    } else if (!data && !loading) {
-      return <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />;
-    } else if (!listing) {
+    if (loading) {
       return "Loading";
-    } else {
-      return <ListingDisplay listing={listing} userId={user?.id || null} />;
     }
+    if (error) {
+      return <ErrorAlert error={error} />;
+    }
+    if (!listing) {
+      return <FourOhFour currentUser={user} />;
+    }
+    return <ListingDisplay listing={listing} userId={user?.id || null} />;
   })();
-  if (!listingId) return <p>invalid id: {id}</p>;
   return (
     <SharedLayout title={data?.lily?.name} query={query}>
       {pageContent}

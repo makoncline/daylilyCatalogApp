@@ -39,6 +39,7 @@ export enum AuthRestrict {
   LOGGED_OUT = 1 << 0,
   LOGGED_IN = 1 << 1,
   NOT_ADMIN = 1 << 2,
+  NOT_OWNER = 1 << 3,
 }
 
 export interface SharedLayoutProps {
@@ -113,6 +114,7 @@ export function SharedLayout({
   const forbidsLoggedIn = forbidWhen & AuthRestrict.LOGGED_IN;
   const forbidsLoggedOut = forbidWhen & AuthRestrict.LOGGED_OUT;
   const forbidsNotAdmin = forbidWhen & AuthRestrict.NOT_ADMIN;
+  const forbidsNotOwner = forbidWhen & AuthRestrict.NOT_OWNER;
   const renderChildren = (props: SharedLayoutChildProps) => {
     const inner =
       props.error && !props.loading && !noHandleErrors ? (

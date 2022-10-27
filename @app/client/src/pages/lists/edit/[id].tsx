@@ -1,13 +1,14 @@
 import {
   EditListForm,
   ErrorAlert,
+  FourOhFour,
   Redirect,
   SEO,
   SharedLayout,
 } from "@app/components";
 import { Center, Spinner } from "@app/design";
 import { useListByIdQuery, useSharedQuery } from "@app/graphql";
-import { loginUrl } from "@app/lib";
+import { loginUrl, toViewListingUrl, toViewUserUrl } from "@app/lib";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React from "react";
@@ -20,16 +21,24 @@ const Edit: NextPage = () => {
   const { data, loading, error } = query;
   const user = data && data.currentUser;
   const list = data && data.list;
+
   const pageContent = (() => {
-    if (error && !loading) {
-      return <ErrorAlert error={error} />;
-    } else if (!data && !loading) {
-      <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />;
-    } else if (!user || !list) {
+    if (loading) {
       return "Loading";
-    } else {
-      return <EditListForm list={list} />;
     }
+    if (error) {
+      return <ErrorAlert error={error} />;
+    }
+    if (!user) {
+      return <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />;
+    }
+    if (!list) {
+      return <FourOhFour currentUser={user} />;
+    }
+    if (user.id !== list.userId) {
+      return <Redirect href={toViewUserUrl(list.id)} />;
+    }
+    return <EditListForm list={list} />;
   })();
 
   return (

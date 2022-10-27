@@ -19,19 +19,20 @@ const Membership: NextPage = () => {
   const { data, loading, error } = query;
   const user = data && data.currentUser;
   const pageContent = (() => {
-    if (error && !loading) {
+    if (loading) {
+      return "Loading";
+    }
+    if (error) {
       return <ErrorAlert error={error} />;
-    } else if (!user && !loading) {
+    }
+    if (!user) {
       return (
         <Redirect
           href={`${loginUrl}?next=${encodeURIComponent("/membership")}`}
         />
       );
-    } else if (!user) {
-      return "Loading";
-    } else {
-      return <Plans user={user} />;
     }
+    return <Plans user={user} />;
   })();
   return (
     <SharedLayout title="Membership" query={query}>
