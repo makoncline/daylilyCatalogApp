@@ -1,4 +1,3 @@
-import { ApolloError } from "@apollo/client";
 import {
   CreateListingForm,
   ErrorAlert,

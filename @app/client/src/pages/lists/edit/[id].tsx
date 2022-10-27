@@ -6,9 +6,8 @@ import {
   SEO,
   SharedLayout,
 } from "@app/components";
-import { Center, Spinner } from "@app/design";
-import { useListByIdQuery, useSharedQuery } from "@app/graphql";
-import { loginUrl, toViewListingUrl, toViewUserUrl } from "@app/lib";
+import { useListByIdQuery } from "@app/graphql";
+import { loginUrl, toViewUserUrl } from "@app/lib";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React from "react";

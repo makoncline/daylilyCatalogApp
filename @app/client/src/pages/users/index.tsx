@@ -1,6 +1,5 @@
 import { ErrorAlert, SEO, SharedLayout, UsersTable } from "@app/components";
-import { Center, Spinner } from "@app/design";
-import { useSharedQuery, useUsersQuery } from "@app/graphql";
+import { useUsersQuery } from "@app/graphql";
 import { NextPage } from "next";
 import React from "react";
 

@@ -1,4 +1,3 @@
-import { ApolloError } from "@apollo/client";
 import {
   EditListingForm,
   ErrorAlert,
@@ -10,7 +9,7 @@ import { useLilyByIdQuery } from "@app/graphql";
 import { loginUrl, toViewListingUrl } from "@app/lib";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React from "react";
 
 const Edit: NextPage = () => {
   const router = useRouter();

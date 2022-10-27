@@ -2,12 +2,9 @@ import {
   ErrorAlert,
   FourOhFour,
   ListingDisplay,
-  Redirect,
   SharedLayout,
 } from "@app/components";
-import { Center, Spinner } from "@app/design";
-import { useLilyByIdQuery, useSharedQuery } from "@app/graphql";
-import { loginUrl } from "@app/lib";
+import { useLilyByIdQuery } from "@app/graphql";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React from "react";

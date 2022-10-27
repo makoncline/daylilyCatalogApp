@@ -5,7 +5,6 @@ import {
   SEO,
   SharedLayout,
 } from "@app/components";
-import { Center, Spinner } from "@app/design";
 import { useSharedQuery } from "@app/graphql";
 import { loginUrl } from "@app/lib";
 import { NextPage } from "next";
