@@ -1,30 +1,20 @@
-import { Alert, Button, Center, Space, Spinner } from "@app/design";
-import { useLiliesQuery } from "@app/graphql";
+import { Alert, Button, Space } from "@app/design";
+import { UserLilyDataFragment } from "@app/graphql";
 import { toCreateListingUrl } from "@app/lib";
 import React from "react";
 
 import { LiliesTable } from "./";
 
-export const Lilies = () => {
-  const { data } = useLiliesQuery();
-  const user = data && data.currentUser;
-  const userLilies = user && user.lilies.nodes;
-
-  if (!user || !userLilies)
-    return (
-      <Center>
-        <Spinner />
-      </Center>
-    );
-
-  const isActive =
-    user.stripeSubscription?.subscriptionInfo?.status == "active";
-  const isOverFreeLimit = userLilies.length >= 99;
-  const isFree = user.freeUntil ? new Date() < new Date(user.freeUntil) : false;
-  const isAddActive = isFree || isActive || !isOverFreeLimit;
+export const Lilies = ({
+  listings,
+  canAddListing,
+}: {
+  listings: UserLilyDataFragment[];
+  canAddListing: boolean;
+}) => {
   return (
     <Space direction="column" block center>
-      {!isAddActive && (
+      {!canAddListing && (
         <Alert type="info">
           <Alert.Heading>Create listing disabled</Alert.Heading>
           <Alert.Body>
@@ -44,12 +34,14 @@ export const Lilies = () => {
           </Alert.Actions>
         </Alert>
       )}
-      {isAddActive && (
+      {canAddListing && (
         <Button href={`${process.env.ROOT_URL}${toCreateListingUrl()}`} block>
-          Create listing
+          {listings.length > 0 ? "Create listing" : "Create your first listing"}
         </Button>
       )}
-      <LiliesTable dataSource={userLilies || []} isOwner={true} />
+      {listings.length > 0 && (
+        <LiliesTable dataSource={listings} isOwner={true} />
+      )}
     </Space>
   );
 };

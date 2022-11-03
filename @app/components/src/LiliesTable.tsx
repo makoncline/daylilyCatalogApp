@@ -1,9 +1,27 @@
-import { above, Button, Space, useLocalStorage } from "@app/design";
+import {
+  above,
+  Button,
+  getPlaceholderImageUrl,
+  Space,
+  useLocalStorage,
+} from "@app/design";
 import { AhsDataFragment, LilyDataFragment } from "@app/graphql";
 import { toViewListingUrl } from "@app/lib";
 import router from "next/router";
 import React from "react";
-import type { Column, FilterTypes } from "react-table";
+import type {
+  Column,
+  ColumnInstance,
+  Filters,
+  FilterTypes,
+  HeaderGroup,
+  Row,
+  TableBodyPropGetter,
+  TableBodyProps,
+  TablePropGetter,
+  TableProps,
+  TableState,
+} from "react-table";
 import {
   useColumnOrder,
   useFilters,
@@ -439,6 +457,10 @@ export function LiliesTable({
   const rtHidenColumns = allColumns
     .filter((column) => !visibleColumns.includes(column))
     .map((column) => column.id);
+  const saveDisabled =
+    JSON.stringify(columnOrder) == JSON.stringify(rtColumnOrder) &&
+    JSON.stringify(hiddenColumns) == JSON.stringify(rtHidenColumns);
+
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setColumnOrder(rtColumnOrder);
@@ -456,104 +478,38 @@ export function LiliesTable({
     rtSetColumnOrder(newColumnOrder);
   }
 
+  const ListingTablePagination = () => {
+    console.log(pageOptions);
+    if (pageOptions.length < 2) {
+      return null;
+    }
+    return (
+      <Pagination
+        canPreviousPage={canPreviousPage}
+        canNextPage={canNextPage}
+        pageOptions={pageOptions}
+        gotoPage={gotoPage}
+        nextPage={nextPage}
+        previousPage={previousPage}
+        setPageSize={setPageSize}
+        pageIndex={pageIndex}
+        pageSize={pageSize}
+      />
+    );
+  };
+
   return (
     <Space direction="column" id="top-of-table" block>
       {!showBasicDisplay && isOwner && (
-        <StyledDetails>
-          <summary>Edit listing table</summary>
-          <form onSubmit={handleSubmit}>
-            <Space direction="column">
-              <ColumnGrid>
-                {allColumns.map((column, index) => (
-                  <div key={column.id}>
-                    <label>
-                      <input
-                        type="checkbox"
-                        id={column.id}
-                        {...column.getToggleHiddenProps()}
-                      />{" "}
-                      {column.Header}
-                      <StyledButton
-                        onClick={() => handleMove("<", index)}
-                        styleType="text"
-                      >
-                        ◀️
-                      </StyledButton>
-                      <StyledButton
-                        onClick={() => handleMove(">", index)}
-                        styleType="text"
-                      >
-                        ▶️
-                      </StyledButton>
-                    </label>
-                  </div>
-                ))}
-              </ColumnGrid>
-              <Space>
-                <Button
-                  type="submit"
-                  styleType="primary"
-                  disabled={
-                    JSON.stringify(columnOrder) ==
-                      JSON.stringify(rtColumnOrder) &&
-                    JSON.stringify(hiddenColumns) ==
-                      JSON.stringify(rtHidenColumns)
-                  }
-                >
-                  Save
-                </Button>
-                <Button
-                  onClick={() => {
-                    if (
-                      confirm(
-                        "Are you sure you want to reset column order and visibility to the default?"
-                      )
-                    ) {
-                      resetToDefault();
-                    }
-                  }}
-                  styleType="text"
-                  danger
-                >
-                  Reset to default
-                </Button>
-              </Space>
-            </Space>
-          </form>
-        </StyledDetails>
+        <EditTable
+          handleSubmit={handleSubmit}
+          allColumns={allColumns}
+          handleMove={handleMove}
+          resetToDefault={resetToDefault}
+          saveDisabled={saveDisabled}
+        />
       )}
-      <StyledDetails>
-        <summary>Sort and filter listings</summary>
-        <Space direction="column">
-          <table>
-            <tbody>
-              {[
-                ...visibleColumns.filter((col) => col.canFilter),
-                ...visibleColumns.filter((col) => !col.canFilter),
-              ]
-                .filter((col) => col.canFilter || col.canSort)
-                .map((column) => (
-                  <tr style={{ verticalAlign: "top" }} key={column.id}>
-                    <td>
-                      <Space {...column.getSortByToggleProps()}>
-                        <NoWrap>{column.render("Header")}</NoWrap>
-                        <span>
-                          {column.isSorted
-                            ? column.isSortedDesc
-                              ? " 🔽"
-                              : " 🔼"
-                            : ""}
-                        </span>
-                      </Space>
-                    </td>
-                    {column.canFilter && <td>{column.render("Filter")}</td>}
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-          <Button onClick={() => setAllFilters([])}>Reset all filters</Button>
-        </Space>
-      </StyledDetails>
+      <SortAndFilter columns={visibleColumns} setAllFilters={setAllFilters} />
       {isOwner && (
         <Space block>
           <Button
@@ -567,111 +523,26 @@ export function LiliesTable({
           </Button>
         </Space>
       )}
-      <Pagination
-        canPreviousPage={canPreviousPage}
-        canNextPage={canNextPage}
-        pageOptions={pageOptions}
-        gotoPage={gotoPage}
-        nextPage={nextPage}
-        previousPage={previousPage}
-        setPageSize={setPageSize}
-        pageIndex={pageIndex}
-        pageSize={pageSize}
-      />
+      <ListingTablePagination />
+      {page.length < 1 && <p>No listings found...</p>}
       {(showBasicDisplay || !isOwner) && (
-        <Space direction="column">
-          {page.map((row) => {
-            prepareRow(row);
-            const { id, name, publicNote, price, imgUrl, description } =
-              row.original;
-            return (
-              <ListingCard
-                key={`${id}${showBasicDisplay}`}
-                id={id}
-                name={name}
-                note={publicNote}
-                price={price}
-                image={imgUrl ? imgUrl[0] : null}
-                description={description}
-              />
-            );
-          })}
-        </Space>
+        <BasicDisplay page={page} prepareRow={prepareRow} />
       )}
       {!showBasicDisplay && isOwner && (
-        <StyledTable {...getTableProps()}>
-          <thead>
-            {headerGroups.map((headerGroup) => (
-              // eslint-disable-next-line react/jsx-key
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
-                  // eslint-disable-next-line react/jsx-key
-                  <th {...column.getHeaderProps()}>
-                    <Space
-                      {...column.getSortByToggleProps()}
-                      style={{ "--direction": "row" }}
-                    >
-                      <NoWrap>{column.render("Header")}</NoWrap>
-                      <span>
-                        {column.isSorted
-                          ? column.isSortedDesc
-                            ? " 🔽"
-                            : " 🔼"
-                          : ""}
-                      </span>
-                    </Space>
-                    <div>
-                      {column.canFilter ? column.render("Filter") : null}
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            ))}
-            <tr>
-              <th colSpan={3}>
-                <GlobalFilter
-                  preGlobalFilteredRows={preGlobalFilteredRows}
-                  globalFilter={state.globalFilter}
-                  setGlobalFilter={setGlobalFilter}
-                />
-              </th>
-              {Array(visibleColumns.length > 3 ? visibleColumns.length - 3 : 0)
-                .fill(0)
-                .map((_, i) => (
-                  <th key={i} />
-                ))}
-            </tr>
-          </thead>
-          <tbody {...getTableBodyProps()}>
-            {page.map((row) => {
-              prepareRow(row);
-              const id = row.original.id;
-              return (
-                // eslint-disable-next-line react/jsx-key
-                <tr {...row.getRowProps()} onClick={() => handleClick(id)}>
-                  {row.cells.map((cell) => {
-                    return (
-                      // eslint-disable-next-line react/jsx-key
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
-        </StyledTable>
+        <TableDisplay
+          getTableProps={getTableProps}
+          getTableBodyProps={getTableBodyProps}
+          headerGroups={headerGroups}
+          prepareRow={prepareRow}
+          handleClick={handleClick}
+          preGlobalFilteredRows={preGlobalFilteredRows}
+          setGlobalFilter={setGlobalFilter}
+          visibleColumns={visibleColumns}
+          state={state}
+          page={page}
+        />
       )}
-      <Pagination
-        canPreviousPage={canPreviousPage}
-        canNextPage={canNextPage}
-        pageOptions={pageOptions}
-        gotoPage={gotoPage}
-        nextPage={nextPage}
-        previousPage={previousPage}
-        setPageSize={setPageSize}
-        pageIndex={pageIndex}
-        pageSize={pageSize}
-      />
+      <ListingTablePagination />
       <Space block style={{ justifyContent: "flex-end" }}>
         {isOwner && (
           <Button onClick={() => download(dataSource)}>
@@ -683,6 +554,243 @@ export function LiliesTable({
     </Space>
   );
 }
+
+const TableDisplay = ({
+  getTableProps,
+  headerGroups,
+  preGlobalFilteredRows,
+  state,
+  setGlobalFilter,
+  visibleColumns,
+  getTableBodyProps,
+  prepareRow,
+  handleClick,
+  page,
+}: {
+  getTableProps: (
+    propGetter?: TablePropGetter<ListingRow> | undefined
+  ) => TableProps;
+  headerGroups: HeaderGroup<ListingRow>[];
+  preGlobalFilteredRows: Row<ListingRow>[];
+  state: TableState<ListingRow>;
+  setGlobalFilter: (filterValue: any) => void;
+  visibleColumns: ColumnInstance<ListingRow>[];
+  getTableBodyProps: (
+    propGetter?: TableBodyPropGetter<ListingRow> | undefined
+  ) => TableBodyProps;
+  prepareRow: (row: Row<ListingRow>) => void;
+  handleClick: (id: number) => void;
+  page: Row<ListingRow>[];
+}) => {
+  return (
+    <StyledTable {...getTableProps()}>
+      <thead>
+        {headerGroups.map((headerGroup) => (
+          // eslint-disable-next-line react/jsx-key
+          <tr {...headerGroup.getHeaderGroupProps()}>
+            {headerGroup.headers.map((column) => (
+              // eslint-disable-next-line react/jsx-key
+              <th {...column.getHeaderProps()}>
+                <Space
+                  {...column.getSortByToggleProps()}
+                  style={{ "--direction": "row" }}
+                >
+                  <NoWrap>{column.render("Header")}</NoWrap>
+                  <span>
+                    {column.isSorted
+                      ? column.isSortedDesc
+                        ? " 🔽"
+                        : " 🔼"
+                      : ""}
+                  </span>
+                </Space>
+                <div>{column.canFilter ? column.render("Filter") : null}</div>
+              </th>
+            ))}
+          </tr>
+        ))}
+        <tr>
+          <th colSpan={3}>
+            <GlobalFilter
+              preGlobalFilteredRows={preGlobalFilteredRows}
+              globalFilter={state.globalFilter}
+              setGlobalFilter={setGlobalFilter}
+            />
+          </th>
+          {Array(visibleColumns.length > 3 ? visibleColumns.length - 3 : 0)
+            .fill(0)
+            .map((_, i) => (
+              <th key={i} />
+            ))}
+        </tr>
+      </thead>
+      <tbody {...getTableBodyProps()}>
+        {page.map((row) => {
+          prepareRow(row);
+          const id = row.original.id;
+          return (
+            // eslint-disable-next-line react/jsx-key
+            <tr {...row.getRowProps()} onClick={() => handleClick(id)}>
+              {row.cells.map((cell) => {
+                return (
+                  // eslint-disable-next-line react/jsx-key
+                  <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                );
+              })}
+            </tr>
+          );
+        })}
+      </tbody>
+    </StyledTable>
+  );
+};
+
+const BasicDisplay = ({
+  page,
+  prepareRow,
+}: {
+  page: Row<ListingRow>[];
+  prepareRow: (row: Row<ListingRow>) => void;
+}) => {
+  return (
+    <Space direction="column">
+      {page.map((row) => {
+        prepareRow(row);
+        const { id, name, publicNote, price, imgUrl, description } =
+          row.original;
+        const image = imgUrl?.[0] || getPlaceholderImageUrl();
+        return (
+          <ListingCard
+            key={`basic-${id}`}
+            id={id}
+            name={name}
+            note={publicNote}
+            price={price}
+            image={image}
+            description={description}
+          />
+        );
+      })}
+    </Space>
+  );
+};
+
+const EditTable = ({
+  handleSubmit,
+  allColumns,
+  handleMove,
+  resetToDefault,
+  saveDisabled,
+}: {
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  allColumns: ColumnInstance<ListingRow>[];
+  handleMove: (direction: "<" | ">", index: number) => void;
+  resetToDefault: () => void;
+  saveDisabled: boolean;
+}) => {
+  return (
+    <StyledDetails>
+      <summary>Edit listing table</summary>
+      <form onSubmit={handleSubmit}>
+        <Space direction="column">
+          <ColumnGrid>
+            {allColumns.map((column, index) => (
+              <div key={column.id}>
+                <label>
+                  <input
+                    type="checkbox"
+                    id={column.id}
+                    {...column.getToggleHiddenProps()}
+                  />{" "}
+                  {column.Header}
+                  <StyledButton
+                    onClick={() => handleMove("<", index)}
+                    styleType="text"
+                  >
+                    ◀️
+                  </StyledButton>
+                  <StyledButton
+                    onClick={() => handleMove(">", index)}
+                    styleType="text"
+                  >
+                    ▶️
+                  </StyledButton>
+                </label>
+              </div>
+            ))}
+          </ColumnGrid>
+          <Space>
+            <Button type="submit" styleType="primary" disabled={saveDisabled}>
+              Save
+            </Button>
+            <Button
+              onClick={() => {
+                if (
+                  confirm(
+                    "Are you sure you want to reset column order and visibility to the default?"
+                  )
+                ) {
+                  resetToDefault();
+                }
+              }}
+              styleType="text"
+              danger
+            >
+              Reset to default
+            </Button>
+          </Space>
+        </Space>
+      </form>
+    </StyledDetails>
+  );
+};
+
+const SortAndFilter = ({
+  columns,
+  setAllFilters,
+}: {
+  columns: ColumnInstance<ListingRow>[];
+  setAllFilters: (
+    updater:
+      | Filters<ListingRow>
+      | ((filters: Filters<ListingRow>) => Filters<ListingRow>)
+  ) => void;
+}) => {
+  return (
+    <StyledDetails>
+      <summary>Sort and filter listings</summary>
+      <Space direction="column">
+        <table>
+          <tbody>
+            {[
+              ...columns.filter((col) => col.canFilter),
+              ...columns.filter((col) => !col.canFilter),
+            ]
+              .filter((col) => col.canFilter || col.canSort)
+              .map((column) => (
+                <tr style={{ verticalAlign: "top" }} key={column.id}>
+                  <td>
+                    <Space {...column.getSortByToggleProps()}>
+                      <NoWrap>{column.render("Header")}</NoWrap>
+                      <span>
+                        {column.isSorted
+                          ? column.isSortedDesc
+                            ? " 🔽"
+                            : " 🔼"
+                          : ""}
+                      </span>
+                    </Space>
+                  </td>
+                  {column.canFilter && <td>{column.render("Filter")}</td>}
+                </tr>
+              ))}
+          </tbody>
+        </table>
+        <Button onClick={() => setAllFilters([])}>Reset all filters</Button>
+      </Space>
+    </StyledDetails>
+  );
+};
 
 function scrollToTop() {
   document?.getElementById("top-of-table")?.scrollIntoView({

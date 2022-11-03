@@ -5,16 +5,15 @@ import {
   SEO,
   SharedLayout,
 } from "@app/components";
-import { useSharedQuery } from "@app/graphql";
+import { useLiliesQuery } from "@app/graphql";
 import { loginUrl } from "@app/lib";
 import { NextPage } from "next";
 import React from "react";
 
 const Catalog: NextPage = () => {
-  const query = useSharedQuery();
+  const query = useLiliesQuery();
   const { data, loading, error } = query;
   const user = data && data.currentUser;
-
   const pageContent = (() => {
     if (loading) {
       return "Loading";
@@ -25,7 +24,15 @@ const Catalog: NextPage = () => {
     if (!user) {
       return <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />;
     }
-    return <Lilies />;
+    const listings = user?.lilies.nodes;
+    const isActive =
+      user.stripeSubscription?.subscriptionInfo?.status == "active";
+    const isOverFreeLimit = listings.length >= 99;
+    const isFree = user.freeUntil
+      ? new Date() < new Date(user.freeUntil)
+      : false;
+    const canAddListing = isFree || isActive || !isOverFreeLimit;
+    return <Lilies listings={listings} canAddListing={canAddListing} />;
   })();
 
   return (
