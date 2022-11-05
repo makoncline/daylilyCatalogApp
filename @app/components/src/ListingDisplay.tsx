@@ -1,15 +1,12 @@
-import { ApolloError } from "@apollo/client";
 import {
   Badge,
   Button,
-  Center,
   getPlaceholderImageUrl,
   Heading,
   Hr,
   PropertyList,
   PropertyListItem,
   Space,
-  Spinner,
 } from "@app/design";
 import { AhsDataFragment, LilyByIdQuery } from "@app/graphql";
 import { toEditListingUrl } from "@app/lib";
@@ -22,28 +19,12 @@ import { ListingImageDisplay } from "./ListingImageDisplay";
 import { SEO } from "./SEO";
 
 function ListingDisplay({
-  listingId,
-  data,
-  loading,
-  error,
+  listing,
   userId,
 }: {
-  listingId: number;
-  data: LilyByIdQuery | undefined;
-  loading: boolean;
-  error: ApolloError | undefined;
+  listing: NonNullable<LilyByIdQuery["lily"]>;
   userId: number | null;
 }) {
-  if (loading)
-    return (
-      <Center>
-        <Spinner />
-      </Center>
-    );
-  if (error) return <p>Error: {error.message}</p>;
-  const listing = data?.lily;
-  if (!listing) return <p>No listing found with id {listingId}</p>;
-
   const listingImageUrls = (listing.imgUrl?.filter(Boolean) as string[]) || [];
   const ahsImageUrls = [listing.ahsDatumByAhsRef?.image || null].filter(
     Boolean
@@ -113,7 +94,7 @@ function ListingDisplay({
           )}
           {isOwner && (
             <PropertyListItem label="Edit">
-              <Link passHref href={toEditListingUrl(listingId)}>
+              <Link passHref href={toEditListingUrl(listing.id)}>
                 <Button>Edit listing</Button>
               </Link>
             </PropertyListItem>

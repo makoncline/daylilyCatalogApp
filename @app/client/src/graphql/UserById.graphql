@@ -1,4 +1,5 @@
 query UserById($id: Int!) {
+  ...SharedLayout_Query
   user(id: $id) {
     id
     ...UserData

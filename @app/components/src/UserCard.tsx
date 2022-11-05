@@ -53,7 +53,9 @@ export const UserCard = ({
           </PropertyListItem>
         </PropertyList>
         {intro && <p>{intro}</p>}
-        <Button href={toViewUserUrl(id)}>View Catalog</Button>
+        <div>
+          <Button href={toViewUserUrl(id)}>View Catalog</Button>
+        </div>
       </Body>
     </StyledCard>
   );

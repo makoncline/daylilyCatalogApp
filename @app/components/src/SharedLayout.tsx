@@ -131,11 +131,7 @@ export function SharedLayout({
       data.currentUser &&
       (forbidsLoggedIn || (forbidsNotAdmin && !data.currentUser.isAdmin))
     ) {
-      return (
-        <StandardWidth>
-          <Redirect href={"/"} />
-        </StandardWidth>
-      );
+      return <Redirect href={"/"} />;
     } else if (
       data &&
       data.currentUser === null &&

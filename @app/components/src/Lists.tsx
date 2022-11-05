@@ -1,21 +1,12 @@
-import { Button, Center, Spinner } from "@app/design";
-import { useListsQuery } from "@app/graphql";
+import { Button } from "@app/design";
+import { ListDataFragment } from "@app/graphql";
 import { createListUrl, toEditListUrl } from "@app/lib";
 import Link from "next/link";
 import Router from "next/router";
 import React from "react";
 import styled from "styled-components";
 
-export const Lists = () => {
-  const { data } = useListsQuery();
-  const user = data && data.currentUser;
-  if (!user)
-    return (
-      <Center>
-        <Spinner />
-      </Center>
-    );
-
+export const Lists = ({ lists }: { lists: ListDataFragment[] }) => {
   return (
     <>
       <Link href={createListUrl} passHref>
@@ -29,7 +20,7 @@ export const Lists = () => {
           </tr>
         </thead>
         <tbody>
-          {data?.currentUser?.lists.nodes.map((list) => (
+          {lists.map((list) => (
             <tr
               key={list.id}
               onClick={() => Router.push(toEditListUrl(list.id))}

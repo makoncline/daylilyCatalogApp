@@ -5,16 +5,36 @@ import {
   SEO,
   SharedLayout,
 } from "@app/components";
-import { Center, Spinner } from "@app/design";
-import { useSharedQuery } from "@app/graphql";
+import { useLiliesQuery } from "@app/graphql";
 import { loginUrl } from "@app/lib";
 import { NextPage } from "next";
 import React from "react";
 
 const Catalog: NextPage = () => {
-  const { data, loading, error } = useSharedQuery();
+  const query = useLiliesQuery();
+  const { data, loading, error } = query;
+  const user = data && data.currentUser;
+  const pageContent = (() => {
+    if (loading) {
+      return "Loading";
+    }
+    if (error) {
+      return <ErrorAlert error={error} />;
+    }
+    if (!user) {
+      return <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />;
+    }
+    const listings = user?.lilies.nodes;
+    const isActive =
+      user.stripeSubscription?.subscriptionInfo?.status == "active";
+    const isOverFreeLimit = listings.length >= 99;
+    const isFree = user.freeUntil
+      ? new Date() < new Date(user.freeUntil)
+      : false;
+    const canAddListing = isFree || isActive || !isOverFreeLimit;
+    return <Lilies listings={listings} canAddListing={canAddListing} />;
+  })();
 
-  const query = useSharedQuery();
   return (
     <SharedLayout title="Catalog" query={query}>
       <SEO
@@ -22,17 +42,7 @@ const Catalog: NextPage = () => {
         description="Manage your Daylily Catalog listings. View, sort, filter, add, edit, and delete your listings."
         noRobots
       />
-      {data && data.currentUser ? (
-        <Lilies />
-      ) : loading ? (
-        <Center>
-          <Spinner />
-        </Center>
-      ) : error ? (
-        <ErrorAlert error={error} />
-      ) : (
-        <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />
-      )}
+      {pageContent}
     </SharedLayout>
   );
 };

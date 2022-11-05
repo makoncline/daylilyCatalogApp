@@ -1,5 +1,6 @@
 #import "./ListData.graphql"
 query Lists {
+  ...SharedLayout_Query
   currentUser {
     id
     lists {

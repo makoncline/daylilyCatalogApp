@@ -159,10 +159,20 @@ const Settings_Security: NextPage = () => {
           onSubmit={handleSubmit}
           onChange={handleChange}
         >
-          <Field name="oldPassword" type="password" required>
+          <Field
+            name="oldPassword"
+            type="password"
+            required
+            data-cy="settings-security-input-old-password"
+          >
             Old passphrase
           </Field>
-          <Field name="newPassword" type="password" required>
+          <Field
+            name="newPassword"
+            type="password"
+            required
+            data-cy="settings-security-input-new-password"
+          >
             New passphrase
           </Field>
           <PasswordStrength
@@ -188,7 +198,9 @@ const Settings_Security: NextPage = () => {
             <p style={{ color: "var(--success)" }}>Password changed!</p>
           ) : null}
           <SubmitButton>
-            <Button block>Change Passphrase</Button>
+            <Button block data-cy="settings-security-button-change-password">
+              Change Passphrase
+            </Button>
           </SubmitButton>
         </Form>
       </FormWrapper>
