@@ -58,6 +58,10 @@ const Settings_Security: NextPage = () => {
         });
         setError(null);
         setSuccess(true);
+        context.setValues({
+          oldPassword: "",
+          newPassword: "",
+        });
       } catch (e: any) {
         Sentry.captureException(e);
         const errcode = getCodeFromError(e);
@@ -155,18 +159,22 @@ const Settings_Security: NextPage = () => {
           onSubmit={handleSubmit}
           onChange={handleChange}
         >
-          <Field name="oldPassword" required>
+          <Field name="oldPassword" type="password" required>
             Old passphrase
           </Field>
-          <Field name="newPassword">New passphrase</Field>
+          <Field name="newPassword" type="password" required>
+            New passphrase
+          </Field>
           <PasswordStrength
             passwordStrength={passwordStrength}
             suggestions={passwordSuggestions}
           />
           {error ? (
             <div>
-              <p>Changing passphrase failed</p>
-              <span>
+              <p style={{ color: "var(--danger)" }}>
+                Changing passphrase failed
+              </p>
+              <span style={{ color: "var(--danger)" }}>
                 {extractError(error).message}
                 {code ? (
                   <span>
@@ -177,7 +185,7 @@ const Settings_Security: NextPage = () => {
               </span>
             </div>
           ) : success ? (
-            <p>Password changed!</p>
+            <p style={{ color: "var(--success)" }}>Password changed!</p>
           ) : null}
           <SubmitButton>
             <Button block>Change Passphrase</Button>
