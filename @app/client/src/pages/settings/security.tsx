@@ -10,6 +10,7 @@ import {
   Button,
   Field,
   Form,
+  FormStateContextProps,
   FormWrapper,
   Heading,
   OnChangeCallbackProps,
@@ -32,7 +33,6 @@ import {
 import * as Sentry from "@sentry/nextjs";
 import { NextPage } from "next";
 import Link from "next/link";
-import { Store } from "rc-field-form/lib/interface";
 import React, { useCallback, useState } from "react";
 
 const Settings_Security: NextPage = () => {
@@ -46,14 +46,14 @@ const Settings_Security: NextPage = () => {
   const [success, setSuccess] = useState(false);
 
   const handleSubmit = useCallback(
-    async (values: Store) => {
+    async (context: FormStateContextProps) => {
       setSuccess(false);
       setError(null);
       try {
         await changePassword({
           variables: {
-            oldPassword: values.oldPassword,
-            newPassword: values.newPassword,
+            oldPassword: context.values.oldPassword,
+            newPassword: context.values.newPassword,
           },
         });
         setError(null);
@@ -104,7 +104,8 @@ const Settings_Security: NextPage = () => {
   }, [email, forgotPassword, resetError, resetInProgress]);
 
   const handleChange = ({ values, changedField }: OnChangeCallbackProps) => {
-    if (changedField === "new-password") {
+    console.log(values);
+    if (changedField === "newPassword") {
       const value = values[changedField];
       if (value.length > 0) {
         setPasswordStrength(getPasswordStrength(value));
@@ -154,10 +155,10 @@ const Settings_Security: NextPage = () => {
           onSubmit={handleSubmit}
           onChange={handleChange}
         >
-          <Field name="old-password" required>
+          <Field name="oldPassword" required>
             Old passphrase
           </Field>
-          <Field name="new-password">New passphrase</Field>
+          <Field name="newPassword">New passphrase</Field>
           <PasswordStrength
             passwordStrength={passwordStrength}
             suggestions={passwordSuggestions}
