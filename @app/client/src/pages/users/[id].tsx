@@ -133,7 +133,11 @@ const Catalogs: NextPage = () => {
                 </PropertyList>
               </Space>
             </Space>
-            {isOwner && <Button href={settingsUrl}>Edit Profile</Button>}
+            {isOwner && (
+              <div>
+                <Button href={settingsUrl}>Edit Profile</Button>
+              </div>
+            )}
             {bio && (
               <ReactMarkdown
                 components={{
