@@ -2,7 +2,6 @@
 #import "./ListData.graphql"
 
 query LilyById($id: Int!) {
-  ...SharedLayout_Query
   lily(id: $id) {
     id
     ...LilyData

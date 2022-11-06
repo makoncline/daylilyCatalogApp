@@ -1,14 +1,14 @@
 #import "./LilyData.graphql"
 #import "./ListData.graphql"
 query Lilies {
-  ...SharedLayout_Query
   currentUser {
     id
     ...ProfileSettingsForm_User
     lilies {
       nodes {
         id
-        ...UserLilyData
+        ...LilyData
+        privateNote
       }
     }
   }

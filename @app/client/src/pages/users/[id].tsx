@@ -9,15 +9,17 @@ import {
 import {
   Badge,
   Button,
+  Center,
   FancyHeading,
   getPlaceholderImageUrl,
   Heading,
   PropertyList,
   PropertyListItem,
   Space,
+  Spinner,
   Thumbnail,
 } from "@app/design";
-import { useUserByIdQuery } from "@app/graphql";
+import { useSharedQuery, useUserByIdQuery } from "@app/graphql";
 import { settingsUrl } from "@app/lib";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -30,12 +32,19 @@ const Catalogs: NextPage = () => {
   const listingSection = React.useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { id } = router.query;
-  const userId = parseInt(id as string, 10);
-  const query = useUserByIdQuery({
-    variables: { id: userId },
+  const sharedQuery = useSharedQuery();
+  const { loading: sharedQueryLoading, error: sharedQueryError } = sharedQuery;
+  const userQuery = useUserByIdQuery({
+    variables: { id: parseInt(id as string) },
   });
-  const { data, loading, error } = query;
-  const user = data?.user;
+  const {
+    data: userQueryData,
+    loading: userQueryLoading,
+    error: userQueryError,
+  } = userQuery;
+
+  const isLoading = sharedQueryLoading || userQueryLoading;
+  const isError = sharedQueryError || userQueryError;
   const {
     username,
     imgUrls,
@@ -46,7 +55,7 @@ const Catalogs: NextPage = () => {
     avatarUrl,
     updatedAt,
     createdAt,
-  } = user || {};
+  } = userQueryData?.user || {};
   const listings = lilies?.nodes || [];
   const forSale = listings.filter((listing) => listing.price > 0);
   const displayListings = selectedList
@@ -54,162 +63,160 @@ const Catalogs: NextPage = () => {
       ? forSale
       : listings.filter((listing) => listing.list?.name === selectedList)
     : listings;
-  let listingsHeading = "All Listings";
-  if (selectedList) {
-    if (selectedList === "forSale") {
-      listingsHeading = "For Sale";
-    } else {
-      listingsHeading = selectedList;
-    }
-  }
-  const isOwner = data?.currentUser?.id === userId;
+  const listingsHeading = selectedList
+    ? selectedList === "forSale"
+      ? "For Sale"
+      : selectedList
+    : "All Listings";
 
   const handleListChange = (list: string | null) => {
     setSelectedList(list);
     listingSection?.current?.scrollIntoView({ behavior: "smooth" });
   };
-
-  const pageContent = (() => {
-    if (loading) {
-      return "Loading";
-    }
-    if (error) {
-      return <ErrorAlert error={error} />;
-    }
-    return (
-      <>
-        <Space responsive>
-          <ListingImageDisplay
-            imageUrls={
-              imgUrls && imgUrls.length
-                ? (imgUrls as string[])
-                : [getPlaceholderImageUrl()]
-            }
-          />
-          <Space direction="column">
-            <Space responsive>
-              <Thumbnail>
-                <Image
-                  src={avatarUrl || getPlaceholderImageUrl(username)}
-                  alt="user avatar image"
-                />
-              </Thumbnail>
-              <Space direction="column">
-                <PropertyList divider>
-                  {updatedAt && (
-                    <PropertyListItem label="Updated">
-                      <Badge>
-                        {new Date(updatedAt).toLocaleDateString("en-US", {
-                          year: "2-digit",
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </Badge>
-                    </PropertyListItem>
-                  )}
-                  {createdAt && (
-                    <PropertyListItem label="Joined">
-                      <Badge>
-                        {new Date(createdAt).toLocaleDateString("en-US", {
-                          year: "2-digit",
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </Badge>
-                    </PropertyListItem>
-                  )}
-                </PropertyList>
-                <PropertyList divider>
-                  {userLocation && (
-                    <PropertyListItem label="Location">
-                      {userLocation}
-                    </PropertyListItem>
-                  )}
-                  {lilies && (
-                    <PropertyListItem label="# Listings">
-                      {lilies.totalCount.toLocaleString()}
-                    </PropertyListItem>
-                  )}
-                </PropertyList>
-              </Space>
-            </Space>
-            {isOwner && (
-              <div>
-                <Button href={settingsUrl}>Edit Profile</Button>
-              </div>
-            )}
-            {bio && (
-              <ReactMarkdown
-                components={{
-                  h1: "h3",
-                  h2: "h4",
-                  h3: "h5",
-                  h4: "h6",
-                  h5: "h6",
-                  h6: "h6",
-                }}
-              >
-                {bio}
-              </ReactMarkdown>
-            )}
-          </Space>
-        </Space>
-        <Space direction="column" center block>
-          <FancyHeading level={2}>Lists</FancyHeading>
-          {forSale.length > 0 && (
-            <ListCard direction="column" block>
-              <Heading level={3}>For sale</Heading>
-              <p>View listings with a price</p>
-              <p>{forSale.length.toLocaleString()} listings</p>
-              <Space>
-                <Button onClick={() => handleListChange("forSale")}>
-                  {selectedList === "forSale" ? "Now viewing" : "View"}
-                </Button>
-              </Space>
-            </ListCard>
-          )}
-          {lists?.nodes &&
-            lists.nodes.length > 0 &&
-            lists.nodes
-              .filter((list) => list.lilies.totalCount > 0)
-              .sort((a, b) => b.lilies.totalCount - a.lilies.totalCount)
-              .map((list) => (
-                <ListCard direction="column" block key={list.id}>
-                  <Heading level={3}>{list.name}</Heading>
-                  {list.intro && <p>{list.intro}</p>}
-                  <p>{list.lilies.totalCount.toLocaleString()} listings</p>
-                  <Space>
-                    <Button onClick={() => handleListChange(list.name)}>
-                      {selectedList === list.name ? "Now viewing" : "View"}
-                    </Button>
-                  </Space>
-                </ListCard>
-              ))}
-          <ListCard direction="column" block>
-            <Heading level={3}>All Listings</Heading>
-            <p>View all of {username}'s listings</p>
-            <p>{listings.length.toLocaleString()} listings</p>
-            <Space>
-              <Button onClick={() => handleListChange(null)}>
-                {selectedList === null ? "Now viewing" : "View"}
-              </Button>
-            </Space>
-          </ListCard>
-        </Space>
-        <Space direction="column" block ref={listingSection}>
-          <FancyHeading level={2}>{listingsHeading}</FancyHeading>
-          <LiliesTable dataSource={displayListings} isOwner={false} />
-        </Space>
-      </>
-    );
-  })();
   return (
-    <SharedLayout title={username ? `${username}` : "Catalog"} query={query}>
+    <SharedLayout
+      title={username ? `${username}` : "Catalog"}
+      query={sharedQuery}
+    >
       <SEO
         title={`Check out this daylily catalog by ${username}`}
         description={`View garden information, daylily lists, and daylily listings. Buy daylilies online from daylily catalog user ${username}.`}
       />
-      {pageContent}
+      {isLoading ? (
+        <Center>
+          <Spinner />
+        </Center>
+      ) : isError ? (
+        <>
+          {sharedQueryError && <ErrorAlert error={sharedQueryError} />}
+          {userQueryError && <ErrorAlert error={userQueryError} />}
+        </>
+      ) : userQueryData ? (
+        <>
+          <Space responsive>
+            <ListingImageDisplay
+              imageUrls={
+                imgUrls && imgUrls.length
+                  ? (imgUrls as string[])
+                  : [getPlaceholderImageUrl()]
+              }
+            />
+            <Space direction="column">
+              <Space responsive>
+                <Thumbnail>
+                  <Image
+                    src={avatarUrl || getPlaceholderImageUrl(username)}
+                    alt="user avatar image"
+                  />
+                </Thumbnail>
+                <Space direction="column">
+                  <PropertyList divider>
+                    {updatedAt && (
+                      <PropertyListItem label="Updated">
+                        <Badge>
+                          {new Date(updatedAt).toLocaleDateString("en-US", {
+                            year: "2-digit",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </Badge>
+                      </PropertyListItem>
+                    )}
+                    {createdAt && (
+                      <PropertyListItem label="Joined">
+                        <Badge>
+                          {new Date(createdAt).toLocaleDateString("en-US", {
+                            year: "2-digit",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </Badge>
+                      </PropertyListItem>
+                    )}
+                  </PropertyList>
+                  <PropertyList divider>
+                    {userLocation && (
+                      <PropertyListItem label="Location">
+                        {userLocation}
+                      </PropertyListItem>
+                    )}
+                    {lilies && (
+                      <PropertyListItem label="# Listings">
+                        {lilies.totalCount.toLocaleString()}
+                      </PropertyListItem>
+                    )}
+                  </PropertyList>
+                </Space>
+              </Space>
+              {sharedQuery.data?.currentUser?.id === parseInt(id as string) && (
+                <Button href={settingsUrl}>Edit Profile</Button>
+              )}
+              {bio && (
+                <ReactMarkdown
+                  components={{
+                    h1: "h3",
+                    h2: "h4",
+                    h3: "h5",
+                    h4: "h6",
+                    h5: "h6",
+                    h6: "h6",
+                  }}
+                >
+                  {bio}
+                </ReactMarkdown>
+              )}
+            </Space>
+          </Space>
+          <Space direction="column" center block>
+            <FancyHeading level={2}>Lists</FancyHeading>
+            {forSale.length > 0 && (
+              <ListCard direction="column" block>
+                <Heading level={3}>For sale</Heading>
+                <p>View listings with a price</p>
+                <p>{forSale.length.toLocaleString()} listings</p>
+                <Space>
+                  <Button onClick={() => handleListChange("forSale")}>
+                    {selectedList === "forSale" ? "Now viewing" : "View"}
+                  </Button>
+                </Space>
+              </ListCard>
+            )}
+            {lists?.nodes &&
+              lists.nodes.length > 0 &&
+              lists.nodes
+                .filter((list) => list.lilies.totalCount > 0)
+                .sort((a, b) => b.lilies.totalCount - a.lilies.totalCount)
+                .map((list) => (
+                  <ListCard direction="column" block key={list.id}>
+                    <Heading level={3}>{list.name}</Heading>
+                    {list.intro && <p>{list.intro}</p>}
+                    <p>{list.lilies.totalCount.toLocaleString()} listings</p>
+                    <Space>
+                      <Button onClick={() => handleListChange(list.name)}>
+                        {selectedList === list.name ? "Now viewing" : "View"}
+                      </Button>
+                    </Space>
+                  </ListCard>
+                ))}
+            <ListCard direction="column" block>
+              <Heading level={3}>All Listings</Heading>
+              <p>View all of {username}'s listings</p>
+              <p>{listings.length.toLocaleString()} listings</p>
+              <Space>
+                <Button onClick={() => handleListChange(null)}>
+                  {selectedList === null ? "Now viewing" : "View"}
+                </Button>
+              </Space>
+            </ListCard>
+          </Space>
+          <Space direction="column" block ref={listingSection}>
+            <FancyHeading level={2}>{listingsHeading}</FancyHeading>
+            <LiliesTable dataSource={displayListings} isOwner={false} />
+          </Space>
+        </>
+      ) : (
+        <p>User with id, {id}, not found...</p>
+      )}
     </SharedLayout>
   );
 };

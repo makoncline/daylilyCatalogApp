@@ -1,6 +1,5 @@
 #import "./ListData.graphql"
 query ListById($id: Int!) {
-  ...SharedLayout_Query
   list(id: $id) {
     id
     ...ListData

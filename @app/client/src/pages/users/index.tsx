@@ -1,30 +1,43 @@
 import { ErrorAlert, SEO, SharedLayout, UsersTable } from "@app/components";
-import { useUsersQuery } from "@app/graphql";
+import { Center, Spinner } from "@app/design";
+import { useSharedQuery, useUsersQuery } from "@app/graphql";
 import { NextPage } from "next";
 import React from "react";
 
-const UsersPage: NextPage = () => {
-  const query = useUsersQuery();
-  const { data, loading, error } = query;
-  const users = data?.users?.nodes || [];
-  const pageContent = (() => {
-    if (loading) {
-      return "Loading";
-    }
-    if (error) {
-      return <ErrorAlert error={error} />;
-    }
-    return <UsersTable users={users} />;
-  })();
+const View: NextPage = () => {
+  const sharedQuery = useSharedQuery();
+  const { loading: sharedQueryLoading, error: sharedQueryError } = sharedQuery;
+  const usersQuery = useUsersQuery();
+  const {
+    data: usersQueryData,
+    loading: usersQueryLoading,
+    error: usersQueryError,
+  } = usersQuery;
+
+  const isLoading = sharedQueryLoading || usersQueryLoading;
+  const isError = sharedQueryError || usersQueryError;
   return (
-    <SharedLayout title="Users" query={query}>
+    <SharedLayout title="Users" query={sharedQuery}>
       <SEO
         title={`Check out these daylily catalogs. Thousands of daylilies for sale.`}
         description="View garden information, daylily lists, and daylily listings. Buy daylilies online from daylily catalog users."
       />
-      {pageContent}
+      {isLoading ? (
+        <Center>
+          <Spinner />
+        </Center>
+      ) : isError ? (
+        <>
+          {sharedQueryError && <ErrorAlert error={sharedQueryError} />}
+          {usersQueryError && <ErrorAlert error={usersQueryError} />}
+        </>
+      ) : usersQueryData ? (
+        <UsersTable data={usersQueryData} />
+      ) : (
+        <p>Users not found...</p>
+      )}
     </SharedLayout>
   );
 };
 
-export default UsersPage;
+export default View;

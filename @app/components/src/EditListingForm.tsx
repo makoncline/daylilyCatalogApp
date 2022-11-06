@@ -1,6 +1,7 @@
 import { ApolloError, useApolloClient } from "@apollo/client";
 import {
   Button,
+  Center,
   Field,
   Form,
   FormError,
@@ -9,16 +10,17 @@ import {
   FormWrapper,
   Heading,
   Space,
+  Spinner,
   SubmitButton,
   useForm,
 } from "@app/design";
 import {
   AhsSearchDataFragment,
-  LilyByIdQuery,
   ListDataFragment,
   useDeleteLilyMutation,
   useDeleteUploadMutation,
   useEditLilyMutation,
+  useLilyByIdQuery,
 } from "@app/graphql";
 import {
   catalogUrl,
@@ -46,30 +48,27 @@ import {
 } from "./UploadDisabled";
 
 type EditListingFormProps = {
+  error: Error | ApolloError | null;
+  setError: (error: Error | ApolloError | null) => void;
+  id: number;
   isPhotoUploadEnabled: "NOT_VERIFIED" | "NO_MEMBERSHIP" | "ENABLED";
-  listing: NonNullable<LilyByIdQuery["lily"]>;
 };
 
 function EditListingForm({
+  error,
+  setError,
+  id,
   isPhotoUploadEnabled,
-  listing,
 }: EditListingFormProps) {
-  const {
-    id,
-    name,
-    price,
-    publicNote,
-    privateNote,
-    ahsDatumByAhsRef,
-    list: origList,
-    imgUrl,
-  } = listing;
-  const [error, setError] = React.useState<Error | ApolloError | null>(null);
   const [formState, setFormState] = React.useState<"idle" | "deleting">("idle");
   const [linkedLily, setLinkedLily] =
-    React.useState<AhsSearchDataFragment | null>(ahsDatumByAhsRef);
-  const [list, setList] = React.useState<ListDataFragment | null>(origList);
-
+    React.useState<AhsSearchDataFragment | null>(null);
+  const [list, setList] = React.useState<ListDataFragment | null>(null);
+  const {
+    data,
+    loading,
+    error: queryError,
+  } = useLilyByIdQuery({ variables: { id } });
   const client = useApolloClient();
   const [editLily] = useEditLilyMutation();
   const [deleteLily] = useDeleteLilyMutation();
@@ -171,19 +170,38 @@ function EditListingForm({
   };
 
   React.useEffect(() => {
-    const priceInt = parseInt(price);
-    const priceString = priceInt ? priceInt.toString() : "";
-    setValues({
-      name: name,
-      price: priceString,
-      publicNote: publicNote || "",
-      privateNote: privateNote || "",
-    });
-  }, [name, price, privateNote, publicNote, setValues]);
+    if (!isReady && data?.lily) {
+      const {
+        name,
+        price,
+        publicNote,
+        privateNote,
+        ahsDatumByAhsRef,
+        list,
+        imgUrl,
+      } = data.lily;
+      const priceInt = parseInt(price);
+      const priceString = priceInt ? priceInt.toString() : "";
+      setValues({
+        name: name,
+        price: priceString,
+        publicNote: publicNote || "",
+        privateNote: privateNote || "",
+      });
+      if (ahsDatumByAhsRef) {
+        setLinkedLily(ahsDatumByAhsRef);
+      }
+      if (list) {
+        setList(list);
+      }
+      if (imgUrl) {
+        setImageUrls(imgUrl.filter(Boolean) as string[]);
+      }
+    }
+  }, [data, isReady, setValues]);
 
   const MAX_NUM_IMAGES = 3;
-  const imgUrls = imgUrl ? (imgUrl.filter(Boolean) as string[]) : null;
-  const [imageUrls, setImageUrls] = React.useState<string[] | null>(imgUrls);
+  const [imageUrls, setImageUrls] = React.useState<string[] | null>([]);
   const numImages = imageUrls?.length ?? 0;
   const showImageUpload = numImages < MAX_NUM_IMAGES;
   const handleBeforeUpload = React.useCallback(
@@ -209,7 +227,7 @@ function EditListingForm({
     if (
       isReady &&
       imageUrls &&
-      JSON.stringify(imageUrls) != JSON.stringify(imgUrl)
+      JSON.stringify(imageUrls) != JSON.stringify(data?.lily?.imgUrl)
     ) {
       try {
         editLily({
@@ -224,12 +242,22 @@ function EditListingForm({
         setError(e);
       }
     }
-  }, [imgUrl, editLily, id, imageUrls, isReady, setError]);
+  }, [data?.lily?.imgUrl, editLily, id, imageUrls, isReady, setError]);
 
+  if (loading)
+    return (
+      <Center>
+        <Spinner />
+      </Center>
+    );
+  if (queryError) return <p>Error: {queryError.message}</p>;
+  if (!data?.lily && formState === "deleting")
+    return <p>Daylily with id {id} has been deleted</p>;
+  if (!data?.lily) return <p>No listing found with id {id}</p>;
   return (
     <Space direction="column" gap="large">
       <SEO
-        title={`Edit ${name}`}
+        title={`Edit ${data.lily.name}`}
         description="Manage your Daylily Catalog listing. Manage photos, description, pricing, or delete your listing."
         noRobots
       />

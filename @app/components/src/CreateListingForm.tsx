@@ -20,15 +20,19 @@ import {
 import * as Sentry from "@sentry/nextjs";
 import { UseComboboxStateChange } from "downshift";
 import Router from "next/router";
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import styled from "styled-components";
 
 import { RegisteredLilyDisplay } from "./RegisteredLilyDisplay";
 import { RegisteredLilyInput } from "./RegisteredLilyInput";
 import { SEO } from "./SEO";
 
-function CreateListingForm() {
-  const [error, setError] = useState<Error | ApolloError | null>(null);
+type EditListingFormProps = {
+  error: Error | ApolloError | null;
+  setError: (error: Error | ApolloError | null) => void;
+};
+
+function CreateListingForm({ error, setError }: EditListingFormProps) {
   const { values, setValues } = useForm("create-listing-form");
   const [linkedLily, setLinkedLily] =
     React.useState<AhsSearchDataFragment | null>(null);

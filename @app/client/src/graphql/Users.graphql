@@ -1,5 +1,4 @@
 query Users {
-  ...SharedLayout_Query
   users {
     nodes {
       id

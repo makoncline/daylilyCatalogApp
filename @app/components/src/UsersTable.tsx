@@ -13,9 +13,8 @@ import { Pagination } from "./Pagination";
 import { GlobalFilter } from "./TableFilters";
 import { UserCard } from "./UserCard";
 
-type User = NonNullable<UsersQuery["users"]>["nodes"][number];
-
-function UsersTable({ users }: { users: User[] }) {
+function UsersTable({ data }: { data: UsersQuery }) {
+  const users = data.users?.nodes || [];
   const {
     prepareRow,
     state,
@@ -91,7 +90,7 @@ function UsersTable({ users }: { users: User[] }) {
 }
 export { UsersTable };
 
-const useReactTable = ({ rawData }: { rawData: User[] }) => {
+const useReactTable = ({ rawData }: { rawData: UserDataFragment[] }) => {
   const data = React.useMemo(() => {
     const sortByLastUpdated = (a: UserDataFragment, b: UserDataFragment) =>
       new Date(a.updatedAt) > new Date(b.updatedAt) ? -1 : 1;
