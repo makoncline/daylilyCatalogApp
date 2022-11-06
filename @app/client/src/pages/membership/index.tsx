@@ -6,8 +6,8 @@ import {
   SEO,
   SharedLayout,
 } from "@app/components";
-import { Button, Heading, Hr, Space } from "@app/design";
-import { SharedLayout_UserFragment, useMembershipQuery } from "@app/graphql";
+import { Button, Center, Heading, Hr, Space, Spinner } from "@app/design";
+import { useMembershipQuery } from "@app/graphql";
 import { emailsUrl, loginUrl } from "@app/lib";
 import { NextPage } from "next";
 import React from "react";
@@ -17,23 +17,9 @@ import { Features, FreePlan, ProPlan } from "../../components";
 const Membership: NextPage = () => {
   const query = useMembershipQuery();
   const { data, loading, error } = query;
-  const user = data && data.currentUser;
-  const pageContent = (() => {
-    if (loading) {
-      return "Loading";
-    }
-    if (error) {
-      return <ErrorAlert error={error} />;
-    }
-    if (!user) {
-      return (
-        <Redirect
-          href={`${loginUrl}?next=${encodeURIComponent("/membership")}`}
-        />
-      );
-    }
-    return <Plans user={user} />;
-  })();
+  const isVerified = !!data?.currentUser?.isVerified;
+  const isSubscriptionActive =
+    data?.currentUser?.stripeSubscription?.subscriptionInfo?.status == "active";
   return (
     <SharedLayout title="Membership" query={query}>
       <SEO
@@ -41,32 +27,50 @@ const Membership: NextPage = () => {
         description="Become a Daylily Catalog Pro and unlock unlimited number of listings and lists, and upload your own photos."
         noRobots
       />
-      {pageContent}
+      {data && data.currentUser ? (
+        <Plans active={isSubscriptionActive} isVerified={isVerified} />
+      ) : loading ? (
+        <Center>
+          <Spinner />
+        </Center>
+      ) : error ? (
+        <ErrorAlert error={error} />
+      ) : (
+        <Redirect
+          href={`${loginUrl}?next=${encodeURIComponent("/membership")}`}
+        />
+      )}
     </SharedLayout>
   );
 };
 
 export default Membership;
 
-const Plans = ({ user }: { user: SharedLayout_UserFragment }) => {
-  const isVerified = user.isVerified;
-  const isSubscriptionActive =
-    user.stripeSubscription?.subscriptionInfo?.status == "active";
+const Plans = ({
+  active,
+  isVerified,
+}: {
+  active: boolean;
+  isVerified: boolean;
+}) => {
   return (
     <Space direction="column" center gap="large">
-      {isSubscriptionActive ? (
+      {active && (
         <>
           <Heading level={2}>You are a pro Daylily Catalog member </Heading>
           <BillingPortalButton />
         </>
-      ) : (
+      )}
+      {!active && (
         <>
           <Heading level={2}>Pick a plan to start your Daylily Catalog</Heading>
           <Space responsive>
             <FreePlan
               action={
                 <Button block disabled>
-                  This is your current plan
+                  {active
+                    ? "Included in your current plan"
+                    : "This is your current plan"}
                 </Button>
               }
             />
@@ -91,6 +95,10 @@ const Plans = ({ user }: { user: SharedLayout_UserFragment }) => {
                         </Button>
                       </Space>
                     </div>
+                  ) : active ? (
+                    <Button block disabled>
+                      This is your current plan
+                    </Button>
                   ) : (
                     <CheckoutButton />
                   )}

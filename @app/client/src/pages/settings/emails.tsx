@@ -73,7 +73,6 @@ function Email({
                 <span
                   data-cy="settingsemails-indicator-primary"
                   style={{ color: "var(--success)" }}
-                  key="primary"
                 >
                   Primary
                 </span>
@@ -84,7 +83,6 @@ function Email({
                     deleteEmail({ variables: { emailId: email.id } })
                   }
                   data-cy="settingsemails-button-delete"
-                  key="delete"
                 >
                   Delete
                 </Button>
@@ -96,7 +94,6 @@ function Email({
                       variables: { emailId: email.id },
                     })
                   }
-                  key="resend"
                 >
                   Resend verification
                 </Button>
@@ -107,7 +104,6 @@ function Email({
                     makeEmailPrimary({ variables: { emailId: email.id } })
                   }
                   data-cy="settingsemails-button-makeprimary"
-                  key="makeprimary"
                 >
                   Make primary
                 </Button>
@@ -166,10 +162,10 @@ const Settings_Emails: NextPage = () => {
           </div>
           <div>
             <EmailList>
-              {user.userEmails.nodes.map((email) => (
+              {user.userEmails.nodes.map((email, index) => (
                 <Email
                   email={email}
-                  key={email.id}
+                  key={index}
                   hasOtherEmails={user.userEmails.nodes.length > 1}
                 />
               ))}

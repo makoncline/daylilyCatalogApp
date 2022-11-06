@@ -1,5 +1,0 @@
-fragment UserLilyData on Lily {
-  id
-  ...LilyData
-  privateNote
-}

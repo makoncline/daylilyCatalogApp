@@ -40,9 +40,7 @@ export const ListingCard = ({
         {price && <p>{price > 0 ? currency(price) : "-"}</p>}
         {note && <p>{note}</p>}
         {description && <p>{description}</p>}
-        <div>
-          <Button href={toViewListingUrl(id)}>View</Button>
-        </div>
+        <Button href={toViewListingUrl(id)}>View</Button>
       </Body>
     </StyledCard>
   );

@@ -1,37 +1,31 @@
 import {
   ErrorAlert,
-  FourOhFour,
   Lists,
   Redirect,
   SEO,
   SharedLayout,
 } from "@app/components";
-import { useListsQuery } from "@app/graphql";
+import { useSharedQuery } from "@app/graphql";
 import { loginUrl } from "@app/lib";
 import { NextPage } from "next";
 import React from "react";
 
 const ListsPage: NextPage = () => {
-  const query = useListsQuery();
-  const { data, loading, error } = query;
+  const { data, loading, error } = useSharedQuery();
   const user = data && data.currentUser;
-  const lists = data && data.currentUser?.lists.nodes;
 
   const pageContent = (() => {
-    if (loading) {
-      return "Loading";
-    }
-    if (error) {
+    if (error && !loading) {
       return <ErrorAlert error={error} />;
-    }
-    if (!user) {
+    } else if (!user && !loading) {
       return <Redirect href={`${loginUrl}?next=${encodeURIComponent("/")}`} />;
+    } else if (!user) {
+      return "Loading";
+    } else {
+      return <Lists />;
     }
-    if (lists === undefined) {
-      return <FourOhFour currentUser={user} />;
-    }
-    return <Lists lists={lists} />;
   })();
+  const query = useSharedQuery();
   return (
     <SharedLayout title="Lists" query={query}>
       <SEO

@@ -13,11 +13,13 @@ import {
 import {
   Alert,
   Button,
+  Center,
   Field,
   Form,
   FormWrapper,
   Heading,
   Space,
+  Spinner,
   SubmitButton,
   useForm,
 } from "@app/design";
@@ -45,55 +47,48 @@ const Settings_Profile: NextPage = () => {
   const [formError, setFormError] = useState<Error | ApolloError | null>(null);
   const query = useSettingsProfileQuery();
   const { data, loading, error } = query;
-  const user = data && data.currentUser;
-  const pageContent = (() => {
-    if (error && !loading) {
-      return <ErrorAlert error={error} />;
-    } else if (!user && !loading) {
-      return (
-        <Redirect
-          href={`${loginUrl}?next=${encodeURIComponent(settingsUrl)}`}
-        />
-      );
-    } else if (!user) {
-      return "Loading";
-    } else {
-      return (
-        <>
-          <Space direction="column">
-            <p>Jump to edit:</p>
-            <Wrap>
-              <NextLink href="#profile" passHref>
-                Profile
-              </NextLink>
-              <NextLink href="#bio" passHref>
-                Bio
-              </NextLink>
-              <NextLink href="#avatar" passHref>
-                Avatar
-              </NextLink>
-              <NextLink href="#images" passHref>
-                Images
-              </NextLink>
-            </Wrap>
-            <Button href={toViewUserUrl(user.id)}>View public profile</Button>
-          </Space>
-          <ProfileSettingsForm
-            error={formError}
-            setError={setFormError}
-            user={user}
-          />
-        </>
-      );
-    }
-  })();
+  const id = data?.currentUser?.id;
   return (
     <SettingsLayout href={settingsUrl} query={query} noPad>
       <SEO
         title="Edit Profile"
         description="Manage your Daylily Catalog profile. Change your username, bio, profile photo, and garden photos."
       />
-      {pageContent}
+      <Space direction="column">
+        <p>Jump to edit:</p>
+        <Wrap>
+          <NextLink href="#profile" passHref>
+            Profile
+          </NextLink>
+          <NextLink href="#bio" passHref>
+            Bio
+          </NextLink>
+          <NextLink href="#avatar" passHref>
+            Avatar
+          </NextLink>
+          <NextLink href="#images" passHref>
+            Images
+          </NextLink>
+        </Wrap>
+        {id && <Button href={toViewUserUrl(id)}>View public profile</Button>}
+      </Space>
+      {data && data.currentUser ? (
+        <ProfileSettingsForm
+          error={formError}
+          setError={setFormError}
+          user={data.currentUser}
+        />
+      ) : loading ? (
+        <Center>
+          <Spinner />
+        </Center>
+      ) : error ? (
+        <ErrorAlert error={error} />
+      ) : (
+        <Redirect
+          href={`${loginUrl}?next=${encodeURIComponent(settingsUrl)}`}
+        />
+      )}
     </SettingsLayout>
   );
 };
