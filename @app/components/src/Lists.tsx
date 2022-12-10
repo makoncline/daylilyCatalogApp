@@ -2,7 +2,6 @@ import { Button, Center, Spinner } from "@app/design";
 import { useListsQuery } from "@app/graphql";
 import { createListUrl, toEditListUrl } from "@app/lib";
 import Link from "next/link";
-import Router from "next/router";
 import React from "react";
 import styled from "styled-components";
 
@@ -26,16 +25,17 @@ export const Lists = () => {
           <tr>
             <th>Name</th>
             <th>Description</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           {data?.currentUser?.lists.nodes.map((list) => (
-            <tr
-              key={list.id}
-              onClick={() => Router.push(toEditListUrl(list.id))}
-            >
+            <tr key={list.id}>
               <td>{list.name}</td>
               <td>{list.intro}</td>
+              <td>
+                <Link href={toEditListUrl(list.id)}>Edit</Link>
+              </td>
             </tr>
           ))}
         </tbody>
