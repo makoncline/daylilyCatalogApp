@@ -1,4 +1,4 @@
-import { Button, Center, Hr, Spinner } from "@app/design";
+import { Button, Center, Spinner } from "@app/design";
 import { useListsQuery } from "@app/graphql";
 import { createListUrl, toEditListUrl } from "@app/lib";
 import Link from "next/link";
