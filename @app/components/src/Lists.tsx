@@ -48,17 +48,6 @@ const StyledTable = styled.table`
   width: 100%;
   border-collapse: collapse;
   thead {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    background: var(--surface-1);
-  }
-  thead::after {
-    content: "";
-    position: absolute;
-    top: -1px;
-    width: 100%;
-    height: 100%;
     border-bottom: var(--hairline);
   }
   th {
@@ -70,11 +59,5 @@ const StyledTable = styled.table`
     &:first-child {
       white-space: nowrap;
     }
-  }
-  tbody tr {
-    cursor: pointer;
-  }
-  tbody tr:hover {
-    background: var(--surface-2);
   }
 `;
