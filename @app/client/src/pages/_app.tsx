@@ -8,7 +8,6 @@ import { ApolloClient, ApolloProvider } from "@apollo/client";
 import { FormValuesProvider } from "@app/design";
 import { withApollo } from "@app/lib";
 import App from "next/app";
-import Head from "next/head";
 import Router from "next/router";
 import NProgress from "nprogress";
 import * as React from "react";
