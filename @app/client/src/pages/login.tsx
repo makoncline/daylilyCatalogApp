@@ -58,7 +58,6 @@ const Login: NextPage<LoginProps> = ({ next: rawNext }) => {
             <SEO
               title="Sign in"
               description="Sign in to your Daylily Catalog account."
-              noRobots
             />
             <FormWrapper>
               {showLogin ? (

@@ -79,17 +79,6 @@ class MyApp extends App<{ apollo: ApolloClient<any> }> {
     return (
       <ApolloProvider client={apollo}>
         <FormValuesProvider>
-          <Head>
-            <meta charSet="utf-8" />
-            <link rel="shortcut icon" href="/favicon.ico" />
-            <meta
-              name="viewport"
-              content="width=device-width, initial-scale=1"
-            />
-            <meta property="og:site_name" content="Daylily Catalog" />
-            <meta property="og:see_also" content="https://daylilycatalog.com" />
-            <meta name="twitter:card" content="summary" />
-          </Head>
           <Component {...pageProps} />
         </FormValuesProvider>
       </ApolloProvider>

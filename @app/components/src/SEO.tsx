@@ -16,7 +16,7 @@ export const SEO = ({
   noRobots?: boolean;
 }) => {
   const router = useRouter();
-  const url = `${process.env.ROOT_URL}${path ? path : router.pathname}`;
+  const url = `${process.env.ROOT_URL}${path ? path : router.asPath}`;
   return (
     <Head>
       {title && (
@@ -32,12 +32,12 @@ export const SEO = ({
           <meta
             key="og-description"
             property="og:description"
-            content={description}
+            content={description.slice(0, 159)}
           />
           <meta
             key="twitter-description"
             name="twitter:description"
-            content={description}
+            content={description.slice(0, 159)}
           />
         </>
       )}
