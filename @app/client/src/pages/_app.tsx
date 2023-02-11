@@ -8,7 +8,6 @@ import { ApolloClient, ApolloProvider } from "@apollo/client";
 import { FormValuesProvider } from "@app/design";
 import { withApollo } from "@app/lib";
 import App from "next/app";
-import Head from "next/head";
 import Router from "next/router";
 import NProgress from "nprogress";
 import * as React from "react";
@@ -79,17 +78,6 @@ class MyApp extends App<{ apollo: ApolloClient<any> }> {
     return (
       <ApolloProvider client={apollo}>
         <FormValuesProvider>
-          <Head>
-            <meta charSet="utf-8" />
-            <link rel="shortcut icon" href="/favicon.ico" />
-            <meta
-              name="viewport"
-              content="width=device-width, initial-scale=1"
-            />
-            <meta property="og:site_name" content="Daylily Catalog" />
-            <meta property="og:see_also" content="https://daylilycatalog.com" />
-            <meta name="twitter:card" content="summary" />
-          </Head>
           <Component {...pageProps} />
         </FormValuesProvider>
       </ApolloProvider>

@@ -158,7 +158,6 @@ const Register: NextPage<RegisterProps> = ({ next: rawNext }) => {
             <SEO
               title="Register"
               description="Create a Daylily Catalog account."
-              noRobots
             />
             <FormWrapper>
               <Form
