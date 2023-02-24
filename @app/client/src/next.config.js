@@ -59,6 +59,7 @@ if (!process.env.SENTRY_AUTH_TOKEN) {
             "images.daylilycatalog.com",
             "images-stage.daylilycatalog.com",
             "source.boringavatars.com",
+            "www.daylilydatabase.org",
           ],
           minimumCacheTTL: 3600,
           deviceSizes: [200, 400, 800],
