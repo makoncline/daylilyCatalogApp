@@ -9,7 +9,7 @@ export const stripeWebhooks = async (req: Request, res: Response) => {
   let data;
   let eventType;
   // Check if webhook signing is configured.
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+  const webhookSecret = `${process.env.STRIPE_WEBHOOK_SECRET}`;
 
   if (webhookSecret) {
     // Retrieve the event by verifying the signature using the raw body and secret.
