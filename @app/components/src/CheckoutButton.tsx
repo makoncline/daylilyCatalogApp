@@ -12,7 +12,11 @@ export const CheckoutButton = () => {
   const userId = data?.currentUser?.id;
   const userEmail = data?.currentUser?.userEmails?.nodes[0]?.email;
   const stripeCustomerId = data?.currentUser?.stripeCustomer?.id;
-  const plan = process.env.NEXT_PUBLIC_STRIPE_PLAN;
+  // TODO: hardcode prod plan since it is undefined in prod only for some reason
+  const plan =
+    process.env.NEXT_PUBLIC_STRIPE_PLAN !== "undefined"
+      ? process.env.NEXT_PUBLIC_STRIPE_PLAN
+      : "price_1JetCGEojuAWz3ApRn8aEB86";
   const router = useRouter();
   const hasPrimaryEmail = !!userEmail;
 
