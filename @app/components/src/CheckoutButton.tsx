@@ -12,7 +12,7 @@ export const CheckoutButton = () => {
   const userId = data?.currentUser?.id;
   const userEmail = data?.currentUser?.userEmails?.nodes[0]?.email;
   const stripeCustomerId = data?.currentUser?.stripeCustomer?.id;
-  const plan = process.env.NEXT_PUBLIC_STRIPE_PLAN;
+  const plan = `${process.env.NEXT_PUBLIC_STRIPE_PLAN}`;
   const router = useRouter();
   const hasPrimaryEmail = !!userEmail;
 
