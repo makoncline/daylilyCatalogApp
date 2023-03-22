@@ -13,10 +13,7 @@ export const CheckoutButton = () => {
   const userEmail = data?.currentUser?.userEmails?.nodes[0]?.email;
   const stripeCustomerId = data?.currentUser?.stripeCustomer?.id;
   // TODO: revert hardcode prod plan since it is undefined in prod only for some reason
-  const plan =
-    process.env.NEXT_PUBLIC_STRIPE_PLAN !== "undefined"
-      ? process.env.NEXT_PUBLIC_STRIPE_PLAN
-      : "price_1JetCGEojuAWz3ApRn8aEB86";
+  const plan = process.env.STRIPE_PLAN;
   const router = useRouter();
   const hasPrimaryEmail = !!userEmail;
 
@@ -25,7 +22,7 @@ export const CheckoutButton = () => {
     const checkoutSession: Stripe.Checkout.Session = await fetchPostJsonCsrf(
       "/api/checkout_session",
       {
-        plan: "price_1JetCGEojuAWz3ApRn8aEB86",
+        plan,
         userId,
         userEmail,
         stripeCustomerId,

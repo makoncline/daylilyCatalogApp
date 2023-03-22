@@ -111,6 +111,10 @@ if (!process.env.SENTRY_AUTH_TOKEN) {
                   "(typeof window !== 'undefined' ? window.__GRAPHILE_APP__.S3_UPLOAD_BUCKET : process.env.S3_UPLOAD_BUCKET)",
                 "process.env.S3_RESIZED_IMAGE_BUCKET":
                   "(typeof window !== 'undefined' ? window.__GRAPHILE_APP__.S3_RESIZED_IMAGE_BUCKET : process.env.S3_RESIZED_IMAGE_BUCKET)",
+                "process.env.STRIPE_PUBLISHABLE_KEY":
+                  "(typeof window !== 'undefined' ? window.__GRAPHILE_APP__.STRIPE_PUBLISHABLE_KEY : process.env.STRIPE_PUBLISHABLE_KEY)",
+                "process.env.STRIPE_PLAN":
+                  "(typeof window !== 'undefined' ? window.__GRAPHILE_APP__.STRIPE_PLAN : process.env.STRIPE_PLAN)",
               }),
               new webpack.IgnorePlugin(
                 // These modules are server-side only; we don't want webpack

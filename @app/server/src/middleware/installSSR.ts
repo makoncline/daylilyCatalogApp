@@ -41,6 +41,8 @@ export default async function installSSR(app: Express) {
         T_AND_C_URL: process.env.T_AND_C_URL,
         S3_UPLOAD_BUCKET: process.env.S3_UPLOAD_BUCKET,
         S3_RESIZED_IMAGE_BUCKET: process.env.S3_RESIZED_IMAGE_BUCKET,
+        STRIPE_PLAN: process.env.STRIPE_PLAN,
+        STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
       },
     });
   });

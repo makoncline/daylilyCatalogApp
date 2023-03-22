@@ -19,6 +19,8 @@ declare global {
       T_AND_C_URL?: string;
       S3_UPLOAD_BUCKET?: string;
       S3_RESIZED_IMAGE_BUCKET?: string;
+      STRIPE_PLAN?: string;
+      STRIPE_PUBLISHABLE_KEY?: string;
     };
   }
 }
@@ -38,6 +40,8 @@ if (typeof window !== "undefined") {
     T_AND_C_URL: data.query.T_AND_C_URL,
     S3_UPLOAD_BUCKET: data.query.S3_UPLOAD_BUCKET,
     S3_RESIZED_IMAGE_BUCKET: data.query.S3_RESIZED_IMAGE_BUCKET,
+    STRIPE_PLAN: data.query.STRIPE_PLAN,
+    STRIPE_PUBLISHABLE_KEY: data.query.STRIPE_PUBLISHABLE_KEY,
   };
 
   Router.events.on("routeChangeStart", () => {
