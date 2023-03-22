@@ -42,6 +42,7 @@ import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 
 import { validateUsername } from "../../util";
+import { getIsFree } from "../../util/getIsFree";
 
 const Settings_Profile: NextPage = () => {
   const [formError, setFormError] = useState<Error | ApolloError | null>(null);
@@ -176,7 +177,7 @@ function ProfileSettingsForm({
 
   const isActive =
     user.stripeSubscription?.subscriptionInfo?.status == "active";
-  const isFree = user.freeUntil ? new Date() < new Date(user.freeUntil) : false;
+  const isFree = getIsFree(user?.freeUntil);
   const isPhotoUploadActive = user.isVerified && (isFree || isActive);
 
   const handleSaveAvatarPhoto = React.useCallback(

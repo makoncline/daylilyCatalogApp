@@ -19,8 +19,13 @@ export const Lilies = () => {
 
   const isActive =
     user.stripeSubscription?.subscriptionInfo?.status == "active";
-  const isOverFreeLimit = userLilies.length >= 99;
-  const isFree = user.freeUntil ? new Date() < new Date(user.freeUntil) : false;
+
+  // TODO: turn this back on once fixed
+  // const isOverFreeLimit = userLilies.length >= 99;
+  // const isFree = getIsFree(user?.freeUntil);
+  const isOverFreeLimit = false;
+  const isFree = true;
+
   const isAddActive = isFree || isActive || !isOverFreeLimit;
   return (
     <Space direction="column" block center>
