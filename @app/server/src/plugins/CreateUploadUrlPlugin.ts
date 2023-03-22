@@ -159,14 +159,15 @@ const CreateUploadUrlPlugin = makeExtendSchemaPlugin(() => ({
           throw err;
         }
 
-        if (!user.isActive && !user.isFree) {
-          const err = new Error(
-            "Only users with active subscription may upload files"
-          );
-          // @ts-ignore
-          err.code = "DNIED";
-          throw err;
-        }
+        // TODO: Uncomment this to require a paid subscription to upload files
+        // if (!user.isActive && !user.isFree) {
+        //   const err = new Error(
+        //     "Only users with active subscription may upload files"
+        //   );
+        //   // @ts-ignore
+        //   err.code = "DNIED";
+        //   throw err;
+        // }
 
         const {
           input: { keyPrefix, contentType, clientMutationId },
