@@ -25,7 +25,7 @@ export const CheckoutButton = () => {
     const checkoutSession: Stripe.Checkout.Session = await fetchPostJsonCsrf(
       "/api/checkout_session",
       {
-        plan,
+        plan: "price_1JetCGEojuAWz3ApRn8aEB86",
         userId,
         userEmail,
         stripeCustomerId,
