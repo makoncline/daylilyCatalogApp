@@ -1,4 +1,5 @@
 import { ApolloError } from "@apollo/client";
+import { getIsFree } from "@app/client/src/util/getIsFree";
 import {
   EditListingForm,
   ErrorAlert,
@@ -28,9 +29,7 @@ const Edit: NextPage = () => {
   const user = sharedQueryData?.currentUser;
   const isActive =
     user?.stripeSubscription?.subscriptionInfo?.status == "active";
-  const isFree = user?.freeUntil
-    ? new Date() < new Date(user.freeUntil)
-    : false;
+  const isFree = getIsFree(user?.freeUntil);
   const isPhotoUploadActive = user?.isVerified && (isFree || isActive);
   const isPhotoUploadEnabled = !user?.isVerified
     ? "NOT_VERIFIED"
