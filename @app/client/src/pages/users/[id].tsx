@@ -211,7 +211,13 @@ const Catalogs: NextPage = () => {
           </Space>
           <Space direction="column" block ref={listingSection}>
             <FancyHeading level={2}>{listingsHeading}</FancyHeading>
-            <LiliesTable dataSource={displayListings} isOwner={false} />
+            {displayListings.length ? (
+              <LiliesTable dataSource={displayListings} isOwner={false} />
+            ) : (
+              <Space center>
+                <p>No listings found. Maybe this user hasn't added any yet?</p>
+              </Space>
+            )}
           </Space>
         </>
       ) : (

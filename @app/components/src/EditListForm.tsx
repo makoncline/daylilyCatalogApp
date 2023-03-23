@@ -67,9 +67,17 @@ function EditListForm({ list }: { list: ListDataFragment }) {
 
   return (
     <FormWrapper>
-      <Form formId={editListFormName} onSubmit={handleSubmit}>
+      <Form
+        formId={editListFormName}
+        onSubmit={handleSubmit}
+        validation={{
+          name: (name: string) => (name.length ? null : "name is required"),
+        }}
+      >
         <Field>Name</Field>
-        <Field textarea>Description</Field>
+        <Field textarea maxLength={279}>
+          Description
+        </Field>
         <Space block>
           <SubmitButton>
             <Button block>Update list</Button>

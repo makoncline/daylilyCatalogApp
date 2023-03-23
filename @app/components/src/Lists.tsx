@@ -20,26 +20,30 @@ export const Lists = () => {
       <Link href={createListUrl} passHref>
         <Button block>Create List</Button>
       </Link>
-      <StyledTable>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {data?.currentUser?.lists.nodes.map((list) => (
-            <tr key={list.id}>
-              <td>{list.name}</td>
-              <td>{list.intro}</td>
-              <td>
-                <Link href={toEditListUrl(list.id)}>Edit</Link>
-              </td>
+      {data?.currentUser?.lists.nodes.length ? (
+        <StyledTable>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th></th>
             </tr>
-          ))}
-        </tbody>
-      </StyledTable>
+          </thead>
+          <tbody>
+            {data?.currentUser?.lists.nodes.map((list) => (
+              <tr key={list.id}>
+                <td>{list.name}</td>
+                <td>{list.intro}</td>
+                <td>
+                  <Link href={toEditListUrl(list.id)}>Edit</Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </StyledTable>
+      ) : (
+        <p>No lists found. Create a list to get started.</p>
+      )}
     </>
   );
 };

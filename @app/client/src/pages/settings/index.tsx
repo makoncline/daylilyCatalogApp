@@ -277,7 +277,7 @@ function ProfileSettingsForm({
               Username
             </Field>
             <Field name="location">Location</Field>
-            <Field name="intro" textarea>
+            <Field name="intro" textarea maxLength={279}>
               Intro
             </Field>
             {error ? (

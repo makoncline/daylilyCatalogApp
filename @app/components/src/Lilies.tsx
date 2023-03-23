@@ -54,7 +54,11 @@ export const Lilies = () => {
           Create listing
         </Button>
       )}
-      <LiliesTable dataSource={userLilies || []} isOwner={true} />
+      {userLilies.length ? (
+        <LiliesTable dataSource={userLilies || []} isOwner={true} />
+      ) : (
+        <p>No listings found. Create a listing to get started.</p>
+      )}
     </Space>
   );
 };

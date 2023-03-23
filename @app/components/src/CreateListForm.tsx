@@ -35,9 +35,17 @@ function CreateListForm() {
   return (
     <FormWrapper>
       <Heading level={2}>Create List</Heading>
-      <Form formId={createListFormName} onSubmit={handleSubmit}>
-        <Field>Name</Field>
-        <Field textarea>Description</Field>
+      <Form
+        formId={createListFormName}
+        onSubmit={handleSubmit}
+        validation={{
+          name: (name: string) => (name.length ? null : "name is required"),
+        }}
+      >
+        <Field required>Name</Field>
+        <Field textarea maxLength={279}>
+          Description
+        </Field>
         <SubmitButton>
           <Button>Create list</Button>
         </SubmitButton>

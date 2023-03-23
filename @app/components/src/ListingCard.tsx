@@ -21,6 +21,7 @@ export const ListingCard = ({
   note?: string | null;
   description: string | null;
 }) => {
+  const body = note?.length ? note : description;
   return (
     <StyledCard>
       <div style={{ position: "relative" }}>
@@ -38,8 +39,11 @@ export const ListingCard = ({
       <Body block direction="column">
         <Heading level={3}>{name}</Heading>
         {price && <p>{price > 0 ? currency(price) : "-"}</p>}
-        {note && <p>{note}</p>}
-        {description && <p>{description}</p>}
+        {body && (
+          <p>
+            {body.length > 200 + 3 ? `${body.substring(0, 200 - 3)}...` : body}
+          </p>
+        )}
         <Button href={toViewListingUrl(id)}>View</Button>
       </Body>
     </StyledCard>
