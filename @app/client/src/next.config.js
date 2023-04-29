@@ -42,6 +42,15 @@ if (!process.env.SENTRY_AUTH_TOKEN) {
             },
           ];
         },
+        async redirects() {
+          return [
+            {
+              source: "/starcrossedseeds",
+              destination: "/users/87",
+              permanent: false,
+            },
+          ];
+        },
         sentry: {
           disableServerWebpackPlugin: sentryDisabled,
           disableClientWebpackPlugin: sentryDisabled,
