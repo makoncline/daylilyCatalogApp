@@ -70,7 +70,6 @@ function formatData(lilies: LilyDataFragment[]): string {
         column === "publicNote" ||
         column === "privateNote"
       ) {
-        // @ts-expect-error
         row += `${lily[column] || ""}`;
       } else if (column === "imgUrl") {
         const imgUrls = lily.imgUrl;
