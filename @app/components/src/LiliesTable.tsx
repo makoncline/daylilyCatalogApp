@@ -1,7 +1,7 @@
 import { above, Button, Space, useLocalStorage } from "@app/design";
 import { AhsDataFragment, LilyDataFragment } from "@app/graphql";
 import { toViewListingUrl } from "@app/lib";
-import router from "next/router";
+import { useRouter } from "next/router";
 import React from "react";
 import type { Column, FilterTypes } from "react-table";
 import {
@@ -97,9 +97,11 @@ const defaultHiddenColumns = [
 const useReactTable = ({
   rawData,
   isOwner,
+  initialState,
 }: {
   rawData: LilyDataFragment[];
   isOwner: boolean;
+  initialState: any;
 }) => {
   const [columnOrder, setColumnOrder] = useLocalStorage<string[]>(
     "columnOrder",
@@ -184,7 +186,8 @@ const useReactTable = ({
       {
         Header: "List",
         accessor: "list",
-        Filter: SelectColumnFilter,
+        disableFilters: true,
+        disableSortBy: true,
       },
       {
         Header: "Registered name",
@@ -335,6 +338,7 @@ const useReactTable = ({
         hiddenColumns: isOwner
           ? hiddenColumns
           : columnOrder.filter((col) => !publicColumns.includes(col)),
+        ...initialState,
       },
     },
     useFilters,
@@ -383,6 +387,18 @@ export function LiliesTable({
   dataSource: LilyDataFragment[];
   isOwner: boolean;
 }) {
+  const router = useRouter();
+  const initialState = React.useMemo(() => {
+    if (router.query.state) {
+      try {
+        return JSON.parse(router.query.state as string);
+      } catch (e) {
+        console.error("Failed to parse state from URL", e);
+      }
+    }
+    return {};
+  }, [router.query.state]);
+
   const [showBasicDisplay, setShowBasicDisplay] = useLocalStorage<boolean>(
     "showBasicDisplay",
     true
@@ -418,7 +434,55 @@ export function LiliesTable({
   } = useReactTable({
     rawData: dataSource,
     isOwner,
+    initialState,
   });
+
+  const filterEmptyValues = React.useCallback((obj: any): any => {
+    if (Array.isArray(obj)) {
+      return obj.filter((v) => v != null && v !== "");
+    } else if (typeof obj === "object" && obj !== null) {
+      return Object.fromEntries(
+        Object.entries(obj)
+          .map(([k, v]) => [k, filterEmptyValues(v)])
+          .filter(
+            ([_, v]) =>
+              v != null &&
+              v !== "" &&
+              v !== 0 &&
+              (Array.isArray(v) ? v.length > 0 : true)
+          )
+      );
+    } else {
+      return obj;
+    }
+  }, []);
+
+  React.useEffect(() => {
+    const filteredState = filterEmptyValues({
+      pageIndex: state.pageIndex,
+      pageSize: state.pageSize,
+      filters: state.filters,
+      sortBy: state.sortBy,
+    });
+    console.log("filteredState", filteredState);
+    const stateString = JSON.stringify(filteredState);
+    if (router.query.state !== stateString) {
+      router.push(
+        {
+          pathname: router.pathname,
+          query: { ...router.query, state: stateString },
+        },
+        undefined,
+        { shallow: true }
+      );
+    }
+  }, [state, router, filterEmptyValues]);
+
+  React.useEffect(() => {
+    if (mounted.current) {
+      gotoPage(0);
+    }
+  }, [state.filters, gotoPage]);
 
   const mounted = React.useRef(false);
   React.useEffect(() => {
