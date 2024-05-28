@@ -464,7 +464,6 @@ export function LiliesTable({
       filters: state.filters,
       sortBy: state.sortBy,
     });
-    console.log("filteredState", filteredState);
     const stateString = JSON.stringify(filteredState);
     if (router.query.state !== stateString) {
       router.push(
