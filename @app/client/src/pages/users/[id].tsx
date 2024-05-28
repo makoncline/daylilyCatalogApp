@@ -5,6 +5,7 @@ import {
   ListingImageDisplay,
   SEO,
   SharedLayout,
+  useReactTable,
 } from "@app/components";
 import {
   Badge,
@@ -27,10 +28,25 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 import styled from "styled-components";
 
+import { download } from "../../util/download";
+
 const Catalogs: NextPage = () => {
-  const [selectedList, setSelectedList] = React.useState<string | null>(null);
   const listingSection = React.useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const initialState = React.useMemo(() => {
+    if (router.query.state) {
+      try {
+        return JSON.parse(router.query.state as string);
+      } catch (e) {
+        console.error("Failed to parse state from URL", e);
+      }
+    }
+    return {};
+  }, [router.query.state]);
+  const selectedList = initialState?.filters?.find(
+    (filter: { id: string; value: string }) => filter.id === "list"
+  )?.value;
+
   const { id } = router.query;
   const sharedQuery = useSharedQuery();
   const { loading: sharedQueryLoading, error: sharedQueryError } = sharedQuery;
@@ -57,20 +73,20 @@ const Catalogs: NextPage = () => {
     createdAt,
   } = userQueryData?.user || {};
   const listings = lilies?.nodes || [];
-  const forSale = listings.filter((listing) => listing.price > 0);
-  const displayListings = selectedList
-    ? selectedList === "forSale"
-      ? forSale
-      : listings.filter((listing) => listing.list?.name === selectedList)
-    : listings;
-  const listingsHeading = selectedList
-    ? selectedList === "forSale"
-      ? "For Sale"
-      : selectedList
-    : "All Listings";
+  const listingsHeading = selectedList ? selectedList : "All Listings";
+  const handleDownloadData = () => {
+    download(listings);
+  };
+
+  const table = useReactTable({
+    rawData: listings,
+    isOwner: false,
+    initialState,
+  });
 
   const handleListChange = (list: string | null) => {
-    setSelectedList(list);
+    // @ts-expect-error
+    table.tableInstance.setFilter("list", list);
     listingSection?.current?.scrollIntoView({ behavior: "smooth" });
   };
   return (
@@ -169,18 +185,6 @@ const Catalogs: NextPage = () => {
           </Space>
           <Space direction="column" center block>
             <FancyHeading level={2}>Lists</FancyHeading>
-            {forSale.length > 0 && (
-              <ListCard direction="column" block>
-                <Heading level={3}>For sale</Heading>
-                <p>View listings with a price</p>
-                <p>{forSale.length.toLocaleString()} listings</p>
-                <Space>
-                  <Button onClick={() => handleListChange("forSale")}>
-                    {selectedList === "forSale" ? "Now viewing" : "View"}
-                  </Button>
-                </Space>
-              </ListCard>
-            )}
             {lists?.nodes &&
               lists.nodes.length > 0 &&
               lists.nodes
@@ -211,8 +215,12 @@ const Catalogs: NextPage = () => {
           </Space>
           <Space direction="column" block ref={listingSection}>
             <FancyHeading level={2}>{listingsHeading}</FancyHeading>
-            {displayListings.length ? (
-              <LiliesTable dataSource={displayListings} isOwner={false} />
+            {listings.length ? (
+              <LiliesTable
+                table={table}
+                isOwner={false}
+                downloadData={handleDownloadData}
+              />
             ) : (
               <Space center>
                 <p>No listings found. Maybe this user hasn't added any yet?</p>

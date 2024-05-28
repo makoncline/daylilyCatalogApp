@@ -1,14 +1,35 @@
 import { Alert, Button, Center, Space, Spinner } from "@app/design";
 import { useLiliesQuery } from "@app/graphql";
 import { toCreateListingUrl } from "@app/lib";
+import { useRouter } from "next/router";
 import React from "react";
 
-import { LiliesTable } from "./";
+import { LiliesTable, useReactTable } from "./";
+import { download } from "./util/download";
 
 export const Lilies = () => {
   const { data } = useLiliesQuery();
   const user = data && data.currentUser;
   const userLilies = user && user.lilies.nodes;
+  const router = useRouter();
+  const initialState = React.useMemo(() => {
+    if (router.query.state) {
+      try {
+        return JSON.parse(router.query.state as string);
+      } catch (e) {
+        console.error("Failed to parse state from URL", e);
+      }
+    }
+    return {};
+  }, [router.query.state]);
+  const table = useReactTable({
+    rawData: userLilies || [],
+    isOwner: false,
+    initialState,
+  });
+  const handleDownloadData = () => {
+    download(userLilies || []);
+  };
 
   if (!user || !userLilies)
     return (
@@ -27,6 +48,7 @@ export const Lilies = () => {
   const isFree = true;
 
   const isAddActive = isFree || isActive || !isOverFreeLimit;
+
   return (
     <Space direction="column" block center>
       {!isAddActive && (
@@ -55,7 +77,11 @@ export const Lilies = () => {
         </Button>
       )}
       {userLilies.length ? (
-        <LiliesTable dataSource={userLilies || []} isOwner={true} />
+        <LiliesTable
+          table={table}
+          isOwner={true}
+          downloadData={handleDownloadData}
+        />
       ) : (
         <p>No listings found. Create a listing to get started.</p>
       )}

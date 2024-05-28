@@ -26,7 +26,7 @@ import {
   SelectColumnFilter,
   textFilter,
 } from "./TableFilters";
-import { currency, download } from "./util";
+import { currency } from "./util";
 
 type ListingRow = Omit<
   LilyDataFragment,
@@ -94,7 +94,7 @@ const defaultHiddenColumns = [
   "updatedAt",
 ];
 
-const useReactTable = ({
+export const useReactTable = ({
   rawData,
   isOwner,
   initialState,
@@ -186,8 +186,8 @@ const useReactTable = ({
       {
         Header: "List",
         accessor: "list",
-        disableFilters: true,
-        disableSortBy: true,
+        Filter: SelectColumnFilter,
+        filter: "equals",
       },
       {
         Header: "Registered name",
@@ -380,24 +380,38 @@ const useReactTable = ({
   };
 };
 
-export function LiliesTable({
-  dataSource,
-  isOwner,
-}: {
-  dataSource: LilyDataFragment[];
-  isOwner: boolean;
-}) {
-  const router = useRouter();
-  const initialState = React.useMemo(() => {
-    if (router.query.state) {
-      try {
-        return JSON.parse(router.query.state as string);
-      } catch (e) {
-        console.error("Failed to parse state from URL", e);
+function getAhsDescription(ahsData: AhsDataFragment) {
+  const descriptionProperties: (keyof AhsDataFragment)[] = [
+    "hybridizer",
+    "year",
+    "ploidy",
+    "foliageType",
+    "color",
+  ];
+  let description = "";
+  descriptionProperties.forEach((property, i) => {
+    if (ahsData[property]) {
+      description += `${ahsData[property]}`;
+      if (i !== descriptionProperties.length - 1) {
+        description += ", ";
+      } else {
+        description += ".";
       }
     }
-    return {};
-  }, [router.query.state]);
+  });
+  return description;
+}
+
+export function LiliesTable({
+  table,
+  isOwner,
+  downloadData,
+}: {
+  table: ReturnType<typeof useReactTable>;
+  isOwner: boolean;
+  downloadData: () => void;
+}) {
+  const router = useRouter();
 
   const [showBasicDisplay, setShowBasicDisplay] = useLocalStorage<boolean>(
     "showBasicDisplay",
@@ -431,11 +445,7 @@ export function LiliesTable({
     setHiddenColumns,
     hiddenColumns,
     resetToDefault,
-  } = useReactTable({
-    rawData: dataSource,
-    isOwner,
-    initialState,
-  });
+  } = table;
 
   const filterEmptyValues = React.useCallback((obj: any): any => {
     if (Array.isArray(obj)) {
@@ -659,6 +669,11 @@ export function LiliesTable({
               />
             );
           })}
+          {page.length === 0 && (
+            <Space center>
+              <p>No listings found for these filter values.</p>
+            </Space>
+          )}
         </Space>
       )}
       {!showBasicDisplay && isOwner && (
@@ -737,9 +752,7 @@ export function LiliesTable({
       />
       <Space block style={{ justifyContent: "flex-end" }}>
         {isOwner && (
-          <Button onClick={() => download(dataSource)}>
-            Download listing data
-          </Button>
+          <Button onClick={() => downloadData()}>Download listing data</Button>
         )}
         <Button onClick={() => scrollToTop()}>Return to top</Button>
       </Space>
@@ -751,28 +764,6 @@ function scrollToTop() {
   document?.getElementById("top-of-table")?.scrollIntoView({
     behavior: "smooth",
   });
-}
-
-function getAhsDescription(ahsData: AhsDataFragment) {
-  const descriptionProperties: (keyof AhsDataFragment)[] = [
-    "hybridizer",
-    "year",
-    "ploidy",
-    "foliageType",
-    "color",
-  ];
-  let description = "";
-  descriptionProperties.forEach((property, i) => {
-    if (ahsData[property]) {
-      description += `${ahsData[property]}`;
-      if (i !== descriptionProperties.length - 1) {
-        description += ", ";
-      } else {
-        description += ".";
-      }
-    }
-  });
-  return description;
 }
 
 const StyledButton = styled(Button)`

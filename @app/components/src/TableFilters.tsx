@@ -82,7 +82,8 @@ function SelectColumnFilter<T extends object>({
   const options = React.useMemo(() => {
     let options = new Set(
       preFilteredRows
-        .map((row) => (Boolean(row.values[id]) ? row.values[id] : null))
+        .map((row) => row.values[id])
+        .filter((value) => value !== null)
         .sort()
     );
     return Array.from(options.values()) as HTMLOptionElement["value"][];
@@ -95,7 +96,8 @@ function SelectColumnFilter<T extends object>({
     <select
       value={filterValue ? filterValue : "all"}
       onChange={(e) => {
-        setFilter(e.target.value);
+        const value = e.target.value;
+        setFilter(value === "all" ? undefined : value);
       }}
       style={{ width: "100%" }}
     >
