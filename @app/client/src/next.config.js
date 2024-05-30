@@ -10,9 +10,9 @@ if (!process.env.ROOT_URL) {
 }
 var sentryDisabled = false;
 if (!process.env.SENTRY_AUTH_TOKEN) {
-  // comment to trigger build
   sentryDisabled = true;
 }
+var sentryAuthToken = process.env.SENTRY_AUTH_TOKEN;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 (function (process = null) {
@@ -21,15 +21,17 @@ if (!process.env.SENTRY_AUTH_TOKEN) {
   module.exports = () => {
     const { withSentryConfig } = require("@sentry/nextjs");
     const sentryWebpackPluginOptions = {
-      // Additional config options for the Sentry Webpack plugin. Keep in mind that
-      // the following options are set automatically, and overriding them is not
-      // recommended:
-      //   release, url, org, project, authToken, configFile, stripPrefix,
-      //   urlPrefix, include, ignore
+      org: "makon-dev",
+      project: "daylily-catalog-app",
+      authToken: sentryAuthToken,
+      silent: true,
+      disableClientWebpackPlugin: sentryDisabled,
+      disableServerWebpackPlugin: sentryDisabled,
+    };
 
-      silent: true, // Suppresses all logs
-      // For all available options, see:
-      // https://github.com/getsentry/sentry-webpack-plugin#options.
+    const sentryOptions = {
+      widenClientFileUpload: true,
+      hideSourceMaps: true,
     };
 
     return withSentryConfig(
@@ -50,10 +52,6 @@ if (!process.env.SENTRY_AUTH_TOKEN) {
               permanent: false,
             },
           ];
-        },
-        sentry: {
-          disableServerWebpackPlugin: sentryDisabled,
-          disableClientWebpackPlugin: sentryDisabled,
         },
         webpack5: false,
         images: {
@@ -138,7 +136,8 @@ if (!process.env.SENTRY_AUTH_TOKEN) {
           };
         },
       },
-      sentryWebpackPluginOptions
+      sentryWebpackPluginOptions,
+      sentryOptions
     );
   };
 })();
