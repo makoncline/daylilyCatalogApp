@@ -4,6 +4,7 @@ function formatData(lilies: LilyDataFragment[]): string {
   const columns = [
     "name",
     "price",
+    "list",
     "publicNote",
     "privateNote",
     "imgUrl",
@@ -71,6 +72,8 @@ function formatData(lilies: LilyDataFragment[]): string {
         column === "privateNote"
       ) {
         row += `${lily[column] || ""}`;
+      } else if (column === "list") {
+        row += `${lily.list?.name || ""}`;
       } else if (column === "imgUrl") {
         const imgUrls = lily.imgUrl;
         const urls =
