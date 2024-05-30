@@ -349,14 +349,22 @@ export const useReactTable = ({
   );
 
   React.useEffect(() => {
-    if (isOwner) {
-      tableInstance.setColumnOrder(columnOrder);
+    if (!isOwner) {
+      return;
     }
+    if (tableInstance.columnOrder !== columnOrder) {
+      return;
+    }
+    tableInstance.setColumnOrder(columnOrder);
   }, [columnOrder, isOwner, tableInstance]);
   React.useEffect(() => {
-    if (isOwner) {
-      tableInstance.setHiddenColumns(hiddenColumns);
+    if (!isOwner) {
+      return;
     }
+    if (tableInstance.hiddenColumns !== hiddenColumns) {
+      return;
+    }
+    tableInstance.setHiddenColumns(hiddenColumns);
   }, [hiddenColumns, isOwner, tableInstance]);
 
   return {
