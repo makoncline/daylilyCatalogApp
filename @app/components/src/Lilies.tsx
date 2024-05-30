@@ -24,7 +24,7 @@ export const Lilies = () => {
   }, [router.query.state]);
   const table = useReactTable({
     rawData: userLilies || [],
-    isOwner: false,
+    isOwner: true,
     initialState,
   });
   const handleDownloadData = () => {
