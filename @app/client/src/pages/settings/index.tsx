@@ -58,18 +58,10 @@ const Settings_Profile: NextPage = () => {
       <Space direction="column">
         <p>Jump to edit:</p>
         <Wrap>
-          <NextLink href="#profile" passHref>
-            Profile
-          </NextLink>
-          <NextLink href="#bio" passHref>
-            Bio
-          </NextLink>
-          <NextLink href="#avatar" passHref>
-            Avatar
-          </NextLink>
-          <NextLink href="#images" passHref>
-            Images
-          </NextLink>
+          <NextLink href="#profile">Profile</NextLink>
+          <NextLink href="#bio">Bio</NextLink>
+          <NextLink href="#avatar">Avatar</NextLink>
+          <NextLink href="#images">Images</NextLink>
         </Wrap>
         {id && <Button href={toViewUserUrl(id)}>View public profile</Button>}
       </Space>
@@ -181,7 +173,7 @@ function ProfileSettingsForm({
   const isPhotoUploadActive = user.isVerified && (isFree || isActive);
 
   const handleSaveAvatarPhoto = React.useCallback(
-    async (avatarUrl: string) => {
+    async (avatarUrl: string | null) => {
       setAvatarUploadError(null);
       try {
         await updateUser({
@@ -192,19 +184,19 @@ function ProfileSettingsForm({
             },
           },
         });
+        return true;
       } catch (e: any) {
         Sentry.captureException(e);
-        setAvatarPhotoUrl(null);
         setAvatarUploadError(`${e.message}`);
+        return false;
       }
     },
     [updateUser, user.id]
   );
 
   const handleAvatarImageUploaded = React.useCallback(
-    (_key: string, url: string) => {
-      setAvatarPhotoUrl(url);
-      handleSaveAvatarPhoto(url);
+    async (_key: string, url: string) => {
+      if (await handleSaveAvatarPhoto(url)) setAvatarPhotoUrl(url);
     },
     [handleSaveAvatarPhoto]
   );
@@ -356,9 +348,12 @@ function ProfileSettingsForm({
           {avatarPhotoUrl && (
             <ImageDisplay
               imageUrls={avatarPhotoUrl ? [avatarPhotoUrl] : []}
-              setImageUrls={(imageUrls: string[]) =>
-                setAvatarPhotoUrl(imageUrls.at(0) || null)
-              }
+              setImageUrls={async (imageUrls: string[]) => {
+                const avatarUrl = imageUrls.at(0) || null;
+                if (!(await handleSaveAvatarPhoto(avatarUrl)))
+                  throw new Error("The avatar could not be saved");
+                setAvatarPhotoUrl(avatarUrl);
+              }}
             />
           )}
           {!user.isVerified && <UploadDisabledNotVerified />}

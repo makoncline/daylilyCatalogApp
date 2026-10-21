@@ -32,9 +32,7 @@ export function ErrorAlert({ error }: ErrorAlertProps) {
       <Alert.Body>
         <span>
           We're really sorry, but an unexpected error occurred. Please{" "}
-          <Link href="/">
-            <a>return to the homepage</a>
-          </Link>
+          <Link href="/">return to the homepage</Link>
           and try again.
         </span>
         {error.message}

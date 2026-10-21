@@ -18,7 +18,7 @@ async function main() {
   // Check that docker/.env exists
   try {
     await fsp.access(DOCKER_DOTENV_PATH, fs.constants.F_OK);
-  } catch (e) {
+  } catch {
     // Does not exist, write it
     const password = safeRandomString(30);
     const data = `

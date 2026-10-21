@@ -9,9 +9,8 @@ type Props = {
   center?: boolean;
   responsive?: boolean;
   block?: boolean;
-  [key: string]: any;
-};
-const Space = React.forwardRef(
+} & React.HTMLAttributes<HTMLDivElement>;
+const Space = React.forwardRef<HTMLDivElement, Props>(
   (
     {
       direction = "row",

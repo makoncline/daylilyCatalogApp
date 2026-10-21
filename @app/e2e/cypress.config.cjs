@@ -1,6 +1,9 @@
+const { defineConfig } = require("cypress");
 const wp = require("@cypress/webpack-preprocessor");
+const rootUrl = process.env.CYPRESS_ROOT_URL || process.env.ROOT_URL;
+if (!rootUrl) throw new Error("ROOT_URL is required for browser tests");
 
-module.exports = (on, config) => {
+function setupNodeEvents(on, config) {
   const options = {
     webpackOptions: {
       resolve: {
@@ -30,4 +33,13 @@ module.exports = (on, config) => {
     config.requestTimeout = 10000; // default 5000
   }
   return config;
-};
+}
+
+module.exports = defineConfig({
+  e2e: {
+    baseUrl: rootUrl,
+    specPattern: "cypress/integration/**/*.spec.ts",
+    supportFile: "cypress/support/index.js",
+    setupNodeEvents,
+  },
+});

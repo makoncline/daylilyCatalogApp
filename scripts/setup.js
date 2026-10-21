@@ -150,7 +150,7 @@ async function main() {
     if (!gitStat || !gitStat.isDirectory()) {
       throw new Error("No .git folder found");
     }
-  } catch (e) {
+  } catch {
     console.error();
     console.error();
     console.error();

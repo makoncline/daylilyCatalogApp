@@ -30,9 +30,10 @@ import { currency } from "./util";
 
 type ListingRow = Omit<
   LilyDataFragment,
-  "__typename" | "list" | "ahsDatumByAhsRef" | "ahsId"
+  "__typename" | "list" | "ahsDatumByAhsRef" | "ahsId" | "price"
 > &
-  Omit<AhsDataFragment, "__typename" | "name" | "ahsId"> & {
+  Partial<Omit<AhsDataFragment, "__typename" | "name" | "ahsId">> & {
+    price: number | null;
     privateNote?: string | null;
     list?: string | null;
     registeredName?: string | null;
@@ -116,27 +117,16 @@ export const useReactTable = ({
     () =>
       rawData
         .map((row) => {
-          const rowDataOrNull = Object.entries(row).reduce(
-            (acc, [key, value]) => {
-              acc[key] = value || null;
-              return acc;
-            },
-            {} as LilyDataFragment
+          const rowDataOrNull = row;
+          const ahsDataOrNull = row.ahsDatumByAhsRef;
+          const images = [...(row.imgUrl || []), ahsDataOrNull?.image].filter(
+            (url): url is string => typeof url === "string" && url.length > 0
           );
-          const ahsDataOrNull = Object.entries(
-            row.ahsDatumByAhsRef || {}
-          ).reduce((acc, [key, value]) => {
-            acc[key] = value || null;
-            return acc;
-          }, {} as AhsDataFragment);
-          const images = [
-            ...(rowDataOrNull.imgUrl || []),
-            ahsDataOrNull.image,
-          ].filter(Boolean);
           return {
             ...ahsDataOrNull,
-            registeredName: ahsDataOrNull.name,
+            registeredName: ahsDataOrNull?.name,
             ...rowDataOrNull,
+            price: row.price === null ? null : Number(row.price),
             list: row.list?.name || null,
             imgUrl: images,
             description: row.ahsDatumByAhsRef
@@ -173,7 +163,8 @@ export const useReactTable = ({
       {
         Header: "Price",
         accessor: "price",
-        Cell: ({ value }) => (value > 0 ? currency(value) : "-"),
+        Cell: ({ value }) =>
+          value !== null && value > 0 ? currency(value) : "-",
         Filter: NumberRangeColumnFilter,
         filter: "between",
       },
@@ -553,7 +544,7 @@ export function LiliesTable({
                         id={column.id}
                         {...column.getToggleHiddenProps()}
                       />{" "}
-                      {column.Header}
+                      {column.render("Header")}
                       <StyledButton
                         onClick={() => handleMove("<", index)}
                         styleType="text"
@@ -693,10 +684,7 @@ export function LiliesTable({
                 {headerGroup.headers.map((column) => (
                   // eslint-disable-next-line react/jsx-key
                   <th {...column.getHeaderProps()}>
-                    <Space
-                      {...column.getSortByToggleProps()}
-                      style={{ "--direction": "row" }}
-                    >
+                    <Space {...column.getSortByToggleProps()} direction="row">
                       <NoWrap>{column.render("Header")}</NoWrap>
                       <span>
                         {column.isSorted

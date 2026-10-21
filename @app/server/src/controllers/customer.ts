@@ -20,7 +20,10 @@ export const createCustomerHandler: RequestHandler = async (
         const customer = await createCustomer(userId, userEmail);
         res.status(200).json(customer);
       } catch (err) {
-        res.status(500).json({ statusCode: 500, message: err.message });
+        res.status(500).json({
+          statusCode: 500,
+          message: err instanceof Error ? err.message : "Unknown error",
+        });
       }
     }
   } else {

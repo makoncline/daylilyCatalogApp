@@ -140,8 +140,9 @@ export default (
             ]
           );
           if (!user || !user.id) {
-            const e = new Error("Registration failed");
-            e["code"] = "FFFFF";
+            const e = Object.assign(new Error("Registration failed"), {
+              code: "FFFFF",
+            });
             throw e;
           }
           if (!session) {
@@ -153,8 +154,9 @@ export default (
             ));
           }
           if (!session) {
-            const e = new Error("Failed to create session");
-            e["code"] = "FFFFF";
+            const e = Object.assign(new Error("Failed to create session"), {
+              code: "FFFFF",
+            });
             throw e;
           }
           done(null, { session_id: session.uuid });

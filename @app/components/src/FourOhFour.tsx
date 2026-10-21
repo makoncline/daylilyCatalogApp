@@ -1,9 +1,8 @@
 import { Alert, Button } from "@app/design";
-import { User } from "@app/graphql";
 import React from "react";
 
 interface FourOhFourProps {
-  currentUser?: Pick<User, "id"> | null;
+  currentUser?: { id: number } | null;
 }
 export function FourOhFour(props: FourOhFourProps) {
   const { currentUser } = props;

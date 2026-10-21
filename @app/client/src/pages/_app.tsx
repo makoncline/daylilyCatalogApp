@@ -1,7 +1,6 @@
 import "nprogress/nprogress.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "../styles.css";
-import "@reach/dialog/styles.css";
 import "regenerator-runtime/runtime";
 
 import { ApolloClient, ApolloProvider } from "@apollo/client";
@@ -35,14 +34,7 @@ if (typeof window !== "undefined") {
     throw new Error("Cannot read from __NEXT_DATA__ element");
   }
   const data = JSON.parse(nextDataEl.textContent);
-  window.__GRAPHILE_APP__ = {
-    ROOT_URL: data.query.ROOT_URL,
-    T_AND_C_URL: data.query.T_AND_C_URL,
-    S3_UPLOAD_BUCKET: data.query.S3_UPLOAD_BUCKET,
-    S3_RESIZED_IMAGE_BUCKET: data.query.S3_RESIZED_IMAGE_BUCKET,
-    STRIPE_PLAN: data.query.STRIPE_PLAN,
-    STRIPE_PUBLISHABLE_KEY: data.query.STRIPE_PUBLISHABLE_KEY,
-  };
+  window.__GRAPHILE_APP__ = data.props.publicRuntimeConfig;
 
   Router.events.on("routeChangeStart", () => {
     NProgress.start();
@@ -53,7 +45,7 @@ if (typeof window !== "undefined") {
   });
   Router.events.on("routeChangeError", (err: Error | string) => {
     NProgress.done();
-    if (err["cancelled"]) {
+    if (typeof err === "object" && "cancelled" in err && err.cancelled) {
       // No worries; you deliberately cancelled it
     } else {
       alert(

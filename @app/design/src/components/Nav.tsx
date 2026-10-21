@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { above } from "../utilities";
-import { Heading, IconButton } from ".";
+import { IconButton } from ".";
 
 type NavProps = {
   logo: React.ReactNode;
@@ -35,18 +35,6 @@ export const Nav = ({ logo, children }: NavProps) => {
     </Wrapper>
   );
 };
-
-export const TextLogo = React.forwardRef<
-  HTMLAnchorElement,
-  {
-    children: React.ReactNode;
-  }
->(({ children, ...props }, ref) => (
-  <a ref={ref} {...props}>
-    <Heading level={3}>{children}</Heading>
-  </a>
-));
-TextLogo.displayName = "TextLogo";
 
 const LogoWrapper = styled.div`
   margin-inline-end: auto;

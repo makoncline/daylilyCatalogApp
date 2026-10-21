@@ -77,8 +77,8 @@ export default (app: Express) => {
       console.error(e);
       res.status(500).json({
         error: {
-          message: e.message,
-          stack: e.stack,
+          message: e instanceof Error ? e.message : "Unknown error",
+          stack: e instanceof Error ? e.stack : undefined,
         },
       });
     }

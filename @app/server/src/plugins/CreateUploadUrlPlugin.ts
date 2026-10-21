@@ -1,66 +1,17 @@
-import * as AWS from "aws-sdk";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { gql, makeExtendSchemaPlugin } from "graphile-utils";
-import { PoolClient } from "pg";
-import { v4 as uuidv4 } from "uuid";
 
 import { OurGraphQLContext } from "../middleware/installPostGraphile";
-import { getStripeSubscriptionInfo } from "./StripeSubscriptionInfoPlugin";
+import { s3 } from "../utils/s3";
+import { createUploadKey, getUploadUser } from "../utils/uploads";
 
-const S3_UPLOAD_KEY = process.env.S3_UPLOAD_KEY;
-const S3_UPLOAD_SECRET = process.env.S3_UPLOAD_SECRET;
 const S3_UPLOAD_BUCKET = process.env.S3_UPLOAD_BUCKET;
-const S3_UPLOAD_REGION = process.env.S3_UPLOAD_REGION;
-
-AWS.config.update({
-  accessKeyId: S3_UPLOAD_KEY,
-  secretAccessKey: S3_UPLOAD_SECRET,
-  region: S3_UPLOAD_REGION,
-  signatureVersion: "v4",
-});
-
-const s3 = new AWS.S3();
 
 interface CreateUploadUrlInput {
   clientMutationId?: string;
-  keyPrefix: string;
+  keyPrefix?: string | null;
   contentType: string;
-}
-
-/** The minimal set of information that this plugin needs to know about users. */
-interface User {
-  id: string;
-  isVerified: boolean;
-  isActive: boolean;
-  isFree: boolean;
-}
-
-async function getCurrentUser(pool: PoolClient): Promise<User | null> {
-  try {
-    const {
-      rows: [row],
-    } = await pool.query(
-      "select u.id as user_id, u.is_verified as is_verified, ss.id as subscription_id, u.free_until as free_until from app_public.users u full join app_public.stripe_subscriptions ss on u.id = ss.user_id where u.id = app_public.current_user_id()"
-    );
-    if (!row) {
-      return null;
-    }
-    let isActive = false;
-    if (row.subscription_id) {
-      const subscription = await getStripeSubscriptionInfo(row.subscription_id);
-      const { status } = subscription ?? {};
-      isActive = status == "active";
-    }
-    const isFree = new Date() < new Date(row.free_until);
-    return {
-      id: row.user_id,
-      isVerified: row.is_verified,
-      isActive,
-      isFree,
-    };
-  } catch (err) {
-    throw err;
-  } finally {
-  }
 }
 
 /** The set of content types that we allow users to upload.*/
@@ -143,31 +94,13 @@ const CreateUploadUrlPlugin = makeExtendSchemaPlugin(() => ({
           throw err;
         }
 
-        const user = await getCurrentUser(context.pgClient);
-
-        if (!user) {
-          const err = new Error("Login required");
-          // @ts-ignore
-          err.code = "LOGIN";
-          throw err;
-        }
-
+        const user = await getUploadUser(context.pgClient);
         if (!user.isVerified) {
-          const err = new Error("Only verified users may upload files");
-          // @ts-ignore
-          err.code = "DNIED";
-          throw err;
+          throw Object.assign(
+            new Error("Only verified users may upload files"),
+            { code: "DNIED" }
+          );
         }
-
-        // TODO: Uncomment this to require a paid subscription to upload files
-        // if (!user.isActive && !user.isFree) {
-        //   const err = new Error(
-        //     "Only users with active subscription may upload files"
-        //   );
-        //   // @ts-ignore
-        //   err.code = "DNIED";
-        //   throw err;
-        // }
 
         const {
           input: { keyPrefix, contentType, clientMutationId },
@@ -180,19 +113,19 @@ const CreateUploadUrlPlugin = makeExtendSchemaPlugin(() => ({
             )}'`
           );
         }
-        const prefix = keyPrefix ? `${keyPrefix}/` : "";
-        const key = `${prefix}${user.id}/${uuidv4()}`;
+        const key = createUploadKey(keyPrefix, user.id);
         const urlPrefix = `https://${S3_UPLOAD_BUCKET}.s3.amazonaws.com`;
         const url = `${urlPrefix}/${key}`;
-        const params = {
-          Bucket: S3_UPLOAD_BUCKET,
-          ContentType: contentType,
-          // randomly generated filename, nested under username directory
-          Key: key,
-          Expires: 60 * 5, // signed URL will expire in 5 minutes
-          ACL: "public-read", // uploaded file will be publicly readable
-        };
-        const signedUrl = await s3.getSignedUrlPromise("putObject", params);
+        const signedUrl = await getSignedUrl(
+          s3,
+          new PutObjectCommand({
+            Bucket: S3_UPLOAD_BUCKET,
+            ContentType: contentType,
+            Key: key,
+            ACL: "public-read",
+          }),
+          { expiresIn: 300, signableHeaders: new Set(["content-type"]) }
+        );
         return {
           clientMutationId,
           uploadUrl: signedUrl,

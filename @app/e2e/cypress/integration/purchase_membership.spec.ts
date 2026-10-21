@@ -2,7 +2,7 @@ context("buy membership", () => {
   beforeEach(() => cy.serverCommand("clearTestUsers"));
 
   it("get started when logged out navigates to register", () => {
-    cy.visit(Cypress.env("ROOT_URL"));
+    cy.visit(Cypress.config("baseUrl"));
     cy.get("[data-cy=get-started-for-free]").click();
     cy.url({ timeout: 20000 }).should("contain", "/login");
     cy.getCy("header-login-button").should("not.exist");
@@ -18,21 +18,21 @@ context("buy membership", () => {
   });
 
   it("pricing leads to pricing page", () => {
-    cy.visit(Cypress.env("ROOT_URL"));
+    cy.visit(Cypress.config("baseUrl"));
     cy.get("[data-cy=pricing]").click();
     cy.url({ timeout: 20000 }).should("contain", "/pricing");
     cy.get("[data-cy=layout-header-title]").should("contain", "Pricing");
   });
 
   it("become a member leads to pricing page", () => {
-    cy.visit(Cypress.env("ROOT_URL"));
+    cy.visit(Cypress.config("baseUrl"));
     cy.get("[data-cy=become-a-member]").click();
     cy.url({ timeout: 20000 }).should("contain", "/pricing");
     cy.get("[data-cy=layout-header-title]").should("contain", "Pricing");
   });
 
   it("pricing page free leads to login when logged out", () => {
-    cy.visit(Cypress.env("ROOT_URL") + "/pricing");
+    cy.visit(Cypress.config("baseUrl") + "/pricing");
     cy.get("[data-cy=free]").click();
     cy.url({ timeout: 20000 }).should("contain", "/login");
     cy.get("[data-cy=layout-header-title]").should("contain", "Sign in");
@@ -46,7 +46,7 @@ context("buy membership", () => {
   });
 
   it("pricing page membership leads to login when not logged in", () => {
-    cy.visit(Cypress.env("ROOT_URL") + "/pricing");
+    cy.visit(Cypress.config("baseUrl") + "/pricing");
     cy.get("[data-cy=get-membership]").click();
     cy.url({ timeout: 20000 }).should("contain", "/login");
     cy.get("[data-cy=layout-header-title]").should("contain", "Sign in");
@@ -65,9 +65,27 @@ context("buy membership", () => {
     cy.get("[data-cy=checkout]").should("not.exist");
   });
 
-  it("membership page purchase button active when verified", () => {
+  it("verified checkout uses the page CSRF token", () => {
     cy.login({ next: "/membership", verified: true });
     cy.get("[data-cy=checkout]").should("exist");
     cy.get("[data-cy=view-email-settings]").should("not.exist");
+    cy.document().then((document) => {
+      const data = JSON.parse(
+        document.getElementById("__NEXT_DATA__").textContent
+      );
+      expect(typeof data.props.csrfToken).to.equal("string");
+      expect(data.props.csrfToken.length).to.be.greaterThan(0);
+      cy.intercept("POST", "/api/checkout_session", (request) => {
+        expect(request.headers["csrf-token"]).to.equal(data.props.csrfToken);
+        request.reply({
+          body: {
+            statusCode: 500,
+            message: "Fixture prevents external checkout",
+          },
+        });
+      }).as("checkout");
+    });
+    cy.get("[data-cy=checkout]").click();
+    cy.wait("@checkout");
   });
 });

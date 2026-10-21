@@ -204,7 +204,7 @@ const Form = ({
   };
 
   const validateFields = () => {
-    let newErrors = {};
+    const newErrors: Record<string, string | null> = {};
     Object.entries(values).forEach(([name, value]) => {
       if (validation[name]) {
         if (name === "confirm") {

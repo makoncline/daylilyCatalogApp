@@ -13,7 +13,7 @@ context("Login", () => {
       verified: true,
       password: PASSWORD,
     });
-    cy.visit(Cypress.env("ROOT_URL") + "/login");
+    cy.visit(Cypress.config("baseUrl") + "/login");
     cy.getCy("loginpage-button-withusername").click();
     cy.getCy("header-login-button").should("not.exist"); // No login button on login page
 
@@ -23,7 +23,7 @@ context("Login", () => {
     cy.getCy("loginpage-button-submit").click();
 
     // Assertion
-    cy.url({ timeout: 10000 }).should("equal", Cypress.env("ROOT_URL") + "/"); // Should be on homepage
+    cy.url({ timeout: 10000 }).should("equal", Cypress.config("baseUrl") + "/"); // Should be on homepage
     cy.getCy("header-login-button").should("not.exist"); // Should be logged in
     cy.getCy("header-logout-button").should("exist"); // Should be logged in
   });
@@ -36,7 +36,7 @@ context("Login", () => {
       verified: true,
       password: PASSWORD,
     });
-    cy.visit(Cypress.env("ROOT_URL") + "/login");
+    cy.visit(Cypress.config("baseUrl") + "/login");
     cy.getCy("loginpage-button-withusername").click();
 
     // Action
@@ -46,13 +46,16 @@ context("Login", () => {
 
     // Assertion
     cy.contains("Incorrect username or passphrase").should("exist");
-    cy.url().should("equal", Cypress.env("ROOT_URL") + "/login"); // Should be on login page still
+    cy.url().should("equal", Cypress.config("baseUrl") + "/login"); // Should be on login page still
     cy.getCy("header-login-button").should("not.exist"); // No login button on login page
     cy.getCy("header-logout-button").should("not.exist"); // Should not be logged in
     // But can recover
     cy.getCy("loginpage-input-password").type("{backspace}"); // Delete the '!' that shouldn't be there
     cy.getCy("loginpage-button-submit").click();
-    cy.url({ timeout: 10000 }).should("contain", Cypress.env("ROOT_URL") + "/"); // Should be on homepage
+    cy.url({ timeout: 10000 }).should(
+      "contain",
+      Cypress.config("baseUrl") + "/"
+    ); // Should be on homepage
     cy.getCy("header-login-button").should("not.exist"); // Should be logged in
     cy.getCy("header-logout-button").should("exist"); // Should be logged in
   });

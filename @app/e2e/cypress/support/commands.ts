@@ -86,8 +86,8 @@ function serverCommand(
 
 // The actual implementation of the 'serverCommand' function.
 function serverCommand(command: string, payload?: any): any {
-  const url = `${Cypress.env(
-    "ROOT_URL"
+  const url = `${Cypress.config(
+    "baseUrl"
   )}/cypressServerCommand?command=${encodeURIComponent(command)}${
     payload ? `&payload=${encodeURIComponent(JSON.stringify(payload))}` : ""
   }`;
@@ -104,7 +104,7 @@ function login(payload?: {
   orgs?: [[string, string] | [string, string, boolean]];
 }): Chainable<Window> {
   return cy.visit(
-    Cypress.env("ROOT_URL") +
+    Cypress.config("baseUrl") +
       `/cypressServerCommand?command=login&payload=${encodeURIComponent(
         JSON.stringify(payload)
       )}`

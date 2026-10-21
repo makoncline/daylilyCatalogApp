@@ -1,19 +1,19 @@
 import { Button, Thumbnail } from "@app/design";
-import { useDeleteUploadMutation } from "@app/graphql";
 import * as Sentry from "@sentry/nextjs";
-import AmazonS3URI from "amazon-s3-uri";
 import React from "react";
 import styled from "styled-components";
 
 import { Image } from "./Image";
+import { useRemoveUpload } from "./useRemoveUpload";
 
 type ImageDisplayProps = {
   imageUrls: string[];
-  setImageUrls: (imageUrls: string[]) => void;
+  setImageUrls: (imageUrls: string[]) => void | Promise<void>;
 };
 
 function ImageDisplay({ imageUrls, setImageUrls }: ImageDisplayProps) {
-  const [deleteUpload] = useDeleteUploadMutation();
+  const removeUpload = useRemoveUpload();
+  const [error, setError] = React.useState<string | null>(null);
   const [showControls, setShowControls] = React.useState(false);
   function handleMove(direction: "<" | ">", index: number) {
     const newImageUrls = [...imageUrls];
@@ -28,20 +28,13 @@ function ImageDisplay({ imageUrls, setImageUrls }: ImageDisplayProps) {
   async function handleDelete(index: number) {
     if (confirm("Are you sure you want to delete this image?")) {
       const url = imageUrls[index];
-      const { key } = AmazonS3URI(url);
+      setError(null);
       try {
-        await deleteUpload({
-          variables: {
-            input: {
-              key: key!!,
-            },
-          },
-        });
-        setImageUrls(imageUrls.filter((_, i) => i !== index));
+        await removeUpload(url);
+        await setImageUrls(imageUrls.filter((_, i) => i !== index));
       } catch (err) {
-        console.error(`Error deleting file: `, key, " at url: ", url);
         Sentry.captureException(err);
-        throw err;
+        setError("The image could not be removed. Try again.");
       }
     }
   }
@@ -51,13 +44,14 @@ function ImageDisplay({ imageUrls, setImageUrls }: ImageDisplayProps) {
   }
   return (
     <>
+      {error && <p role="alert">{error}</p>}
       {imageUrls.length > 0 && (
         <>
           <Wrapper>
             {imageUrls.map((url, i) => (
               <ImageDisplayItem key={url}>
                 <Thumbnail>
-                  <Image src={url} />
+                  <Image src={url} alt="Uploaded image" />
                 </Thumbnail>
                 {showControls && (
                   <ControlsWrapper>

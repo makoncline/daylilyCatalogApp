@@ -1,4 +1,3 @@
-// TODO: fix to 'import next' when next fixes the bug
 import { Express } from "express";
 import next from "next";
 import { parse } from "url";
@@ -10,8 +9,6 @@ if (!process.env.NODE_ENV) {
 const isDev = process.env.NODE_ENV === "development";
 
 export default async function installSSR(app: Express) {
-  // @ts-ignore Next had a bad typing file, they claim `export default` but should have `export =`
-  // Ref: https://unpkg.com/next@9.0.3/dist/server/next.js
   const nextApp = next({
     dev: isDev,
     dir: `${__dirname}/../../../client/src`,
@@ -22,7 +19,6 @@ export default async function installSSR(app: Express) {
     await nextApp.prepare();
     return nextApp.getRequestHandler();
   })();
-  // Foo
   handlerPromise.catch((e) => {
     console.error("Error occurred starting Next.js; aborting process");
     console.error(e);
@@ -31,19 +27,6 @@ export default async function installSSR(app: Express) {
   app.get("*", async (req, res) => {
     const handler = await handlerPromise;
     const parsedUrl = parse(req.url, true);
-    handler(req, res, {
-      ...parsedUrl,
-      query: {
-        ...parsedUrl.query,
-        CSRF_TOKEN: req.csrfToken(),
-        // See 'next.config.js':
-        ROOT_URL: process.env.ROOT_URL || "http://localhost:5678",
-        T_AND_C_URL: process.env.T_AND_C_URL,
-        S3_UPLOAD_BUCKET: process.env.S3_UPLOAD_BUCKET,
-        S3_RESIZED_IMAGE_BUCKET: process.env.S3_RESIZED_IMAGE_BUCKET,
-        STRIPE_PLAN: process.env.STRIPE_PLAN,
-        STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
-      },
-    });
+    handler(req, res, parsedUrl);
   });
 }

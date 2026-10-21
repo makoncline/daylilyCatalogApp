@@ -11,14 +11,14 @@ context("Manage emails", () => {
     cy.getCy("link-settings").click();
     cy.url({ timeout: 20000 }).should(
       "equal",
-      Cypress.env("ROOT_URL") + "/settings"
+      Cypress.config("baseUrl") + "/settings"
     );
     cy.getCy("settingslayout-link-emails").click();
 
     // Assertion
     cy.url({ timeout: 20000 }).should(
       "equal",
-      Cypress.env("ROOT_URL") + "/settings/emails"
+      Cypress.config("baseUrl") + "/settings/emails"
     );
   });
 
@@ -44,12 +44,12 @@ context("Manage emails", () => {
     // Action: verify the email
     cy.serverCommand("getEmailSecrets", { email }).then((secrets) => {
       const { user_email_id, verification_token } = secrets;
-      const url = `${Cypress.env("ROOT_URL")}/verify?id=${encodeURIComponent(
+      const url = `${Cypress.config("baseUrl")}/verify?id=${encodeURIComponent(
         user_email_id
       )}&token=${encodeURIComponent(verification_token!)}`;
       cy.visit(url);
       cy.contains("Email Verified").should("exist");
-      cy.visit(Cypress.env("ROOT_URL") + "/settings/emails");
+      cy.visit(Cypress.config("baseUrl") + "/settings/emails");
     });
 
     // Assertion

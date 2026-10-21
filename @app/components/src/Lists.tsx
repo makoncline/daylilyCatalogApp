@@ -17,9 +17,9 @@ export const Lists = () => {
 
   return (
     <>
-      <Link href={createListUrl} passHref>
-        <Button block>Create List</Button>
-      </Link>
+      <Button href={createListUrl} block>
+        Create List
+      </Button>
       {data?.currentUser?.lists.nodes.length ? (
         <StyledTable>
           <thead>

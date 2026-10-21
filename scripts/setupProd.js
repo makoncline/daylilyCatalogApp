@@ -65,7 +65,7 @@ async function main() {
     try {
       await pgPool.query('select true as "Connection test";');
       break;
-    } catch (e) {
+    } catch {
       attempts++;
       if (attempts <= 30) {
         console.log(`Database is not ready yet (attempt ${attempts})`);

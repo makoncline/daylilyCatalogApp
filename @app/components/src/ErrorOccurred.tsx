@@ -11,9 +11,7 @@ export function ErrorOccurred() {
         later, or if this keeps happening then let us know.
       </p>
       <p>
-        <Link href="/">
-          <a>Go to the homepage</a>
-        </Link>
+        <Link href="/">Go to the homepage</Link>
       </p>
     </div>
   );

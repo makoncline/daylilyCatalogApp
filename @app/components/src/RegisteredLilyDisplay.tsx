@@ -42,7 +42,7 @@ export function RegisteredLilyDisplay({
                 alt="user avatar"
                 width={400}
                 height={400}
-                objectFit="cover"
+                style={{ objectFit: "cover" }}
               />
             )}
           </CardImage>
@@ -73,7 +73,7 @@ const Title = styled(Heading)`
 `;
 
 export function getDescription(lily: AhsDataFragment) {
-  const descriptionKeys = [
+  const descriptionKeys: (keyof AhsDataFragment)[] = [
     "scapeHeight",
     "bloomSize",
     "bloomSeason",

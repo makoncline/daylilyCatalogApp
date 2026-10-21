@@ -3,6 +3,7 @@ module.exports = (dir) => {
 
   return {
     testEnvironment: "node",
+    snapshotFormat: { escapeString: true, printBasicPrototype: true },
     transform: {
       "^.+\\.tsx?$": "babel-jest",
     },
@@ -11,7 +12,6 @@ module.exports = (dir) => {
     roots: [`<rootDir>`],
 
     rootDir: dir,
-    name: package.name,
     displayName: package.name,
   };
 };

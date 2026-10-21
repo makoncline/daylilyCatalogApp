@@ -14,7 +14,6 @@ import {
 import { AhsDataFragment, LilyByIdQuery } from "@app/graphql";
 import { toEditListingUrl } from "@app/lib";
 import Head from "next/head";
-import Link from "next/link";
 import React from "react";
 import styled from "styled-components";
 
@@ -113,9 +112,7 @@ function ListingDisplay({
           )}
           {isOwner && (
             <PropertyListItem label="Edit">
-              <Link passHref href={toEditListingUrl(listingId)}>
-                <Button>Edit listing</Button>
-              </Link>
+              <Button href={toEditListingUrl(listingId)}>Edit listing</Button>
             </PropertyListItem>
           )}
         </PropertyList>
@@ -152,7 +149,7 @@ function ListingDisplay({
 export { ListingDisplay };
 
 function getTraits(ahsData: AhsDataFragment): [string, string][] {
-  const traitLabels: Record<string, string> = {
+  const traitLabels: Partial<Record<keyof AhsDataFragment, string>> = {
     hybridizer: "Hybridizer",
     year: "Year",
     parentage: "Parentage",
@@ -172,7 +169,7 @@ function getTraits(ahsData: AhsDataFragment): [string, string][] {
     sculpting: "Sculpting",
     seedlingNum: "Seedling #",
   };
-  return Object.entries(traitLabels)
+  return (Object.entries(traitLabels) as [keyof AhsDataFragment, string][])
     .map(([key, label]) =>
       ahsData[key] ? [label, ahsData[key] as string] : null
     )

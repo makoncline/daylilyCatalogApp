@@ -36,6 +36,7 @@ module.exports = {
     },
   },
   settings: {
+    "import/resolver": { typescript: { project: "./tsconfig.json" } },
     react: {
       version: "detect",
     },
@@ -47,7 +48,10 @@ module.exports = {
     es6: true,
   },
   rules: {
-    "@next/next/no-html-link-for-pages": [2, "./@app/client/src/pages"],
+    "@next/next/no-html-link-for-pages": [
+      2,
+      require("path").join(__dirname, "@app/client/src/pages"),
+    ],
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "error",
     "@typescript-eslint/no-unused-vars": [

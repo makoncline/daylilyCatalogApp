@@ -1,5 +1,5 @@
 import { Button, Heading, Space, Thumbnail } from "@app/design";
-import type { CreateUploadUrlPayload } from "@app/graphql";
+import type { CreateUploadUrlMutation } from "@app/graphql";
 import { useCreateUploadUrlMutation } from "@app/graphql";
 import axios from "axios";
 import React from "react";
@@ -14,7 +14,7 @@ function useFileUpload(
 ) {
   const [createUploadUrl] = useCreateUploadUrlMutation();
   const [uploadConfig, setUploadConfig] = React.useState<Pick<
-    CreateUploadUrlPayload,
+    NonNullable<CreateUploadUrlMutation["createUploadUrl"]>,
     "uploadUrl" | "key" | "url"
   > | null>(null);
   const [progress, setProgress] = React.useState<number | null>(null);
@@ -32,7 +32,7 @@ function useFileUpload(
       setUploadConfig(data.createUploadUrl || null);
     }
     if (errors) {
-      setError(errors[0]);
+      setError(new Error(errors[0].message));
     }
   }, [createUploadUrl, file, keyPrefix]);
 
@@ -45,6 +45,7 @@ function useFileUpload(
     if (uploadUrl && url && key) {
       axios
         .put(uploadUrl, file, {
+          headers: { "Content-Type": file.type },
           onUploadProgress: (progressEvent: ProgressEvent) => {
             const { loaded, total } = progressEvent;
             const percent = Math.round((loaded / total) * 100);
@@ -275,7 +276,7 @@ function getImagePreview(file: File): JSX.Element {
   return (
     <Space direction="row">
       <Thumbnail>
-        <Image src={src} onLoad={onLoad} />
+        <Image src={src} alt={file.name} onLoad={onLoad} />
       </Thumbnail>
       <div>
         <p>{file.name}</p>

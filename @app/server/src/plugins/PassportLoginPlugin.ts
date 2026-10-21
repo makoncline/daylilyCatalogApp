@@ -1,3 +1,4 @@
+import { getCodeFromError } from "@app/lib";
 import { gql, makeExtendSchemaPlugin } from "graphile-utils";
 
 import { OurGraphQLContext } from "../middleware/installPostGraphile";
@@ -77,8 +78,9 @@ const PassportLoginPlugin = makeExtendSchemaPlugin((build) => ({
           );
 
           if (!details || !details.user_id) {
-            const e = new Error("Registration failed");
-            e["code"] = "FFFFF";
+            const e = Object.assign(new Error("Registration failed"), {
+              code: "FFFFF",
+            });
             throw e;
           }
 
@@ -107,22 +109,23 @@ const PassportLoginPlugin = makeExtendSchemaPlugin((build) => ({
             data: row,
           };
         } catch (e) {
-          const { code } = e;
+          const code = getCodeFromError(e);
           const safeErrorCodes = [
             "WEAKP",
             "LOCKD",
             "EMTKN",
             ...Object.keys(ERROR_MESSAGE_OVERRIDES),
           ];
-          if (safeErrorCodes.includes(code)) {
+          if (safeErrorCodes.includes(code || "")) {
             throw e;
           } else {
             console.error(
               "Unrecognised error in PassportLoginPlugin; replacing with sanitized version"
             );
             console.error(e);
-            const error = new Error("Registration failed");
-            error["code"] = code;
+            const error = Object.assign(new Error("Registration failed"), {
+              code: code,
+            });
             throw error;
           }
         }
@@ -141,8 +144,10 @@ const PassportLoginPlugin = makeExtendSchemaPlugin((build) => ({
           );
 
           if (!session) {
-            const error = new Error("Incorrect username/password");
-            error["code"] = "CREDS";
+            const error = Object.assign(
+              new Error("Incorrect username/password"),
+              { code: "CREDS" }
+            );
             throw error;
           }
 
@@ -171,14 +176,15 @@ const PassportLoginPlugin = makeExtendSchemaPlugin((build) => ({
             data: row,
           };
         } catch (e) {
-          const { code } = e;
+          const code = getCodeFromError(e);
           const safeErrorCodes = ["LOCKD", "CREDS"];
-          if (safeErrorCodes.includes(code)) {
+          if (safeErrorCodes.includes(code || "")) {
             throw e;
           } else {
             console.error(e);
-            const error = new Error("Login failed");
-            error["code"] = e.code;
+            const error = Object.assign(new Error("Login failed"), {
+              code: getCodeFromError(e),
+            });
             throw error;
           }
         }
