@@ -31,13 +31,7 @@ context("Settings after the supported runtime update", () => {
         body: { query: "query { currentUser { id } }" },
       }).then(({ body }) => {
         const id = body.data.currentUser.id;
-        const bucket = data.props.publicRuntimeConfig.S3_UPLOAD_BUCKET;
-        const avatarUrl =
-          "https://" +
-          bucket +
-          ".s3.amazonaws.com/avatar/" +
-          id +
-          "/67cac85c-2e81-4eb5-8859-1f7475d2b76f";
+        const avatarUrl = Cypress.config("baseUrl") + "/favicon.ico";
         cy.request({
           method: "POST",
           url: "/graphql",
