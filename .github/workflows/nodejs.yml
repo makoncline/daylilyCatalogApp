@@ -52,5 +52,6 @@ jobs:
           CONFIRM_DROP=1 yarn setup
           yarn build
           yarn lint
+          yarn test:graphql-lint
           yarn test --ci
           yarn depcheck

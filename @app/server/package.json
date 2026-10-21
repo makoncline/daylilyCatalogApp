@@ -16,7 +16,6 @@
     "@graphile-contrib/pg-simplify-inflector": "6.1.0",
     "@graphile/pg-pubsub": "4.14.1",
     "@graphile/pro": "^1.0.2",
-    "@next/eslint-plugin-next": "15.5.28",
     "@types/connect-pg-simple": "^4.2.0",
     "@types/connect-redis": "^0.0.16",
     "@types/csurf": "^1.11.1",

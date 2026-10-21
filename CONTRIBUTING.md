@@ -27,3 +27,15 @@ and commit your changes.
 
 This project is designed to work both with and without Docker. Please don't
 break this!
+
+## GraphQL checks
+
+Run yarn lint:graphql to validate the client documents against
+data/schema.graphql. The command reads all .graphql files under @app/client/src
+together, so fragments can be shared across files. Operations must have names.
+Select both nodeId and id where the type has those fields. Inline fragments can
+use identifier fields from their parent selection.
+
+The check is part of yarn lint and yarn lint:fix. It does not provide ESLint
+editor diagnostics for GraphQL files. Server schema templates are outside this
+check. Run yarn test:graphql-lint for its synthetic integration tests.
