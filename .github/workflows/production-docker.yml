@@ -38,7 +38,9 @@ jobs:
           corepack enable
           corepack prepare yarn@1.22.22 --activate
       - name: Install PostgreSQL client18
-        run: sudo sh docker/install-postgresql-client.sh
+        run: |
+          sudo sh docker/install-postgresql-client.sh
+          echo "/usr/lib/postgresql/18/bin" >> "$GITHUB_PATH"
       - name: setup database
         run: |
           cp .env.ci .env
