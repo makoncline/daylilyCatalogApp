@@ -11,7 +11,11 @@ interface ParsedError {
   code?: string;
 }
 
-function parseError(error: Error): ParsedError {
+function parseError(error: {
+  code?: unknown;
+  statusCode?: unknown;
+  status?: unknown;
+}): ParsedError {
   /*
    * Because an error may contain confidential information or information that
    * might help attackers, by default we don't output the error message at all.
@@ -28,7 +32,7 @@ function parseError(error: Error): ParsedError {
 
   // TODO: process certain errors
   const code = error["statusCode"] || error["status"] || error["code"];
-  const codeAsFloat = parseInt(code, 10);
+  const codeAsFloat = parseInt(String(code), 10);
   const httpCode =
     isFinite(codeAsFloat) && codeAsFloat >= 400 && codeAsFloat < 600
       ? codeAsFloat

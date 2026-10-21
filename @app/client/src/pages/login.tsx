@@ -75,14 +75,13 @@ const Login: NextPage<LoginProps> = ({ next: rawNext }) => {
                   >
                     Sign in with E-mail or Username
                   </Button>
-                  <Link
+                  <Button
                     href={`${registerUrl}?next=${encodeURIComponent(next)}`}
-                    passHref
+                    block
+                    data-cy="loginpage-button-register"
                   >
-                    <Button block data-cy="loginpage-button-register">
-                      Create an account
-                    </Button>
-                  </Link>
+                    Create an account
+                  </Button>
                 </Space>
               )}
             </FormWrapper>
@@ -175,9 +174,7 @@ function LoginForm({
         Passphrase
       </Field>
       <FormGroup>
-        <Link href={forgotUrl}>
-          <a>Forgotten passphrase?</a>
-        </Link>
+        <Link href={forgotUrl}>Forgotten passphrase?</Link>
       </FormGroup>
       {error ? (
         <FormGroup>

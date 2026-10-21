@@ -77,8 +77,8 @@ export default (app: Express) => {
       console.error(e);
       res.status(500).json({
         error: {
-          message: e.message,
-          stack: e.stack,
+          message: e instanceof Error ? e.message : "Unknown error",
+          stack: e instanceof Error ? e.stack : undefined,
         },
       });
     }
@@ -173,12 +173,13 @@ async function runCommand(
       await client.release();
     }
 
-    req.login({ session_id: session.uuid }, () => {
-      setTimeout(() => {
-        // This 500ms delay is required to keep GitHub actions happy. 200ms wasn't enough.
-        res.redirect(next || "/");
-      }, 500);
+    await new Promise<void>((resolve, reject) => {
+      req.login({ session_id: session.uuid }, (error) => {
+        if (error) return reject(error);
+        req.session.save((error) => (error ? reject(error) : resolve()));
+      });
     });
+    res.redirect(next || "/");
     return null;
   } else if (command === "getEmailSecrets") {
     const { email = "testuser@example.com" } = payload;

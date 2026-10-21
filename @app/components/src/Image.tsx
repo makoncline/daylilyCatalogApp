@@ -12,7 +12,8 @@ function Image({
   src: originalSrc,
   thumb = false,
   ...props
-}: ImageProps & {
+}: Omit<ImageProps, "src"> & {
+  src: string;
   thumb?: boolean;
 }) {
   const { hostname, pathname } = new URL(originalSrc);
@@ -48,6 +49,7 @@ function Image({
     <Wrapper isPlaceholder={isPlaceholder}>
       <NextImage
         src={src}
+        fill={props.width === undefined && props.height === undefined}
         placeholder={placeholder ? "blur" : undefined}
         blurDataURL={placeholder ? placeholder : undefined}
         onError={handleError}

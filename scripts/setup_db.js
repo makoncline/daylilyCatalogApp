@@ -5,7 +5,6 @@ const {
   checkGit,
   outro,
   runSync,
-  projectName,
 } = require("./_setup_utils");
 const inquirer = require("inquirer");
 const dotenv = require("dotenv");
@@ -133,10 +132,5 @@ runMain(async () => {
 
 🚀 To get started, run:
 
-${
-  projectName
-    ? // Probably Docker setup
-      "  export UID; docker-compose up server"
-    : `  ${yarnCmd} start`
-}`);
+${yarnCmd} start`);
 });

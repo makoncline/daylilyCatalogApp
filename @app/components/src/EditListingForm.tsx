@@ -18,7 +18,6 @@ import {
   AhsSearchDataFragment,
   ListDataFragment,
   useDeleteLilyMutation,
-  useDeleteUploadMutation,
   useEditLilyMutation,
   useLilyByIdQuery,
 } from "@app/graphql";
@@ -30,7 +29,6 @@ import {
   toViewListingUrl,
 } from "@app/lib";
 import * as Sentry from "@sentry/nextjs";
-import AmazonS3URI from "amazon-s3-uri";
 import { UseComboboxStateChange } from "downshift";
 import Router from "next/router";
 import React, { useCallback } from "react";
@@ -46,6 +44,7 @@ import {
   UploadDisabledNoMembership,
   UploadDisabledNotVerified,
 } from "./UploadDisabled";
+import { useRemoveUpload } from "./useRemoveUpload";
 
 type EditListingFormProps = {
   error: Error | ApolloError | null;
@@ -104,23 +103,7 @@ function EditListingForm({
     },
     [client, editLily, id, linkedLily, list, setError]
   );
-  const [deleteUpload] = useDeleteUploadMutation();
-  async function handleDeleteImage(imageUrl: string) {
-    const { key } = AmazonS3URI(imageUrl);
-    try {
-      await deleteUpload({
-        variables: {
-          input: {
-            key: key!!,
-          },
-        },
-      });
-    } catch (err) {
-      console.error(`Error deleting file: `, key, " at url: ", imageUrl);
-      Sentry.captureException(err);
-      throw err;
-    }
-  }
+  const handleDeleteImage = useRemoveUpload();
   const handleDelete = async () => {
     if (confirm("Are you sure you want to delete this listing?")) {
       setFormState("deleting");
@@ -138,6 +121,7 @@ function EditListingForm({
       } catch (e: any) {
         Sentry.captureException(e);
         setError(e);
+        setFormState("idle");
       }
     }
   };
@@ -180,7 +164,7 @@ function EditListingForm({
         list,
         imgUrl,
       } = data.lily;
-      const priceInt = parseInt(price);
+      const priceInt = parseInt(price || "");
       const priceString = priceInt ? priceInt.toString() : "";
       setValues({
         name: name,

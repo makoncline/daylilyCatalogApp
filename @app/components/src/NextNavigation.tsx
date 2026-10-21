@@ -1,4 +1,4 @@
-import { Button, Link, Nav, TextLogo } from "@app/design";
+import { Button, Heading, Link, Nav } from "@app/design";
 import {
   catalogUrl,
   listsUrl,
@@ -59,9 +59,9 @@ const NextNavLink = ({
   href: string;
   children: string;
 }) => (
-  <NextLink href={href} passHref>
-    <Link {...props}>{children}</Link>
-  </NextLink>
+  <Link as={NextLink} href={href} {...props}>
+    {children}
+  </Link>
 );
 
 const NextTextLogo = ({
@@ -72,7 +72,7 @@ const NextTextLogo = ({
   href: string;
   children: string;
 }) => (
-  <NextLink href={href} passHref {...props}>
-    <TextLogo>{children}</TextLogo>
+  <NextLink href={href} {...props}>
+    <Heading level={3}>{children}</Heading>
   </NextLink>
 );

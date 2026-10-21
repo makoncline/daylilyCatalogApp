@@ -22,7 +22,7 @@ export const stripeWebhooks = async (req: Request, res: Response) => {
         signature,
         webhookSecret
       );
-    } catch (err) {
+    } catch {
       console.log(`⚠️  Webhook signature verification failed.`);
       return res.sendStatus(400);
     }
@@ -57,7 +57,10 @@ export const stripeWebhooks = async (req: Request, res: Response) => {
             customer
           );
         } catch (err) {
-          res.status(500).json({ statusCode: 500, message: err.message });
+          res.status(500).json({
+            statusCode: 500,
+            message: err instanceof Error ? err.message : "Unknown error",
+          });
         }
       }
       break;
@@ -74,7 +77,10 @@ export const stripeWebhooks = async (req: Request, res: Response) => {
         try {
           await deleteStripeSubscription(subscription);
         } catch (err) {
-          res.status(500).json({ statusCode: 500, message: err.message });
+          res.status(500).json({
+            statusCode: 500,
+            message: err instanceof Error ? err.message : "Unknown error",
+          });
         }
       }
       break;

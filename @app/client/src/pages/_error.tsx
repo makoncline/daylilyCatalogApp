@@ -21,11 +21,7 @@ function SocialAuthError({ provider }: SocialAuthErrorProps) {
         This application is not configured for that auth provider
       </Heading>
       <p>
-        Please try and{" "}
-        <Link href={loginUrl}>
-          <a>login with another method</a>
-        </Link>
-        .
+        Please try and <Link href={loginUrl}>login with another method</Link>.
       </p>
       {isDev && (
         <Alert type="info">

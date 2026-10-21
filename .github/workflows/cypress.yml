@@ -18,11 +18,11 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [24.22.1]
 
     services:
       postgres:
-        image: postgres:12.5
+        image: postgres:18
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -33,17 +33,19 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7.0.1
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install pg_dump
+      - name: Enable pinned Yarn
         run: |
-          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-          sudo apt-get update
-          sudo apt-get -yqq install postgresql-client-14
+          corepack enable
+          corepack prepare yarn@1.22.22 --activate
+      - name: Install PostgreSQL client18
+        run: |
+          sudo sh docker/install-postgresql-client.sh
+          echo "/usr/lib/postgresql/18/bin" >> "$GITHUB_PATH"
       - name: Setup
         run: |
           cp .env.ci .env
@@ -55,16 +57,16 @@ jobs:
       - name: Start worker in background
         run: yarn worker start &
       - name: Cypress run
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v7.4.6
         with:
           wait-on: http://localhost:5678
           working-directory: "@app/e2e"
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v7.0.2
         if: failure()
         with:
           name: cypress-screenshots
           path: "@app/e2e/cypress/screenshots"
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v7.0.2
         if: failure()
         with:
           name: cypress-videos

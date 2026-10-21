@@ -11,13 +11,10 @@ const { safeRandomString } = require("./lib/random");
 const platform = require("os").platform();
 const yarnCmd = platform === "win32" ? "yarn.cmd" : "yarn";
 
-const projectName = process.env.PROJECT_NAME;
-
 exports.withDotenvUpdater = withDotenvUpdater;
 exports.readDotenv = readDotenv;
 exports.runSync = runSync;
 exports.yarnCmd = yarnCmd;
-exports.projectName = projectName;
 
 exports.updateDotenv = function updateDotenv(add, answers) {
   add(
@@ -133,15 +130,6 @@ exports.updateDotenv = function updateDotenv(add, answers) {
     `\
 # Set to 1 only if you're on Node v12 of higher; enables advanced optimisations:`
   );
-
-  if (projectName) {
-    add(
-      "COMPOSE_PROJECT_NAME",
-      projectName,
-      `\
-# The name of the folder you cloned graphile-starter to (so we can run docker-compose inside a container):`
-    );
-  }
 };
 
 exports.checkGit = async function checkGit() {
@@ -150,7 +138,7 @@ exports.checkGit = async function checkGit() {
     if (!gitStat || !gitStat.isDirectory()) {
       throw new Error("No .git folder found");
     }
-  } catch (e) {
+  } catch {
     console.error();
     console.error();
     console.error();

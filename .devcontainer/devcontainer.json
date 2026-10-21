@@ -27,8 +27,6 @@
     "msjsdiag.debugger-for-chrome",
     "apollographql.vscode-apollo",
     "mikestead.dotenv",
-    "ms-azuretools.vscode-docker",
-    "p1c2u.docker-compose",
     "dzannotti.vscode-babel-coloring",
     "aaron-bond.better-comments",
     "pranaygp.vscode-css-peek",

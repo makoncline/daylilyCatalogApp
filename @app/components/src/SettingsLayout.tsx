@@ -33,7 +33,7 @@ function page(spec: PageSpec): PageSpec {
   return spec;
 }
 
-const pages = {
+const pages: Record<string, PageSpec> = {
   [settingsUrl]: page({
     title: "Profile",
     cy: "settingslayout-link-profile",
@@ -92,13 +92,8 @@ export function SettingsLayout({
             <Space direction="column" gap="large">
               <Wrap>
                 {Object.keys(pages).map((pageHref, i) => (
-                  <Link
-                    href={pageHref}
-                    key={i}
-                    data-cy={pages[pageHref].cy}
-                    passHref
-                  >
-                    <a data-cy={pages[pageHref].cy}>{pages[pageHref].title}</a>
+                  <Link href={pageHref} key={i} data-cy={pages[pageHref].cy}>
+                    {pages[pageHref].title}
                   </Link>
                 ))}
               </Wrap>

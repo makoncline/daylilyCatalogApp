@@ -7,12 +7,12 @@ async function readDotenv() {
   let buffer = null;
   try {
     buffer = await fsp.readFile(DOTENV_PATH);
-  } catch (e) {
+  } catch {
     /* noop */
   }
   const config = buffer ? dotenv.parse(buffer) : null;
   // also read from current env, because docker-compose already needs to know some of it
-  // eg. $PG_DUMP, $CONFIRM
+  // For example, database settings passed by Compose.
   return { ...config, ...process.env };
 }
 
@@ -39,7 +39,7 @@ async function withDotenvUpdater(overrides, callback) {
     data = await fsp.readFile(DOTENV_PATH, "utf8");
     // Trim whitespace, and prefix with newline so we can do easier checking later
     data = "\n" + data.trim();
-  } catch (e) {
+  } catch {
     data = "";
   }
 

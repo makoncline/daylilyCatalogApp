@@ -14,8 +14,8 @@ function ListingImageDisplay({ imageUrls }: { imageUrls: string[] }) {
             key={imageIndex}
             src={imageUrl}
             alt={`listing photo`}
-            layout="fill"
-            objectFit="cover"
+            fill
+            style={{ objectFit: "cover" }}
           />
         )}
       </DisplayImage>
@@ -26,8 +26,8 @@ function ListingImageDisplay({ imageUrls }: { imageUrls: string[] }) {
               key={i}
               src={url}
               alt={`listing photo ${i}`}
-              layout="fill"
-              objectFit="cover"
+              fill
+              style={{ objectFit: "cover" }}
               onClick={() => setImageIndex(i)}
               thumb
               sizes="200px"

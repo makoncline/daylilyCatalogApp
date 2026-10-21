@@ -1,6 +1,8 @@
 import { LilyDataFragment } from "@app/graphql";
 
-function formatData(lilies: LilyDataFragment[]): string {
+type DownloadLily = LilyDataFragment & { privateNote?: string | null };
+
+function formatData(lilies: DownloadLily[]): string {
   const columns = [
     "name",
     "price",
@@ -100,7 +102,7 @@ function formatData(lilies: LilyDataFragment[]): string {
   return output;
 }
 
-function download(lilies: LilyDataFragment[]) {
+function download(lilies: DownloadLily[]) {
   const output = lilies && formatData(lilies);
   const element = document.createElement("a");
   const file = output && new Blob([output], { type: "text/plain" });

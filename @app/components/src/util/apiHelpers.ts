@@ -7,7 +7,7 @@ export async function fetchPostJsonCsrf(url: string, data?: {}) {
       throw new Error("Cannot read from __NEXT_DATA__ element");
     }
     const nextData = JSON.parse(nextDataEl.textContent);
-    const CSRF_TOKEN = nextData.query.CSRF_TOKEN;
+    const CSRF_TOKEN = nextData.props.csrfToken;
     const response = await fetch(url, {
       method: "POST",
       credentials: "same-origin",

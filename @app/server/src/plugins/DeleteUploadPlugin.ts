@@ -1,19 +1,11 @@
-import * as AWS from "aws-sdk";
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { gql, makeExtendSchemaPlugin } from "graphile-utils";
 
-const S3_UPLOAD_KEY = process.env.S3_UPLOAD_KEY;
-const S3_UPLOAD_SECRET = process.env.S3_UPLOAD_SECRET;
+import { OurGraphQLContext } from "../middleware/installPostGraphile";
+import { s3 } from "../utils/s3";
+import { authorizeUploadKey, getUploadUser } from "../utils/uploads";
+
 const S3_UPLOAD_BUCKET = process.env.S3_UPLOAD_BUCKET;
-const S3_UPLOAD_REGION = process.env.S3_UPLOAD_REGION;
-
-AWS.config.update({
-  accessKeyId: S3_UPLOAD_KEY,
-  secretAccessKey: S3_UPLOAD_SECRET,
-  region: S3_UPLOAD_REGION,
-  signatureVersion: "v4",
-});
-
-const s3 = new AWS.S3();
 
 interface DeleteUploadInput {
   clientMutationId?: string;
@@ -41,7 +33,7 @@ const DeleteUploadPlugin = makeExtendSchemaPlugin(() => ({
       async deleteUpload(
         _query,
         args: { input: DeleteUploadInput },
-        _resolveInfo
+        context: OurGraphQLContext
       ) {
         if (!S3_UPLOAD_BUCKET) {
           const err = new Error(
@@ -56,21 +48,20 @@ const DeleteUploadPlugin = makeExtendSchemaPlugin(() => ({
           input: { key, clientMutationId },
         } = args;
 
-        const params = {
-          Bucket: S3_UPLOAD_BUCKET,
-          Key: key,
-        };
-        let success = false;
+        const user = await getUploadUser(context.pgClient);
+        authorizeUploadKey(key, user.id);
         try {
-          await s3.deleteObject(params).promise();
-          success = true;
-        } catch (err) {
-          console.error("ERROR in file Deleting : " + JSON.stringify(err));
+          await s3.send(
+            new DeleteObjectCommand({ Bucket: S3_UPLOAD_BUCKET, Key: key })
+          );
+        } catch {
+          throw Object.assign(new Error("The image could not be deleted"), {
+            code: "UPLDE",
+          });
         }
-
         return {
           clientMutationId,
-          success,
+          success: true,
         };
       },
     },

@@ -1,3 +1,4 @@
+import { getCodeFromError } from "@app/lib";
 import { GraphQLError } from "graphql";
 import { camelCase } from "lodash";
 
@@ -25,7 +26,7 @@ const ERROR_PROPERTIES_TO_EXPOSE =
 
 // This would be better as a macro...
 const pluck = (err: any): { [key: string]: any } => {
-  return ERROR_PROPERTIES_TO_EXPOSE.reduce((memo, key) => {
+  return ERROR_PROPERTIES_TO_EXPOSE.reduce<Record<string, any>>((memo, key) => {
     const value =
       key === "code"
         ? // err.errcode is equivalent to err.code; replace it
@@ -93,8 +94,8 @@ export default function handleErrors(
 ): Array<any> {
   return errors.map((error) => {
     const { message: rawMessage, locations, path, originalError } = error;
-    const code = originalError ? originalError["code"] : null;
-    const localPluck = ERROR_MESSAGE_OVERRIDES[code] || pluck;
+    const code = getCodeFromError(originalError);
+    const localPluck = ERROR_MESSAGE_OVERRIDES[code || ""] || pluck;
     const exception = localPluck(originalError || error);
     return {
       message: exception.message || rawMessage,

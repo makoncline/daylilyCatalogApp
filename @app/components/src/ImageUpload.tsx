@@ -1,5 +1,5 @@
 import { Button, Heading, Space, Thumbnail } from "@app/design";
-import type { CreateUploadUrlPayload } from "@app/graphql";
+import type { CreateUploadUrlMutation } from "@app/graphql";
 import { useCreateUploadUrlMutation } from "@app/graphql";
 import axios from "axios";
 import React from "react";
@@ -14,41 +14,40 @@ function useFileUpload(
 ) {
   const [createUploadUrl] = useCreateUploadUrlMutation();
   const [uploadConfig, setUploadConfig] = React.useState<Pick<
-    CreateUploadUrlPayload,
+    NonNullable<CreateUploadUrlMutation["createUploadUrl"]>,
     "uploadUrl" | "key" | "url"
   > | null>(null);
   const [progress, setProgress] = React.useState<number | null>(null);
   const [error, setError] = React.useState<Error | null>(null);
-  const getUploadCongif = React.useCallback(async () => {
-    const { data, errors } = await createUploadUrl({
+  const getUploadConfig = React.useCallback(() => {
+    return createUploadUrl({
       variables: {
         input: {
           keyPrefix,
           contentType: file.type,
         },
       },
-    });
-    if (data) {
-      setUploadConfig(data.createUploadUrl || null);
-    }
-    if (errors) {
-      setError(errors[0]);
-    }
+    }).then(
+      ({ data }) => setUploadConfig(data?.createUploadUrl || null),
+      (error) => setError(error)
+    );
   }, [createUploadUrl, file, keyPrefix]);
 
   React.useEffect(() => {
-    getUploadCongif();
-  }, [getUploadCongif]);
+    getUploadConfig();
+  }, [getUploadConfig]);
 
   const runUpload = React.useCallback(() => {
     const { uploadUrl, url, key } = uploadConfig || {};
     if (uploadUrl && url && key) {
       axios
         .put(uploadUrl, file, {
-          onUploadProgress: (progressEvent: ProgressEvent) => {
+          headers: { "Content-Type": file.type },
+          onUploadProgress: (progressEvent) => {
             const { loaded, total } = progressEvent;
-            const percent = Math.round((loaded / total) * 100);
-            setProgress(percent);
+            if (total) {
+              setProgress(Math.round((loaded / total) * 100));
+            }
           },
         })
         .then(
@@ -258,7 +257,12 @@ export function ImageUpload({
             </Space>
             <Space>
               <Button onClick={handleReset}>Reset</Button>
-              <Button onClick={handleUpload}>Upload</Button>
+              <Button
+                onClick={handleUpload}
+                disabled={uploadFunctions.length !== files.length}
+              >
+                Upload
+              </Button>
             </Space>
           </>
         )}
@@ -275,7 +279,7 @@ function getImagePreview(file: File): JSX.Element {
   return (
     <Space direction="row">
       <Thumbnail>
-        <Image src={src} onLoad={onLoad} />
+        <Image src={src} alt={file.name} onLoad={onLoad} />
       </Thumbnail>
       <div>
         <p>{file.name}</p>

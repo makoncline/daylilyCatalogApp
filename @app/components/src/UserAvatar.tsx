@@ -13,6 +13,7 @@ export const UserAvatar: FC<{
   return (
     <Thumbnail>
       <Image
+        alt={props.user.name || "User avatar"}
         src={
           avatarUrl
             ? avatarUrl

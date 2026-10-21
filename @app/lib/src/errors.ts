@@ -1,41 +1,37 @@
 import { ApolloError } from "@apollo/client";
-import { GraphQLError } from "graphql";
+import { GraphQLError, GraphQLFormattedError } from "graphql";
+
+type ErrorInput = Error | ApolloError | GraphQLError | GraphQLFormattedError;
+type ErrorResult = Error | GraphQLFormattedError;
 
 export function extractError(error: null): null;
-export function extractError(error: Error): Error;
-export function extractError(error: ApolloError): GraphQLError;
-export function extractError(error: GraphQLError): GraphQLError;
-export function extractError(
-  error: null | Error | ApolloError | GraphQLError
-): null | Error | GraphQLError;
-export function extractError(
-  error: null | Error | ApolloError | GraphQLError
-): null | Error | GraphQLError {
-  return (
-    (error &&
-      "graphQLErrors" in error &&
-      error.graphQLErrors &&
-      error.graphQLErrors.length &&
-      error.graphQLErrors[0]) ||
-    error
-  );
+export function extractError(error: ErrorInput): ErrorResult;
+export function extractError(error: ErrorInput | null): ErrorResult | null;
+export function extractError(error: ErrorInput | null): ErrorResult | null {
+  return error && "graphQLErrors" in error
+    ? error.graphQLErrors[0] || error
+    : error;
+}
+
+function errorObject(value: unknown): Record<string, unknown> | null {
+  return value !== null && typeof value === "object"
+    ? (value as Record<string, unknown>)
+    : null;
 }
 
 export function getExceptionFromError(
-  error: null | Error | ApolloError | GraphQLError
-): Error | null {
-  // @ts-ignore
-  const graphqlError: GraphQLError = extractError(error);
-  const exception =
-    graphqlError &&
-    graphqlError.extensions &&
-    graphqlError.extensions.exception;
-  return exception || graphqlError || error;
+  error: unknown
+): Record<string, unknown> | null {
+  const original = errorObject(error);
+  const errors = original?.graphQLErrors;
+  const extracted =
+    Array.isArray(errors) && errors.length ? errorObject(errors[0]) : original;
+  return (
+    errorObject(errorObject(extracted?.extensions)?.exception) || extracted
+  );
 }
 
-export function getCodeFromError(
-  error: null | Error | ApolloError | GraphQLError
-): null | string {
-  const err = getExceptionFromError(error);
-  return (err && err["code"]) || null;
+export function getCodeFromError(error: unknown): string | null {
+  const code = getExceptionFromError(error)?.code;
+  return typeof code === "string" ? code : null;
 }

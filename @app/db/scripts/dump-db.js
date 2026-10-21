@@ -1,19 +1,13 @@
 const { spawn } = require("child_process");
 
-if (process.env.IN_TESTS === "1") {
-  process.exit(0);
-}
-
+if (process.env.IN_TESTS === "1") process.exit(0);
 const connectionString = process.env.GM_DBURL;
 if (!connectionString) {
-  console.error(
-    "This script should only be called from a graphile-migrate action."
-  );
+  console.error("This script requires the Graphile Migrate database context.");
   process.exit(1);
 }
-
-spawn(
-  process.env.PG_DUMP || "pg_dump",
+const child = spawn(
+  "pg_dump",
   [
     "--no-sync",
     "--schema-only",
@@ -23,8 +17,12 @@ spawn(
     "--file=../../data/schema.sql",
     connectionString,
   ],
-  {
-    stdio: "inherit",
-    shell: true,
-  }
+  { stdio: "inherit" }
 );
+child.once("error", (error) => {
+  console.error("pg_dump could not start:", error.code);
+  process.exitCode = 1;
+});
+child.once("close", (code) => {
+  process.exitCode = code === null ? 1 : code;
+});

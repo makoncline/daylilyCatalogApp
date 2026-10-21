@@ -99,9 +99,7 @@ const ForgotPassword: NextPage = () => {
             <Button styleType="primary">Reset password</Button>
           </SubmitButton>
           <p>
-            <Link href={loginUrl}>
-              <a>Remembered your password? Log in.</a>
-            </Link>
+            <Link href={loginUrl}>Remembered your password? Log in.</Link>
           </p>
         </Form>
       </FormWrapper>

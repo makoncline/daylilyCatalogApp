@@ -158,9 +158,9 @@ const Settings_Accounts: NextPage = () => {
         ) : null}
       </Space>
       <Dialog
-        isOpen={confirmOpen}
-        onDismiss={closeModal}
-        aria-label="delete account dialog"
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title="delete account dialog"
       >
         {doingIt ? (
           <Alert type="danger">
@@ -192,10 +192,11 @@ const Settings_Accounts: NextPage = () => {
         )}
       </Dialog>
       <Dialog
-        isOpen={deleted}
-        onDismiss={() => router.push("/")}
+        open={deleted}
+        onOpenChange={(open) => {
+          if (!open) void router.push("/");
+        }}
         title="Account deleted"
-        aria-label="Account deleted dialog"
       >
         <Alert type="danger">
           <Alert.Heading>Account deleted</Alert.Heading>

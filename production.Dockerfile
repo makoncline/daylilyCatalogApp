@@ -6,7 +6,7 @@ ARG TARGET="server"
 ################################################################################
 # Build stage 1 - `yarn build`
 
-FROM node:16 as builder
+FROM node:24.22.1-bookworm as builder
 # Import our shared args
 ARG NODE_ENV
 ARG ROOT_URL
@@ -28,7 +28,7 @@ RUN yarn run build
 ################################################################################
 # Build stage 2 - COPY the relevant things (multiple steps)
 
-FROM node:16 as clean
+FROM node:24.22.1-bookworm as clean
 # Import our shared args
 ARG NODE_ENV
 ARG ROOT_URL
@@ -67,7 +67,9 @@ RUN rm -Rf /app/node_modules /app/@app/*/node_modules
 ################################################################################
 # Build stage FINAL - COPY everything, once, and then do a clean `yarn install`
 
-FROM node:16
+FROM node:24.22.1-bookworm
+
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
 
 EXPOSE $PORT
 WORKDIR /app/

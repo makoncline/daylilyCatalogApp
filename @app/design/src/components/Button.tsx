@@ -69,11 +69,15 @@ export const Button = ({
   return (
     <>
       {isLink ? (
-        <Link href={href as string} passHref>
-          <StyledButton style={style} disabled={disabled} as="a" {...props}>
-            {child}
-          </StyledButton>
-        </Link>
+        <StyledButton
+          as={Link}
+          href={href}
+          style={style}
+          aria-disabled={disabled || undefined}
+          {...props}
+        >
+          {child}
+        </StyledButton>
       ) : (
         <StyledButton
           type="button"

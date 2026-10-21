@@ -218,7 +218,7 @@ export const runGraphQLQuery = async function runGraphQLQuery(
                 Object.keys(e.originalError).forEach((k) => {
                   try {
                     e[k] = e.originalError[k];
-                  } catch (err) {
+                  } catch {
                     // Meh.
                   }
                 });

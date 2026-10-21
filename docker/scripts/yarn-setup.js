@@ -1,5 +1,4 @@
 const { runSync } = require("../../scripts/lib/run");
-const { basename, dirname, resolve } = require("path");
 const platform = require("os").platform();
 const { safeRandomString } = require("../../scripts/lib/random");
 const fs = require("fs");
@@ -18,7 +17,7 @@ async function main() {
   // Check that docker/.env exists
   try {
     await fsp.access(DOCKER_DOTENV_PATH, fs.constants.F_OK);
-  } catch (e) {
+  } catch {
     // Does not exist, write it
     const password = safeRandomString(30);
     const data = `
@@ -26,15 +25,7 @@ async function main() {
 # interactive terminal.
 FORCE_COLOR=2
 
-# \`pg_dump\` is run from inside container, which doesn't have pg tools installed
-# so it needs a way to still run it. \`docker-compose run\` would start an
-# instance inside the current running container which doesn't work with volume
-# mappings, so we must use \`docker-compose exec\`. \`-T\` is needed because our
-# \`.gmrc\` checks for interactive TTY.
-PG_DUMP=docker-compose exec -T db pg_dump
-
-# Drops tables without asking in \`yarn setup\`. Reasoning: 1) docker-compose is
-# not tty, 2) it's a dev env anyway.
+# Setup resets only this development environment's databases.
 CONFIRM_DROP=y
 
 # POSTGRES_PASSWORD is the superuser password for PostgreSQL, it's required to
@@ -46,14 +37,8 @@ POSTGRES_PASSWORD=${password}
 DATABASE_HOST=db
 ROOT_DATABASE_URL=postgres://postgres:${password}@db/postgres
 `;
-    await fsp.writeFile(DOCKER_DOTENV_PATH, data);
+    await fsp.writeFile(DOCKER_DOTENV_PATH, data, { mode: 0o600 });
   }
-
-  // The `docker-compose` project name defaults to the directory name containing
-  // `docker-compose.yml`, which is the root folder of our project. Let's call
-  // that 'ROOT'. We're in ROOT/docker/scripts and we want to get the name of
-  // ROOT:
-  const projectName = basename(dirname(dirname(resolve(__dirname))));
 
   // On Windows we must run 'yarn.cmd' rather than 'yarn'
   const yarnCmd = platform === "win32" ? "yarn.cmd" : "yarn";
@@ -61,27 +46,27 @@ ROOT_DATABASE_URL=postgres://postgres:${password}@db/postgres
   runSync(yarnCmd, ["down"]);
   runSync(yarnCmd, ["db:up"]);
 
-  // Fix permissions
   runSync(yarnCmd, [
     "compose",
     "run",
+    "--rm",
+    "--no-deps",
+    "--user",
+    "root",
     "server",
-    "sudo",
-    "bash",
-    "-c",
-    "chmod o+rwx /var/run/docker.sock && chown -R node /work/node_modules /work/@app/*/node_modules",
+    "chown",
+    "-R",
+    "node:node",
+    "/work/node_modules",
+    "/work/@app/client/node_modules",
+    "/work/@app/config/node_modules",
+    "/work/@app/db/node_modules",
+    "/work/@app/e2e/node_modules",
+    "/work/@app/graphql/node_modules",
+    "/work/@app/server/node_modules",
+    "/work/@app/worker/node_modules",
   ]);
-
-  // Run setup as normal
-  runSync(yarnCmd, [
-    "compose",
-    "run",
-    "-e",
-    `PROJECT_NAME=${projectName}`,
-    "server",
-    "yarn",
-    "setup",
-  ]);
+  runSync(yarnCmd, ["compose", "run", "--rm", "server", "yarn", "setup"]);
 }
 
 main().catch((e) => {
