@@ -43,10 +43,11 @@ function useFileUpload(
       axios
         .put(uploadUrl, file, {
           headers: { "Content-Type": file.type },
-          onUploadProgress: (progressEvent: ProgressEvent) => {
+          onUploadProgress: (progressEvent) => {
             const { loaded, total } = progressEvent;
-            const percent = Math.round((loaded / total) * 100);
-            setProgress(percent);
+            if (total) {
+              setProgress(Math.round((loaded / total) * 100));
+            }
           },
         })
         .then(
