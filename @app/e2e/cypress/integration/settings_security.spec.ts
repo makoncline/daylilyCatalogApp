@@ -3,6 +3,15 @@
 context("Settings after the supported runtime update", () => {
   beforeEach(() => cy.serverCommand("clearTestUsers"));
 
+  it("shows the upload denial for an unverified user", () => {
+    cy.login({ username: "testuser", verified: false, next: "/settings" });
+    cy.get('input[type="file"]')
+      .first()
+      .selectFile("../server/public/flowerPlaceholder.png", { force: true });
+    cy.contains("Only verified users may upload files").should("be.visible");
+    cy.contains("button", "Upload", { exact: true }).should("be.disabled");
+  });
+
   it("restores dialog focus and persists avatar removal", () => {
     cy.login({
       username: "testuser",

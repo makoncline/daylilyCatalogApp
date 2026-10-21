@@ -19,26 +19,23 @@ function useFileUpload(
   > | null>(null);
   const [progress, setProgress] = React.useState<number | null>(null);
   const [error, setError] = React.useState<Error | null>(null);
-  const getUploadCongif = React.useCallback(async () => {
-    const { data, errors } = await createUploadUrl({
+  const getUploadConfig = React.useCallback(() => {
+    return createUploadUrl({
       variables: {
         input: {
           keyPrefix,
           contentType: file.type,
         },
       },
-    });
-    if (data) {
-      setUploadConfig(data.createUploadUrl || null);
-    }
-    if (errors) {
-      setError(new Error(errors[0].message));
-    }
+    }).then(
+      ({ data }) => setUploadConfig(data?.createUploadUrl || null),
+      (error) => setError(error)
+    );
   }, [createUploadUrl, file, keyPrefix]);
 
   React.useEffect(() => {
-    getUploadCongif();
-  }, [getUploadCongif]);
+    getUploadConfig();
+  }, [getUploadConfig]);
 
   const runUpload = React.useCallback(() => {
     const { uploadUrl, url, key } = uploadConfig || {};
