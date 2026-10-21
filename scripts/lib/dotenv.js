@@ -12,7 +12,7 @@ async function readDotenv() {
   }
   const config = buffer ? dotenv.parse(buffer) : null;
   // also read from current env, because docker-compose already needs to know some of it
-  // eg. $PG_DUMP, $CONFIRM
+  // For example, database settings passed by Compose.
   return { ...config, ...process.env };
 }
 

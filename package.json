@@ -34,7 +34,6 @@
     "server": "yarn workspace @app/server",
     "worker": "yarn workspace @app/worker",
     "docker": "yarn --cwd ./docker",
-    "docker-compose": "yarn --cwd ./docker compose",
     "build:prod:server": "docker build --file production.Dockerfile --build-arg TARGET=\"server\" -t makon/daylilycatalog:server .",
     "build:prod:worker": "docker build --file production.Dockerfile --build-arg TARGET=\"worker\" -t makon/daylilycatalog:worker .",
     "build:prod-local:server": "docker build --file production.Dockerfile --build-arg TARGET=\"server\" --build-arg ROOT_URL=\"http://localhost:5678\" -t makon/daylilycatalog:server-local .",
@@ -118,6 +117,6 @@
   },
   "packageManager": "yarn@1.22.22",
   "engines": {
-    "node": ">=24.15.0 <25"
+    "node": "^24.22.1"
   }
 }

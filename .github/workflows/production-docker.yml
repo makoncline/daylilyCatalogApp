@@ -11,11 +11,11 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [24.22.1]
 
     services:
       postgres:
-        image: postgres:12.5
+        image: postgres:18
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -27,18 +27,18 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7.0.1
       # TODO: we should be able to get rid of Node here
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install pg_dump
+      - name: Enable pinned Yarn
         run: |
-          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-          sudo apt-get update
-          sudo apt-get -yqq install postgresql-client-14
+          corepack enable
+          corepack prepare yarn@1.22.22 --activate
+      - name: Install PostgreSQL client18
+        run: sudo sh docker/install-postgresql-client.sh
       - name: setup database
         run: |
           cp .env.ci .env
@@ -48,11 +48,11 @@ jobs:
           CI: true
       - name: "Run docker server build"
         run:
-          docker build --file production.Dockerfile --build-arg ROOT_URL="http://localhost:5678" --build-arg
+          docker build --pull --file production.Dockerfile --build-arg ROOT_URL="http://localhost:5678" --build-arg
           TARGET="server" --tag gs-server .
       - name: "Run docker worker build"
         run:
-          docker build --file production.Dockerfile --build-arg ROOT_URL="http://localhost:5678" --build-arg
+          docker build --pull --file production.Dockerfile --build-arg ROOT_URL="http://localhost:5678" --build-arg
           TARGET="worker" --tag gs-worker .
       - name: "ifconfig -a"
         run: "ifconfig -a"
