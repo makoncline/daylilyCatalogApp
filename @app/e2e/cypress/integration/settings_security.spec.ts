@@ -93,15 +93,10 @@ context("Settings after the supported runtime update", () => {
     });
     cy.get('input[type="file"]')
       .first()
-      .selectFile(
-        {
-          contents: Cypress.Buffer.from("fixture-png-bytes"),
-          fileName: "avatar.png",
-          mimeType: "image/png",
-        },
-        { force: true }
-      );
-    cy.contains("button", "Upload", { exact: true }).click();
+      .selectFile("../server/public/flowerPlaceholder.png", { force: true });
+    cy.contains("button", "Upload", { exact: true })
+      .should("be.enabled")
+      .click();
     cy.wait("@avatarUpload");
     cy.contains("button", "Edit image").should("exist");
   });

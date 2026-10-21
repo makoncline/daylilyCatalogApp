@@ -259,7 +259,12 @@ export function ImageUpload({
             </Space>
             <Space>
               <Button onClick={handleReset}>Reset</Button>
-              <Button onClick={handleUpload}>Upload</Button>
+              <Button
+                onClick={handleUpload}
+                disabled={uploadFunctions.length !== files.length}
+              >
+                Upload
+              </Button>
             </Space>
           </>
         )}

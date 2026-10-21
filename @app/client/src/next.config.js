@@ -1,3 +1,4 @@
+require("@app/config/env");
 require("@app/config");
 require("sharp");
 const { withSentryConfig } = require("@sentry/nextjs/config");
